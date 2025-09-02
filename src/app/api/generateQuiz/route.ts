@@ -14,6 +14,11 @@ function shuffleVariants(variants: any[]) {
   return shuffled;
 }
 
+// Simple delay utility for retries
+async function delay(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 // Helper function to remove comments from code
 function removeComments(code: string): string {
   return code
@@ -166,25 +171,27 @@ async function generateQuestionsForChunk(
     try {
       console.log(`🔄 Generating function-variant questions for chunk ${chunkIndex + 1}...`);
       
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000);
-      
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openaiApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o',
-          messages: [
-            { 
-              role: 'system', 
-              content: 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.' 
+      let response: Response | null = null;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
+        try {
+          response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${openaiApiKey}`,
+              'Content-Type': 'application/json',
             },
-            { 
-              role: 'user', 
-              content: `Generate 1-2 function-variant quiz questions based on this code chunk:
+            body: JSON.stringify({
+              model: 'gpt-4o',
+              messages: [
+                { 
+                  role: 'system', 
+                  content: 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.' 
+                },
+                { 
+                  role: 'user', 
+                  content: `Generate 1-2 function-variant quiz questions based on this code chunk:
 
 ${codeChunk}
 
@@ -226,17 +233,25 @@ Format:
     }
   }
 ]` 
-            }
-          ],
-          temperature: 0.3,
-          max_tokens: 3000
-        }),
-        signal: controller.signal
-      });
-      
-      clearTimeout(timeoutId);
+                }
+              ],
+              temperature: 0.3,
+              max_tokens: 2000
+            }),
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+          if (response && (response.ok || response.status !== 429)) break;
+        } catch (e) {
+          clearTimeout(timeoutId);
+          if (e instanceof Error && e.name === 'AbortError') throw e;
+        }
+        const backoff = 500 * Math.pow(2, attempt);
+        console.warn(`⚠️ Function-variant 429 retry in ${backoff}ms (attempt ${attempt + 1})`);
+        await delay(backoff);
+      }
 
-      if (response.ok) {
+      if (response && response.ok) {
         const data = await response.json();
         const content = data.choices[0].message.content;
         
@@ -291,25 +306,27 @@ Format:
     try {
       console.log(`🔄 Generating multiple-choice questions for chunk ${chunkIndex + 1}...`);
       
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 20000);
-      
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openaiApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o',
-          messages: [
-            { 
-              role: 'system', 
-              content: 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.' 
+      let response: Response | null = null;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 20000);
+        try {
+          response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${openaiApiKey}`,
+              'Content-Type': 'application/json',
             },
-            { 
-              role: 'user', 
-              content: `Generate 1 multiple-choice question based on this code chunk:
+            body: JSON.stringify({
+              model: 'gpt-4o',
+              messages: [
+                { 
+                  role: 'system', 
+                  content: 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.' 
+                },
+                { 
+                  role: 'user', 
+                  content: `Generate 1 multiple-choice question based on this code chunk:
 
 ${codeChunk}
 
@@ -333,17 +350,25 @@ Format:
     }
   }
 ]` 
-            }
-          ],
-          temperature: 0.3,
-          max_tokens: 2000
-        }),
-        signal: controller.signal
-      });
-      
-      clearTimeout(timeoutId);
+                }
+              ],
+              temperature: 0.3,
+              max_tokens: 1500
+            }),
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+          if (response && (response.ok || response.status !== 429)) break;
+        } catch (e) {
+          clearTimeout(timeoutId);
+          if (e instanceof Error && e.name === 'AbortError') throw e;
+        }
+        const backoff = 500 * Math.pow(2, attempt);
+        console.warn(`⚠️ Multiple-choice 429 retry in ${backoff}ms (attempt ${attempt + 1})`);
+        await delay(backoff);
+      }
 
-      if (response.ok) {
+      if (response && response.ok) {
         const data = await response.json();
         const content = data.choices[0].message.content;
         
@@ -412,261 +437,25 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('🤖 Using OpenAI to generate questions based on actual code');
-      console.log('🤖 Using OpenAI to generate questions based on actual code');
-      
-      // Generate questions using OpenAI with your actual prompts
-      const generatedQuestions = [];
-      
-      // Generate function-variant questions
-      if (questionTypes.includes('function-variant')) {
-        try {
-          console.log('🔄 Generating function-variant questions...');
-          
-          // Add timeout to prevent long waits
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-          
-          const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${openaiApiKey}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              model: 'gpt-4o',
-              messages: [
-                { 
-                  role: 'system', 
-                  content: 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.' 
-                },
-                { 
-                  role: 'user', 
-                  content: `Generate exactly 3 function-variant quiz questions based on this code:
-
-${code}
-
-CRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.
-
-Format:
-[
-  {
-    "snippet": "function name from code",
-    "quiz": {
-      "type": "function-variant",
-      "question": "Which version correctly implements [FUNCTION]?",
-      "variants": [
-        {
-          "id": "A",
-          "code": "function code",
-          "isCorrect": true,
-          "explanation": "why correct"
-        },
-        {
-          "id": "B",
-          "code": "function with bug",
-          "isCorrect": false,
-          "explanation": "why wrong"
-        },
-        {
-          "id": "C",
-          "code": "function with different bug",
-          "isCorrect": false,
-          "explanation": "why wrong"
-        },
-        {
-          "id": "D",
-          "code": "function with another bug",
-          "isCorrect": false,
-          "explanation": "why wrong"
-        }
-      ]
-    }
-  }
-]` 
-                }
-              ],
-              temperature: 0.3, // Lower temperature for more consistent formatting
-              max_tokens: 4000
-            }),
-            signal: controller.signal
-          });
-          
-          clearTimeout(timeoutId);
-
-          if (response.ok) {
-            const data = await response.json();
-            const content = data.choices[0].message.content;
-            
-            try {
-              // Clean the response - remove markdown code blocks if present
-              let cleanContent = content.trim();
-              
-              // Remove ```json and ``` if present
-              if (cleanContent.startsWith('```json')) {
-                cleanContent = cleanContent.replace(/^```json\s*/, '');
-              }
-              if (cleanContent.startsWith('```')) {
-                cleanContent = cleanContent.replace(/^```\s*/, '');
-              }
-              if (cleanContent.endsWith('```')) {
-                cleanContent = cleanContent.replace(/\s*```$/, '');
-              }
-              
-              console.log('🧹 Cleaned OpenAI response:', cleanContent.substring(0, 200) + '...');
-              
-              const parsedQuestions = JSON.parse(cleanContent);
-              
-              // Shuffle the variants for each AI-generated question and remove comments
-              parsedQuestions.forEach((question: any) => {
-                if (question.quiz.variants) {
-                  question.quiz.variants = shuffleVariants(question.quiz.variants);
-                  // Remove comments from code variants
-                  question.quiz.variants.forEach((variant: any) => {
-                    variant.code = removeComments(variant.code);
-                  });
-                  // Balance verbosity to prevent correct answers from being consistently longer
-                  question.quiz.variants = balanceVariantVerbosity(question.quiz.variants);
-                }
-              });
-              
-              generatedQuestions.push(...parsedQuestions);
-              
-              console.log(`✅ Generated ${generatedQuestions.length} questions total`);
-            } catch (parseError) {
-              console.error('❌ Failed to parse OpenAI response:', parseError);
-              console.error('🔍 Raw response:', content);
-              const errorMessage = parseError instanceof Error ? parseError.message : 'Unknown parsing error';
-              throw new Error(`Failed to parse AI-generated questions: ${errorMessage}`);
-            }
-          }
-        } catch (error) {
-          console.error('❌ OpenAI API error:', error);
-          throw new Error(`Failed to generate function-variant questions: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.log('🤖 Using OpenAI to generate questions based on actual code');
+    
+    // Chunk code to avoid token limits and generate per chunk
+    const generatedQuestions: any[] = [];
+    const desiredTotal = typeof numQuestions === 'number' && numQuestions > 0 ? numQuestions : 5;
+    const chunks = createSmartCodeChunks(code || '', 8000);
+    console.log(`🧩 Generating across ${chunks.length} chunks, aiming for ${desiredTotal} questions`);
+    
+    for (let i = 0; i < chunks.length; i++) {
+      if (generatedQuestions.length >= desiredTotal) break;
+      const chunkQuestions = await generateQuestionsForChunk(chunks[i], questionTypes, openaiApiKey, i);
+      for (const q of chunkQuestions) {
+        if (generatedQuestions.length < desiredTotal) {
+          generatedQuestions.push(q);
+        } else {
+          break;
         }
       }
-
-      // Generate multiple-choice questions
-      if (questionTypes.includes('multiple-choice')) {
-        try {
-          console.log('🔄 Generating multiple-choice questions...');
-          
-          // Add timeout to prevent long waits
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 second timeout
-          
-          const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${openaiApiKey}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              model: 'gpt-4o',
-              messages: [
-                { 
-                  role: 'system', 
-                  content: 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.' 
-                },
-                { 
-                  role: 'user', 
-                  content: `Generate exactly 2 multiple-choice questions based on this code:
-
-${code}
-
-CRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.
-
-Format:
-[
-  {
-    "snippet": "function name from code",
-    "quiz": {
-      "type": "multiple-choice",
-      "question": "What does [FUNCTION] do?",
-      "options": [
-        "Option A description",
-        "Option B description", 
-        "Option C description",
-        "Option D description"
-      ],
-      "answer": "1",
-      "explanation": "why this is correct"
     }
-  }
-]` 
-                }
-              ],
-              temperature: 0.3, // Lower temperature for more consistent formatting
-              max_tokens: 3000
-            }),
-            signal: controller.signal
-          });
-          
-          clearTimeout(timeoutId);
-
-          console.log('📡 OpenAI multiple-choice response status:', response.status);
-
-          if (response.ok) {
-            const data = await response.json();
-            const content = data.choices[0].message.content;
-            
-            console.log('📝 Multiple-choice response length:', content.length);
-            
-            try {
-              let cleanContent = content.trim();
-              if (cleanContent.startsWith('```json')) {
-                cleanContent = cleanContent.replace(/^```json\s*/, '');
-              }
-              if (cleanContent.startsWith('```')) {
-                cleanContent = cleanContent.replace(/^```\s*/, '');
-              }
-              if (cleanContent.endsWith('```')) {
-                cleanContent = cleanContent.replace(/\s*```$/, '');
-              }
-              
-              // Remove any text before the first [
-              const jsonStart = cleanContent.indexOf('[');
-              if (jsonStart > 0) {
-                cleanContent = cleanContent.substring(jsonStart);
-              }
-              
-              // Remove any text after the last ]
-              const jsonEnd = cleanContent.lastIndexOf(']');
-              if (jsonEnd > 0 && jsonEnd < cleanContent.length - 1) {
-                cleanContent = cleanContent.substring(0, jsonEnd + 1);
-              }
-              
-              const parsedQuestions = JSON.parse(cleanContent);
-              console.log('✅ Successfully parsed multiple-choice JSON, questions count:', parsedQuestions.length);
-              
-              // Validate the parsed questions
-              if (!Array.isArray(parsedQuestions)) {
-                throw new Error('AI response is not an array');
-              }
-              
-              if (parsedQuestions.length === 0) {
-                throw new Error('AI generated 0 questions');
-              }
-              
-              generatedQuestions.push(...parsedQuestions);
-              console.log(`✅ Generated ${parsedQuestions.length} multiple-choice questions`);
-            } catch (parseError) {
-              console.error('❌ Failed to parse multiple-choice response:', parseError);
-              const errorMessage = parseError instanceof Error ? parseError.message : 'Unknown parsing error';
-              throw new Error(`Failed to parse multiple-choice questions: ${errorMessage}`);
-            }
-          } else {
-            const errorText = await response.text();
-            console.error('❌ OpenAI multiple-choice API error response:', errorText);
-            throw new Error(`OpenAI multiple-choice API error: ${response.status} - ${errorText}`);
-          }
-        } catch (error) {
-          console.error('❌ Multiple-choice generation error:', error);
-          if (error instanceof Error && error.name === 'AbortError') {
-            throw new Error('Multiple-choice generation timed out after 20 seconds');
-          }
-          throw new Error(`Failed to generate multiple-choice questions: ${error instanceof Error ? error.message : 'Unknown error'}`);
-        }
-      }
 
       // Convert the generated questions to the format expected by your quiz interface
       questions = generatedQuestions.map((q, index) => ({
@@ -693,7 +482,7 @@ Format:
           question.variants = balanceVariantVerbosity(question.variants);
         }
       });
-    }
+    
 
     const quizSession = {
       id: Date.now().toString(),
