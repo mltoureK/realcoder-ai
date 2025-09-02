@@ -1,4 +1,15 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RealCoder AI - Next.js Quiz Application
+
+Real Coder AI React Migration - A Next.js application that generates AI-powered coding quizzes based on your actual code.
+
+## Features
+
+- **AI-Generated Quizzes**: Creates questions based on your actual code patterns and logic
+- **Multiple Question Types**: Function-variant and multiple-choice questions
+- **Code Analysis**: Analyzes real functions, variables, and patterns from your codebase
+- **GitHub Integration**: Process repositories directly from GitHub URLs
+- **File Upload**: Upload and analyze local code files
+- **Smart Learning**: Practice with real-world code from popular repositories
 
 ## Getting Started
 
@@ -19,6 +30,14 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Environment Variables
+
+Create a `.env.local` file with:
+```
+OPENAI_API_KEY=your_openai_api_key_here
+GITHUB_TOKEN=your_github_token_here
+```
 
 ## Learn More
 
