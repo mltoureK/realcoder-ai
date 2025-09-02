@@ -75,6 +75,315 @@ function balanceVariantVerbosity(variants: any[]): any[] {
   return variants;
 }
 
+// Smart code chunking function
+function createSmartCodeChunks(code: string, maxTokensPerChunk: number = 25000): string[] {
+  // Split code into files (assuming format: // filename\ncontent)
+  const fileRegex = /\/\/ ([^\n]+)\n([\s\S]*?)(?=\/\/ [^\n]+\n|$)/g;
+  const files: { name: string; content: string; size: number }[] = [];
+  
+  let match;
+  while ((match = fileRegex.exec(code)) !== null) {
+    const filename = match[1];
+    const content = match[2].trim();
+    
+    // Skip irrelevant files
+    if (isIrrelevantFile(filename)) continue;
+    
+    // Estimate tokens (rough approximation: 1 token ≈ 4 characters)
+    const estimatedTokens = Math.ceil(content.length / 4);
+    
+    files.push({
+      name: filename,
+      content: content,
+      size: estimatedTokens
+    });
+  }
+  
+  // Group files logically
+  const chunks: string[] = [];
+  let currentChunk = '';
+  let currentChunkTokens = 0;
+  
+  for (const file of files) {
+    // If adding this file would exceed limit, start new chunk
+    if (currentChunkTokens + file.size > maxTokensPerChunk && currentChunk) {
+      chunks.push(currentChunk.trim());
+      currentChunk = '';
+      currentChunkTokens = 0;
+    }
+    
+    // Add file to current chunk
+    currentChunk += `// ${file.name}\n${file.content}\n\n`;
+    currentChunkTokens += file.size;
+  }
+  
+  // Add final chunk
+  if (currentChunk) {
+    chunks.push(currentChunk.trim());
+  }
+  
+  console.log(`📦 Created ${chunks.length} code chunks from ${files.length} relevant files`);
+  return chunks;
+}
+
+// Filter out irrelevant files
+function isIrrelevantFile(filename: string): boolean {
+  const irrelevantPatterns = [
+    /package\.json$/,
+    /package-lock\.json$/,
+    /yarn\.lock$/,
+    /\.md$/,
+    /\.txt$/,
+    /\.log$/,
+    /\.gitignore$/,
+    /\.env/,
+    /\.config\./,
+    /tsconfig\.json$/,
+    /next\.config\./,
+    /\.d\.ts$/,
+    /node_modules/,
+    /dist\//,
+    /build\//,
+    /\.min\./,
+    /\.bundle\./,
+    /\.map$/
+  ];
+  
+  return irrelevantPatterns.some(pattern => pattern.test(filename));
+}
+
+// Generate questions for a single code chunk
+async function generateQuestionsForChunk(
+  codeChunk: string, 
+  questionTypes: string[], 
+  openaiApiKey: string,
+  chunkIndex: number
+): Promise<any[]> {
+  const generatedQuestions = [];
+  
+  // Generate function-variant questions for this chunk
+  if (questionTypes.includes('function-variant')) {
+    try {
+      console.log(`🔄 Generating function-variant questions for chunk ${chunkIndex + 1}...`);
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openaiApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o',
+          messages: [
+            { 
+              role: 'system', 
+              content: 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.' 
+            },
+            { 
+              role: 'user', 
+              content: `Generate 1-2 function-variant quiz questions based on this code chunk:
+
+${codeChunk}
+
+CRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.
+
+Format:
+[
+  {
+    "snippet": "function name from code",
+    "quiz": {
+      "type": "function-variant",
+      "question": "Which version correctly implements [FUNCTION]?",
+      "variants": [
+        {
+          "id": "A",
+          "code": "function code",
+          "isCorrect": true,
+          "explanation": "why correct"
+        },
+        {
+          "id": "B",
+          "code": "function with bug",
+          "isCorrect": false,
+          "explanation": "why wrong"
+        },
+        {
+          "id": "C",
+          "code": "function with different bug",
+          "isCorrect": false,
+          "explanation": "why wrong"
+        },
+        {
+          "id": "D",
+          "code": "function with another bug",
+          "isCorrect": false,
+          "explanation": "why wrong"
+        }
+      ]
+    }
+  }
+]` 
+            }
+          ],
+          temperature: 0.3,
+          max_tokens: 3000
+        }),
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const data = await response.json();
+        const content = data.choices[0].message.content;
+        
+        try {
+          let cleanContent = content.trim();
+          if (cleanContent.startsWith('```json')) {
+            cleanContent = cleanContent.replace(/^```json\s*/, '');
+          }
+          if (cleanContent.startsWith('```')) {
+            cleanContent = cleanContent.replace(/^```\s*/, '');
+          }
+          if (cleanContent.endsWith('```')) {
+            cleanContent = cleanContent.replace(/\s*```$/, '');
+          }
+          
+          const jsonStart = cleanContent.indexOf('[');
+          if (jsonStart > 0) {
+            cleanContent = cleanContent.substring(jsonStart);
+          }
+          
+          const jsonEnd = cleanContent.lastIndexOf(']');
+          if (jsonEnd > 0 && jsonEnd < cleanContent.length - 1) {
+            cleanContent = cleanContent.substring(0, jsonEnd + 1);
+          }
+          
+          const parsedQuestions = JSON.parse(cleanContent);
+          
+          // Process variants
+          parsedQuestions.forEach((question: any) => {
+            if (question.quiz?.variants) {
+              question.quiz.variants = shuffleVariants(question.quiz.variants);
+              question.quiz.variants.forEach((variant: any) => {
+                variant.code = removeComments(variant.code);
+              });
+              question.quiz.variants = balanceVariantVerbosity(question.quiz.variants);
+            }
+          });
+          
+          generatedQuestions.push(...parsedQuestions);
+          console.log(`✅ Generated ${parsedQuestions.length} function-variant questions for chunk ${chunkIndex + 1}`);
+        } catch (parseError) {
+          console.error(`❌ Failed to parse function-variant response for chunk ${chunkIndex + 1}:`, parseError);
+        }
+      }
+    } catch (error) {
+      console.error(`❌ Function-variant generation error for chunk ${chunkIndex + 1}:`, error);
+    }
+  }
+
+  // Generate multiple-choice questions for this chunk
+  if (questionTypes.includes('multiple-choice')) {
+    try {
+      console.log(`🔄 Generating multiple-choice questions for chunk ${chunkIndex + 1}...`);
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 20000);
+      
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openaiApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o',
+          messages: [
+            { 
+              role: 'system', 
+              content: 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.' 
+            },
+            { 
+              role: 'user', 
+              content: `Generate 1 multiple-choice question based on this code chunk:
+
+${codeChunk}
+
+CRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.
+
+Format:
+[
+  {
+    "snippet": "function name from code",
+    "quiz": {
+      "type": "multiple-choice",
+      "question": "What does [FUNCTION] do?",
+      "options": [
+        "Option A description",
+        "Option B description", 
+        "Option C description",
+        "Option D description"
+      ],
+      "answer": "1",
+      "explanation": "why this is correct"
+    }
+  }
+]` 
+            }
+          ],
+          temperature: 0.3,
+          max_tokens: 2000
+        }),
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const data = await response.json();
+        const content = data.choices[0].message.content;
+        
+        try {
+          let cleanContent = content.trim();
+          if (cleanContent.startsWith('```json')) {
+            cleanContent = cleanContent.replace(/^```json\s*/, '');
+          }
+          if (cleanContent.startsWith('```')) {
+            cleanContent = cleanContent.replace(/^```\s*/, '');
+          }
+          if (cleanContent.endsWith('```')) {
+            cleanContent = cleanContent.replace(/\s*```$/, '');
+          }
+          
+          const jsonStart = cleanContent.indexOf('[');
+          if (jsonStart > 0) {
+            cleanContent = cleanContent.substring(jsonStart);
+          }
+          
+          const jsonEnd = cleanContent.lastIndexOf(']');
+          if (jsonEnd > 0 && jsonEnd < cleanContent.length - 1) {
+            cleanContent = cleanContent.substring(0, jsonEnd + 1);
+          }
+          
+          const parsedQuestions = JSON.parse(cleanContent);
+          generatedQuestions.push(...parsedQuestions);
+          console.log(`✅ Generated ${parsedQuestions.length} multiple-choice questions for chunk ${chunkIndex + 1}`);
+        } catch (parseError) {
+          console.error(`❌ Failed to parse multiple-choice response for chunk ${chunkIndex + 1}:`, parseError);
+        }
+      }
+    } catch (error) {
+      console.error(`❌ Multiple-choice generation error for chunk ${chunkIndex + 1}:`, error);
+    }
+  }
+  
+  return generatedQuestions;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
