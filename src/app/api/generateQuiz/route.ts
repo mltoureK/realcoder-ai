@@ -439,10 +439,17 @@ export async function POST(request: NextRequest) {
     console.log('🤖 Using OpenAI to generate questions based on actual code');
     console.log('🤖 Using OpenAI to generate questions based on actual code');
     
+    // Clean code to remove irrelevant files before chunking
+    const cleanCode = code?.replace(/\/\/ deps\/.*$/gm, '')  // Remove dependency files
+                         .replace(/\/\/ .*\.cc$/gm, '')      // Remove C++ files  
+                         .replace(/\/\/ .*\.h$/gm, '')       // Remove header files
+                         .replace(/\/\/ .*\.cpp$/gm, '')     // Remove C++ source files
+                         .replace(/\/\/ .*v8dll.*$/gm, '');  // Remove V8 engine internals
+    
     // Chunk code to avoid token limits and generate per chunk
     const generatedQuestions: any[] = [];
     const desiredTotal = typeof numQuestions === 'number' && numQuestions > 0 ? numQuestions : 5;
-    const chunks = createSmartCodeChunks(code || '', 8000);
+    const chunks = createSmartCodeChunks(cleanCode || '', 8000);
     console.log(`🧩 Generating across ${chunks.length} chunks, aiming for ${desiredTotal} questions`);
     
     for (let i = 0; i < chunks.length; i++) {
