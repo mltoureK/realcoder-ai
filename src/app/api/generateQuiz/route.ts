@@ -104,6 +104,16 @@ function createSmartCodeChunks(code: string, maxTokensPerChunk: number = 25000):
     });
   }
   
+  // If no files were found (no filename comments), treat the entire code as one file
+  if (files.length === 0) {
+    const estimatedTokens = Math.ceil(code.length / 4);
+    files.push({
+      name: 'main.js',
+      content: code,
+      size: estimatedTokens
+    });
+  }
+  
   // Group files logically
   const chunks: string[] = [];
   let currentChunk = '';
@@ -162,7 +172,8 @@ async function generateQuestionsForChunk(
   codeChunk: string, 
   questionTypes: string[], 
   openaiApiKey: string,
-  chunkIndex: number
+  chunkIndex: number,
+  questionsPerChunk: number = 2
 ): Promise<any[]> {
   const generatedQuestions = [];
   
@@ -191,43 +202,52 @@ async function generateQuestionsForChunk(
                 },
                 { 
                   role: 'user', 
-                  content: `Generate 1-2 function-variant quiz questions based on this code chunk:
+                  content: `Generate ${questionsPerChunk} function-variant quiz questions based on this code chunk:
 
 ${codeChunk}
 
 CRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.
 
+IMPORTANT REQUIREMENTS:
+1. ONLY generate questions about functions that actually exist in the provided code chunk
+2. The function name in "snippet" must match a real function from the code
+3. The correct variant must be the actual function implementation from the code
+4. Incorrect variants should have realistic bugs (off-by-one, wrong variable names, missing checks, etc.)
+5. ALL variants must be similar in length (±30 characters and/or ±2 lines)
+6. Each variant must be syntactically valid JavaScript/TypeScript
+7. LENGTH BALANCING RULE: Randomize the length of the correct answer. The correct answer should NOT always be the longest or most verbose option.
+
 Format:
 [
   {
-    "snippet": "function name from code",
+    "snippet": "actual function name from the code chunk",
     "quiz": {
       "type": "function-variant",
-      "question": "Which version correctly implements [FUNCTION]?",
+      "question": "Which version correctly implements [ACTUAL_FUNCTION_NAME]?",
       "variants": [
         {
           "id": "A",
-          "code": "function code",
+          "code": "the actual function implementation from the code chunk",
           "isCorrect": true,
-          "explanation": "why correct"
+          "explanation": "This is the correct implementation from the original code"
         },
         {
           "id": "B",
-          "code": "function with bug",
+          "code": "function with realistic bug (similar length)",
           "isCorrect": false,
-          "explanation": "why wrong"
+          "explanation": "why this specific bug makes it wrong"
         },
         {
           "id": "C",
-          "code": "function with different bug",
+          "code": "function with different realistic bug (similar length)",
           "isCorrect": false,
-          "explanation": "why wrong"
+          "explanation": "why this specific bug makes it wrong"
         },
         {
           "id": "D",
-          "code": "function with another bug",
+          "code": "function with another realistic bug (similar length)",
           "isCorrect": false,
-          "explanation": "why wrong"
+          "explanation": "why this specific bug makes it wrong"
         }
       ]
     }
@@ -279,19 +299,30 @@ Format:
           
           const parsedQuestions = JSON.parse(cleanContent);
           
-          // Process variants
-          parsedQuestions.forEach((question: any) => {
-            if (question.quiz?.variants) {
+          // Validate and process each question
+          parsedQuestions.forEach((question: any, qIndex: number) => {
+            // Validate question structure
+            if (!question || !question.quiz || !question.quiz.type) {
+              console.warn(`⚠️ Skipping malformed question ${qIndex + 1} in chunk ${chunkIndex + 1}:`, question);
+              return;
+            }
+            
+            // Process variants if they exist
+            if (question.quiz.variants && Array.isArray(question.quiz.variants)) {
               question.quiz.variants = shuffleVariants(question.quiz.variants);
               question.quiz.variants.forEach((variant: any) => {
-                variant.code = removeComments(variant.code);
+                if (variant && variant.code) {
+                  variant.code = removeComments(variant.code);
+                }
               });
               question.quiz.variants = balanceVariantVerbosity(question.quiz.variants);
             }
+            
+            // Only add valid questions
+            generatedQuestions.push(question);
           });
           
-          generatedQuestions.push(...parsedQuestions);
-          console.log(`✅ Generated ${parsedQuestions.length} function-variant questions for chunk ${chunkIndex + 1}`);
+          console.log(`✅ Generated ${generatedQuestions.length} valid function-variant questions for chunk ${chunkIndex + 1}`);
         } catch (parseError) {
           console.error(`❌ Failed to parse function-variant response for chunk ${chunkIndex + 1}:`, parseError);
         }
@@ -449,12 +480,15 @@ export async function POST(request: NextRequest) {
     // Chunk code to avoid token limits and generate per chunk
     const generatedQuestions: any[] = [];
     const desiredTotal = typeof numQuestions === 'number' && numQuestions > 0 ? numQuestions : 5;
-    const chunks = createSmartCodeChunks(cleanCode || '', 8000);
+    const chunks = createSmartCodeChunks(cleanCode || '', 4000); // Smaller chunks for more variety
     console.log(`🧩 Generating across ${chunks.length} chunks, aiming for ${desiredTotal} questions`);
+    
+    // If we have fewer chunks than desired questions, generate multiple questions per chunk
+    const questionsPerChunk = Math.ceil(desiredTotal / Math.max(chunks.length, 1));
     
     for (let i = 0; i < chunks.length; i++) {
       if (generatedQuestions.length >= desiredTotal) break;
-      const chunkQuestions = await generateQuestionsForChunk(chunks[i], questionTypes, openaiApiKey, i);
+      const chunkQuestions = await generateQuestionsForChunk(chunks[i], questionTypes, openaiApiKey, i, questionsPerChunk);
       for (const q of chunkQuestions) {
         if (generatedQuestions.length < desiredTotal) {
           generatedQuestions.push(q);
@@ -465,17 +499,63 @@ export async function POST(request: NextRequest) {
     }
 
       // Convert the generated questions to the format expected by your quiz interface
-      questions = generatedQuestions.map((q, index) => ({
-        id: (index + 1).toString(),
-        type: q.quiz.type,
-        question: q.quiz.question,
-        options: q.quiz.options || [],
-        correctAnswer: q.quiz.options ? q.quiz.options[parseInt(q.quiz.answer) - 1] : null,
-        explanation: q.quiz.explanation,
-        difficulty: 'medium',
-        codeContext: code?.substring(0, 1000) + '...',
-        variants: q.quiz.variants || []
-      }));
+      questions = generatedQuestions.map((q, index) => {
+        // Add debugging and safety checks
+        console.log(`🔍 Processing question ${index + 1}:`, JSON.stringify(q, null, 2));
+        
+        if (!q || !q.quiz) {
+          console.warn(`⚠️ Question ${index + 1} has invalid structure:`, q);
+          return {
+            id: (index + 1).toString(),
+            type: 'unknown',
+            question: 'Invalid question structure',
+            options: [],
+            correctAnswer: null,
+            explanation: 'This question could not be processed',
+            difficulty: 'medium',
+            variants: []
+          };
+        }
+        
+        const questionData = q.quiz;
+        
+        if (questionData.type === 'function-variant') {
+          return {
+            id: (index + 1).toString(),
+            type: questionData.type,
+            question: questionData.question || 'Missing question text',
+            options: [],
+            correctAnswer: null,
+            explanation: '',
+            difficulty: 'medium',
+            variants: questionData.variants || []
+          };
+        } else if (questionData.type === 'multiple-choice') {
+          return {
+            id: (index + 1).toString(),
+            type: questionData.type,
+            question: questionData.question || 'Missing question text',
+            options: questionData.options || [],
+            correctAnswer: questionData.options ? questionData.options[parseInt(questionData.answer) - 1] : null,
+            explanation: questionData.explanation || '',
+            difficulty: 'medium',
+            variants: []
+          };
+        } else {
+          // Fallback for unknown question types
+          console.warn(`⚠️ Question ${index + 1} has unknown type: ${questionData.type}`);
+          return {
+            id: (index + 1).toString(),
+            type: questionData.type || 'unknown',
+            question: questionData.question || 'Missing question text',
+            options: questionData.options || [],
+            correctAnswer: null,
+            explanation: questionData.explanation || '',
+            difficulty: 'medium',
+            variants: questionData.variants || []
+          };
+        }
+      });
       
       // Shuffle variants for all questions to randomize correct answer position and remove comments
       questions.forEach((question: any) => {
