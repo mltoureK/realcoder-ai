@@ -566,14 +566,18 @@ export async function POST(request: NextRequest) {
     const generatedQuestions: any[] = [];
     const desiredTotal = typeof numQuestions === 'number' && numQuestions > 0 ? numQuestions : 5;
     const chunks = createSmartCodeChunks(cleanCode || '', 4000); // Smaller chunks for more variety
+    
+    // Randomize chunk order to ensure variety in function selection across different runs
+    const shuffledChunks = shuffleVariants(chunks);
     console.log(`🧩 Generating across ${chunks.length} chunks, aiming for ${desiredTotal} questions`);
+    console.log(`🎲 Randomized chunk order to ensure variety in function selection`);
     
     // If we have fewer chunks than desired questions, generate multiple questions per chunk
-    const questionsPerChunk = Math.ceil(desiredTotal / Math.max(chunks.length, 1));
+    const questionsPerChunk = Math.ceil(desiredTotal / Math.max(shuffledChunks.length, 1));
     
-    for (let i = 0; i < chunks.length; i++) {
+    for (let i = 0; i < shuffledChunks.length; i++) {
       if (generatedQuestions.length >= desiredTotal) break;
-      const chunkQuestions = await generateQuestionsForChunk(chunks[i], questionTypes, openaiApiKey, i, questionsPerChunk);
+      const chunkQuestions = await generateQuestionsForChunk(shuffledChunks[i], questionTypes, openaiApiKey, i, questionsPerChunk);
       for (const q of chunkQuestions) {
         if (generatedQuestions.length < desiredTotal) {
           generatedQuestions.push(q);
@@ -583,8 +587,16 @@ export async function POST(request: NextRequest) {
       }
     }
 
-      // Convert the generated questions to the format expected by your quiz interface
-      questions = generatedQuestions.map((q, index) => {
+    // Randomize the generated questions to ensure variety in function selection
+    // This prevents the same functions from appearing repeatedly
+    const shuffledGeneratedQuestions = shuffleVariants(generatedQuestions);
+    
+    // Log the randomization for debugging
+    console.log(`🎲 Randomized ${shuffledGeneratedQuestions.length} questions for variety`);
+    console.log(`📝 Selected functions:`, shuffledGeneratedQuestions.map(q => q.snippet).slice(0, 5));
+    
+    // Convert the generated questions to the format expected by your quiz interface
+      questions = shuffledGeneratedQuestions.map((q, index) => {
         // Add debugging and safety checks
         console.log(`🔍 Processing question ${index + 1}:`, JSON.stringify(q, null, 2));
         
