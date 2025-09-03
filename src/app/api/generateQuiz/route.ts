@@ -80,6 +80,56 @@ function balanceVariantVerbosity(variants: any[]): any[] {
   return variants;
 }
 
+// Add comprehensive question validation function
+function validateQuestionStructure(question: any): boolean {
+  // Basic structure check
+  if (!question || typeof question !== 'object') {
+    return false;
+  }
+  
+  // Must have quiz property
+  if (!question.quiz || typeof question.quiz !== 'object') {
+    return false;
+  }
+  
+  // Must have type and question
+  if (!question.quiz.type || !question.quiz.question) {
+    return false;
+  }
+  
+  // For function-variant questions
+  if (question.quiz.type === 'function-variant') {
+    if (!Array.isArray(question.quiz.variants) || question.quiz.variants.length === 0) {
+      return false;
+    }
+    
+    // Each variant must have required properties
+    return question.quiz.variants.every((variant: any) => 
+      variant && 
+      variant.id && 
+      variant.code && 
+      typeof variant.isCorrect === 'boolean' &&
+      variant.explanation
+    );
+  }
+  
+  // For multiple-choice questions
+  if (question.quiz.type === 'multiple-choice') {
+    if (!Array.isArray(question.quiz.options) || question.quiz.options.length === 0) {
+      return false;
+    }
+    
+    if (!question.quiz.answer || !question.quiz.explanation) {
+      return false;
+    }
+    
+    return true;
+  }
+  
+  // Unknown question type
+  return false;
+}
+
 // Smart code chunking function
 function createSmartCodeChunks(code: string, maxTokensPerChunk: number = 25000): string[] {
   // Split code into files (assuming format: // filename\ncontent)
@@ -175,7 +225,7 @@ async function generateQuestionsForChunk(
   chunkIndex: number,
   questionsPerChunk: number = 2
 ): Promise<any[]> {
-  const generatedQuestions = [];
+  const generatedQuestions: any[] = [];
   
   // Generate function-variant questions for this chunk
   if (questionTypes.includes('function-variant')) {
@@ -302,7 +352,7 @@ Format:
           // Validate and process each question
           parsedQuestions.forEach((question: any, qIndex: number) => {
             // Validate question structure
-            if (!question || !question.quiz || !question.quiz.type) {
+            if (!validateQuestionStructure(question)) {
               console.warn(`⚠️ Skipping malformed question ${qIndex + 1} in chunk ${chunkIndex + 1}:`, question);
               return;
             }
@@ -426,8 +476,43 @@ Format:
           }
           
           const parsedQuestions = JSON.parse(cleanContent);
-          generatedQuestions.push(...parsedQuestions);
-          console.log(`✅ Generated ${parsedQuestions.length} multiple-choice questions for chunk ${chunkIndex + 1}`);
+          
+          // Validate and process each question
+          const validQuestions: any[] = [];
+          const invalidQuestions: any[] = [];
+          
+          parsedQuestions.forEach((question: any, qIndex: number) => {
+            if (validateQuestionStructure(question)) {
+              validQuestions.push(question);
+            } else {
+              invalidQuestions.push({
+                index: qIndex,
+                question: question,
+                reason: 'Invalid structure'
+              });
+            }
+          });
+          
+          // Log what we found
+          console.log(`✅ Found ${validQuestions.length} valid multiple-choice questions`);
+          if (invalidQuestions.length > 0) {
+            console.warn(`⚠️ Found ${invalidQuestions.length} invalid multiple-choice questions:`, invalidQuestions);
+          }
+          
+          // Only proceed if we have valid questions
+          if (validQuestions.length === 0) {
+            console.warn(`⚠️ No valid multiple-choice questions found for chunk ${chunkIndex + 1}`);
+            // Skip this question type and continue processing
+          } else {
+            // Process only valid questions
+            validQuestions.forEach((question: any) => {
+              generatedQuestions.push(question);
+            });
+            
+            console.log(`✅ Generated ${validQuestions.length} valid multiple-choice questions for chunk ${chunkIndex + 1}`);
+          }
+          
+
         } catch (parseError) {
           console.error(`❌ Failed to parse multiple-choice response for chunk ${chunkIndex + 1}:`, parseError);
         }
