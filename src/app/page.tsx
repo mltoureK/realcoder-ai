@@ -134,9 +134,11 @@ export default function Home() {
                 console.log('🧩 Expecting ~', evt.expectedTotal, 'questions');
               } else if (evt.type === 'question') {
                 total += 1;
+                console.log('📝 Received question', total, ':', evt.question);
                 setQuizSession((prev: any) => {
                   if (!prev) return initialSession;
                   const updated = { ...prev, questions: [...prev.questions, evt.question] };
+                  console.log('🔄 Updated quiz session with', updated.questions.length, 'questions');
                   return updated;
                 });
               } else if (evt.type === 'done') {
@@ -163,9 +165,9 @@ export default function Home() {
         
         const combinedCode = fileContents.join('\n\n');
         
-        console.log('📤 Sending quiz request with code length:', combinedCode.length);
+        console.log('📤 Streaming quiz request with code length:', combinedCode.length);
         
-        const quizResponse = await fetch('/api/generateQuiz', {
+        const quizResponse = await fetch('/api/generateQuiz?stream=1', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -178,25 +180,63 @@ export default function Home() {
           })
         });
         
-        console.log('📡 Quiz response status:', quizResponse.status);
-        
-        if (!quizResponse.ok) {
+        console.log('📡 Quiz stream response status:', quizResponse.status);
+        if (!quizResponse.ok || !quizResponse.body) {
           const errorText = await quizResponse.text();
           console.error('❌ Quiz API error:', errorText);
-          throw new Error(`Failed to generate quiz: ${quizResponse.status}`);
+          throw new Error(`Failed to stream quiz: ${quizResponse.status}`);
         }
         
-        const quizData = await quizResponse.json();
-        console.log('📊 Quiz data received:', quizData);
+        // Initialize empty session and mount UI early
+        const initialSession = {
+          id: Date.now().toString(),
+          title: 'Generated Quiz',
+          questions: [] as any[],
+          currentQuestionIndex: 0,
+          score: 0,
+          lives: 3,
+          lastLifeRefill: new Date(),
+          completed: false
+        } as any;
+        setQuizSession(initialSession);
         
-        if (!quizData.success) {
-          throw new Error(quizData.error || 'Quiz generation failed');
+        const reader = quizResponse.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let total = 0;
+        
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          let idx;
+          while ((idx = buffer.indexOf('\n')) >= 0) {
+            const line = buffer.slice(0, idx).trim();
+            buffer = buffer.slice(idx + 1);
+            if (!line) continue;
+            try {
+              const evt = JSON.parse(line);
+              if (evt.type === 'meta') {
+                console.log('🧩 Expecting ~', evt.expectedTotal, 'questions');
+              } else if (evt.type === 'question') {
+                total += 1;
+                console.log('📝 Received question', total, ':', evt.question);
+                setQuizSession((prev: any) => {
+                  if (!prev) return initialSession;
+                  const updated = { ...prev, questions: [...prev.questions, evt.question] };
+                  console.log('🔄 Updated quiz session with', updated.questions.length, 'questions');
+                  return updated;
+                });
+              } else if (evt.type === 'done') {
+                console.log('✅ Stream done:', evt.count);
+              } else if (evt.type === 'error') {
+                console.warn('⚠️ Stream error event');
+              }
+            } catch (e) {
+              console.warn('⚠️ Failed to parse stream line', line);
+            }
+          }
         }
-        
-        const quizSession = quizData.quiz;
-        
-        // Show full-screen quiz interface
-        setQuizSession(quizSession);
       }
       
     } catch (error) {

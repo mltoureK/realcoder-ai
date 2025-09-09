@@ -18,7 +18,9 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   const [showExplanations, setShowExplanations] = useState(false);
   const [shakingNext, setShakingNext] = useState(false);
 
-  const currentQuestion = quizSession.questions[currentQuestionIndex];
+  const totalQuestions = Array.isArray(quizSession.questions) ? quizSession.questions.length : 0;
+  const hasQuestion = totalQuestions > 0 && currentQuestionIndex < totalQuestions;
+  const currentQuestion: any = hasQuestion ? quizSession.questions[currentQuestionIndex] : undefined;
 
   // Reset variant index when question changes
   useEffect(() => {
@@ -26,6 +28,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   }, [currentQuestion]);
 
   const handleAnswerSelect = (answer: string) => {
+    if (!hasQuestion) return;
     if (currentQuestion.type === 'multiple-choice' || currentQuestion.type === 'fill-blank' || currentQuestion.type === 'function-variant') {
       setSelectedAnswers([answer]);
     } else if (currentQuestion.type === 'select-all') {
@@ -38,19 +41,19 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   };
 
   const handleSubmitAnswer = () => {
-    if (selectedAnswers.length === 0) return;
+    if (!hasQuestion || selectedAnswers.length === 0) return;
 
     let isCorrect = false;
     
     if (currentQuestion.type === 'function-variant') {
       // For function-variant, find the correct variant
-      const correctVariant = currentQuestion.variants?.find(v => v.isCorrect);
+      const correctVariant = currentQuestion.variants?.find((v: any) => v.isCorrect);
       isCorrect = correctVariant ? selectedAnswers.includes(correctVariant.id) : false;
     } else {
       // For other question types
       isCorrect = Array.isArray(currentQuestion.correctAnswer)
-        ? currentQuestion.correctAnswer.every(answer => selectedAnswers.includes(answer)) &&
-          selectedAnswers.every(answer => currentQuestion.correctAnswer.includes(answer))
+        ? (currentQuestion.correctAnswer as string[]).every((answer: string) => selectedAnswers.includes(answer)) &&
+          selectedAnswers.every((answer: string) => (currentQuestion.correctAnswer as string[]).includes(answer))
         : selectedAnswers.includes(currentQuestion.correctAnswer);
     }
 
@@ -66,7 +69,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
   const handleNextQuestion = () => {
     const nextIndex = currentQuestionIndex + 1;
-    const nextAvailable = nextIndex < quizSession.questions.length;
+    const nextAvailable = nextIndex < totalQuestions;
     if (nextAvailable) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswers([]);
@@ -108,7 +111,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
       case 'multiple-choice':
         return (
           <div className="space-y-4">
-            {currentQuestion.options?.map((option, index) => (
+            {currentQuestion.options?.map((option: string, index: number) => (
               <button
                 key={index}
                 onClick={() => handleAnswerSelect(option)}
@@ -169,7 +172,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
             {/* Draggable tokens */}
             <div className="flex flex-wrap gap-3">
-              {currentQuestion.options?.map((option, index) => (
+              {currentQuestion.options?.map((option: string, index: number) => (
                 <button
                   key={index}
                   draggable
@@ -282,7 +285,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
             {/* Progress Indicator */}
             <div className="flex justify-center space-x-3">
-              {currentQuestion.variants.map((_, index) => (
+              {currentQuestion.variants.map((_: any, index: number) => (
                 <button
                   key={index}
                   onClick={() => setCurrentVariantIndex(index)}
@@ -367,7 +370,11 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             <div className="flex items-center space-x-6">
               {/* Progress */}
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                Question {currentQuestionIndex + 1} of {quizSession.questions.length}
+                {hasQuestion ? (
+                  <>Question {currentQuestionIndex + 1} of {totalQuestions}</>
+                ) : (
+                  <>Loading questions…</>
+                )}
               </div>
               
               {/* Score */}
@@ -392,7 +399,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
               <div 
                 className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${((currentQuestionIndex + 1) / quizSession.questions.length) * 100}%` }}
+                style={{ width: `${hasQuestion ? ((currentQuestionIndex + 1) / totalQuestions) * 100 : 0}%` }}
               ></div>
             </div>
           </div>
@@ -402,7 +409,27 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
       {/* Question Card */}
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
-          {/* Question */}
+          {!hasQuestion ? (
+            <div className="space-y-6 animate-pulse">
+              <div className="h-7 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
+              <div className="space-y-3">
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full" />
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-11/12" />
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-10/12" />
+              </div>
+              <div className="flex gap-3">
+                <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-24" />
+                <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-24" />
+                <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-24" />
+              </div>
+              <div className="flex justify-end">
+                <button className={`bg-green-600 text-white py-3 px-8 rounded-lg font-medium opacity-60 cursor-not-allowed ${shakingNext ? 'animate-shake' : ''}`} onClick={handleNextQuestion}>
+                  Next Question
+                </button>
+              </div>
+            </div>
+          ) : (
+          <>
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               {currentQuestion.question}
@@ -430,7 +457,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 Answer Explanations
               </h3>
               <div className="space-y-4">
-                {currentQuestion.variants.map((variant, index) => {
+                {currentQuestion.variants.map((variant: any, index: number) => {
                   const isSelected = selectedAnswers.includes(variant.id);
                   const isCorrect = variant.isCorrect;
                   const isUserCorrect = isSelected === isCorrect;
@@ -509,6 +536,8 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               </button>
             )}
           </div>
+          </>
+          )}
         </div>
       </div>
     </div>

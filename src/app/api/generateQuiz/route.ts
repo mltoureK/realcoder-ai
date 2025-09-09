@@ -168,6 +168,7 @@ export async function POST(request: NextRequest) {
                   ui.variants = balanceVariantVerbosity(ui.variants);
                 }
                 counter += 1;
+                console.log('📤 Streaming question', counter, ':', ui.type, ui.question?.substring(0, 50) + '...');
                 controller.enqueue(encoder.encode(JSON.stringify({ type: 'question', question: ui }) + '\n'));
               }
             });

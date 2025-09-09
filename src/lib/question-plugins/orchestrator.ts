@@ -137,9 +137,12 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
           results.push(q);
           try {
             if (onQuestion) {
+              console.log('🎯 Orchestrator calling onQuestion for:', (q as any)?.quiz?.type);
               await onQuestion(q);
             }
-          } catch {}
+          } catch (e) {
+            console.error('❌ Error in onQuestion callback:', e);
+          }
           const qType = (q as any)?.quiz?.type as string | undefined;
           if (qType) countsByType[qType] = (countsByType[qType] || 0) + 1;
           if (isComplete()) { stopRequested = true; break; }
