@@ -1,5 +1,5 @@
 import { GenerateParams, QuestionPlugin, RawQuestion } from './QuestionPlugin';
-import { balanceVariantVerbosity, delay, removeComments, shuffleVariants, validateQuestionStructure } from './utils';
+import { balanceVariantVerbosity, delay, removeComments, shuffleVariants, validateQuestionStructure, balanceDisplayedLengths } from './utils';
 
 export const functionVariantPlugin: QuestionPlugin = {
   type: 'function-variant',
@@ -26,7 +26,9 @@ export const functionVariantPlugin: QuestionPlugin = {
               model: process.env.OPENAI_MODEL_FUNCTION_VARIANT ?? 'gpt-4o-mini',
               messages: [
                 { role: 'system', content: 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.' },
-                { role: 'user', content: `Generate ${questionsPerChunk} function-variant quiz questions based on this code chunk:\n\n${chunk}\n\nCRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.\n\nIMPORTANT REQUIREMENTS:\n1. ONLY generate questions about functions that actually exist in the provided code chunk\n2. The function name in \"snippet\" must match a real function from the code\n3. The correct variant must be the actual function implementation from the code\n4. Incorrect variants should have realistic bugs (off-by-one, wrong variable names, missing checks, etc.)\n5. ALL variants must be similar in length (±30 characters and/or ±2 lines)\n6. Each variant must be syntactically valid JavaScript/TypeScript\n7. LENGTH BALANCING RULE: Randomize the length of the correct answer. The correct answer should NOT always be the longest or most verbose option.\n8. QUESTION STYLE: Use a single, imperative instruction as the question (no extra Behavior/Examples lines).\n\nFormat:\n[\n  {\n    \"snippet\": \"actual function name from the code chunk\",\n    \"quiz\": {\n      \"type\": \"function-variant\",\n      \"question\": \"Choose the code variant that correctly implements [ACTUAL_FUNCTION_NAME].\",\n      \"variants\": [\n        {\n          \"id\": \"A\",\n          \"code\": \"the actual function implementation from the code chunk\",\n          \"isCorrect\": true,\n          \"explanation\": \"This is the correct implementation from the original code\"\n        },\n        {\n          \"id\": \"B\",\n          \"code\": \"function with realistic bug (similar length)\",\n          \"isCorrect\": false,\n          \"explanation\": \"why this specific bug makes it wrong\"\n        },\n        {\n          \"id\": \"C\",\n          \"code\": \"function with different realistic bug (similar length)\",\n          \"isCorrect\": false,\n          \"explanation\": \"why this specific bug makes it wrong\"\n        },\n        {\n          \"id\": \"D\",\n          \"code\": \"function with another realistic bug (similar length)\",\n          \"isCorrect\": false,\n          \"explanation\": \"why this specific bug makes it wrong\"\n        }\n      ]\n    }\n  }\n]` }
+                { role: 'user', content: `Generate ${questionsPerChunk} function-variant quiz questions based on this code chunk:\n\n${chunk}\n\nCRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.\n\nIMPORTANT REQUIREMENTS:\n1. ONLY generate questions about functions that actually exist in the provided code chunk\n2. The function name in \"snippet\" must match a real function from the code\n3. The correct variant must be the actual function implementation from the code\n4. Incorrect variants should have realistic bugs (off-by-one, wrong variable names, missing checks, etc.)\n5. ALL variants must be similar in length (±30 characters and/or ±2 lines)\n
+                6. Each variant must be syntactically valid JavaScript/TypeScript\n
+                7. LENGTH BALANCING RULE: Randomize the length of the correct answer. The correct answer should NOT always be the longest or most verbose option.\n8. QUESTION STYLE: Use a single, imperative instruction as the question (no extra Behavior/Examples lines).\n\nFormat:\n[\n  {\n    \"snippet\": \"actual function name from the code chunk\",\n    \"quiz\": {\n      \"type\": \"function-variant\",\n      \"question\": \"Choose the code variant that correctly implements [ACTUAL_FUNCTION_NAME].\",\n      \"variants\": [\n        {\n          \"id\": \"A\",\n          \"code\": \"the actual function implementation from the code chunk\",\n          \"isCorrect\": true,\n          \"explanation\": \"This is the correct implementation from the original code\"\n        },\n        {\n          \"id\": \"B\",\n          \"code\": \"function with realistic bug (similar length)\",\n          \"isCorrect\": false,\n          \"explanation\": \"why this specific bug makes it wrong\"\n        },\n        {\n          \"id\": \"C\",\n          \"code\": \"function with different realistic bug (similar length)\",\n          \"isCorrect\": false,\n          \"explanation\": \"why this specific bug makes it wrong\"\n        },\n        {\n          \"id\": \"D\",\n          \"code\": \"function with another realistic bug (similar length)\",\n          \"isCorrect\": false,\n          \"explanation\": \"why this specific bug makes it wrong\"\n        }\n      ]\n    }\n  }\n]` }
               ],
               temperature: 0.3,
               max_tokens: 2000
@@ -62,11 +64,14 @@ export const functionVariantPlugin: QuestionPlugin = {
           parsed.forEach((question: any) => {
             if (!validateQuestionStructure(question)) return;
             if (question.quiz.variants && Array.isArray(question.quiz.variants)) {
-              question.quiz.variants = shuffleVariants(question.quiz.variants);
+              // Clean code & balance
               question.quiz.variants.forEach((variant: any) => {
                 if (variant && variant.code) variant.code = removeComments(variant.code);
               });
               question.quiz.variants = balanceVariantVerbosity(question.quiz.variants);
+              question.quiz.variants = balanceDisplayedLengths(question.quiz.variants);
+              // Finally shuffle
+              question.quiz.variants = shuffleVariants(question.quiz.variants);
             }
             generated.push(question);
           });

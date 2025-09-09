@@ -36,7 +36,7 @@ export function balanceVariantVerbosity(variants: any[]): any[] {
     if (longestIncorrect && typeof longestIncorrect.code === 'string' && longestIncorrect.code.includes('return')) {
       longestIncorrect.code = longestIncorrect.code.replace(
         /return ([^;]+);/,
-        'const result = $1;\n  return result;'
+        'const result = $1\n  return result;'
       );
     }
   }
@@ -53,6 +53,24 @@ export function balanceVariantVerbosity(variants: any[]): any[] {
     }
   }
 
+  return variants;
+}
+
+// Ensure displayed code lengths are similar to avoid giveaway by verbosity
+export function balanceDisplayedLengths(variants: any[]): any[] {
+  if (!Array.isArray(variants) || variants.length < 2) return variants;
+  const correct = variants.find((v: any) => v && v.isCorrect);
+  if (!correct || typeof correct.code !== 'string') return variants;
+  const target = Math.max(0, Math.floor(correct.code.length * 0.9)); // aim within ~10%
+
+  variants.forEach((v: any) => {
+    if (!v || v.isCorrect || typeof v.code !== 'string') return;
+    if (v.code.length < target) {
+      const deficit = target - v.code.length;
+      const padLines = Math.min(6, Math.ceil(deficit / 80));
+      v.code = v.code + '\n'.repeat(padLines); // harmless whitespace
+    }
+  });
   return variants;
 }
 
