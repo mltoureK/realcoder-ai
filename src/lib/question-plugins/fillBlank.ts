@@ -1,4 +1,5 @@
 import { GenerateParams, QuestionPlugin, RawQuestion } from './QuestionPlugin';
+
 import { delay, validateQuestionStructure } from './utils';
 
 export const fillBlankPlugin: QuestionPlugin = {
@@ -8,6 +9,7 @@ export const fillBlankPlugin: QuestionPlugin = {
     const generated: RawQuestion[] = [];
     try {
       let response: Response | null = null;
+      const questionsPerChunk = 1;
       for (let attempt = 0; attempt < retry.attempts; attempt++) {
         const controller = new AbortController();
         const onAbort = () => controller.abort();
@@ -24,7 +26,7 @@ export const fillBlankPlugin: QuestionPlugin = {
               model: process.env.OPENAI_MODEL_FILLBLANK ?? 'gpt-4o-mini',
               messages: [
                 { role: 'system', content: 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.' },
-                { role: 'user', content: `Generate 1 JavaScript/TypeScript fill-blank question grounded strictly in the provided code.\n\nOnly blank tokens that teach language/syntax recognition:\n- React hooks: useState, useEffect, useMemo, useCallback, useRef, useReducer, useContext\n- JS/TS control/declaration keywords: if, else, switch, case, try, catch, finally, await, async, return, throw, new, yield\n- Built-in/global or stdlib methods/properties: map, filter, reduce, forEach, includes, find, push, pop, splice, slice, toLowerCase, toUpperCase, trim, JSON.parse, Object.assign, Promise.all\n- Parameter names ONLY if they come from the current function signature and are referenced inside its body\n\nHard rules:\n1) Choose a compact snippet (2–6 lines) that compiles.\n2) Replace exactly ONE allowed token with \"____\". Never blank arbitrary user-defined function or variable names.\n3) Provide 4 options from the SAME CATEGORY as the blank (hook vs keyword vs built-in vs parameter).\n4) Return top-level \"codeContext\" with exactly one \"____\".\n5) quiz.question must be: \"Complete the code: <same snippet with ____>\".\n6) Provide numeric \"answer\" (1-based) and a concise explanation mentioning the category.\n\nCODE CHUNK:\n${chunk}\n\nReturn ONLY a valid JSON array with one item matching:\n[\n  {\n    \"snippet\": \"identifier/category representative (e.g., useEffect | Array.map | await)\",\n    \"codeContext\": \"2–6 line snippet with exactly one ____\",\n    \"quiz\": {\n      \"type\": \"fill-blank\",\n      \"question\": \"Complete the code: <same snippet with ____>\",\n      \"options\": [\"opt1\", \"opt2\", \"opt3\", \"opt4\"],\n      \"answer\": \"1\",\n      \"explanation\": \"why this token is correct in this code\"\n    }\n  }\n]` }
+                { role: 'user', content: `Generate ${questionsPerChunk} JavaScript/TypeScript fill-blank questions from this code:\n\n${chunk}\n\nRules:\n- Use a 2–6 line snippet that compiles.\n- Replace exactly ONE token with "____".\n- Blank token must be a general language token: a **keyword**, a **built-in function/method**, or a **syntax element** (e.g., case, new). You may also blank a **parameter name** from this snippet. Do NOT blank repo-specific identifiers (custom variables/functions/classes).\n- Put the blank inside a statement (not next to \"}\" or just before \";\"). If \"____\" is immediately followed by \"(\", the correct option must be callable.\n- Provide 4 options from the SAME category and a 1-based numeric answer.\n\nReturn ONLY this JSON:\n[\n  {\n    \"snippet\": \"<the blanked token>\",\n    \"codeContext\": \"<2–6 lines with exactly one ____>\",\n    \"quiz\": {\n      \"type\": \"fill-blank\",\n      \"question\": \"Complete the code: <same snippet with ____>\",\n      \"options\": [\"opt1\",\"opt2\",\"opt3\",\"opt4\"],\n      \"answer\": \"1\",\n      \"explanation\": \"short reason\"\n    }\n  }\n]` }
               ],
               temperature: 0.3,
               max_tokens: 1000
