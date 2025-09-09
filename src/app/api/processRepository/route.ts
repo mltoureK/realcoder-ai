@@ -7,7 +7,7 @@ import { FileProcessor, FileInfo } from '@/lib/fileProcessor';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { url, branch: branchInput } = body;
+    const { url } = body;
 
     console.log('�� /processRepository API called with URL:', url);
 
@@ -27,29 +27,13 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ Extracted:', { owner, repo: cleanRepo });
 
-    // Determine branch: explicit input > URL path > default to default_branch from repo API
-    let branch = (branchInput || '').trim();
-    if (!branch) {
-      const urlBranchMatch = url.match(/github\.com\/[^\/]+\/[^\/]+\/(?:tree|blob)\/([^\/#?]+)/);
-      if (urlBranchMatch) branch = urlBranchMatch[1];
-    }
+    // Fetch repository tree
+    const apiUrl = `https://api.github.com/repos/${owner}/${cleanRepo}/git/trees/main?recursive=1`;
+    console.log('�� GitHub API Call:', apiUrl);
+    
     const headers: HeadersInit = {
       'Accept': 'application/vnd.github.v3+json',
     };
-    if (!branch) {
-      // Query repo metadata to get default_branch
-      const repoMetaRes = await fetch(`https://api.github.com/repos/${owner}/${cleanRepo}`, { headers });
-      if (repoMetaRes.ok) {
-        const meta = await repoMetaRes.json();
-        if (meta && meta.default_branch) branch = meta.default_branch;
-      }
-    }
-    if (!branch) branch = 'main';
-
-    // Fetch repository tree for resolved branch
-    const apiUrl = `https://api.github.com/repos/${owner}/${cleanRepo}/git/trees/${encodeURIComponent(branch)}?recursive=1`;
-    console.log('�� GitHub API Call:', apiUrl);
-
     
     // Add GitHub token if available
     const githubToken = process.env.GITHUB_TOKEN;
@@ -144,7 +128,7 @@ export async function POST(request: NextRequest) {
       repositoryInfo: {
         owner,
         repo: cleanRepo,
-        branch,
+        branch: 'main',
         files: fileContents,
         languages: [...new Set(fileContents.map(f => f.language))],
         totalFiles: fileContents.length,

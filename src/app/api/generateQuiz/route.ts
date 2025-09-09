@@ -21,9 +21,7 @@ import {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { code, questionTypes, difficulty, numQuestions, stream } = body;
-    const url = new URL(request.url);
-    const streamMode = stream === true || url.searchParams.get('stream') === '1';
+    const { code, questionTypes, difficulty, numQuestions } = body;
 
     console.log('📡 /generateQuiz API called with:', { 
       codeLength: code?.length, 
@@ -73,111 +71,6 @@ export async function POST(request: NextRequest) {
       },
       retries: { attempts: 3, backoffBaseMs: 500 }
     };
-
-    if (streamMode) {
-      const encoder = new TextEncoder();
-
-      const mapQuestion = (q: any, index: number) => {
-        const questionData = q.quiz;
-        if (questionData.type === 'function-variant') {
-          return {
-            id: (index + 1).toString(),
-            type: questionData.type,
-            question: questionData.question || 'Missing question text',
-            options: [],
-            correctAnswer: null,
-            explanation: '',
-            difficulty: 'medium',
-            variants: (questionData.variants || []).map((v: any) => ({
-              ...v,
-              code: typeof v.code === 'string' ? removeComments(v.code) : v.code
-            }))
-          } as any;
-        } else if (questionData.type === 'multiple-choice') {
-          const opts = questionData.options || [];
-          const ansNum = parseInt(questionData.answer);
-          let idx = -1;
-          if (!isNaN(ansNum)) {
-            if (ansNum >= 1 && ansNum <= opts.length) idx = ansNum - 1;
-            else if (ansNum >= 0 && ansNum < opts.length) idx = ansNum;
-          }
-          return {
-            id: (index + 1).toString(),
-            type: questionData.type,
-            question: questionData.question || 'Missing question text',
-            options: opts,
-            correctAnswer: idx >= 0 ? opts[idx] : null,
-            explanation: questionData.explanation || '',
-            difficulty: 'medium',
-            codeContext: (q as any).codeContext || (q as any).snippet || undefined,
-            variants: []
-          } as any;
-        } else if (questionData.type === 'fill-blank') {
-          const opts = questionData.options || [];
-          const ansNum = parseInt(questionData.answer);
-          let idx = -1;
-          if (!isNaN(ansNum)) {
-            if (ansNum >= 1 && ansNum <= opts.length) idx = ansNum - 1;
-            else if (ansNum >= 0 && ansNum < opts.length) idx = ansNum;
-          }
-          return {
-            id: (index + 1).toString(),
-            type: questionData.type,
-            question: questionData.question || 'Complete the code',
-            options: opts,
-            correctAnswer: idx >= 0 ? opts[idx] : null,
-            explanation: questionData.explanation || '',
-            difficulty: 'medium',
-            codeContext: undefined,
-            variants: []
-          } as any;
-        }
-        return {
-          id: (index + 1).toString(),
-          type: questionData.type || 'unknown',
-          question: questionData.question || 'Missing question text',
-          options: questionData.options || [],
-          correctAnswer: null,
-          explanation: questionData.explanation || '',
-          difficulty: 'medium',
-          variants: questionData.variants || []
-        } as any;
-      };
-
-      let indexCounter = 0;
-      const stream = new ReadableStream<Uint8Array>({
-        start: async (controller) => {
-          const write = (obj: any) => controller.enqueue(encoder.encode(JSON.stringify(obj) + '\n'));
-          write({ type: 'start' });
-          try {
-            await orchestrateGeneration({
-              chunks,
-              plugins: selectedPlugins,
-              numQuestions: desiredTotal,
-              settings,
-              apiKey: openaiApiKey,
-              options: { difficulty: difficulty || 'medium' },
-              onQuestion: (raw: any) => {
-                const ui = mapQuestion(raw, indexCounter++);
-                write({ type: 'question', question: ui });
-              }
-            } as any);
-            write({ type: 'done', total: indexCounter });
-          } catch (e: any) {
-            write({ type: 'error', error: e?.message || 'stream_failed' });
-          } finally {
-            controller.close();
-          }
-        }
-      });
-
-      return new Response(stream as any, {
-        headers: {
-          'Content-Type': 'application/x-ndjson',
-          'Cache-Control': 'no-cache'
-        }
-      });
-    }
 
     let rawGenerated = await orchestrateGeneration({
       chunks,
@@ -262,8 +155,8 @@ export async function POST(request: NextRequest) {
             correctAnswer: idx >= 0 ? opts[idx] : null,
             explanation: questionData.explanation || '',
             difficulty: 'medium',
-            // Keep MCQ codeContext for user clarity
-            codeContext: q.codeContext || q.snippet || undefined,
+            // Hide codeContext for MCQ in UI layer
+            codeContext: undefined,
             variants: []
           };
         } else if (questionData.type === 'fill-blank') {

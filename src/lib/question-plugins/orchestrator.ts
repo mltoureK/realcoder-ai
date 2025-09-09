@@ -14,7 +14,6 @@ interface OrchestrateArgs {
   };
   apiKey: string;
   options: { difficulty: 'easy' | 'medium' | 'hard' };
-  onQuestion?: (q: RawQuestion) => void;
 }
 
 export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQuestion[]> {
@@ -135,7 +134,6 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
           }
           if (!accept) continue;
           results.push(q);
-          try { args.onQuestion && args.onQuestion(q); } catch {}
           const qType = (q as any)?.quiz?.type as string | undefined;
           if (qType) countsByType[qType] = (countsByType[qType] || 0) + 1;
           if (isComplete()) { stopRequested = true; break; }

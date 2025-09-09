@@ -1,98 +1,19 @@
-// fillBlankPlugin.ts
 import { GenerateParams, QuestionPlugin, RawQuestion } from './QuestionPlugin';
 import { delay, validateQuestionStructure } from './utils';
 
-// ---------- Static pools (reuse across calls) ----------
-const HOOKS = new Set(['useState','useEffect','useMemo','useCallback','useRef','useReducer','useContext']);
-const KEYWORDS = new Set(['if','else','switch','case','try','catch','finally','await','async','return','throw','new','yield']);
-const BUILTINS = new Set([
-  'map','filter','reduce','forEach','includes','find','push','pop','splice','slice',
-  'toLowerCase','toUpperCase','trim','JSON.parse','Object.assign','Promise.all'
-]);
-
-const ALLOWED_GLOBAL_CALLEES = new Set([
-  'parseInt','parseFloat','Number','String','Boolean','atob','btoa',
-  'decodeURI','decodeURIComponent','encodeURI','encodeURIComponent',
-  'setTimeout','clearTimeout','setInterval','clearInterval',
-  'Array.from','Array.isArray','JSON.parse','JSON.stringify','Object.assign','Promise.all','Promise.race'
-]);
-
-const categoryOf = (t: string): 'hook'|'keyword'|'builtin'|'other' => (
-  HOOKS.has(t) ? 'hook' : KEYWORDS.has(t) ? 'keyword' : BUILTINS.has(t) ? 'builtin' : 'other'
-);
-
-function stripCodeFences(s: string): string {
-  let t = (s || '').trim();
-  if (t.startsWith('```json')) t = t.replace(/^```json\s*/, '');
-  if (t.startsWith('```')) t = t.replace(/^```\s*/, '');
-  if (t.endsWith('```')) t = t.replace(/\s*```$/, '');
-  // keep only the outermost JSON array if any preamble
-  const start = t.indexOf('[');
-  if (start > 0) t = t.slice(start);
-  const end = t.lastIndexOf(']');
-  if (end > 0 && end < t.length - 1) t = t.slice(0, end + 1);
-  return t;
-}
-
-function sameCategory(opts: string[], correct: string): boolean {
-  const c = categoryOf(correct);
-  if (c === 'other') return false;
-  return opts.every(o => categoryOf(o) === c || o === correct);
-}
-
-function isCallableToken(token: string, chunk: string): boolean {
-  if (token.includes('.')) return ALLOWED_GLOBAL_CALLEES.has(token);
-  if (HOOKS.has(token)) return true;
-  if (BUILTINS.has(token)) return true;
-  if (KEYWORDS.has(token)) return false;
-  // allow if token appears as a callee somewhere in the chunk
-  const re = new RegExp(`\\b${token}\\s*\\(`);
-  return re.test(chunk);
-}
-
-function parseAnswerIndex(ans: unknown, options: string[]): number {
-  if (typeof ans === 'number') return ans >= 1 && ans <= options.length ? ans - 1 : -1;
-  if (typeof ans === 'string') {
-    const num = parseInt(ans, 10);
-    if (!Number.isNaN(num)) return num >= 1 && num <= options.length ? num - 1 : -1;
-    return options.indexOf(ans);
-  }
-  return -1;
-}
-
 export const fillBlankPlugin: QuestionPlugin = {
   type: 'fill-blank',
-
   async generate(params: GenerateParams): Promise<RawQuestion[]> {
-    const {
-      chunk,
-      apiKey,
-      timeoutMs,
-      retry,
-      abortSignal,
-      // allow optional model on params; fall back to env or a default
-    } = params;
-
-    const model = (typeof process !== 'undefined' ? process.env.OPENAI_MODEL_FILLBLANK : undefined) ?? 'gpt-4o-mini';
-
+    const { chunk, apiKey, timeoutMs, retry, abortSignal } = params;
     const generated: RawQuestion[] = [];
-
-    // ---------- Remote generation with robust retry ----------
-    let response: Response | null = null;
-
     try {
-      const isRetriable = (status: number) =>
-        status === 408 || status === 429 || (status >= 500 && status < 600);
-
+      let response: Response | null = null;
       for (let attempt = 0; attempt < retry.attempts; attempt++) {
         const controller = new AbortController();
         const onAbort = () => controller.abort();
-        let timeoutId: ReturnType<typeof setTimeout> | null = null;
-
+        if (abortSignal) abortSignal.addEventListener('abort', onAbort);
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
         try {
-          if (abortSignal) abortSignal.addEventListener('abort', onAbort);
-          timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
           response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -100,220 +21,178 @@ export const fillBlankPlugin: QuestionPlugin = {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-              model,
+              model: process.env.OPENAI_MODEL_FILLBLANK ?? 'gpt-4o-mini',
               messages: [
                 { role: 'system', content: 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.' },
-                { role: 'user', content:
-`Generate 1  fill-blank question grounded strictly in the provided code.
-
-Only blank tokens that teach language/syntax recognition:
-
-function signature and are referenced inside its body
-
-Hard rules:
-1) Choose a compact snippet (2–6 lines) that compiles.
-2) Replace exactly ONE allowed token with "____". Never blank arbitrary user-defined function or variable names.
-3) Provide 4 options from the SAME CATEGORY as the blank (hook vs keyword vs built-in vs parameter).
-4) Return top-level "codeContext" with exactly one "____".
-5) quiz.question must be: "Complete the code: <same snippet with ____>".
-6) Provide numeric "answer" (1-based) and a concise explanation mentioning the category.
-
-CODE CHUNK:
-${chunk}
-
-Return ONLY a valid JSON array with one item matching:
-[
-  {
-    "snippet": "identifier/category representative (e.g., useEffect | Array.map | await)",
-    "codeContext": "2–6 line snippet with exactly one ____",
-    "quiz": {
-      "type": "fill-blank",
-      "question": "Complete the code: <same snippet with ____>",
-      "options": ["opt1", "opt2", "opt3", "opt4"],
-      "answer": "1",
-      "explanation": "why this token is correct in this code"
-    }
-  }
-]` }
+                { role: 'user', content: `Generate 1 JavaScript/TypeScript fill-blank question grounded strictly in the provided code.\n\nOnly blank tokens that teach language/syntax recognition:\n- React hooks: useState, useEffect, useMemo, useCallback, useRef, useReducer, useContext\n- JS/TS control/declaration keywords: if, else, switch, case, try, catch, finally, await, async, return, throw, new, yield\n- Built-in/global or stdlib methods/properties: map, filter, reduce, forEach, includes, find, push, pop, splice, slice, toLowerCase, toUpperCase, trim, JSON.parse, Object.assign, Promise.all\n- Parameter names ONLY if they come from the current function signature and are referenced inside its body\n\nHard rules:\n1) Choose a compact snippet (2–6 lines) that compiles.\n2) Replace exactly ONE allowed token with \"____\". Never blank arbitrary user-defined function or variable names.\n3) Provide 4 options from the SAME CATEGORY as the blank (hook vs keyword vs built-in vs parameter).\n4) Return top-level \"codeContext\" with exactly one \"____\".\n5) quiz.question must be: \"Complete the code: <same snippet with ____>\".\n6) Provide numeric \"answer\" (1-based) and a concise explanation mentioning the category.\n\nCODE CHUNK:\n${chunk}\n\nReturn ONLY a valid JSON array with one item matching:\n[\n  {\n    \"snippet\": \"identifier/category representative (e.g., useEffect | Array.map | await)\",\n    \"codeContext\": \"2–6 line snippet with exactly one ____\",\n    \"quiz\": {\n      \"type\": \"fill-blank\",\n      \"question\": \"Complete the code: <same snippet with ____>\",\n      \"options\": [\"opt1\", \"opt2\", \"opt3\", \"opt4\"],\n      \"answer\": \"1\",\n      \"explanation\": \"why this token is correct in this code\"\n    }\n  }\n]` }
               ],
-              temperature: 0.2,
-              max_tokens: 800
+              temperature: 0.3,
+              max_tokens: 1000
             }),
             signal: controller.signal
           });
-
-          // success or non-retriable error → break / throw
-          if (response.ok) break;
-
-          if (!isRetriable(response.status)) {
-            // surface readable error
-            const text = await response.text().catch(() => '');
-            throw new Error(`OpenAI error ${response.status}: ${text || response.statusText}`);
-          }
-
-          // otherwise fall through to retry
-        } catch (err: any) {
-          // Abort gets re-thrown to keep upstream semantics
-          if (err?.name === 'AbortError') throw err;
-        } finally {
-          if (timeoutId) clearTimeout(timeoutId);
+          clearTimeout(timeoutId);
           if (abortSignal) abortSignal.removeEventListener('abort', onAbort);
+          if (response && (response.ok || response.status !== 429)) break;
+        } catch (e: any) {
+          if (abortSignal) abortSignal.removeEventListener('abort', onAbort);
+          if (e && e.name === 'AbortError') throw e;
         }
-
-        // Backoff (honor Retry-After if present)
-        let backoff = retry.backoffBaseMs * Math.pow(2, attempt);
-        if (response && response.status === 429) {
-          const ra = response.headers.get('Retry-After');
-          const raMs = ra ? (Number.isNaN(+ra) ? 0 : +ra * 1000) : 0;
-          if (raMs > 0) backoff = Math.max(backoff, raMs);
-        }
-        // add jitter ±20%
-        const jitter = backoff * (0.2 * (Math.random() - 0.5) * 2);
-        await delay(Math.max(0, Math.round(backoff + jitter)));
+        const backoff = retry.backoffBaseMs * Math.pow(2, attempt);
+        await delay(backoff);
       }
 
-      // Parse successful response
       if (response && response.ok) {
         const data = await response.json();
-        const content = String(data?.choices?.[0]?.message?.content ?? '');
-        const clean = stripCodeFences(content);
+        const content = data.choices?.[0]?.message?.content as string;
+        try {
+          let cleanContent = (content || '').trim();
+          if (cleanContent.startsWith('```json')) cleanContent = cleanContent.replace(/^```json\s*/, '');
+          if (cleanContent.startsWith('```')) cleanContent = cleanContent.replace(/^```\s*/, '');
+          if (cleanContent.endsWith('```')) cleanContent = cleanContent.replace(/\s*```$/, '');
+          const jsonStart = cleanContent.indexOf('[');
+          if (jsonStart > 0) cleanContent = cleanContent.substring(jsonStart);
+          const jsonEnd = cleanContent.lastIndexOf(']');
+          if (jsonEnd > 0 && jsonEnd < cleanContent.length - 1) cleanContent = cleanContent.substring(0, jsonEnd + 1);
+          const parsed = JSON.parse(cleanContent);
+          const hookNames = new Set(['useState','useEffect','useMemo','useCallback','useRef','useReducer','useContext']);
+          const keywordPool = new Set(['if','else','switch','case','try','catch','finally','await','async','return','throw','new','yield']);
+          const builtinPool = new Set(['map','filter','reduce','forEach','includes','find','push','pop','splice','slice','toLowerCase','toUpperCase','trim','JSON.parse','Object.assign','Promise.all']);
 
-        let parsed: any[] = [];
-        try { parsed = JSON.parse(clean); } catch { /* fall through to fallback */ }
-
-        for (const q of parsed) {
-          try {
-            if (!validateQuestionStructure(q)) continue;
-
-            const codeCtx: string = String(q.codeContext || '');
-            const questionText: string = String(q?.quiz?.question || '');
-            const looksLikeCode = /(\{|\}|;|\bconst\b|\blet\b|\breturn\b|\bfunction\b|=>|\bimport\b|\bexport\b|\(|\))/.test(codeCtx);
-            const hasPromptLeak = /(CRITICAL:|You MUST|Return ONLY|valid JSON|quiz\.question|options\]|\"snippet\"|\"codeContext\")/i.test(questionText + '\n' + codeCtx);
-            if (!looksLikeCode || hasPromptLeak) continue;
-            const linesCount = codeCtx.split(/\r?\n/).filter(l => l.trim() !== '').length;
-            const blanksCount = (codeCtx.match(/____/g) || []).length;
-            if (linesCount < 2 || linesCount > 6) continue;
-            if (blanksCount !== 1) continue;
-
-            // question must mirror the snippet with ____
-            const expectedQuestion = `Complete the code: ${codeCtx}`;
-            if (questionText.trim() !== expectedQuestion.trim()) continue;
-
-            const opts: string[] = Array.isArray(q?.quiz?.options) ? q.quiz.options : [];
-            const idx = parseAnswerIndex(q?.quiz?.answer, opts);
-            if (idx < 0 || idx >= opts.length) continue;
-
-            const correct = opts[idx];
-
-            // category check
-            const isHook = HOOKS.has(correct);
-            const isKeyword = KEYWORDS.has(correct);
-            const isBuiltin = BUILTINS.has(correct);
-
-            if (!(isHook || isKeyword || isBuiltin)) {
-              // maybe it's a parameter? allow only if present in the snippet signature
-              const ctx = `${q.codeContext}\n${q?.quiz?.question}`;
+          const isAcceptable = (q: any): boolean => {
+            try {
+              if (!validateQuestionStructure(q)) return false;
+              const opts: string[] = Array.isArray(q?.quiz?.options) ? q.quiz.options : [];
+              const ansRaw = q?.quiz?.answer;
+              let idx = -1;
+              if (typeof ansRaw === 'number') idx = ansRaw >= 1 && ansRaw <= opts.length ? ansRaw - 1 : ansRaw;
+              else if (typeof ansRaw === 'string') {
+                const parsedIdx = parseInt(ansRaw, 10);
+                idx = !Number.isNaN(parsedIdx) ? (parsedIdx >= 1 && parsedIdx <= opts.length ? parsedIdx - 1 : parsedIdx) : opts.indexOf(ansRaw);
+              }
+              if (idx < 0 || idx >= opts.length) return false;
+              const correct = opts[idx];
+              if (hookNames.has(correct) || keywordPool.has(correct) || builtinPool.has(correct)) return true;
+              const ctx: string = (q.codeContext || '') + '\n' + (q?.quiz?.question || '');
+              // Parameters in a function declaration or arrow function
               const paramsMatch = ctx.match(/function\s*[A-Za-z_][A-Za-z0-9_]*?\s*\(([^)]*)\)|\(([^)]*)\)\s*=>/);
               const paramsStr = paramsMatch ? (paramsMatch[1] || paramsMatch[2] || '') : '';
-              const params = paramsStr.split(',').map(s => s.trim()).filter(Boolean);
-              if (!params.includes(correct)) continue;
-            }
+              const params = paramsStr.split(',').map((s: string) => s.trim()).filter(Boolean);
+              if (params.includes(correct)) return true;
+              return false; // reject arbitrary function names
+            } catch { return false; }
+          };
 
-            // If blank is used as a callee, ensure options are callable
-            const callPosition = /____\s*\(/.test(codeCtx) || /____\s*\(/.test(questionText);
-            if (callPosition) {
-              if (!isCallableToken(correct, chunk)) continue;
-              if (!opts.every(o => isCallableToken(o, chunk))) continue;
-            }
-
-            if (!sameCategory(opts, correct)) continue;
-
-            generated.push(q);
-            break; // only one item
-          } catch {
-            // skip bad item
-          }
-        }
+          parsed.forEach((q: any) => { if (isAcceptable(q)) generated.push(q); });
+        } catch {}
       }
-    } catch {
-      // swallow; will use fallback below if needed
-    }
+    } catch {}
 
-    // ---------- Local fallback synthesis ----------
+    // Local deterministic fallback: synthesize a better fill-blank from the chunk if model returned nothing
     if (generated.length === 0) {
       try {
-        const rawLines = chunk.split(/\r?\n/);
-        const lines = rawLines.filter(l => l.trim().length >= 1 && l.length <= 200);
+        const lines = chunk.split(/\r?\n/).filter(l => l.trim().length >= 8 && l.length <= 180);
         const callRegex = /(this\.)?([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)/;
-        const score = (line: string) =>
-          (/\=\s*(this\.)?[A-Za-z_][A-Za-z0-9_]*\s*\(/.test(line) ? 3 : 0) +
-          (callRegex.test(line) ? 2 : 0) +
-          (/return\s+/.test(line) ? 1 : 0);
+        const hookNames = ['useState','useEffect','useMemo','useCallback','useRef','useReducer','useContext'];
+        const keywordPool = ['if','else','switch','case','try','catch','finally','await','async','return','throw','new','yield'];
+        const builtinPool = ['map','filter','reduce','forEach','includes','find','push','pop','splice','slice','toLowerCase','toUpperCase','trim','assign','parse','stringify','all','race'];
+        const scored = lines.map(line => {
+          let score = 0;
+          if (/=\s*(this\.)?[A-Za-z_][A-Za-z0-9_]*\s*\(/.test(line)) score += 3;
+          if (callRegex.test(line)) score += 2;
+          if (/return\s+/.test(line)) score += 1;
+          return { line: line.trim(), score };
+        }).sort((a,b) => b.score - a.score);
+        const chosen = (scored[0]?.line || lines[0] || '').trim();
 
-        // pick a seed line, then expand to 2–6 lines window
-        const ranked = lines
-          .map((l, i) => ({ l: l.trim(), i, s: score(l) }))
-          .sort((a, b) => b.s - a.s);
-        const seed = ranked[0] ?? { l: lines[0]?.trim() || '', i: 0, s: 0 };
-        const start = Math.max(0, seed.i - 1);
-        const end = Math.min(rawLines.length, start + 4); // up to 5 lines
-        const snippetLines = rawLines.slice(start, end).map(l => l.replace(/\s+$/,'')).filter(l => l.trim() !== '');
-        while (snippetLines.length < 2 && end < rawLines.length) {
-          snippetLines.push(rawLines[end]);
-        }
-        const snippet = snippetLines.slice(0, 6).join('\n');
-
+        const callMatch = chosen.match(callRegex);
         let correct = '';
-        let category: 'hook'|'keyword'|'builtin'|'param'|'other' = 'other';
+        let argCount = 0;
+        let category: 'hook' | 'keyword' | 'builtin' | 'param' | 'other' = 'other';
 
-        for (const h of HOOKS) { if (new RegExp(`\\b${h}\\b`).test(snippet)) { correct = h; category = 'hook'; break; } }
-        if (!correct) for (const k of KEYWORDS) { if (new RegExp(`\\b${k}\\b`).test(snippet)) { correct = k; category = 'keyword'; break; } }
-        if (!correct) for (const b of BUILTINS) { if (new RegExp(`\\b${b}\\b`).test(snippet)) { correct = b; category = 'builtin'; break; } }
+        const hookMatch = hookNames.find(h => new RegExp(`\\b${h}\\b`).test(chosen));
+        if (hookMatch) {
+          correct = hookMatch;
+          category = 'hook';
+        }
 
         if (!correct) {
-          const paramsMatch = snippet.match(/function\s*[A-Za-z_][A-Za-z0-9_]*?\s*\(([^)]*)\)|\(([^)]*)\)\s*=>/);
+          const kw = keywordPool.find(k => new RegExp(`\\b${k}\\b`).test(chosen));
+          if (kw) { correct = kw; category = 'keyword'; }
+        }
+
+        if (!correct) {
+          const built = builtinPool.find(b => new RegExp(`\\b${b}\\b`).test(chosen));
+          if (built) { correct = built; category = 'builtin'; }
+        }
+
+        if (!correct) {
+          const paramsMatch = chosen.match(/function\s*[A-Za-z_][A-Za-z0-9_]*?\s*\(([^)]*)\)|\(([^)]*)\)\s*=>/);
           const paramsStr = paramsMatch ? (paramsMatch[1] || paramsMatch[2] || '') : '';
           const params = paramsStr.split(',').map(s => s.trim()).filter(Boolean);
-          const usedParam = params.find(p => new RegExp(`\\b${p}\\b`).test(snippet));
+          const usedParam = params.find(p => new RegExp(`\\b${p}\\b`).test(chosen));
           if (usedParam) { correct = usedParam; category = 'param'; }
         }
 
-        if (category === 'other' || !correct) throw new Error('No suitable token for fill-blank');
+        if (!correct && callMatch) {
+          correct = callMatch[2];
+          argCount = callMatch[3].split(',').filter(s => s.trim().length > 0).length;
+        }
+        if (!correct) {
+          const identifiers = Array.from(chosen.matchAll(/[A-Za-z_][A-Za-z0-9_]*/g)).map(m => m[0]);
+          const uniqueIds = Array.from(new Set(identifiers)).filter(id => !['const','let','var','function','true','false','null','undefined'].includes(id));
+          correct = uniqueIds[0] || (identifiers[0] || 'value');
+        }
 
-        const codeContext = snippet.replace(new RegExp(`\\b${correct}\\b`), '____');
-        const blanksCount = (codeContext.match(/____/g) || []).length;
-        const linesCount = codeContext.split(/\r?\n/).filter(l => l.trim() !== '').length;
-        const looksLikeCode = /(\{|\}|;|\bconst\b|\blet\b|\breturn\b|\bfunction\b|=>|\bimport\b|\bexport\b|\(|\))/.test(codeContext);
-        const hasPromptLeak = /(CRITICAL:|You MUST|Return ONLY|valid JSON|quiz\.question|options\]|\"snippet\"|\"codeContext\")/i.test(codeContext);
-        if (blanksCount !== 1 || linesCount < 2 || linesCount > 6) throw new Error('Invalid snippet for basic fill-blank');
-        if (!looksLikeCode || hasPromptLeak) throw new Error('Non code-like or prompt-leak snippet');
+        const codeContext = (category === 'other' && callMatch)
+          ? chosen.replace(new RegExp(`(this\\.)?${correct}\\s*\\(`), (m) => m.replace(correct, '____'))
+          : chosen.replace(new RegExp(`\\b${correct}\\b`), '____');
 
-        // Build options from same category
-        const options = new Set<string>([correct]);
-        const addFrom = (iter: Iterable<string>) => {
-          for (const t of iter) {
-            if (options.size >= 4) break;
-            if (t !== correct) options.add(t);
+        const optionsSet = new Set<string>([correct]);
+        if (category === 'hook') {
+          for (const h of hookNames) {
+            if (optionsSet.size >= 4) break;
+            if (h !== correct) optionsSet.add(h);
           }
-        };
-
-        if (category === 'hook') addFrom(HOOKS);
-        else if (category === 'keyword') addFrom(KEYWORDS);
-        else if (category === 'builtin') addFrom(BUILTINS);
-        else if (category === 'param') {
-          const pm = snippet.match(/function\s*[A-Za-z_][A-Za-z0-9_]*?\s*\(([^)]*)\)|\(([^)]*)\)\s*=>/);
-          const ps = pm ? (pm[1] || pm[2] || '') : '';
-          addFrom(ps.split(',').map(s => s.trim()).filter(Boolean));
-          if (options.size < 4) addFrom(['event','e','req','res','next','props','state']);
+        } else if (category === 'keyword') {
+          for (const k of keywordPool) {
+            if (optionsSet.size >= 4) break;
+            if (k !== correct) optionsSet.add(k);
+          }
+        } else if (category === 'builtin') {
+          for (const b of builtinPool) {
+            if (optionsSet.size >= 4) break;
+            if (b !== correct) optionsSet.add(b);
+          }
+        } else if (category === 'param') {
+          const paramsMatch2 = chunk.match(/function\s*[A-Za-z_][A-Za-z0-9_]*?\s*\(([^)]*)\)|\(([^)]*)\)\s*=>/);
+          const paramsStr2 = paramsMatch2 ? (paramsMatch2[1] || paramsMatch2[2] || '') : '';
+          const params2 = paramsStr2.split(',').map(s => s.trim()).filter(Boolean);
+          for (const p of params2) {
+            if (optionsSet.size >= 4) break;
+            if (p && p !== correct) optionsSet.add(p);
+          }
+          const common = ['event','e','req','res','next','props','state'];
+          for (const c of common) {
+            if (optionsSet.size >= 4) break;
+            if (c !== correct) optionsSet.add(c);
+          }
+        } else {
+          const allCallers = Array.from(chunk.matchAll(/(this\.)?([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)/g))
+            .map(m => ({ name: m[2], argc: m[3].split(',').filter(s => s.trim().length > 0).length }));
+          const callerPool = Array.from(new Set(allCallers.map(c => `${c.name}:${c.argc}`)))
+            .map(s => ({ name: s.split(':')[0], argc: parseInt(s.split(':')[1], 10) }))
+            .filter(c => c.name !== correct && (argCount === 0 || c.argc === argCount));
+          for (const cand of callerPool) {
+            if (optionsSet.size >= 4) break;
+            if (Math.abs(cand.name.length - correct.length) <= 6) optionsSet.add(cand.name);
+          }
         }
+        while (optionsSet.size < 4) optionsSet.add(`${correct}${optionsSet.size}`);
+        const options = Array.from(optionsSet).slice(0, 4);
 
-        while (options.size < 4) options.add(`${correct}${options.size}`);
-        const opts = Array.from(options).slice(0, 4);
-        const shuffled = [...opts];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
+        const shuffled = [...options];
+        for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; }
         const answerIndex = shuffled.indexOf(correct);
 
         generated.push({
@@ -324,14 +203,14 @@ Return ONLY a valid JSON array with one item matching:
             question: `Complete the code: ${codeContext}`,
             options: shuffled,
             answer: String(answerIndex + 1),
-            explanation: `"${correct}" is the correct ${category === 'hook' ? 'React hook' : category === 'keyword' ? 'keyword' : category === 'builtin' ? 'built-in method' : 'parameter'} in this snippet.`
+            explanation: `"${correct}" is the correct ${category === 'hook' ? 'React hook' : category === 'keyword' ? 'keyword' : category === 'builtin' ? 'built-in method' : category === 'param' ? 'parameter' : 'identifier'} in this snippet.`
           }
         });
-      } catch {
-        // still nothing; return empty list
-      }
+      } catch {}
     }
 
     return generated;
   }
 };
+
+

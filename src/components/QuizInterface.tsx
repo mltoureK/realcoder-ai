@@ -403,7 +403,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               {currentQuestion.question}
             </h2>
             
-            {currentQuestion.codeContext && (
+            {currentQuestion.codeContext && currentQuestion.type === 'function-variant' && (
               <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mb-4">
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Code Context:</p>
                 <pre className="text-sm text-gray-800 dark:text-gray-200 overflow-x-auto">
