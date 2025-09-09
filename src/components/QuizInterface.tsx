@@ -16,6 +16,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   const [lives] = useState(999); // Unlimited lives
   const [currentVariantIndex, setCurrentVariantIndex] = useState(0);
   const [showExplanations, setShowExplanations] = useState(false);
+  const [shakingNext, setShakingNext] = useState(false);
 
   const currentQuestion = quizSession.questions[currentQuestionIndex];
 
@@ -64,13 +65,17 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   };
 
   const handleNextQuestion = () => {
-    if (currentQuestionIndex < quizSession.questions.length - 1) {
+    const nextIndex = currentQuestionIndex + 1;
+    const nextAvailable = nextIndex < quizSession.questions.length;
+    if (nextAvailable) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswers([]);
       setCurrentVariantIndex(0);
       setShowExplanations(false);
     } else {
-      setShowResults(true);
+      // Not yet loaded → trigger a brief shake
+      setShakingNext(true);
+      setTimeout(() => setShakingNext(false), 600);
     }
   };
 
@@ -498,7 +503,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             ) : (
               <button
                 onClick={handleNextQuestion}
-                className="bg-green-600 text-white py-3 px-8 rounded-lg font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
+                className={`bg-green-600 text-white py-3 px-8 rounded-lg font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors ${shakingNext ? 'animate-shake' : ''}`}
               >
                 {currentQuestionIndex === quizSession.questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
               </button>

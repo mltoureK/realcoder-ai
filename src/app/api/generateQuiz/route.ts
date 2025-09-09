@@ -22,6 +22,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { code, questionTypes, difficulty, numQuestions } = body;
+    const streamParam = request.nextUrl?.searchParams?.get('stream');
 
     console.log('📡 /generateQuiz API called with:', { 
       codeLength: code?.length, 
@@ -71,6 +72,122 @@ export async function POST(request: NextRequest) {
       },
       retries: { attempts: 3, backoffBaseMs: 500 }
     };
+
+    // Helper to map raw -> UI
+    const mapToUi = (q: any, index: number) => {
+      const questionData = q.quiz;
+      if (questionData.type === 'function-variant') {
+        return {
+          id: (index + 1).toString(),
+          type: questionData.type,
+          question: questionData.question || 'Missing question text',
+          options: [],
+          correctAnswer: null,
+          explanation: '',
+          difficulty: 'medium',
+          variants: (questionData.variants || []).map((v: any) => ({
+            ...v,
+            code: typeof v.code === 'string' ? removeComments(v.code) : v.code
+          }))
+        } as any;
+      } else if (questionData.type === 'multiple-choice') {
+        const opts = questionData.options || [];
+        const ansNum = parseInt(questionData.answer);
+        let idx = -1;
+        if (!isNaN(ansNum)) {
+          if (ansNum >= 1 && ansNum <= opts.length) idx = ansNum - 1;
+          else if (ansNum >= 0 && ansNum < opts.length) idx = ansNum;
+        }
+        return {
+          id: (index + 1).toString(),
+          type: questionData.type,
+          question: questionData.question || 'Missing question text',
+          options: opts,
+          correctAnswer: idx >= 0 ? opts[idx] : null,
+          explanation: questionData.explanation || '',
+          difficulty: 'medium',
+          codeContext: undefined,
+          variants: []
+        } as any;
+      } else if (questionData.type === 'fill-blank') {
+        const opts = questionData.options || [];
+        const ansNum = parseInt(questionData.answer);
+        let idx = -1;
+        if (!isNaN(ansNum)) {
+          if (ansNum >= 1 && ansNum <= opts.length) idx = ansNum - 1;
+          else if (ansNum >= 0 && ansNum < opts.length) idx = ansNum;
+        }
+        return {
+          id: (index + 1).toString(),
+          type: questionData.type,
+          question: questionData.question || 'Complete the code',
+          options: opts,
+          correctAnswer: idx >= 0 ? opts[idx] : null,
+          explanation: questionData.explanation || '',
+          difficulty: 'medium',
+          codeContext: undefined,
+          variants: []
+        } as any;
+      } else {
+        return {
+          id: (index + 1).toString(),
+          type: questionData.type || 'unknown',
+          question: questionData.question || 'Missing question text',
+          options: questionData.options || [],
+          correctAnswer: null,
+          explanation: questionData.explanation || '',
+          difficulty: 'medium',
+          variants: questionData.variants || []
+        } as any;
+      }
+    };
+
+    // Streaming path: NDJSON when stream=1
+    if (streamParam === '1') {
+      const encoder = new TextEncoder();
+      let counter = 0;
+      const stream = new ReadableStream<Uint8Array>({
+        start: async (controller) => {
+          try {
+            // Emit meta first
+            const meta = { type: 'meta', expectedTotal: desiredTotal };
+            controller.enqueue(encoder.encode(JSON.stringify(meta) + '\n'));
+
+            await orchestrateGeneration({
+              chunks,
+              plugins: selectedPlugins,
+              numQuestions: desiredTotal,
+              settings,
+              apiKey: openaiApiKey,
+              options: { difficulty: difficulty || 'medium' },
+              onQuestion: async (q) => {
+                const ui = mapToUi(q as any, counter);
+                // Shuffle variants if present and balance
+                if (ui.variants && ui.variants.length > 0) {
+                  ui.variants = shuffleVariants(ui.variants);
+                  ui.variants = balanceVariantVerbosity(ui.variants);
+                }
+                counter += 1;
+                controller.enqueue(encoder.encode(JSON.stringify({ type: 'question', question: ui }) + '\n'));
+              }
+            });
+            controller.enqueue(encoder.encode(JSON.stringify({ type: 'done', count: counter }) + '\n'));
+          } catch (e) {
+            controller.enqueue(encoder.encode(JSON.stringify({ type: 'error', message: 'stream-failed' }) + '\n'));
+          } finally {
+            controller.close();
+          }
+        }
+      });
+
+      return new Response(stream, {
+        headers: {
+          'Content-Type': 'application/x-ndjson',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive'
+        }
+      });
+    }
 
     let rawGenerated = await orchestrateGeneration({
       chunks,

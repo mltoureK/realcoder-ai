@@ -27,15 +27,16 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ Extracted:', { owner, repo: cleanRepo });
 
-    // Fetch repository tree
-    const apiUrl = `https://api.github.com/repos/${owner}/${cleanRepo}/git/trees/main?recursive=1`;
-    console.log('�� GitHub API Call:', apiUrl);
-    
+    // Determine a valid branch: try repo default branch, then main/master, then any branch
+    const repoMetaUrl = `https://api.github.com/repos/${owner}/${cleanRepo}`;
+    let chosenBranch = 'main';
+
     const headers: HeadersInit = {
       'Accept': 'application/vnd.github.v3+json',
     };
     
     // Add GitHub token if available
+    
     const githubToken = process.env.GITHUB_TOKEN;
     console.log('🔍 Debug - GITHUB_TOKEN value:', githubToken ? `${githubToken.substring(0, 10)}...` : 'undefined');
     console.log('🔍 Debug - GITHUB_TOKEN length:', githubToken ? githubToken.length : 0);
@@ -52,17 +53,60 @@ export async function POST(request: NextRequest) {
       });
     }
     
-    const response = await fetch(apiUrl, { headers });
-    
-    if (!response.ok) {
-      console.error('❌ GitHub API error:', response.status, response.statusText);
+    // 1) Try default branch from repo metadata
+    try {
+      const metaRes = await fetch(repoMetaUrl, { headers });
+      if (metaRes.ok) {
+        const meta = await metaRes.json();
+        if (meta && meta.default_branch) chosenBranch = meta.default_branch;
+      }
+    } catch {}
+
+    async function fetchTreeForBranch(branch: string): Promise<any | null> {
+      const url = `https://api.github.com/repos/${owner}/${cleanRepo}/git/trees/${branch}?recursive=1`;
+      console.log('�� GitHub API Call:', url);
+      try {
+        const res = await fetch(url, { headers });
+        if (res.ok) {
+          const json = await res.json();
+          if (json && Array.isArray(json.tree)) return json;
+        } else {
+          console.warn('⚠️ Tree fetch failed for branch', branch, res.status, res.statusText);
+        }
+      } catch (e) {
+        console.warn('⚠️ Error fetching tree for branch', branch, e);
+      }
+      return null;
+    }
+
+    // Try chosen default branch
+    let data = await fetchTreeForBranch(chosenBranch);
+    // Then try main/master fallbacks if needed
+    if (!data && chosenBranch !== 'main') data = await fetchTreeForBranch('main');
+    if (!data && chosenBranch !== 'master') data = await fetchTreeForBranch('master');
+    // Then try any branch from list
+    if (!data) {
+      try {
+        const branchesRes = await fetch(`https://api.github.com/repos/${owner}/${cleanRepo}/branches`, { headers });
+        if (branchesRes.ok) {
+          const branches = await branchesRes.json();
+          if (Array.isArray(branches) && branches.length > 0) {
+            for (const b of branches) {
+              const tree = await fetchTreeForBranch(b.name || b.branch || '');
+              if (tree) { data = tree; chosenBranch = b.name || b.branch || chosenBranch; break; }
+            }
+          }
+        }
+      } catch {}
+    }
+
+    if (!data) {
+      console.error('❌ GitHub API error: could not obtain repo tree from any branch');
       return NextResponse.json(
-        { success: false, error: `GitHub API error: ${response.status} - ${response.statusText}` },
-        { status: response.status }
+        { success: false, error: 'GitHub API error: failed to fetch repository tree from any branch' },
+        { status: 502 }
       );
     }
-    
-    const data = await response.json();
     console.log('📁 Found', data.tree.length, 'files in repository');
 
     // Use the improved FileProcessor
@@ -128,7 +172,7 @@ export async function POST(request: NextRequest) {
       repositoryInfo: {
         owner,
         repo: cleanRepo,
-        branch: 'main',
+        branch: chosenBranch,
         files: fileContents,
         languages: [...new Set(fileContents.map(f => f.language))],
         totalFiles: fileContents.length,

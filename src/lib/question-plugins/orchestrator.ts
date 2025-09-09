@@ -14,10 +14,11 @@ interface OrchestrateArgs {
   };
   apiKey: string;
   options: { difficulty: 'easy' | 'medium' | 'hard' };
+  onQuestion?: (q: RawQuestion) => Promise<void> | void;
 }
 
 export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQuestion[]> {
-  const { chunks, plugins, numQuestions, settings, apiKey, options } = args;
+  const { chunks, plugins, numQuestions, settings, apiKey, options, onQuestion } = args;
   if (plugins.length === 0 || chunks.length === 0) return [];
 
   const tasks: Array<{ plugin: QuestionPlugin; chunk: string }> = [];
@@ -134,6 +135,11 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
           }
           if (!accept) continue;
           results.push(q);
+          try {
+            if (onQuestion) {
+              await onQuestion(q);
+            }
+          } catch {}
           const qType = (q as any)?.quiz?.type as string | undefined;
           if (qType) countsByType[qType] = (countsByType[qType] || 0) + 1;
           if (isComplete()) { stopRequested = true; break; }
