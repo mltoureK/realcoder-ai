@@ -74,52 +74,64 @@ export default function Home() {
         
         console.log('✅ Repository processed successfully');
         
-        // Step 2: Call your original /generateQuiz API endpoint
+        // Step 2: Stream /generateQuiz so first question appears immediately
         const combinedCode = repoData.repositoryInfo.files.map((file: any) => 
           `// ${file.path}\n${file.content}`
         ).join('\n\n');
-        
-        console.log('📤 Sending quiz request with code length:', combinedCode.length);
-        
-        const quizResponse = await fetch('/api/generateQuiz', {
+        console.log('📤 Streaming quiz request with code length:', combinedCode.length);
+
+        const resp = await fetch('/api/generateQuiz?stream=1', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             code: combinedCode,
-            questionTypes: ['function-variant', 'multiple-choice'],
+            questionTypes: ['function-variant', 'multiple-choice', 'fill-blank'],
             difficulty: 'medium',
-            numQuestions: 5
+            numQuestions: 10,
+            stream: true
           })
         });
-        
-        console.log('📡 Quiz response status:', quizResponse.status);
-        
-        if (!quizResponse.ok) {
-          const errorText = await quizResponse.text();
-          console.error('❌ Quiz API error:', errorText);
-          throw new Error(`Failed to generate quiz: ${quizResponse.status}`);
+        if (!resp.ok || !resp.body) throw new Error('Failed to stream quiz');
+
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let questions: any[] = [];
+        const sessionBase = {
+          id: Date.now().toString(),
+          title: 'Generated Quiz',
+          currentQuestionIndex: 0,
+          score: 0,
+          lives: 3,
+          lastLifeRefill: new Date(),
+          completed: false
+        } as any;
+
+        const flushFirst = () => {
+          if (!quizSession && questions.length > 0) {
+            setQuizSession({ ...sessionBase, questions: [...questions] });
+          } else if (quizSession) {
+            setQuizSession((prev: any) => ({ ...prev, questions: [...questions] }));
+          }
+        };
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+          for (const line of lines) {
+            if (!line.trim()) continue;
+            let evt: any; try { evt = JSON.parse(line); } catch { continue; }
+            if (evt.type === 'question' && evt.question) {
+              questions.push(evt.question);
+              flushFirst();
+            }
+          }
         }
-        
-        const quizData = await quizResponse.json();
-        console.log('📊 Quiz data received:', quizData);
-        
-        if (!quizData.success) {
-          throw new Error(quizData.error || 'Quiz generation failed');
-        }
-        
-        const quizSession = quizData.quiz;
-        
-        console.log('🎉 Quiz generated successfully!');
-        console.log('📊 Quiz Summary:', {
-          title: quizSession.title,
-          questions: quizSession.questions.length,
-          lives: quizSession.lives
-        });
-        
-        // Show full-screen quiz interface
-        setQuizSession(quizSession);
+        // Final flush to ensure all questions are present
+        flushFirst();
         
       } else if (activeTab === 'upload' && selectedFiles.length > 0) {
         console.log('📁 Processing uploaded files:', selectedFiles.length, 'files');
@@ -143,9 +155,9 @@ export default function Home() {
           },
           body: JSON.stringify({
             code: combinedCode,
-            questionTypes: ['function-variant', 'multiple-choice'],
+            questionTypes: ['function-variant', 'multiple-choice', 'fill-blank'],
             difficulty: 'medium',
-            numQuestions: 5
+            numQuestions: 10
           })
         });
         

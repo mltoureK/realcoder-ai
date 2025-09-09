@@ -29,6 +29,7 @@ export interface GenerateParams {
 
 export interface RawQuestion {
   snippet?: string;
+  codeContext?: string;
   // `quiz` remains loosely typed to preserve current route behavior without forcing a schema here
   quiz: any;
 }

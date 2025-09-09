@@ -70,7 +70,41 @@ export function validateQuestionStructure(question: any): boolean {
 
   if (question.quiz.type === 'multiple-choice') {
     if (!Array.isArray(question.quiz.options) || question.quiz.options.length === 0) return false;
-    if (!question.quiz.answer || !question.quiz.explanation) return false;
+    const ans = question.quiz.answer;
+    if (ans === undefined || ans === null) return false;
+    let idx = -1;
+    if (typeof ans === 'number') {
+      idx = ans >= 1 && ans <= question.quiz.options.length ? ans - 1 : ans;
+    } else {
+      const parsed = parseInt(ans, 10);
+      if (!Number.isNaN(parsed)) {
+        idx = parsed >= 1 && parsed <= question.quiz.options.length ? parsed - 1 : parsed;
+      } else {
+        idx = question.quiz.options.indexOf(ans);
+      }
+    }
+    if (idx < 0 || idx >= question.quiz.options.length) return false;
+    if (!question.quiz.explanation) return false;
+    return true;
+  }
+
+  if (question.quiz.type === 'fill-blank') {
+    if (!Array.isArray(question.quiz.options) || question.quiz.options.length === 0) return false;
+    const ans = question.quiz.answer;
+    if (ans === undefined || ans === null) return false;
+    let idx = -1;
+    if (typeof ans === 'number') {
+      idx = ans >= 1 && ans <= question.quiz.options.length ? ans - 1 : ans;
+    } else {
+      const parsed = parseInt(ans, 10);
+      if (!Number.isNaN(parsed)) {
+        idx = parsed >= 1 && parsed <= question.quiz.options.length ? parsed - 1 : parsed;
+      } else {
+        idx = question.quiz.options.indexOf(ans);
+      }
+    }
+    if (idx < 0 || idx >= question.quiz.options.length) return false;
+    if (!question.quiz.explanation) return false;
     return true;
   }
 

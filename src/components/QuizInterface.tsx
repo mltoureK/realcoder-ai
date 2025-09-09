@@ -130,6 +130,59 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
           </div>
         );
 
+      case 'fill-blank':
+        // Render a Duolingo-like drag-to-fill experience
+        // Find the blank and render a drop zone that accepts option chips
+        const qText = currentQuestion.question || '';
+        const parts = qText.split('____');
+        const filledToken = selectedAnswers[0];
+        return (
+          <div className="space-y-6">
+            <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600">
+              <p className="text-base text-gray-700 dark:text-gray-200 font-mono whitespace-pre-wrap">
+                {parts[0]}
+                <span
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    const token = e.dataTransfer.getData('text/plain');
+                    if (token) handleAnswerSelect(token);
+                  }}
+                  className={`inline-flex items-center px-3 py-1 rounded-md border-2 mx-1 select-none ${
+                    filledToken
+                      ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-200'
+                      : 'border-dashed border-blue-400 text-blue-600 dark:text-blue-300'
+                  }`}
+                  role="button"
+                >
+                  {filledToken || '____'}
+                </span>
+                {parts.length > 1 ? parts[1] : ''}
+              </p>
+              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Tip: drag a token below into the blank or click a token to select.</p>
+            </div>
+
+            {/* Draggable tokens */}
+            <div className="flex flex-wrap gap-3">
+              {currentQuestion.options?.map((option, index) => (
+                <button
+                  key={index}
+                  draggable
+                  onDragStart={(e) => e.dataTransfer.setData('text/plain', option)}
+                  onClick={() => handleAnswerSelect(option)}
+                  className={`px-4 py-2 rounded-full border-2 text-sm font-medium transition-all ${
+                    selectedAnswers.includes(option)
+                      ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-200'
+                      : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                  }`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+
       case 'function-variant':
         if (!currentQuestion.variants || currentQuestion.variants.length === 0) {
           return <div>No variants available</div>;

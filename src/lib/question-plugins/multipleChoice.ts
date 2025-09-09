@@ -21,10 +21,10 @@ export const multipleChoicePlugin: QuestionPlugin = {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-              model: 'gpt-4o',
+              model: process.env.OPENAI_MODEL_MCQ ?? 'gpt-4o-mini',
               messages: [
                 { role: 'system', content: 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.' },
-                { role: 'user', content: `Generate 1 multiple-choice question based on this code chunk:\n\n${chunk}\n\nCRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.\n\nFormat:\n[\n  {\n    \"snippet\": \"function name from code\",\n    \"quiz\": {\n      \"type\": \"multiple-choice\",\n      \"question\": \"What does [FUNCTION] do?\",\n      \"options\": [\n        \"Option A description\",\n        \"Option B description\", \n        \"Option C description\",\n        \"Option D description\"\n      ],\n      \"answer\": \"1\",\n      \"explanation\": \"why this is correct\"\n    }\n  }\n]` }
+                { role: 'user', content: `Generate 1 multiple-choice question from this code chunk.\n\nStrict requirements:\n1) Pick ONE real function from the chunk.\n2) Provide top-level 'codeContext' with the exact function body (trim to 8–12 most relevant lines if long).\n3) Ask about BEHAVIOR/RETURN VALUE/SIDE EFFECTS (no trivia).\n4) Distractors MUST be genuinely confusable and code-grounded: only realistic mistakes (off-by-one boundary, wrong branch/condition, swapped args, wrong return shape, missing effect). Avoid trivial wrong answers and avoid giveaways (unique keywords, different tone, extra qualifiers).\n5) Option parity: keep options similar in style and complexity (same tense/voice; roughly similar length) but do NOT rely on length tricks.\n6) Randomize option order.\n7) Provide numeric 'answer' (1-based) and a brief 'explanation' citing the exact token/branch that proves it.\n\nCODE CHUNK:\n${chunk}\n\nCRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.\n\nFormat:\n[\n  {\n    \"snippet\": \"function name from code\",\n    \"codeContext\": \"function foo(a){return a+1}\",\n    \"quiz\": {\n      \"type\": \"multiple-choice\",\n      \"question\": \"What does [FUNCTION] do?\",\n      \"options\": [\n        \"A\", \"B\", \"C\", \"D\"\n      ],\n      \"answer\": \"1\",\n      \"explanation\": \"why this is correct\"\n    }\n  }\n]` }
               ],
               temperature: 0.3,
               max_tokens: 1500
@@ -58,6 +58,10 @@ export const multipleChoicePlugin: QuestionPlugin = {
 
           parsed.forEach((question: any) => {
             if (!validateQuestionStructure(question)) return;
+            // Attach minimal context header when available
+            if (!question.quiz.question && question.snippet) {
+              question.quiz.question = `What does ${question.snippet} do?`;
+            }
             generated.push(question);
           });
         } catch (err) {
