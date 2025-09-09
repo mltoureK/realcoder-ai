@@ -186,6 +186,10 @@ Return ONLY a valid JSON array with one item matching:
             if (!validateQuestionStructure(q)) continue;
 
             const codeCtx: string = String(q.codeContext || '');
+            const questionText: string = String(q?.quiz?.question || '');
+            const looksLikeCode = /(\{|\}|;|\bconst\b|\blet\b|\breturn\b|\bfunction\b|=>|\bimport\b|\bexport\b|\(|\))/.test(codeCtx);
+            const hasPromptLeak = /(CRITICAL:|You MUST|Return ONLY|valid JSON|quiz\.question|options\]|\"snippet\"|\"codeContext\")/i.test(questionText + '\n' + codeCtx);
+            if (!looksLikeCode || hasPromptLeak) continue;
             const linesCount = codeCtx.split(/\r?\n/).filter(l => l.trim() !== '').length;
             const blanksCount = (codeCtx.match(/____/g) || []).length;
             if (linesCount < 2 || linesCount > 6) continue;
@@ -193,7 +197,6 @@ Return ONLY a valid JSON array with one item matching:
 
             // question must mirror the snippet with ____
             const expectedQuestion = `Complete the code: ${codeCtx}`;
-            const questionText: string = String(q?.quiz?.question || '');
             if (questionText.trim() !== expectedQuestion.trim()) continue;
 
             const opts: string[] = Array.isArray(q?.quiz?.options) ? q.quiz.options : [];
@@ -280,7 +283,10 @@ Return ONLY a valid JSON array with one item matching:
         const codeContext = snippet.replace(new RegExp(`\\b${correct}\\b`), '____');
         const blanksCount = (codeContext.match(/____/g) || []).length;
         const linesCount = codeContext.split(/\r?\n/).filter(l => l.trim() !== '').length;
+        const looksLikeCode = /(\{|\}|;|\bconst\b|\blet\b|\breturn\b|\bfunction\b|=>|\bimport\b|\bexport\b|\(|\))/.test(codeContext);
+        const hasPromptLeak = /(CRITICAL:|You MUST|Return ONLY|valid JSON|quiz\.question|options\]|\"snippet\"|\"codeContext\")/i.test(codeContext);
         if (blanksCount !== 1 || linesCount < 2 || linesCount > 6) throw new Error('Invalid snippet for basic fill-blank');
+        if (!looksLikeCode || hasPromptLeak) throw new Error('Non code-like or prompt-leak snippet');
 
         // Build options from same category
         const options = new Set<string>([correct]);

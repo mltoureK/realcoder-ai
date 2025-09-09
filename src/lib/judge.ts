@@ -27,6 +27,24 @@ export async function tinyJudge(
       const categoryOf = (t: string): 'hook' | 'keyword' | 'builtin' | 'other' =>
         hookNames.has(t) ? 'hook' : keywordPool.has(t) ? 'keyword' : builtinPool.has(t) ? 'builtin' : 'other';
 
+      // Basic snippet constraints
+      const linesCount = codeContext.split(/\r?\n/).filter(l => l.trim() !== '').length;
+      const blanksCount = (codeContext.match(/____/g) || []).length;
+      if (linesCount < 2 || linesCount > 6) return { ok: false, reason: 'Snippet must be 2–6 lines' };
+      if (blanksCount !== 1) return { ok: false, reason: 'Snippet must contain exactly one blank' };
+
+      // Looks-like-code heuristic (must include common code tokens)
+      const looksLikeCode = /(\{|\}|;|\bconst\b|\blet\b|\breturn\b|\bfunction\b|=>|\bimport\b|\bexport\b|\(|\))/.test(codeContext);
+      if (!looksLikeCode) return { ok: false, reason: 'Code context not code-like' };
+
+      // Reject obvious prompt/instruction leaks
+      const hasPromptLeak = /(CRITICAL:|You MUST|Return ONLY|valid JSON|quiz\.question|options\]|\"snippet\"|\"codeContext\")/i.test(question + '\n' + codeContext);
+      if (hasPromptLeak) return { ok: false, reason: 'Prompt text leaked into question/context' };
+
+      // Enforce exact question mirror
+      const expectedQuestion = `Complete the code: ${codeContext}`.trim();
+      if (question.trim() !== expectedQuestion) return { ok: false, reason: 'Question must mirror codeContext' };
+
       // 1) Mixed categories is unfair (e.g., keywords and callables together)
       const cats = new Set(options.map(categoryOf));
       if (cats.has('hook') || cats.has('keyword') || cats.has('builtin')) {
