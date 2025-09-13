@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { generateQuizFromRepository } from '@/lib/quiz-service';
 import QuizInterface from '@/components/QuizInterface';
+import StreamingQuizGenerator from '@/components/StreamingQuizGenerator';
 
 interface GitHubRepo {
   owner: string;
@@ -16,6 +17,12 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'upload' | 'github'>('upload');
   const [quizSession, setQuizSession] = useState<any>(null);
+  const [streamingQuiz, setStreamingQuiz] = useState<{
+    code: string;
+    questionTypes: string[];
+    difficulty: string;
+    numQuestions: number;
+  } | null>(null);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -74,52 +81,83 @@ export default function Home() {
         
         console.log('✅ Repository processed successfully');
         
-        // Step 2: Call your original /generateQuiz API endpoint
+        // Step 2: Stream from /generateQuiz
         const combinedCode = repoData.repositoryInfo.files.map((file: any) => 
           `// ${file.path}\n${file.content}`
         ).join('\n\n');
         
-        console.log('📤 Sending quiz request with code length:', combinedCode.length);
+        console.log('📤 Streaming quiz request with code length:', combinedCode.length);
         
-        const quizResponse = await fetch('/api/generateQuiz', {
+        const quizResponse = await fetch('/api/generateQuiz?stream=1', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             code: combinedCode,
-            questionTypes: ['function-variant', 'multiple-choice'],
+            questionTypes: ['function-variant', 'multiple-choice', 'fill-blank'],
             difficulty: 'medium',
-            numQuestions: 5
+            numQuestions: 10
           })
         });
         
-        console.log('📡 Quiz response status:', quizResponse.status);
-        
-        if (!quizResponse.ok) {
+        console.log('📡 Quiz stream response status:', quizResponse.status);
+        if (!quizResponse.ok || !quizResponse.body) {
           const errorText = await quizResponse.text();
           console.error('❌ Quiz API error:', errorText);
-          throw new Error(`Failed to generate quiz: ${quizResponse.status}`);
+          throw new Error(`Failed to stream quiz: ${quizResponse.status}`);
         }
         
-        const quizData = await quizResponse.json();
-        console.log('📊 Quiz data received:', quizData);
+        // Initialize empty session and mount UI early
+        const initialSession = {
+          id: Date.now().toString(),
+          title: 'Generated Quiz',
+          questions: [] as any[],
+          currentQuestionIndex: 0,
+          score: 0,
+          lives: 3,
+          lastLifeRefill: new Date(),
+          completed: false
+        } as any;
+        setQuizSession(initialSession);
         
-        if (!quizData.success) {
-          throw new Error(quizData.error || 'Quiz generation failed');
+        const reader = quizResponse.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let total = 0;
+        
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          let idx;
+          while ((idx = buffer.indexOf('\n')) >= 0) {
+            const line = buffer.slice(0, idx).trim();
+            buffer = buffer.slice(idx + 1);
+            if (!line) continue;
+            try {
+              const evt = JSON.parse(line);
+              if (evt.type === 'meta') {
+                console.log('🧩 Expecting ~', evt.expectedTotal, 'questions');
+              } else if (evt.type === 'question') {
+                total += 1;
+                console.log('📝 Received question', total, ':', evt.question);
+                setQuizSession((prev: any) => {
+                  if (!prev) return initialSession;
+                  const updated = { ...prev, questions: [...prev.questions, evt.question] };
+                  console.log('🔄 Updated quiz session with', updated.questions.length, 'questions');
+                  return updated;
+                });
+              } else if (evt.type === 'done') {
+                console.log('✅ Stream done:', evt.count);
+              } else if (evt.type === 'error') {
+                console.warn('⚠️ Stream error event');
+              }
+            } catch (e) {
+              console.warn('⚠️ Failed to parse stream line', line);
+            }
+          }
         }
-        
-        const quizSession = quizData.quiz;
-        
-        console.log('🎉 Quiz generated successfully!');
-        console.log('📊 Quiz Summary:', {
-          title: quizSession.title,
-          questions: quizSession.questions.length,
-          lives: quizSession.lives
-        });
-        
-        // Show full-screen quiz interface
-        setQuizSession(quizSession);
         
       } else if (activeTab === 'upload' && selectedFiles.length > 0) {
         console.log('📁 Processing uploaded files:', selectedFiles.length, 'files');
@@ -134,40 +172,78 @@ export default function Home() {
         
         const combinedCode = fileContents.join('\n\n');
         
-        console.log('📤 Sending quiz request with code length:', combinedCode.length);
+        console.log('📤 Streaming quiz request with code length:', combinedCode.length);
         
-        const quizResponse = await fetch('/api/generateQuiz', {
+        const quizResponse = await fetch('/api/generateQuiz?stream=1', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             code: combinedCode,
-            questionTypes: ['function-variant', 'multiple-choice'],
+            questionTypes: ['function-variant', 'multiple-choice', 'fill-blank'],
             difficulty: 'medium',
-            numQuestions: 5
+            numQuestions: 10
           })
         });
         
-        console.log('📡 Quiz response status:', quizResponse.status);
-        
-        if (!quizResponse.ok) {
+        console.log('📡 Quiz stream response status:', quizResponse.status);
+        if (!quizResponse.ok || !quizResponse.body) {
           const errorText = await quizResponse.text();
           console.error('❌ Quiz API error:', errorText);
-          throw new Error(`Failed to generate quiz: ${quizResponse.status}`);
+          throw new Error(`Failed to stream quiz: ${quizResponse.status}`);
         }
         
-        const quizData = await quizResponse.json();
-        console.log('📊 Quiz data received:', quizData);
+        // Initialize empty session and mount UI early
+        const initialSession = {
+          id: Date.now().toString(),
+          title: 'Generated Quiz',
+          questions: [] as any[],
+          currentQuestionIndex: 0,
+          score: 0,
+          lives: 3,
+          lastLifeRefill: new Date(),
+          completed: false
+        } as any;
+        setQuizSession(initialSession);
         
-        if (!quizData.success) {
-          throw new Error(quizData.error || 'Quiz generation failed');
+        const reader = quizResponse.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let total = 0;
+        
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          let idx;
+          while ((idx = buffer.indexOf('\n')) >= 0) {
+            const line = buffer.slice(0, idx).trim();
+            buffer = buffer.slice(idx + 1);
+            if (!line) continue;
+            try {
+              const evt = JSON.parse(line);
+              if (evt.type === 'meta') {
+                console.log('🧩 Expecting ~', evt.expectedTotal, 'questions');
+              } else if (evt.type === 'question') {
+                total += 1;
+                console.log('📝 Received question', total, ':', evt.question);
+                setQuizSession((prev: any) => {
+                  if (!prev) return initialSession;
+                  const updated = { ...prev, questions: [...prev.questions, evt.question] };
+                  console.log('🔄 Updated quiz session with', updated.questions.length, 'questions');
+                  return updated;
+                });
+              } else if (evt.type === 'done') {
+                console.log('✅ Stream done:', evt.count);
+              } else if (evt.type === 'error') {
+                console.warn('⚠️ Stream error event');
+              }
+            } catch (e) {
+              console.warn('⚠️ Failed to parse stream line', line);
+            }
+          }
         }
-        
-        const quizSession = quizData.quiz;
-        
-        // Show full-screen quiz interface
-        setQuizSession(quizSession);
       }
       
     } catch (error) {

@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { orchestrateGeneration } from '@/lib/question-plugins/orchestrator';
 import { functionVariantPlugin } from '@/lib/question-plugins/functionVariant';
 import { multipleChoicePlugin } from '@/lib/question-plugins/multipleChoice';
+import { fillBlankPlugin } from '@/lib/question-plugins/fillBlank';
 import { 
   cleanCodeForChunking,
   createSmartCodeChunks,
@@ -21,6 +22,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { code, questionTypes, difficulty, numQuestions } = body;
+    const streamParam = request.nextUrl?.searchParams?.get('stream');
 
     console.log('📡 /generateQuiz API called with:', { 
       codeLength: code?.length, 
@@ -53,7 +55,8 @@ export async function POST(request: NextRequest) {
     // Select plugins per requested types
     const availablePlugins: Record<string, any> = {
       'function-variant': functionVariantPlugin,
-      'multiple-choice': multipleChoicePlugin
+      'multiple-choice': multipleChoicePlugin,
+      'fill-blank': fillBlankPlugin
     };
     const selectedPlugins = (Array.isArray(questionTypes) ? questionTypes : [])
       .map((t: string) => availablePlugins[t])
@@ -70,7 +73,124 @@ export async function POST(request: NextRequest) {
       retries: { attempts: 3, backoffBaseMs: 500 }
     };
 
-    const rawGenerated = await orchestrateGeneration({
+    // Helper to map raw -> UI
+    const mapToUi = (q: any, index: number) => {
+      const questionData = q.quiz;
+      if (questionData.type === 'function-variant') {
+        return {
+          id: (index + 1).toString(),
+          type: questionData.type,
+          question: questionData.question || 'Missing question text',
+          options: [],
+          correctAnswer: null,
+          explanation: '',
+          difficulty: 'medium',
+          variants: (questionData.variants || []).map((v: any) => ({
+            ...v,
+            code: typeof v.code === 'string' ? removeComments(v.code) : v.code
+          }))
+        } as any;
+      } else if (questionData.type === 'multiple-choice') {
+        const opts = questionData.options || [];
+        const ansNum = parseInt(questionData.answer);
+        let idx = -1;
+        if (!isNaN(ansNum)) {
+          if (ansNum >= 1 && ansNum <= opts.length) idx = ansNum - 1;
+          else if (ansNum >= 0 && ansNum < opts.length) idx = ansNum;
+        }
+        return {
+          id: (index + 1).toString(),
+          type: questionData.type,
+          question: questionData.question || 'Missing question text',
+          options: opts,
+          correctAnswer: idx >= 0 ? opts[idx] : null,
+          explanation: questionData.explanation || '',
+          difficulty: 'medium',
+          codeContext: undefined,
+          variants: []
+        } as any;
+      } else if (questionData.type === 'fill-blank') {
+        const opts = questionData.options || [];
+        const ansNum = parseInt(questionData.answer);
+        let idx = -1;
+        if (!isNaN(ansNum)) {
+          if (ansNum >= 1 && ansNum <= opts.length) idx = ansNum - 1;
+          else if (ansNum >= 0 && ansNum < opts.length) idx = ansNum;
+        }
+        return {
+          id: (index + 1).toString(),
+          type: questionData.type,
+          question: questionData.question || 'Complete the code',
+          options: opts,
+          correctAnswer: idx >= 0 ? opts[idx] : null,
+          explanation: questionData.explanation || '',
+          difficulty: 'medium',
+          codeContext: undefined,
+          variants: []
+        } as any;
+      } else {
+        return {
+          id: (index + 1).toString(),
+          type: questionData.type || 'unknown',
+          question: questionData.question || 'Missing question text',
+          options: questionData.options || [],
+          correctAnswer: null,
+          explanation: questionData.explanation || '',
+          difficulty: 'medium',
+          variants: questionData.variants || []
+        } as any;
+      }
+    };
+
+    // Streaming path: NDJSON when stream=1
+    if (streamParam === '1') {
+      const encoder = new TextEncoder();
+      let counter = 0;
+      const stream = new ReadableStream<Uint8Array>({
+        start: async (controller) => {
+          try {
+            // Emit meta first
+            const meta = { type: 'meta', expectedTotal: desiredTotal };
+            controller.enqueue(encoder.encode(JSON.stringify(meta) + '\n'));
+
+            await orchestrateGeneration({
+              chunks,
+              plugins: selectedPlugins,
+              numQuestions: desiredTotal,
+              settings,
+              apiKey: openaiApiKey,
+              options: { difficulty: difficulty || 'medium' },
+              onQuestion: async (q) => {
+                const ui = mapToUi(q as any, counter);
+                // Shuffle variants if present and balance
+                if (ui.variants && ui.variants.length > 0) {
+                  ui.variants = shuffleVariants(ui.variants);
+                  ui.variants = balanceVariantVerbosity(ui.variants);
+                }
+                counter += 1;
+                console.log('📤 Streaming question', counter, ':', ui.type, ui.question?.substring(0, 50) + '...');
+                controller.enqueue(encoder.encode(JSON.stringify({ type: 'question', question: ui }) + '\n'));
+              }
+            });
+            controller.enqueue(encoder.encode(JSON.stringify({ type: 'done', count: counter }) + '\n'));
+          } catch (e) {
+            controller.enqueue(encoder.encode(JSON.stringify({ type: 'error', message: 'stream-failed' }) + '\n'));
+          } finally {
+            controller.close();
+          }
+        }
+      });
+
+      return new Response(stream, {
+        headers: {
+          'Content-Type': 'application/x-ndjson',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive'
+        }
+      });
+    }
+
+    let rawGenerated = await orchestrateGeneration({
       chunks,
       plugins: selectedPlugins,
       numQuestions: desiredTotal,
@@ -78,6 +198,25 @@ export async function POST(request: NextRequest) {
       apiKey: openaiApiKey,
       options: { difficulty: difficulty || 'medium' }
     });
+
+    // Fallback: if fill-blank was requested but none were produced, try one direct call on the first chunk
+    if (Array.isArray(questionTypes) && questionTypes.includes('fill-blank')) {
+      const hasFillBlank = rawGenerated.some((q: any) => q?.quiz?.type === 'fill-blank');
+      if (!hasFillBlank && chunks.length > 0) {
+        try {
+          const fb = await fillBlankPlugin.generate({
+            chunk: chunks[0],
+            options: { difficulty: difficulty || 'medium', numQuestions: desiredTotal },
+            apiKey: openaiApiKey,
+            timeoutMs: Number(process.env.OPENAI_TIMEOUT_FILLBLANK_MS ?? 20000),
+            retry: { attempts: 3, backoffBaseMs: 500 }
+          } as any);
+          if (Array.isArray(fb) && fb.length > 0) {
+            rawGenerated = [...rawGenerated, fb[0]];
+          }
+        } catch {}
+      }
+    }
 
     const shuffledGeneratedQuestions = shuffleVariants(rawGenerated);
     console.log(`🎲 Randomized ${shuffledGeneratedQuestions.length} questions for variety`);
@@ -119,14 +258,43 @@ export async function POST(request: NextRequest) {
             }))
           };
         } else if (questionData.type === 'multiple-choice') {
+          const opts = questionData.options || [];
+          const ansNum = parseInt(questionData.answer);
+          let idx = -1;
+          if (!isNaN(ansNum)) {
+            if (ansNum >= 1 && ansNum <= opts.length) idx = ansNum - 1; // 1-based
+            else if (ansNum >= 0 && ansNum < opts.length) idx = ansNum; // 0-based
+          }
           return {
             id: (index + 1).toString(),
             type: questionData.type,
             question: questionData.question || 'Missing question text',
-            options: questionData.options || [],
-            correctAnswer: questionData.options ? questionData.options[parseInt(questionData.answer) - 1] : null,
+            options: opts,
+            correctAnswer: idx >= 0 ? opts[idx] : null,
             explanation: questionData.explanation || '',
             difficulty: 'medium',
+            // Hide codeContext for MCQ in UI layer
+            codeContext: undefined,
+            variants: []
+          };
+        } else if (questionData.type === 'fill-blank') {
+          const opts = questionData.options || [];
+          const ansNum = parseInt(questionData.answer);
+          let idx = -1;
+          if (!isNaN(ansNum)) {
+            if (ansNum >= 1 && ansNum <= opts.length) idx = ansNum - 1; // 1-based
+            else if (ansNum >= 0 && ansNum < opts.length) idx = ansNum; // 0-based
+          }
+          return {
+            id: (index + 1).toString(),
+            type: questionData.type,
+            question: questionData.question || 'Complete the code',
+            options: opts,
+            correctAnswer: idx >= 0 ? opts[idx] : null,
+            explanation: questionData.explanation || '',
+            difficulty: 'medium',
+            // Hide codeContext for fill-blank in UI layer
+            codeContext: undefined,
             variants: []
           };
         } else {
