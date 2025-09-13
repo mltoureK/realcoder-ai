@@ -1,5 +1,5 @@
 import { GenerateParams, QuestionPlugin, RawQuestion } from './QuestionPlugin';
-import { balanceVariantVerbosity, delay, removeComments, shuffleVariants, validateQuestionStructure } from './utils';
+import { balanceVariantVerbosity, delay, removeComments, shuffleVariants, validateQuestionStructure, removeDuplicateVariants } from './utils';
 
 export const functionVariantPlugin: QuestionPlugin = {
   type: 'function-variant',
@@ -65,6 +65,14 @@ export const functionVariantPlugin: QuestionPlugin = {
           parsed.forEach((question: any) => {
             if (!validateQuestionStructure(question)) return;
             if (question.quiz.variants && Array.isArray(question.quiz.variants)) {
+              // Remove duplicate variants before processing
+              const filteredVariants = removeDuplicateVariants(question.quiz.variants);
+              if (filteredVariants === null) {
+                console.warn('⚠️ Skipping question - all variants were duplicates of correct answer');
+                return;
+              }
+              
+              question.quiz.variants = filteredVariants;
               question.quiz.variants = shuffleVariants(question.quiz.variants);
               question.quiz.variants.forEach((variant: any) => {
                 if (variant && variant.code) variant.code = removeComments(variant.code);
