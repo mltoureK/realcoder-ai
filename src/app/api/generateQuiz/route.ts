@@ -75,6 +75,7 @@ export async function POST(request: NextRequest) {
 
     // Helper to map raw -> UI
     const mapToUi = (q: any, index: number) => {
+      console.log('🔍 mapToUi called with:', JSON.stringify(q, null, 2));
       const questionData = q.quiz;
       if (questionData.type === 'function-variant') {
         return {
@@ -89,7 +90,7 @@ export async function POST(request: NextRequest) {
             ...v,
             code: typeof v.code === 'string' ? removeComments(v.code) : v.code
           }))
-        } as any;
+        };
       } else if (questionData.type === 'multiple-choice') {
         const opts = questionData.options || [];
         const ansNum = parseInt(questionData.answer);
@@ -106,7 +107,7 @@ export async function POST(request: NextRequest) {
           correctAnswer: idx >= 0 ? opts[idx] : null,
           explanation: questionData.explanation || '',
           difficulty: 'medium',
-          codeContext: undefined,
+          codeContext: questionData.codeContext || q.codeContext,
           variants: []
         } as any;
       } else if (questionData.type === 'fill-blank') {
@@ -161,7 +162,9 @@ export async function POST(request: NextRequest) {
               apiKey: openaiApiKey,
               options: { difficulty: difficulty || 'medium' },
               onQuestion: async (q) => {
+                console.log('🔍 onQuestion callback received:', JSON.stringify(q, null, 2));
                 const ui = mapToUi(q as any, counter);
+                console.log('🔍 mapToUi returned:', JSON.stringify(ui, null, 2));
                 // Shuffle variants if present and balance
                 if (ui.variants && ui.variants.length > 0) {
                   ui.variants = shuffleVariants(ui.variants);
@@ -265,6 +268,12 @@ export async function POST(request: NextRequest) {
             if (ansNum >= 1 && ansNum <= opts.length) idx = ansNum - 1; // 1-based
             else if (ansNum >= 0 && ansNum < opts.length) idx = ansNum; // 0-based
           }
+          // Debug: Check what codeContext we have
+          console.log('🔍 MCQ Processing - questionData.codeContext:', questionData.codeContext);
+          console.log('🔍 MCQ Processing - q.codeContext:', q.codeContext);
+          const finalCodeContext = questionData.codeContext || q.codeContext;
+          console.log('🔍 MCQ Processing - final codeContext:', finalCodeContext);
+          
           return {
             id: (index + 1).toString(),
             type: questionData.type,
@@ -273,8 +282,8 @@ export async function POST(request: NextRequest) {
             correctAnswer: idx >= 0 ? opts[idx] : null,
             explanation: questionData.explanation || '',
             difficulty: 'medium',
-            // Hide codeContext for MCQ in UI layer
-            codeContext: undefined,
+            // Include codeContext for MCQ so users can see the function code
+            codeContext: finalCodeContext,
             variants: []
           };
         } else if (questionData.type === 'fill-blank') {

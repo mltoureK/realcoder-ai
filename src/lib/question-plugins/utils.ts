@@ -147,27 +147,27 @@ export function cleanCodeForChunking(code: string): string {
 export function removeDuplicateVariants(variants: any[]): any[] | null {
   if (!Array.isArray(variants) || variants.length < 2) return variants;
   
-  // Find the correct variant
-  const correctVariant = variants.find(v => v && v.isCorrect === true);
-  if (!correctVariant) return variants;
+  // First, remove duplicates among all variants (not just against correct answer)
+  const seenCodes = new Set<string>();
+  const uniqueVariants: any[] = [];
   
-  // Normalize the correct variant code for comparison
-  const correctCode = normalizeCodeForComparison(correctVariant.code || '');
-  
-  // Filter out variants that are EXACT duplicates of the correct answer
-  const uniqueVariants = variants.filter(variant => {
-    if (!variant) return false;
-    if (variant.isCorrect === true) return true; // Keep the correct variant
+  for (const variant of variants) {
+    if (!variant) continue;
     
-    const variantCode = normalizeCodeForComparison(variant.code || '');
+    const normalizedCode = normalizeCodeForComparison(variant.code || '');
     
-    // Only remove EXACT matches (100% similarity)
-    return correctCode !== variantCode;
-  });
+    if (!seenCodes.has(normalizedCode)) {
+      seenCodes.add(normalizedCode);
+      uniqueVariants.push(variant);
+    }
+  }
   
-  // If we removed all incorrect variants, return null to indicate the question should be deleted
-  const hasIncorrectVariants = uniqueVariants.some(v => v && v.isCorrect === false);
-  if (!hasIncorrectVariants) {
+  // Check if we have both correct and incorrect variants remaining
+  const hasCorrect = uniqueVariants.some(v => v && v.isCorrect === true);
+  const hasIncorrect = uniqueVariants.some(v => v && v.isCorrect === false);
+  
+  // If we don't have both correct and incorrect variants, discard the question
+  if (!hasCorrect || !hasIncorrect || uniqueVariants.length < 2) {
     return null;
   }
   

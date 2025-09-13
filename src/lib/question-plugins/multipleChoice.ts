@@ -24,7 +24,7 @@ export const multipleChoicePlugin: QuestionPlugin = {
               model: 'gpt-4o',
               messages: [
                 { role: 'system', content: 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.' },
-                { role: 'user', content: `Generate 1 multiple-choice question based on this code chunk:\n\n${chunk}\n\nCRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.\n\nFormat:\n[\n  {\n    \"snippet\": \"function name from code\",\n    \"quiz\": {\n      \"type\": \"multiple-choice\",\n      \"question\": \"What does [FUNCTION] do?\",\n      \"options\": [\n        \"Option A description\",\n        \"Option B description\", \n        \"Option C description\",\n        \"Option D description\"\n      ],\n      \"answer\": \"1\",\n      \"explanation\": \"why this is correct\"\n    }\n  }\n]` }
+                { role: 'user', content: `Generate 1 multiple-choice question based on this code chunk:\n\n${chunk}\n\nCRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.\n\nIMPORTANT REQUIREMENTS:\n1. ONLY generate questions about functions that actually exist in the provided code chunk\n2. The function name in "snippet" must match a real function from the code\n3. Include the actual function code in the "codeContext" field\n4. The correct answer should be based on the actual function implementation\n5. Create realistic incorrect options that are plausible but wrong\n\nFormat:\n[\n  {\n    \"snippet\": \"function name from code\",\n    \"quiz\": {\n      \"type\": \"multiple-choice\",\n      \"question\": \"What does the function [FUNCTION_NAME] do?\",\n      \"codeContext\": \"the actual function implementation from the code chunk\",\n      \"options\": [\n        \"Correct description of what the function actually does\",\n        \"Plausible but incorrect description\", \n        \"Another plausible but incorrect description\",\n        \"Third plausible but incorrect description\"\n      ],\n      \"answer\": \"1\",\n      \"explanation\": \"why this is correct based on the actual function code\"\n    }\n  }\n]` }
               ],
               temperature: 0.3,
               max_tokens: 1500
@@ -58,6 +58,8 @@ export const multipleChoicePlugin: QuestionPlugin = {
 
           parsed.forEach((question: any) => {
             if (!validateQuestionStructure(question)) return;
+            // Debug: Log what the AI generated
+            console.log('🔍 Multiple Choice AI generated:', JSON.stringify(question, null, 2));
             generated.push(question);
           });
         } catch (err) {
