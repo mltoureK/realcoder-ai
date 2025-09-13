@@ -16,8 +16,11 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   const [lives] = useState(999); // Unlimited lives
   const [currentVariantIndex, setCurrentVariantIndex] = useState(0);
   const [showExplanations, setShowExplanations] = useState(false);
+  const [shakingNext, setShakingNext] = useState(false);
 
-  const currentQuestion = quizSession.questions[currentQuestionIndex];
+  const totalQuestions = Array.isArray(quizSession.questions) ? quizSession.questions.length : 0;
+  const hasQuestion = totalQuestions > 0 && currentQuestionIndex < totalQuestions;
+  const currentQuestion: any = hasQuestion ? quizSession.questions[currentQuestionIndex] : undefined;
 
   // Reset variant index when question changes
   useEffect(() => {
@@ -25,6 +28,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   }, [currentQuestion]);
 
   const handleAnswerSelect = (answer: string) => {
+    if (!hasQuestion) return;
     if (currentQuestion.type === 'multiple-choice' || currentQuestion.type === 'fill-blank' || currentQuestion.type === 'function-variant') {
       setSelectedAnswers([answer]);
     } else if (currentQuestion.type === 'select-all') {
@@ -37,19 +41,19 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   };
 
   const handleSubmitAnswer = () => {
-    if (selectedAnswers.length === 0) return;
+    if (!hasQuestion || selectedAnswers.length === 0) return;
 
     let isCorrect = false;
     
     if (currentQuestion.type === 'function-variant') {
       // For function-variant, find the correct variant
-      const correctVariant = currentQuestion.variants?.find(v => v.isCorrect);
+      const correctVariant = currentQuestion.variants?.find((v: any) => v.isCorrect);
       isCorrect = correctVariant ? selectedAnswers.includes(correctVariant.id) : false;
     } else {
       // For other question types
       isCorrect = Array.isArray(currentQuestion.correctAnswer)
-        ? currentQuestion.correctAnswer.every(answer => selectedAnswers.includes(answer)) &&
-          selectedAnswers.every(answer => currentQuestion.correctAnswer.includes(answer))
+        ? (currentQuestion.correctAnswer as string[]).every((answer: string) => selectedAnswers.includes(answer)) &&
+          selectedAnswers.every((answer: string) => (currentQuestion.correctAnswer as string[]).includes(answer))
         : selectedAnswers.includes(currentQuestion.correctAnswer);
     }
 
@@ -64,13 +68,17 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   };
 
   const handleNextQuestion = () => {
-    if (currentQuestionIndex < quizSession.questions.length - 1) {
+    const nextIndex = currentQuestionIndex + 1;
+    const nextAvailable = nextIndex < totalQuestions;
+    if (nextAvailable) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswers([]);
       setCurrentVariantIndex(0);
       setShowExplanations(false);
     } else {
-      setShowResults(true);
+      // Not yet loaded → trigger a brief shake
+      setShakingNext(true);
+      setTimeout(() => setShakingNext(false), 600);
     }
   };
 
@@ -103,7 +111,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
       case 'multiple-choice':
         return (
           <div className="space-y-4">
-            {currentQuestion.options?.map((option, index) => (
+            {currentQuestion.options?.map((option: string, index: number) => (
               <button
                 key={index}
                 onClick={() => handleAnswerSelect(option)}
@@ -127,6 +135,59 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 </div>
               </button>
             ))}
+          </div>
+        );
+
+      case 'fill-blank':
+        // Render a Duolingo-like drag-to-fill experience
+        // Find the blank and render a drop zone that accepts option chips
+        const qText = currentQuestion.question || '';
+        const parts = qText.split('____');
+        const filledToken = selectedAnswers[0];
+        return (
+          <div className="space-y-6">
+            <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600">
+              <p className="text-base text-gray-700 dark:text-gray-200 font-mono whitespace-pre-wrap">
+                {parts[0]}
+                <span
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    const token = e.dataTransfer.getData('text/plain');
+                    if (token) handleAnswerSelect(token);
+                  }}
+                  className={`inline-flex items-center px-3 py-1 rounded-md border-2 mx-1 select-none ${
+                    filledToken
+                      ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-200'
+                      : 'border-dashed border-blue-400 text-blue-600 dark:text-blue-300'
+                  }`}
+                  role="button"
+                >
+                  {filledToken || '____'}
+                </span>
+                {parts.length > 1 ? parts[1] : ''}
+              </p>
+              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Tip: drag a token below into the blank or click a token to select.</p>
+            </div>
+
+            {/* Draggable tokens */}
+            <div className="flex flex-wrap gap-3">
+              {currentQuestion.options?.map((option: string, index: number) => (
+                <button
+                  key={index}
+                  draggable
+                  onDragStart={(e) => e.dataTransfer.setData('text/plain', option)}
+                  onClick={() => handleAnswerSelect(option)}
+                  className={`px-4 py-2 rounded-full border-2 text-sm font-medium transition-all ${
+                    selectedAnswers.includes(option)
+                      ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-200'
+                      : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                  }`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
           </div>
         );
 
@@ -224,7 +285,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
             {/* Progress Indicator */}
             <div className="flex justify-center space-x-3">
-              {currentQuestion.variants.map((_, index) => (
+              {currentQuestion.variants.map((_: any, index: number) => (
                 <button
                   key={index}
                   onClick={() => setCurrentVariantIndex(index)}
@@ -309,7 +370,11 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             <div className="flex items-center space-x-6">
               {/* Progress */}
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                Question {currentQuestionIndex + 1} of {quizSession.questions.length}
+                {hasQuestion ? (
+                  <>Question {currentQuestionIndex + 1} of {totalQuestions}</>
+                ) : (
+                  <>Loading questions…</>
+                )}
               </div>
               
               {/* Score */}
@@ -334,7 +399,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
               <div 
                 className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${((currentQuestionIndex + 1) / quizSession.questions.length) * 100}%` }}
+                style={{ width: `${hasQuestion ? ((currentQuestionIndex + 1) / totalQuestions) * 100 : 0}%` }}
               ></div>
             </div>
           </div>
@@ -344,13 +409,33 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
       {/* Question Card */}
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
-          {/* Question */}
+          {!hasQuestion ? (
+            <div className="space-y-6 animate-pulse">
+              <div className="h-7 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
+              <div className="space-y-3">
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full" />
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-11/12" />
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-10/12" />
+              </div>
+              <div className="flex gap-3">
+                <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-24" />
+                <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-24" />
+                <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-24" />
+              </div>
+              <div className="flex justify-end">
+                <button className={`bg-green-600 text-white py-3 px-8 rounded-lg font-medium opacity-60 cursor-not-allowed ${shakingNext ? 'animate-shake' : ''}`} onClick={handleNextQuestion}>
+                  Next Question
+                </button>
+              </div>
+            </div>
+          ) : (
+          <>
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               {currentQuestion.question}
             </h2>
             
-            {currentQuestion.codeContext && (
+            {currentQuestion.codeContext && currentQuestion.type === 'function-variant' && (
               <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mb-4">
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Code Context:</p>
                 <pre className="text-sm text-gray-800 dark:text-gray-200 overflow-x-auto">
@@ -372,7 +457,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 Answer Explanations
               </h3>
               <div className="space-y-4">
-                {currentQuestion.variants.map((variant, index) => {
+                {currentQuestion.variants.map((variant: any, index: number) => {
                   const isSelected = selectedAnswers.includes(variant.id);
                   const isCorrect = variant.isCorrect;
                   const isUserCorrect = isSelected === isCorrect;
@@ -445,12 +530,14 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             ) : (
               <button
                 onClick={handleNextQuestion}
-                className="bg-green-600 text-white py-3 px-8 rounded-lg font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
+                className={`bg-green-600 text-white py-3 px-8 rounded-lg font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors ${shakingNext ? 'animate-shake' : ''}`}
               >
                 {currentQuestionIndex === quizSession.questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
               </button>
             )}
           </div>
+          </>
+          )}
         </div>
       </div>
     </div>
