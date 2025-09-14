@@ -332,7 +332,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                     className={`p-4 bg-white dark:bg-gray-800 border-2 rounded-lg cursor-move hover:border-blue-300 dark:hover:border-blue-500 transition-all ${
                       selectedAnswers.includes(step.id) ? 'opacity-50' : ''
                     } ${
-                      step.isDistractor 
+                      showExplanations && step.isDistractor 
                         ? 'border-orange-300 dark:border-orange-600 bg-orange-50 dark:bg-orange-900/20' 
                         : 'border-gray-200 dark:border-gray-600'
                     }`}
@@ -342,24 +342,26 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                   >
                     <div className="flex items-start space-x-3">
                       <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium ${
-                        step.isDistractor 
+                        showExplanations && step.isDistractor 
                           ? 'bg-orange-200 dark:bg-orange-800 text-orange-700 dark:text-orange-300' 
                           : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
                       }`}>
-                        {step.isDistractor ? '⚠️' : '⋮⋮'}
+                        {showExplanations && step.isDistractor ? '⚠️' : '⋮⋮'}
                       </div>
                       <div className="flex-1">
                         <pre className="text-sm font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
                           {step.code}
                         </pre>
-                        <p className={`text-xs mt-1 ${
-                          step.isDistractor 
-                            ? 'text-orange-600 dark:text-orange-400' 
-                            : 'text-gray-500 dark:text-gray-400'
-                        }`}>
-                          {step.explanation}
-                        </p>
-                        {step.isDistractor && (
+                        {showExplanations && (
+                          <p className={`text-xs mt-1 ${
+                            step.isDistractor 
+                              ? 'text-orange-600 dark:text-orange-400' 
+                              : 'text-gray-500 dark:text-gray-400'
+                          }`}>
+                            {step.explanation}
+                          </p>
+                        )}
+                        {showExplanations && step.isDistractor && (
                           <span className="inline-block mt-1 px-2 py-1 text-xs bg-orange-200 dark:bg-orange-800 text-orange-800 dark:text-orange-200 rounded-full">
                             Distractor
                           </span>
@@ -405,13 +407,13 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                         <div
                           key={stepId}
                           className={`flex items-center space-x-3 p-3 border rounded-lg ${
-                            step.isDistractor 
+                            showExplanations && step.isDistractor 
                               ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' 
                               : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600'
                           }`}
                         >
                           <div className={`w-8 h-8 text-white rounded-full flex items-center justify-center text-sm font-bold ${
-                            step.isDistractor 
+                            showExplanations && step.isDistractor 
                               ? 'bg-red-600' 
                               : 'bg-blue-600'
                           }`}>
@@ -421,7 +423,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                             <pre className="text-sm font-mono text-gray-800 dark:text-gray-200">
                               {step.code}
                             </pre>
-                            {step.isDistractor && (
+                            {showExplanations && step.isDistractor && (
                               <p className="text-xs text-red-600 dark:text-red-400 mt-1">
                                 ⚠️ This is a distractor step - not part of the correct sequence
                               </p>
