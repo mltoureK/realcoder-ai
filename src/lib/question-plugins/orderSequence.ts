@@ -62,6 +62,20 @@ export const orderSequencePlugin: QuestionPlugin = {
           parsed.forEach((question: any) => {
             if (!validateQuestionStructure(question)) return;
             if (question.quiz.steps && Array.isArray(question.quiz.steps)) {
+              // Remove duplicate steps based on code content
+              const seenCodes = new Set();
+              const uniqueSteps = [];
+              
+              for (const step of question.quiz.steps) {
+                const codeKey = step.code?.trim();
+                if (!seenCodes.has(codeKey)) {
+                  seenCodes.add(codeKey);
+                  uniqueSteps.push(step);
+                }
+              }
+              
+              question.quiz.steps = uniqueSteps;
+              
               // Shuffle the steps for presentation (correctOrder remains the same)
               question.quiz.steps = shuffleVariants(question.quiz.steps);
               question.quiz.steps.forEach((step: any) => {
