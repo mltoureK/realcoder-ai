@@ -272,7 +272,7 @@ export default function Home() {
           },
           body: JSON.stringify({
             code: combinedCode,
-            questionTypes: ['function-variant', 'multiple-choice'/*, 'fill-blank'*/],
+            questionTypes: ['function-variant', 'multiple-choice', 'order-sequence'/*, 'fill-blank'*/],
             difficulty: 'medium',
             numQuestions: 15
           })
@@ -358,7 +358,7 @@ export default function Home() {
           },
           body: JSON.stringify({
             code: combinedCode,
-            questionTypes: ['function-variant', 'multiple-choice'/*, 'fill-blank'*/],
+            questionTypes: ['function-variant', 'multiple-choice', 'order-sequence'/*, 'fill-blank'*/],
             difficulty: 'medium',
             numQuestions: 10
           })

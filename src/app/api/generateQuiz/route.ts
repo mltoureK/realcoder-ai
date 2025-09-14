@@ -7,6 +7,7 @@ import { orchestrateGeneration } from '@/lib/question-plugins/orchestrator';
 import { functionVariantPlugin } from '@/lib/question-plugins/functionVariant';
 import { multipleChoicePlugin } from '@/lib/question-plugins/multipleChoice';
 import { fillBlankPlugin } from '@/lib/question-plugins/fillBlank';
+import { orderSequencePlugin } from '@/lib/question-plugins/orderSequence';
 import { 
   cleanCodeForChunking,
   createSmartCodeChunks,
@@ -56,7 +57,8 @@ export async function POST(request: NextRequest) {
     const availablePlugins: Record<string, any> = {
       'function-variant': functionVariantPlugin,
       'multiple-choice': multipleChoicePlugin,
-      'fill-blank': fillBlankPlugin
+      'fill-blank': fillBlankPlugin,
+      'order-sequence': orderSequencePlugin
     };
     const selectedPlugins = (Array.isArray(questionTypes) ? questionTypes : [])
       .map((t: string) => availablePlugins[t])
@@ -129,6 +131,19 @@ export async function POST(request: NextRequest) {
           codeContext: undefined,
           variants: []
         } as any;
+      } else if (questionData.type === 'order-sequence') {
+        return {
+          id: (index + 1).toString(),
+          type: questionData.type,
+          question: questionData.question || 'Arrange the steps in correct order',
+          options: questionData.steps || [],
+          correctAnswer: questionData.correctOrder || [],
+          explanation: questionData.explanation || '',
+          difficulty: 'medium',
+          steps: questionData.steps || [],
+          correctOrder: questionData.correctOrder || [],
+          variants: []
+        };
       } else {
         return {
           id: (index + 1).toString(),
@@ -304,6 +319,19 @@ export async function POST(request: NextRequest) {
             difficulty: 'medium',
             // Hide codeContext for fill-blank in UI layer
             codeContext: undefined,
+            variants: []
+          };
+        } else if (questionData.type === 'order-sequence') {
+          return {
+            id: (index + 1).toString(),
+            type: questionData.type,
+            question: questionData.question || 'Arrange the steps in correct order',
+            options: questionData.steps || [],
+            correctAnswer: questionData.correctOrder || [],
+            explanation: questionData.explanation || '',
+            difficulty: 'medium',
+            steps: questionData.steps || [],
+            correctOrder: questionData.correctOrder || [],
             variants: []
           };
         } else {

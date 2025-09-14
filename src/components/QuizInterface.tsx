@@ -37,6 +37,9 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
           ? prev.filter(a => a !== answer)
           : [...prev, answer]
       );
+    } else if (currentQuestion.type === 'order-sequence') {
+      // For order-sequence, we handle this in the drag-and-drop UI
+      // This function is not used for order-sequence
     }
   };
 
@@ -49,6 +52,11 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
       // For function-variant, find the correct variant
       const correctVariant = currentQuestion.variants?.find((v: any) => v.isCorrect);
       isCorrect = correctVariant ? selectedAnswers.includes(correctVariant.id) : false;
+    } else if (currentQuestion.type === 'order-sequence') {
+      // For order-sequence, check if the order matches exactly
+      const correctOrder = currentQuestion.correctOrder || [];
+      isCorrect = selectedAnswers.length === correctOrder.length &&
+        selectedAnswers.every((stepId, index) => stepId === correctOrder[index]);
     } else {
       // For other question types
       isCorrect = Array.isArray(currentQuestion.correctAnswer)
@@ -296,6 +304,143 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                   }`}
                 />
               ))}
+            </div>
+          </div>
+        );
+
+      case 'order-sequence':
+        return (
+          <div className="space-y-6">
+            {/* Instructions */}
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+              <p className="text-blue-800 dark:text-blue-200 text-sm font-medium">
+                💡 Drag and drop the steps below to arrange them in the correct execution order for this function
+              </p>
+              <p className="text-blue-700 dark:text-blue-300 text-xs mt-1">
+                Pay attention to dependencies, async operations, and error handling patterns
+              </p>
+            </div>
+
+            {/* Draggable Steps Bank */}
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Available Steps:</h3>
+              <div className="grid gap-3">
+                {currentQuestion.steps?.map((step: any, index: number) => (
+                  <div
+                    key={step.id}
+                    draggable
+                    className={`p-4 bg-white dark:bg-gray-800 border-2 rounded-lg cursor-move hover:border-blue-300 dark:hover:border-blue-500 transition-all ${
+                      selectedAnswers.includes(step.id) ? 'opacity-50' : ''
+                    } ${
+                      step.isDistractor 
+                        ? 'border-orange-300 dark:border-orange-600 bg-orange-50 dark:bg-orange-900/20' 
+                        : 'border-gray-200 dark:border-gray-600'
+                    }`}
+                    onDragStart={(e) => {
+                      e.dataTransfer.setData('text/plain', step.id);
+                    }}
+                  >
+                    <div className="flex items-start space-x-3">
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium ${
+                        step.isDistractor 
+                          ? 'bg-orange-200 dark:bg-orange-800 text-orange-700 dark:text-orange-300' 
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                      }`}>
+                        {step.isDistractor ? '⚠️' : '⋮⋮'}
+                      </div>
+                      <div className="flex-1">
+                        <pre className="text-sm font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
+                          {step.code}
+                        </pre>
+                        <p className={`text-xs mt-1 ${
+                          step.isDistractor 
+                            ? 'text-orange-600 dark:text-orange-400' 
+                            : 'text-gray-500 dark:text-gray-400'
+                        }`}>
+                          {step.explanation}
+                        </p>
+                        {step.isDistractor && (
+                          <span className="inline-block mt-1 px-2 py-1 text-xs bg-orange-200 dark:bg-orange-800 text-orange-800 dark:text-orange-200 rounded-full">
+                            Distractor
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Drop Zone for Ordered Steps */}
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Correct Order:</h3>
+              <div
+                className="min-h-[200px] border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700"
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.currentTarget.classList.add('border-blue-400', 'bg-blue-50', 'dark:bg-blue-900/20');
+                }}
+                onDragLeave={(e) => {
+                  e.currentTarget.classList.remove('border-blue-400', 'bg-blue-50', 'dark:bg-blue-900/20');
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.currentTarget.classList.remove('border-blue-400', 'bg-blue-50', 'dark:bg-blue-900/20');
+                  const stepId = e.dataTransfer.getData('text/plain');
+                  if (stepId && !selectedAnswers.includes(stepId)) {
+                    setSelectedAnswers([...selectedAnswers, stepId]);
+                  }
+                }}
+              >
+                {selectedAnswers.length === 0 ? (
+                  <div className="text-center text-gray-500 dark:text-gray-400 py-8">
+                    <p>Drag steps here to build the correct order</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {selectedAnswers.map((stepId, index) => {
+                      const step = currentQuestion.steps?.find((s: any) => s.id === stepId);
+                      if (!step) return null;
+                      return (
+                        <div
+                          key={stepId}
+                          className={`flex items-center space-x-3 p-3 border rounded-lg ${
+                            step.isDistractor 
+                              ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' 
+                              : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600'
+                          }`}
+                        >
+                          <div className={`w-8 h-8 text-white rounded-full flex items-center justify-center text-sm font-bold ${
+                            step.isDistractor 
+                              ? 'bg-red-600' 
+                              : 'bg-blue-600'
+                          }`}>
+                            {index + 1}
+                          </div>
+                          <div className="flex-1">
+                            <pre className="text-sm font-mono text-gray-800 dark:text-gray-200">
+                              {step.code}
+                            </pre>
+                            {step.isDistractor && (
+                              <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+                                ⚠️ This is a distractor step - not part of the correct sequence
+                              </p>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => {
+                              setSelectedAnswers(selectedAnswers.filter(id => id !== stepId));
+                            }}
+                            className="text-red-500 hover:text-red-700 p-1"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         );

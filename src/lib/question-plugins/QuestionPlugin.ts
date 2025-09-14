@@ -6,7 +6,8 @@ export type QuestionType =
   | 'drag-drop'
   | 'code-execution'
   | 'function-rearrange'
-  | 'function-variant';
+  | 'function-variant'
+  | 'order-sequence';
 
 export interface RepoContext {
   owner?: string;

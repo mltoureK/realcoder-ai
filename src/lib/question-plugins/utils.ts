@@ -74,6 +74,14 @@ export function validateQuestionStructure(question: any): boolean {
     return true;
   }
 
+  if (question.quiz.type === 'order-sequence') {
+    if (!Array.isArray(question.quiz.steps) || question.quiz.steps.length === 0) return false;
+    if (!Array.isArray(question.quiz.correctOrder) || question.quiz.correctOrder.length === 0) return false;
+    return question.quiz.steps.every((step: any) =>
+      step && step.id && step.code && step.explanation
+    );
+  }
+
   return false;
 }
 
