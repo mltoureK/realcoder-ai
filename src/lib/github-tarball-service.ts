@@ -176,9 +176,14 @@ function calculateRelevanceScore(path: string, content: string): number {
   if (path.endsWith('.ts') || path.endsWith('.tsx')) score += 10;
   if (path.endsWith('.js') || path.endsWith('.jsx')) score += 8;
   if (path.endsWith('.py')) score += 8;
+  if (path.endsWith('.cs')) score += 10; // C# files are important
+  if (path.endsWith('.java')) score += 8;
+  if (path.endsWith('.cpp') || path.endsWith('.c')) score += 8;
+  if (path.endsWith('.go')) score += 8;
+  if (path.endsWith('.rs')) score += 8;
   
   // Boost files with more functions/classes
-  const functionCount = (content.match(/function\s+\w+|class\s+\w+|def\s+\w+/g) || []).length;
+  const functionCount = (content.match(/function\s+\w+|class\s+\w+|def\s+\w+|public\s+\w+|private\s+\w+|protected\s+\w+/g) || []).length;
   score += Math.min(functionCount * 2, 20);
   
   // Penalize test files and configs
@@ -265,7 +270,7 @@ export function prepareRepositoryForQuiz(files: GitHubFile[]): RepositoryInfo {
   const sortedFiles = files.sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0));
   
   // Take top files for processing (limit to avoid overwhelming AI)
-  const maxFiles = 50;
+  const maxFiles = 100; // Increased to get better language representation
   const topFiles = sortedFiles.slice(0, maxFiles);
   
   // Determine languages and primary language

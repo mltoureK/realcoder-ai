@@ -25,18 +25,19 @@ ${chunk}
 CRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.
 
 IMPORTANT REQUIREMENTS:
-1. ONLY generate questions about functions that actually exist in the provided code chunk
-2. The function name in "snippet" must match a real function from the code
-3. Include the actual function code in the "codeContext" field with PROPER FORMATTING
-4. The correct answer should be based on the actual function implementation
-5. Create realistic incorrect options that are plausible but wrong
-6. SCENARIO CONTEXT: Create realistic development scenarios that explain WHY this function exists
-7. CODE FORMATTING: Format the codeContext with proper indentation and line breaks for readability
-8. CHALLENGING DISTRACTORS: Make incorrect options subtle and plausible - they should test understanding of the function's behavior, not just obvious differences
-9. RANDOMIZE ANSWERS: Place the correct answer in a random position (1-4), not always first
-10. TEST UNDERSTANDING: Focus on edge cases, side effects, data flow, or implementation details rather than obvious function purposes
-11. SUBTLE DIFFERENCES: Incorrect options should differ in subtle ways - wrong data types, missing edge cases, incorrect side effects, wrong return values, or different execution order
-12. RANDOM POSITIONING: Always randomize which option number (1-4) contains the correct answer
+1. IGNORE any code that is not in the primary programming language of this repository.
+2. ONLY generate questions about functions that actually exist in the provided code chunk
+3. The function name in "snippet" must match a real function from the code
+4. Include the actual function code in the "codeContext" field with PROPER FORMATTING
+5. The correct answer should be based on the actual function implementation
+6. Create realistic incorrect options that are plausible but wrong
+7. SCENARIO CONTEXT: Create realistic development scenarios that explain WHY this function exists
+8. CODE FORMATTING: Format the codeContext with proper indentation and line breaks for readability
+9. CHALLENGING DISTRACTORS: Make incorrect options subtle and plausible - they should test understanding of the function's behavior, not just obvious differences
+10. RANDOMIZE ANSWERS: Place the correct answer in a random position (1-4), not always first
+11. TEST UNDERSTANDING: Focus on edge cases, side effects, data flow, or implementation details rather than obvious function purposes
+12. SUBTLE DIFFERENCES: Incorrect options should differ in subtle ways - wrong data types, missing edge cases, incorrect side effects, wrong return values, or different execution order
+13. RANDOM POSITIONING: Always randomize which option number (1-4) contains the correct answer
 
 Format:
 [
