@@ -53,17 +53,32 @@ export default function Home() {
       }
       
       console.log('✅ Repository processed successfully');
+      console.log('📁 Files received from API:', repoData.repositoryInfo.files?.length || 0);
       
       // Store repository files for later use
-      setRepositoryFiles(repoData.repositoryInfo.files);
+      setRepositoryFiles(repoData.repositoryInfo.files || []);
       
-      // Detect languages from repository files
-      const detectedLanguages = detectLanguagesFromFiles(repoData.repositoryInfo.files);
-      setAvailableLanguages(detectedLanguages);
-      setSelectedLanguages(detectedLanguages.map(lang => lang.name)); // Default to all languages
-      
-      console.log('🔍 Detected languages:', detectedLanguages);
-      
+      // Use language data from backend (GitHub-style analysis)
+      if (repoData.repositoryInfo.languagePercentages && repoData.repositoryInfo.languageCounts) {
+        const detectedLanguages = Object.entries(repoData.repositoryInfo.languagePercentages)
+          .map(([language, percentage]) => ({
+            name: language,
+            percentage: percentage as number,
+            fileCount: (repoData.repositoryInfo.languageCounts as { [key: string]: number })[language] || 0
+          }))
+          .sort((a, b) => (b.percentage as number) - (a.percentage as number));        
+        setAvailableLanguages(detectedLanguages);
+        setSelectedLanguages(detectedLanguages.map(lang => lang.name)); // Default to all languages
+        
+        console.log("🎯 Using backend language analysis:", detectedLanguages);
+      } else {
+        // Fallback to local detection if backend data not available
+        const detectedLanguages = detectLanguagesFromFiles(repoData.repositoryInfo.files);
+        setAvailableLanguages(detectedLanguages);
+        setSelectedLanguages(detectedLanguages.map(lang => lang.name));
+        
+        console.log("🔍 Fallback to local language detection:", detectedLanguages);
+      }      
       return repoData;
     } catch (error) {
       console.error('❌ Error processing repository:', error);
@@ -184,9 +199,11 @@ export default function Home() {
         setAvailableBranches(data.branches);
         setSelectedBranch(data.defaultBranch);
         console.log('✅ Branches loaded:', data.branches.map((b: any) => b.name));
+        console.log('🎯 Using default branch:', data.defaultBranch);
         
-        // Also process the repository to detect languages
-        await processRepository(url);
+        // Also process the repository to detect languages using the correct branch
+        const branchUrl = `${url}/tree/${data.defaultBranch}`;
+        await processRepository(branchUrl);
       } else {
         console.error('❌ Failed to fetch branches:', data.error);
         setAvailableBranches([]);
@@ -217,6 +234,12 @@ export default function Home() {
       
       if (activeTab === 'github' && githubUrl) {
         console.log('📁 Generating quiz from stored repository files');
+        console.log('🔍 Repository files available:', repositoryFiles.length);
+        console.log('🔍 Selected languages:', selectedLanguages);
+        
+        if (repositoryFiles.length === 0) {
+          throw new Error('No repository files available. Please ensure the repository was processed successfully.');
+        }
         
         // Use stored repository files and filter by selected languages
         const filteredFiles = repositoryFiles.filter((file: any) => {

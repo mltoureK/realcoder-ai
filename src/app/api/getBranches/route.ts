@@ -43,10 +43,23 @@ export async function POST(request: NextRequest) {
 
     const branches = await response.json();
     
+    // Get repository info to find the actual default branch
+    const repoUrl = `https://api.github.com/repos/${owner}/${cleanRepo}`;
+    const repoResponse = await fetch(repoUrl, { headers });
+    
+    let defaultBranchName = 'main'; // fallback
+    if (repoResponse.ok) {
+      const repoData = await repoResponse.json();
+      defaultBranchName = repoData.default_branch || 'main';
+      console.log('🔍 Repository default branch from API:', defaultBranchName);
+    } else {
+      console.warn('⚠️ Failed to get repository info, using fallback branch');
+    }
+    
     // Extract branch names and mark default branch
     const branchList = branches.map((branch: any) => ({
       name: branch.name,
-      isDefault: branch.name === branches.find((b: any) => b.protected)?.name || branch.name === 'main' || branch.name === 'master'
+      isDefault: branch.name === defaultBranchName
     }));
 
     // Sort: default first, then alphabetically
@@ -58,10 +71,12 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ Found branches:', branchList.map(b => b.name));
 
+    console.log('🎯 Returning default branch:', defaultBranchName);
+    
     return NextResponse.json({
       success: true,
       branches: branchList,
-      defaultBranch: branchList.find(b => b.isDefault)?.name || 'main'
+      defaultBranch: defaultBranchName
     });
 
   } catch (error) {
