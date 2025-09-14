@@ -1,0 +1,25 @@
+{
+  role: 'user',
+  content: `Generate ${questionsPerChunk} basic fill-in-the-blank quiz questions from this code:\n\n${chunk}\n\nRules:\n
+- Use only code from the snippet.\n
+- Replace exactly ONE token with "____".\n
+- The blank must be a general language token: a built-in function, keyword, syntax element, or control structure.\n
+- Put the blank inside a valid statement.\n
+- If you blank a callable like "____(", the correct option must also be callable.\n
+- Provide 4 options of the same kind (all built-ins, all keywords, etc.).\n
+- Include the correct answer as a 1-based index.\n
+- Keep questions short and simple.\n\n
+Return ONLY this format:\n[
+  {
+    "snippet": "<the blanked token>",
+    "codeContext": "<code snippet with exactly one ____>",
+    "quiz": {
+      "type": "fill-blank",
+      "question": "Complete the code: <same snippet with ____>",
+      "options": ["opt1", "opt2", "opt3", "opt4"],
+      "answer": "1",
+      "explanation": "one short line"
+    }
+  }
+]`
+}
