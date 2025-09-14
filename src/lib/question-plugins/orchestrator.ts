@@ -125,7 +125,8 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
                 question: quiz.question,
                 options: quiz.options,
                 variants: quiz.variants,
-                codeContext: (q as any).codeContext
+                codeContext: (q as any).codeContext,
+                snippet: (q as any).snippet
               } as any;
               try {
                 const verdict = await tinyJudge(judgeInput, apiKey);

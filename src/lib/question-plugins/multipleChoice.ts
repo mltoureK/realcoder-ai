@@ -1,74 +1,234 @@
 import { GenerateParams, QuestionPlugin, RawQuestion } from './QuestionPlugin';
 import { delay, validateQuestionStructure } from './utils';
 
+/**
+ * Constants for better maintainability
+ */
+const OPENAI_MODEL = 'gpt-4o-mini';
+const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
+const TEMPERATURE = 0.3;
+const MAX_TOKENS = 1500;
+
+/**
+ * System prompt for consistent AI behavior
+ */
+const SYSTEM_PROMPT = 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.';
+
+/**
+ * Creates the user prompt for multiple choice question generation
+ */
+function createUserPrompt(chunk: string): string {
+  return `Generate 1 multiple-choice question based on this code chunk:
+
+${chunk}
+
+CRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.
+
+IMPORTANT REQUIREMENTS:
+1. ONLY generate questions about functions that actually exist in the provided code chunk
+2. The function name in "snippet" must match a real function from the code
+3. Include the actual function code in the "codeContext" field with PROPER FORMATTING
+4. The correct answer should be based on the actual function implementation
+5. Create realistic incorrect options that are plausible but wrong
+6. SCENARIO CONTEXT: Create realistic development scenarios that explain WHY this function exists
+7. CODE FORMATTING: Format the codeContext with proper indentation and line breaks for readability
+8. CHALLENGING DISTRACTORS: Make incorrect options subtle and plausible - they should test understanding of the function's behavior, not just obvious differences
+9. RANDOMIZE ANSWERS: Place the correct answer in a random position (1-4), not always first
+10. TEST UNDERSTANDING: Focus on edge cases, side effects, data flow, or implementation details rather than obvious function purposes
+11. SUBTLE DIFFERENCES: Incorrect options should differ in subtle ways - wrong data types, missing edge cases, incorrect side effects, wrong return values, or different execution order
+12. RANDOM POSITIONING: Always randomize which option number (1-4) contains the correct answer
+
+Format:
+[
+  {
+    "snippet": "function name from code",
+    "quiz": {
+      "type": "multiple-choice",
+      "question": "In a [REALISTIC_APP_CONTEXT], what does the function [FUNCTION_NAME] do?",
+      "codeContext": "const functionName = (param) => {\n  // properly formatted code with\n  // proper indentation and line breaks\n  return result;\n};",
+      "options": [
+        "Subtle but incorrect description that sounds plausible",
+        "Correct description of what the function actually does", 
+        "Another subtle but incorrect description",
+        "Third subtle but incorrect description"
+      ],
+      "answer": "2",
+      "explanation": "why this is correct based on the actual function code"
+    }
+  }
+]`;
+}
+
+/**
+ * Formats code context for better readability
+ */
+function formatCodeContext(codeContext: string): string {
+  if (!codeContext) return codeContext;
+  
+  // Replace escaped newlines with actual newlines
+  let formatted = codeContext.replace(/\\n/g, '\n');
+  
+  // Ensure proper indentation (basic formatting)
+  const lines = formatted.split('\n');
+  const formattedLines = lines.map((line, index) => {
+    // Skip empty lines
+    if (line.trim() === '') return line;
+    
+    // Basic indentation logic
+    if (line.includes('{') && !line.includes('}')) {
+      return line + '\n';
+    }
+    
+    return line;
+  });
+  
+  return formattedLines.join('\n').trim();
+}
+
+/**
+ * Cleans AI response content by removing markdown formatting and extracting JSON
+ */
+function cleanAiResponse(content: string): string {
+  let cleanContent = content.trim();
+  
+  // Remove markdown code blocks
+  if (cleanContent.startsWith('```json')) {
+    cleanContent = cleanContent.replace(/^```json\s*/, '');
+  }
+  if (cleanContent.startsWith('```')) {
+    cleanContent = cleanContent.replace(/^```\s*/, '');
+  }
+  if (cleanContent.endsWith('```')) {
+    cleanContent = cleanContent.replace(/\s*```$/, '');
+  }
+  
+  // Extract JSON array boundaries
+  const jsonStart = cleanContent.indexOf('[');
+  if (jsonStart > 0) {
+    cleanContent = cleanContent.substring(jsonStart);
+  }
+  
+  const jsonEnd = cleanContent.lastIndexOf(']');
+  if (jsonEnd > 0 && jsonEnd < cleanContent.length - 1) {
+    cleanContent = cleanContent.substring(0, jsonEnd + 1);
+  }
+  
+  return cleanContent;
+}
+
+/**
+ * Makes API request to OpenAI with retry logic and timeout handling
+ */
+async function makeApiRequest(
+  chunk: string,
+  apiKey: string,
+  timeoutMs: number,
+  retry: { attempts: number; backoffBaseMs: number },
+  abortSignal?: AbortSignal
+): Promise<Response | null> {
+  for (let attempt = 0; attempt < retry.attempts; attempt++) {
+    const controller = new AbortController();
+    const onAbort = () => controller.abort();
+    
+    if (abortSignal) {
+      abortSignal.addEventListener('abort', onAbort);
+    }
+    
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    
+    try {
+      const response = await fetch(OPENAI_API_URL, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: OPENAI_MODEL,
+          messages: [
+            { role: 'system', content: SYSTEM_PROMPT },
+            { role: 'user', content: createUserPrompt(chunk) }
+          ],
+          temperature: TEMPERATURE,
+          max_tokens: MAX_TOKENS
+        }),
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      if (abortSignal) {
+        abortSignal.removeEventListener('abort', onAbort);
+      }
+      
+      if (response && (response.ok || response.status !== 429)) {
+        return response;
+      }
+    } catch (error: unknown) {
+      if (abortSignal) {
+        abortSignal.removeEventListener('abort', onAbort);
+      }
+      
+      if (error && typeof error === 'object' && 'name' in error && error.name === 'AbortError') {
+        throw error;
+      }
+    }
+    
+    // Exponential backoff for retries
+    const backoff = retry.backoffBaseMs * Math.pow(2, attempt);
+    await delay(backoff);
+  }
+  
+  return null;
+}
+
+/**
+ * Processes AI response and extracts valid questions
+ */
+async function processAiResponse(response: Response, generated: RawQuestion[]): Promise<void> {
+  const data = await response.json();
+  const content = data.choices[0].message.content as string;
+  
+  try {
+    const cleanContent = cleanAiResponse(content);
+    const parsed = JSON.parse(cleanContent);
+    
+    if (Array.isArray(parsed)) {
+      parsed.forEach((question: unknown) => {
+        if (validateQuestionStructure(question)) {
+          // Format the code context for better readability
+          const questionData = question as any;
+          if (questionData.quiz && questionData.quiz.codeContext) {
+            questionData.quiz.codeContext = formatCodeContext(questionData.quiz.codeContext);
+          }
+          
+          console.log('🔍 Multiple Choice AI generated:', JSON.stringify(question, null, 2));
+          generated.push(question as RawQuestion);
+        }
+      });
+    }
+  } catch (error) {
+    console.warn('Failed to process AI response:', error);
+  }
+}
+
 export const multipleChoicePlugin: QuestionPlugin = {
   type: 'multiple-choice',
+  
   async generate(params: GenerateParams): Promise<RawQuestion[]> {
     const { chunk, apiKey, timeoutMs, retry, abortSignal } = params;
     const generated: RawQuestion[] = [];
+    
     try {
-      let response: Response | null = null;
-      for (let attempt = 0; attempt < retry.attempts; attempt++) {
-        const controller = new AbortController();
-        const onAbort = () => controller.abort();
-        if (abortSignal) abortSignal.addEventListener('abort', onAbort);
-        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-        try {
-          response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${apiKey}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              model: 'gpt-4o',
-              messages: [
-                { role: 'system', content: 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.' },
-                { role: 'user', content: `Generate 1 multiple-choice question based on this code chunk:\n\n${chunk}\n\nCRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.\n\nIMPORTANT REQUIREMENTS:\n1. ONLY generate questions about functions that actually exist in the provided code chunk\n2. The function name in "snippet" must match a real function from the code\n3. Include the actual function code in the "codeContext" field\n4. The correct answer should be based on the actual function implementation\n5. Create realistic incorrect options that are plausible but wrong\n\nFormat:\n[\n  {\n    \"snippet\": \"function name from code\",\n    \"quiz\": {\n      \"type\": \"multiple-choice\",\n      \"question\": \"What does the function [FUNCTION_NAME] do?\",\n      \"codeContext\": \"the actual function implementation from the code chunk\",\n      \"options\": [\n        \"Correct description of what the function actually does\",\n        \"Plausible but incorrect description\", \n        \"Another plausible but incorrect description\",\n        \"Third plausible but incorrect description\"\n      ],\n      \"answer\": \"1\",\n      \"explanation\": \"why this is correct based on the actual function code\"\n    }\n  }\n]` }
-              ],
-              temperature: 0.3,
-              max_tokens: 1500
-            }),
-            signal: controller.signal
-          });
-          clearTimeout(timeoutId);
-          if (abortSignal) abortSignal.removeEventListener('abort', onAbort);
-          if (response && (response.ok || response.status !== 429)) break;
-        } catch (e: any) {
-          if (abortSignal) abortSignal.removeEventListener('abort', onAbort);
-          if (e && e.name === 'AbortError') throw e;
-        }
-        const backoff = retry.backoffBaseMs * Math.pow(2, attempt);
-        await delay(backoff);
-      }
-
+      const response = await makeApiRequest(chunk, apiKey, timeoutMs, retry, abortSignal);
+      
       if (response && response.ok) {
-        const data = await response.json();
-        const content = data.choices[0].message.content as string;
-        try {
-          let cleanContent = content.trim();
-          if (cleanContent.startsWith('```json')) cleanContent = cleanContent.replace(/^```json\s*/, '');
-          if (cleanContent.startsWith('```')) cleanContent = cleanContent.replace(/^```\s*/, '');
-          if (cleanContent.endsWith('```')) cleanContent = cleanContent.replace(/\s*```$/, '');
-          const jsonStart = cleanContent.indexOf('[');
-          if (jsonStart > 0) cleanContent = cleanContent.substring(jsonStart);
-          const jsonEnd = cleanContent.lastIndexOf(']');
-          if (jsonEnd > 0 && jsonEnd < cleanContent.length - 1) cleanContent = cleanContent.substring(0, jsonEnd + 1);
-          const parsed = JSON.parse(cleanContent);
-
-          parsed.forEach((question: any) => {
-            if (!validateQuestionStructure(question)) return;
-            // Debug: Log what the AI generated
-            console.log('🔍 Multiple Choice AI generated:', JSON.stringify(question, null, 2));
-            generated.push(question);
-          });
-        } catch (err) {
-          // swallow parse errors per-chunk
-        }
+        await processAiResponse(response, generated);
       }
     } catch (error) {
-      // swallow plugin-level errors to let orchestrator continue
+      console.warn('Multiple Choice plugin error:', error);
+      // Continue execution to allow other plugins to work
     }
+    
     return generated;
   }
 };
