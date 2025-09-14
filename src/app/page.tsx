@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { generateQuizFromRepository } from '@/lib/quiz-service';
 import QuizInterface from '@/components/QuizInterface';
-import StreamingQuizGenerator from '@/components/StreamingQuizGenerator';
 
 interface GitHubRepo {
   owner: string;
@@ -26,6 +25,120 @@ export default function Home() {
     difficulty: string;
     numQuestions: number;
   } | null>(null);
+  const [availableLanguages, setAvailableLanguages] = useState<Array<{name: string, percentage: number, fileCount: number}>>([]);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [repositoryFiles, setRepositoryFiles] = useState<any[]>([]);
+
+  // Process repository and detect languages
+  const processRepository = async (url: string) => {
+    try {
+      console.log('🔍 Processing repository for language detection:', url);
+      
+      const repoResponse = await fetch('/api/processRepository', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url })
+      });
+      
+      if (!repoResponse.ok) {
+        throw new Error(`Failed to process repository: ${repoResponse.status}`);
+      }
+      
+      const repoData = await repoResponse.json();
+      
+      if (!repoData.success) {
+        throw new Error(repoData.error || 'Repository processing failed');
+      }
+      
+      console.log('✅ Repository processed successfully');
+      
+      // Store repository files for later use
+      setRepositoryFiles(repoData.repositoryInfo.files);
+      
+      // Detect languages from repository files
+      const detectedLanguages = detectLanguagesFromFiles(repoData.repositoryInfo.files);
+      setAvailableLanguages(detectedLanguages);
+      setSelectedLanguages(detectedLanguages.map(lang => lang.name)); // Default to all languages
+      
+      console.log('🔍 Detected languages:', detectedLanguages);
+      
+      return repoData;
+    } catch (error) {
+      console.error('❌ Error processing repository:', error);
+      throw error;
+    }
+  };
+
+  // Language detection function
+  const detectLanguagesFromFiles = (files: any[]): Array<{name: string, percentage: number, fileCount: number}> => {
+    const languageMap: { [key: string]: string } = {
+      '.cs': 'C#',
+      '.js': 'JavaScript', 
+      '.ts': 'TypeScript',
+      '.jsx': 'JavaScript',
+      '.tsx': 'TypeScript',
+      '.py': 'Python',
+      '.java': 'Java',
+      '.cpp': 'C++',
+      '.cc': 'C++',
+      '.cxx': 'C++',
+      '.c': 'C',
+      '.h': 'C',
+      '.go': 'Go',
+      '.rs': 'Rust',
+      '.php': 'PHP',
+      '.rb': 'Ruby',
+      '.swift': 'Swift',
+      '.kt': 'Kotlin',
+      '.scala': 'Scala',
+      '.clj': 'Clojure',
+      '.hs': 'Haskell',
+      '.ml': 'OCaml',
+      '.fs': 'F#',
+      '.vb': 'VB.NET',
+      '.sh': 'Shell',
+      '.ps1': 'PowerShell',
+      '.bat': 'Batch',
+      '.sql': 'SQL',
+      '.html': 'HTML',
+      '.css': 'CSS',
+      '.scss': 'SCSS',
+      '.sass': 'Sass',
+      '.less': 'Less',
+      '.xml': 'XML',
+      '.json': 'JSON',
+      '.yaml': 'YAML',
+      '.yml': 'YAML',
+      '.toml': 'TOML',
+      '.ini': 'INI',
+      '.cfg': 'Config',
+      '.conf': 'Config'
+    };
+
+    const languageCounts: { [key: string]: number } = {};
+    let totalFiles = 0;
+    
+    files.forEach(file => {
+      const ext = file.path.split('.').pop()?.toLowerCase();
+      if (ext && languageMap[`.${ext}`]) {
+        const language = languageMap[`.${ext}`];
+        languageCounts[language] = (languageCounts[language] || 0) + 1;
+        totalFiles++;
+      }
+    });
+
+    // Convert to array with percentages
+    return Object.entries(languageCounts)
+      .filter(([_, count]) => count > 0)
+      .map(([language, count]) => ({
+        name: language,
+        percentage: Math.round((count / totalFiles) * 100),
+        fileCount: count
+      }))
+      .sort((a, b) => b.percentage - a.percentage);
+  };
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -58,6 +171,7 @@ export default function Home() {
   const fetchBranches = async (url: string) => {
     setIsLoadingBranches(true);
     try {
+      // Fetch branches
       const response = await fetch('/api/getBranches', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -70,6 +184,9 @@ export default function Home() {
         setAvailableBranches(data.branches);
         setSelectedBranch(data.defaultBranch);
         console.log('✅ Branches loaded:', data.branches.map((b: any) => b.name));
+        
+        // Also process the repository to detect languages
+        await processRepository(url);
       } else {
         console.error('❌ Failed to fetch branches:', data.error);
         setAvailableBranches([]);
@@ -82,44 +199,44 @@ export default function Home() {
     }
   };
 
+  // Handle branch change and reprocess repository
+  const handleBranchChange = async (branch: string) => {
+    setSelectedBranch(branch);
+    
+    if (githubUrl) {
+      // Reprocess repository with new branch
+      const branchUrl = `${githubUrl}/tree/${branch}`;
+      await processRepository(branchUrl);
+    }
+  };
+
   const handleGenerateQuiz = async () => {
     setIsLoading(true);
     try {
       console.log('🚀 Starting quiz generation process...');
       
       if (activeTab === 'github' && githubUrl) {
-        console.log('📁 Processing GitHub repository:', githubUrl);
+        console.log('📁 Generating quiz from stored repository files');
         
-        // Step 1: Call the new server-side API route for GitHub processing
-        const repoResponse = await fetch('/api/processRepository', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ 
-            url: selectedBranch ? `${githubUrl}/tree/${selectedBranch}` : githubUrl 
-          })
+        // Use stored repository files and filter by selected languages
+        const filteredFiles = repositoryFiles.filter((file: any) => {
+          if (selectedLanguages.length === 0) return true; // If no languages selected, include all
+          
+          const ext = file.path.split('.').pop()?.toLowerCase();
+          const languageMap: { [key: string]: string } = {
+            '.cs': 'C#', '.js': 'JavaScript', '.ts': 'TypeScript', '.jsx': 'JavaScript', '.tsx': 'TypeScript',
+            '.py': 'Python', '.java': 'Java', '.cpp': 'C++', '.cc': 'C++', '.cxx': 'C++', '.c': 'C', '.h': 'C',
+            '.go': 'Go', '.rs': 'Rust', '.php': 'PHP', '.rb': 'Ruby', '.swift': 'Swift', '.kt': 'Kotlin'
+          };
+          
+          const fileLanguage = languageMap[`.${ext}`];
+          return fileLanguage && selectedLanguages.includes(fileLanguage);
         });
         
-        console.log('📡 Repository API response status:', repoResponse.status);
+        console.log(`📊 Filtered ${filteredFiles.length} files for selected languages:`, selectedLanguages);
         
-        if (!repoResponse.ok) {
-          const errorText = await repoResponse.text();
-          console.error('❌ Repository API error:', errorText);
-          throw new Error(`Failed to process repository: ${repoResponse.status}`);
-        }
-        
-        const repoData = await repoResponse.json();
-        console.log('📊 Repository data received:', repoData);
-        
-        if (!repoData.success) {
-          throw new Error(repoData.error || 'Repository processing failed');
-        }
-        
-        console.log('✅ Repository processed successfully');
-        
-        // Step 2: Stream from /generateQuiz
-        const combinedCode = repoData.repositoryInfo.files.map((file: any) => 
+        // Generate quiz from filtered files
+        const combinedCode = filteredFiles.map((file: any) => 
           `// ${file.path}\n${file.content}`
         ).join('\n\n');
         
@@ -481,7 +598,7 @@ export default function Home() {
                   ) : availableBranches.length > 0 ? (
                     <select
                       value={selectedBranch}
-                      onChange={(e) => setSelectedBranch(e.target.value)}
+                      onChange={(e) => handleBranchChange(e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                     >
                       {availableBranches.map((branch) => (
@@ -500,6 +617,102 @@ export default function Home() {
                       ✓ Selected branch: <span className="font-mono">{selectedBranch}</span>
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Language Selection */}
+              {availableLanguages.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    Select Programming Languages to Test
+                  </label>
+                  
+                  {/* GitHub-style Language Bar */}
+                  <div className="mb-4">
+                    <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600">
+                      {availableLanguages.map((language, index) => (
+                        <div
+                          key={language.name}
+                          className="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          style={{
+                            width: `${language.percentage}%`,
+                            backgroundColor: selectedLanguages.includes(language.name) 
+                              ? 'var(--language-color)' 
+                              : 'transparent'
+                          }}
+                          onClick={() => {
+                            if (selectedLanguages.includes(language.name)) {
+                              setSelectedLanguages(selectedLanguages.filter(l => l !== language.name));
+                            } else {
+                              setSelectedLanguages([...selectedLanguages, language.name]);
+                            }
+                          }}
+                        >
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+                            {language.name}
+                          </span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+                            {language.percentage}%
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Individual Language Checkboxes */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {availableLanguages.map((language) => (
+                      <label key={language.name} className="flex items-center space-x-3 cursor-pointer p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <input
+                          type="checkbox"
+                          checked={selectedLanguages.includes(language.name)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedLanguages([...selectedLanguages, language.name]);
+                            } else {
+                              setSelectedLanguages(selectedLanguages.filter(l => l !== language.name));
+                            }
+                          }}
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+                            {language.name}
+                          </div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                            {language.fileCount} files ({language.percentage}%)
+                          </div>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+
+                  <div className="mt-3 flex items-center justify-between text-sm">
+                    <div className="text-gray-600 dark:text-gray-400">
+                      {selectedLanguages.length > 0 ? (
+                        <span className="text-green-600 dark:text-green-400">
+                          ✓ {selectedLanguages.length} language{selectedLanguages.length !== 1 ? 's' : ''} selected
+                        </span>
+                      ) : (
+                        <span className="text-red-600 dark:text-red-400">
+                          ⚠️ No languages selected
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (selectedLanguages.length === availableLanguages.length) {
+                          setSelectedLanguages([]);
+                        } else {
+                          setSelectedLanguages(availableLanguages.map(lang => lang.name));
+                        }
+                      }}
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
+                    >
+                      {selectedLanguages.length === availableLanguages.length ? 'Deselect All' : 'Select All'}
+                    </button>
+                  </div>
                 </div>
               )}
               
