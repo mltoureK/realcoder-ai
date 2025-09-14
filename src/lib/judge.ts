@@ -28,7 +28,7 @@ ${data.variants ? `Variants:\n${variantLines}` : ''}
 CodeContext (trimmed): ${context}
 
 Rules:
-- function-variant: correct is a real function definition (≥3 lines) from context; wrong ones are plausible bugs; no giveaways.
+- function-variant: correct is a real function definition (≥3 lines) from context; wrong ones are plausible bugs; no giveaways, and can't be unfairly biased to repo specific knowledge.
 - multiple-choice: options similar style/complexity; non-trivial distractors; answer/explanation must match context.
 - fill-blank: exactly one ____; blank is a meaningful token (callee/operator/keyword); options appear in context and plausibly fit.
 

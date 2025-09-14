@@ -14,7 +14,10 @@ export default function Home() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [githubRepo, setGithubRepo] = useState<GitHubRepo>({ owner: '', repo: '' });
   const [githubUrl, setGithubUrl] = useState('');
+  const [selectedBranch, setSelectedBranch] = useState<string>('');
+  const [availableBranches, setAvailableBranches] = useState<Array<{name: string, isDefault: boolean}>>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingBranches, setIsLoadingBranches] = useState(false);
   const [activeTab, setActiveTab] = useState<'upload' | 'github'>('upload');
   const [quizSession, setQuizSession] = useState<any>(null);
   const [streamingQuiz, setStreamingQuiz] = useState<{
@@ -29,8 +32,10 @@ export default function Home() {
     setSelectedFiles(files);
   };
 
-  const handleGitHubUrlChange = (url: string) => {
+  const handleGitHubUrlChange = async (url: string) => {
     setGithubUrl(url);
+    setAvailableBranches([]);
+    setSelectedBranch('');
     
     // Extract owner and repo from any GitHub URL format using regex
     // Handles: github.com/owner/repo, github.com/owner/repo/tree/main, github.com/owner/repo/blob/main/file.js, etc.
@@ -42,8 +47,38 @@ export default function Home() {
       // Remove .git suffix if present and clean up any trailing slashes or query params
       const cleanRepo = repo.replace(/\.git$/, '').split('?')[0].split('#')[0];
       setGithubRepo({ owner, repo: cleanRepo });
+      
+      // Fetch available branches
+      await fetchBranches(url);
     } else {
       setGithubRepo({ owner: '', repo: '' });
+    }
+  };
+
+  const fetchBranches = async (url: string) => {
+    setIsLoadingBranches(true);
+    try {
+      const response = await fetch('/api/getBranches', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setAvailableBranches(data.branches);
+        setSelectedBranch(data.defaultBranch);
+        console.log('✅ Branches loaded:', data.branches.map((b: any) => b.name));
+      } else {
+        console.error('❌ Failed to fetch branches:', data.error);
+        setAvailableBranches([]);
+      }
+    } catch (error) {
+      console.error('❌ Error fetching branches:', error);
+      setAvailableBranches([]);
+    } finally {
+      setIsLoadingBranches(false);
     }
   };
 
@@ -61,7 +96,9 @@ export default function Home() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ url: githubUrl })
+          body: JSON.stringify({ 
+            url: selectedBranch ? `${githubUrl}/tree/${selectedBranch}` : githubUrl 
+          })
         });
         
         console.log('📡 Repository API response status:', repoResponse.status);
@@ -97,7 +134,7 @@ export default function Home() {
             code: combinedCode,
             questionTypes: ['function-variant', 'multiple-choice'/*, 'fill-blank'*/],
             difficulty: 'medium',
-            numQuestions: 10
+            numQuestions: 15
           })
         });
         
@@ -258,7 +295,7 @@ export default function Home() {
     if (activeTab === 'upload') {
       return selectedFiles.length > 0;
     } else {
-      return githubRepo.owner && githubRepo.repo;
+      return githubRepo.owner && githubRepo.repo && selectedBranch;
     }
   };
 
@@ -427,6 +464,44 @@ export default function Home() {
                   </div>
                 )}
               </div>
+
+              {/* Branch Selector */}
+              {githubRepo.owner && githubRepo.repo && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Select Branch
+                  </label>
+                  {isLoadingBranches ? (
+                    <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700">
+                      <div className="flex items-center space-x-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Loading branches...</span>
+                      </div>
+                    </div>
+                  ) : availableBranches.length > 0 ? (
+                    <select
+                      value={selectedBranch}
+                      onChange={(e) => setSelectedBranch(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                    >
+                      {availableBranches.map((branch) => (
+                        <option key={branch.name} value={branch.name}>
+                          {branch.name} {branch.isDefault ? '(default)' : ''}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-sm text-gray-600 dark:text-gray-400">
+                      No branches found
+                    </div>
+                  )}
+                  {selectedBranch && (
+                    <div className="mt-2 text-sm text-blue-600 dark:text-blue-400">
+                      ✓ Selected branch: <span className="font-mono">{selectedBranch}</span>
+                    </div>
+                  )}
+                </div>
+              )}
               
               {/* Example Repos */}
                               <div>
