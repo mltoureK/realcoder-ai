@@ -1,6 +1,7 @@
 import { GenerateParams, QuestionPlugin, RawQuestion } from './QuestionPlugin';
 import { shuffleVariants } from './utils';
 import { tinyJudge } from '../judge';
+import { shouldKeepQuestion } from '../quality-filter';
 
 interface OrchestrateArgs {
   chunks: string[];
@@ -113,28 +114,34 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
         if (stopRequested) return;
         for (const q of generated) {
           if (stopRequested) break;
-          // Optional tiny judge sampling
+          
+          // Quality filter: Rate ALL questions and only keep 7/10+ ones (if enabled)
           let accept = true;
-          if (process.env.ENABLE_TINY_JUDGE) {
-            const rate = Number(process.env.JUDGE_SAMPLE_RATE ?? 0.3);
-            const roll = Math.random();
-            if (roll < rate) {
-              const quiz: any = (q as any).quiz || {};
-              const judgeInput = {
-                type: quiz.type,
-                question: quiz.question,
-                options: quiz.options,
-                variants: quiz.variants,
-                codeContext: (q as any).codeContext,
-                snippet: (q as any).snippet
-              } as any;
-              try {
-                const verdict = await tinyJudge(judgeInput, apiKey);
-                accept = verdict.ok;
-              } catch {}
+          if (process.env.ENABLE_QUALITY_FILTER !== 'false') {
+            const quiz: any = (q as any).quiz || {};
+            const qualityInput = {
+              type: quiz.type,
+              question: quiz.question,
+              options: quiz.options,
+              variants: quiz.variants,
+              codeContext: (q as any).codeContext,
+              snippet: (q as any).snippet,
+              explanation: quiz.explanation
+            };
+            
+            try {
+              accept = await shouldKeepQuestion(qualityInput);
+              if (!accept) {
+                console.log(`🚫 Question rejected by quality filter: ${quiz.question?.substring(0, 50)}...`);
+                continue;
+              }
+              console.log(`✅ Question passed quality filter: ${quiz.question?.substring(0, 50)}...`);
+            } catch (error) {
+              console.error('❌ Error in quality filter:', error);
+              // If quality filter fails, reject the question for safety
+              continue;
             }
           }
-          if (!accept) continue;
           results.push(q);
           try {
             if (onQuestion) {
