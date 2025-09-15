@@ -13,7 +13,7 @@ interface QualityRatingRequest {
 interface QualityRatingResponse {
   score: number; // 1-10 scale
   reasoning: string;
-  shouldKeep: boolean; // true if score >= 7
+  shouldKeep: boolean; // true if score >= 5
 }
 
 const openai = new OpenAI({
@@ -21,7 +21,7 @@ const openai = new OpenAI({
 });
 
 /**
- * Rates a question's quality on a 1-10 scale and determines if it should be kept (7/10+)
+ * Rates a question's quality on a 1-10 scale and determines if it should be kept (5/10+)
  * Uses o1-mini for fast, cost-effective quality assessment
  */
 export async function rateQuestionQuality(question: QualityRatingRequest): Promise<QualityRatingResponse> {
@@ -40,6 +40,8 @@ CRITERIA FOR MEDIUM QUALITY (5-7):
 - Generally clear but might have minor ambiguities
 - Moderate educational value
 - Decent explanations
+
+EMPHASIS: Prioritize FAIRNESS and avoid questions heavily relying on repository-specific knowledge.
 
 CRITERIA FOR LOW QUALITY (1-4):
 - Tests repository-specific trivia (bracket vs parentheses, specific variable names)
@@ -61,7 +63,7 @@ Respond with a JSON object:
 {
   "score": <number 1-10>,
   "reasoning": "<brief explanation of your rating>",
-  "shouldKeep": <true if score >= 7, false otherwise>
+  "shouldKeep": <true if score >= 6, false otherwise>
 }`;
 
     const response = await openai.chat.completions.create({
@@ -81,8 +83,16 @@ Respond with a JSON object:
       throw new Error('No response from OpenAI');
     }
 
+    // Clean the content to extract JSON (remove markdown code blocks if present)
+    let jsonContent = content.trim();
+    if (jsonContent.startsWith('```json')) {
+      jsonContent = jsonContent.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+    } else if (jsonContent.startsWith('```')) {
+      jsonContent = jsonContent.replace(/^```\s*/, '').replace(/\s*```$/, '');
+    }
+    
     // Parse JSON response
-    const parsed = JSON.parse(content);
+    const parsed = JSON.parse(jsonContent);
     
     return {
       score: Math.max(1, Math.min(10, parsed.score)),
@@ -102,11 +112,29 @@ Respond with a JSON object:
   }
 }
 
+// Global counters for logging
+let questionsAccepted = 0;
+let questionsRejected = 0;
+
 /**
- * Checks if a question meets the quality threshold (7/10+)
+ * Checks if a question meets the quality threshold (5/10+)
  */
 export async function shouldKeepQuestion(question: QualityRatingRequest): Promise<boolean> {
   const rating = await rateQuestionQuality(question);
-  console.log(`📊 Quality rating: ${rating.score}/10 - ${rating.reasoning}`);
+  
+  if (rating.shouldKeep) {
+    questionsAccepted++;
+    console.log(`✅ Question accepted: ${rating.score}/10 - ${rating.reasoning}`);
+  } else {
+    questionsRejected++;
+    console.log(`🚫 Question rejected: ${rating.score}/10 - ${rating.reasoning}`);
+  }
+  
+  // Log stats every 10 questions
+  const total = questionsAccepted + questionsRejected;
+  if (total % 10 === 0) {
+    console.log(`📊 Quality Filter Stats: ${questionsAccepted} accepted, ${questionsRejected} rejected (${Math.round(questionsAccepted/total*100)}% acceptance rate)`);
+  }
+  
   return rating.shouldKeep;
 }

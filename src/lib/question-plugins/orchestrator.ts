@@ -115,7 +115,7 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
         for (const q of generated) {
           if (stopRequested) break;
           
-          // Quality filter: Rate ALL questions and only keep 7/10+ ones (if enabled)
+          // Quality filter: Rate ALL questions and only keep 5/10+ ones (if enabled)
           let accept = true;
           if (process.env.ENABLE_QUALITY_FILTER !== 'false') {
             const quiz: any = (q as any).quiz || {};
