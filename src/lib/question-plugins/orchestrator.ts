@@ -1,7 +1,7 @@
 import { GenerateParams, QuestionPlugin, RawQuestion } from './QuestionPlugin';
 import { shuffleVariants } from './utils';
 import { tinyJudge } from '../judge';
-import { shouldKeepQuestion } from '../quality-filter';
+import { shouldKeepQuestion, displayQualityRatingSummary } from '../quality-filter';
 
 interface OrchestrateArgs {
   chunks: string[];
@@ -43,6 +43,9 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
 
   const budgetedTasks: Array<{ plugin: QuestionPlugin; chunk: string }> = [];
   const budget = Math.min(settings.maxCalls, shuffledTasks.length);
+  
+  console.log(`🎯 Quality Generation Target: ${numQuestions} excellent questions (8/10+)`);
+  console.log(`📊 Generation Budget: ${budget} API calls across ${chunks.length} chunks and ${plugins.length} plugins`);
   // First pass: reserve up to 2 tasks per plugin
   const typesInOrder = plugins.map(p => p.type);
   for (let r = 0; r < 2 && budgetedTasks.length < budget; r++) {
@@ -83,10 +86,18 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
   }
 
   const isComplete = (): boolean => {
-    if (results.length < numQuestions) return false;
-    for (const [type, min] of Object.entries(requiredByType)) {
-      if ((countsByType[type] || 0) < min) return false;
+    if (results.length < numQuestions) {
+      console.log(`📊 Quality Generation Status: ${results.length}/${numQuestions} questions (need ${numQuestions - results.length} more)`);
+      return false;
     }
+    for (const [type, min] of Object.entries(requiredByType)) {
+      if ((countsByType[type] || 0) < min) {
+        console.log(`📊 Type requirement not met: ${type} has ${countsByType[type] || 0}/${min}`);
+        return false;
+      }
+    }
+    console.log(`✅ Quality Generation Complete: ${results.length} excellent questions (7/10+) generated`);
+    displayQualityRatingSummary();
     return true;
   };
 
@@ -115,7 +126,7 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
         for (const q of generated) {
           if (stopRequested) break;
           
-          // Quality filter: Rate ALL questions and only keep 5/10+ ones (if enabled)
+          // Quality filter: Rate ALL questions and only keep 8/10+ ones (if enabled)
           let accept = true;
           if (process.env.ENABLE_QUALITY_FILTER !== 'false') {
             const quiz: any = (q as any).quiz || {};

@@ -64,10 +64,10 @@ export async function POST(request: NextRequest) {
       .map((t: string) => availablePlugins[t])
       .filter(Boolean);
 
-    const desiredTotal = typeof numQuestions === 'number' && numQuestions > 0 ? numQuestions : 5;
+    const desiredTotal = typeof numQuestions === 'number' && numQuestions > 0 ? numQuestions : 8;
     const settings = {
       concurrency: Number(process.env.OPENAI_CONCURRENCY ?? 4),
-      maxCalls: Number(process.env.OPENAI_MAX_CALLS_PER_REQUEST ?? 12),
+      maxCalls: Number(process.env.OPENAI_MAX_CALLS_PER_REQUEST ?? 30),
       timeouts: {
         'function-variant': Number(process.env.OPENAI_TIMEOUT_FUNCTION_VARIANT_MS ?? 30000),
         'multiple-choice': Number(process.env.OPENAI_TIMEOUT_MCQ_MS ?? 20000)

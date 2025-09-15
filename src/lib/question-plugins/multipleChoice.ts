@@ -39,6 +39,29 @@ IMPORTANT REQUIREMENTS:
 12. SUBTLE DIFFERENCES: Incorrect options should differ in subtle ways - wrong data types, missing edge cases, incorrect side effects, wrong return values, or different execution order
 13. RANDOM POSITIONING: Always randomize which option number (1-4) contains the correct answer
 
+FOCUS ON UNIVERSAL PROGRAMMING CONCEPTS:
+- Error handling and validation
+- Async/await patterns
+- Data transformation and processing
+- API interactions
+- State management
+- Data structures and algorithms
+- Security considerations
+- Performance optimization
+
+AVOID:
+- Repository-specific trivia
+- Domain-specific business logic
+- Cosmetic formatting differences
+- Game-specific mechanics
+- Chatbot/AI-specific implementations
+
+EXPLANATION REQUIREMENTS:
+- Explain WHY the correct answer is right
+- Explain WHY incorrect answers are wrong
+- Include practical examples
+- Focus on learning value
+
 Format:
 [
   {

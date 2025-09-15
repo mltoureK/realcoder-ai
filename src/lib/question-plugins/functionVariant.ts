@@ -30,7 +30,32 @@ export const functionVariantPlugin: QuestionPlugin = {
                 6. Each variant must be syntactically valid code in the programming language used\n
                 7. LENGTH BALANCING RULE: Randomize the length of the correct answer. The correct answer should NOT always be the longest or most verbose option.\n8. SCENARIO CONTEXT: Create realistic development scenarios that explain WHY this function exists
 9. GENERIC PATTERNS: Focus on universal programming patterns, not specific app functionality. Test concepts like error handling, data validation, async operations, state management, etc.
-10. AVOID REPO-SPECIFIC: Don't use specific function names in the question. Instead, describe the general pattern or concept being tested.\n\nFormat:\n[\n  {\n    \"snippet\": \"actual function name from the code chunk\",\n    \"quiz\": {\n      \"type\": \"function-variant\",\n     
+10. AVOID REPO-SPECIFIC: Don't use specific function names in the question. Instead, describe the general pattern or concept being tested.
+
+FOCUS ON UNIVERSAL PROGRAMMING CONCEPTS:
+- Error handling and validation
+- Async/await patterns
+- Data transformation and processing
+- API interactions
+- State management
+- Data structures and algorithms
+- Security considerations
+- Performance optimization
+
+AVOID:
+- Repository-specific trivia
+- Domain-specific business logic
+- Cosmetic formatting differences
+- Game-specific mechanics
+- Chatbot/AI-specific implementations
+
+EXPLANATION REQUIREMENTS:
+- Explain WHY the correct answer is right
+- Explain WHY incorrect answers are wrong
+- Include practical examples
+- Focus on learning value
+
+Format:\n[\n  {\n    \"snippet\": \"actual function name from the code chunk\",\n    \"quiz\": {\n      \"type\": \"function-variant\",\n     
                  \"question\": \"In [REALISTIC_APP_CONTEXT], how should this function be implemented to [UNIVERSAL_GOAL/CONSTRAINT]?\",
       \"variants\": [\n        {\n          \"id\": \"A\",\n          \"code\": \"the actual function implementation from the code chunk\",\n          \"isCorrect\": true,\n          \"explanation\": \"Here is why this is correct implementation from the original code\"\n        },\n        {\n          \"id\": \"B\",\n          \"code\": \"function with realistic bug (similar length)\",\n          \"isCorrect\": false,\n          \"explanation\": \"Here is why this specific bug is wrong, and here is an example to further explain that\"\n        },\n        {\n          \"id\": \"C\",\n          \"code\": \"function with different realistic bug (similar length)\",\n          \"isCorrect\": false,\n          \"explanation\": \"Here is why this specific bug is wrong, and here is an example to further explain that\"\n        },\n        {\n          \"id\": \"D\",\n          \"code\": \"function with another realistic bug (similar length)\",\n          \"isCorrect\": false,\n          \"explanation\": \"Here is why this specific bug is wrong, and here is an example to further explain that\"\n        }\n      ]\n    }\n  }\n]` }
               ],
