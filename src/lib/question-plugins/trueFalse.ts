@@ -6,7 +6,7 @@ import { delay, validateQuestionStructure } from './utils';
  */
 const OPENAI_MODEL = 'gpt-4o-mini';
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
-const TEMPERATURE = 0.3;
+const TEMPERATURE = 0.5;
 const MAX_TOKENS = 1500;
 
 /**
@@ -35,23 +35,25 @@ IMPORTANT REQUIREMENTS:
 8. Create realistic scenarios that explain WHY this question matters
 9. CODE FORMATTING: Format the codeContext with proper indentation and line breaks for readability
 
-QUESTION TYPES TO FOCUS ON:
-- Code behavior analysis (will this throw an error, return a value, etc.)
-- Performance implications (time/space complexity, efficiency)
-- Security considerations (vulnerabilities, safe practices)
-- Best practices (code quality, maintainability)
-- Edge case handling (null checks, error handling)
-- Async behavior (promises, callbacks, execution order)
-- Data flow and side effects
-- JavaScript runtime behavior (closures, hoisting, type coercion)
+QUESTION TYPES TO FOCUS ON (MAKE THEM HARDER):
+- Code behavior analysis: Test edge cases, boundary conditions, error scenarios
+- Performance implications: Test algorithmic complexity, memory usage, bottlenecks
+- Security considerations: Test input validation, boundary conditions, overflow scenarios
+- Best practices: Test maintainability implications, code smell identification
+- Edge case handling: Test boundary values, empty inputs, null/undefined scenarios
+- Execution order: Test sequence dependencies, timing issues, race conditions
+- Data flow: Test unexpected transformations, pipeline failures, data corruption
+- Language-specific behavior: Test type systems, memory management, compilation behavior
 
 AVOID:
 - Repository-specific trivia
 - Domain-specific business logic
-- Obvious statements that don't test understanding
+- Obvious statements that don't test understanding (e.g., "this function returns a value")
 - Questions about external dependencies not shown in code
 - Cosmetic formatting differences
 - Game-specific mechanics
+- Simple surface-level observations
+- Questions answerable without reading the code logic
 
 EXPLANATION REQUIREMENTS:
 - Explain WHY the statement is true or false based on the actual code
@@ -65,11 +67,11 @@ Format:
     "snippet": "key function or concept from code",
     "quiz": {
       "type": "true-false",
-      "question": "This function will throw an error if called with a null parameter.",
+      "question": "This function will throw an error when accessing user.name if the user object has a null name property.",
       "codeContext": "function validateUser(user) {\n  if (!user) {\n    throw new Error('User is required');\n  }\n  return user.name;\n}",
       "options": ["True", "False"],
-      "answer": "1",
-      "explanation": "The function includes a null check at the beginning and throws an error if user is falsy, so this statement is TRUE."
+      "answer": "2",
+      "explanation": "The function checks if user exists but NOT if user.name exists. If user.name is null, it will return null (not throw an error). Only undefined properties would cause issues, and null is a valid return value. Statement is FALSE."
     }
   }
 ]`;
