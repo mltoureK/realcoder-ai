@@ -5,7 +5,7 @@ import { RepositoryInfo, GitHubFile } from './github-service';
 
 export interface QuizQuestion {
   id: string;
-  type: 'multiple-choice' | 'fill-blank' | 'select-all' | 'predict-output' | 'drag-drop' | 'code-execution' | 'function-rearrange' | 'function-variant';
+  type: 'multiple-choice' | 'fill-blank' | 'select-all' | 'predict-output' | 'drag-drop' | 'code-execution' | 'function-rearrange' | 'function-variant' | 'true-false';
   question: string;
   options?: string[];
   correctAnswer: string | string[];

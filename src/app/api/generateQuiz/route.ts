@@ -8,6 +8,7 @@ import { functionVariantPlugin } from '@/lib/question-plugins/functionVariant';
 import { multipleChoicePlugin } from '@/lib/question-plugins/multipleChoice';
 import { fillBlankPlugin } from '@/lib/question-plugins/fillBlank';
 import { orderSequencePlugin } from '@/lib/question-plugins/orderSequence';
+import { trueFalsePlugin } from '@/lib/question-plugins/trueFalse';
 import { 
   cleanCodeForChunking,
   createSmartCodeChunks,
@@ -58,19 +59,21 @@ export async function POST(request: NextRequest) {
       'function-variant': functionVariantPlugin,
       'multiple-choice': multipleChoicePlugin,
       'fill-blank': fillBlankPlugin,
-      'order-sequence': orderSequencePlugin
+      'order-sequence': orderSequencePlugin,
+      'true-false': trueFalsePlugin
     };
     const selectedPlugins = (Array.isArray(questionTypes) ? questionTypes : [])
       .map((t: string) => availablePlugins[t])
       .filter(Boolean);
 
-    const desiredTotal = typeof numQuestions === 'number' && numQuestions > 0 ? numQuestions : 8;
+    const desiredTotal = typeof numQuestions === 'number' && numQuestions > 0 ? numQuestions : 15;
     const settings = {
       concurrency: Number(process.env.OPENAI_CONCURRENCY ?? 4),
       maxCalls: Number(process.env.OPENAI_MAX_CALLS_PER_REQUEST ?? 30),
       timeouts: {
         'function-variant': Number(process.env.OPENAI_TIMEOUT_FUNCTION_VARIANT_MS ?? 30000),
-        'multiple-choice': Number(process.env.OPENAI_TIMEOUT_MCQ_MS ?? 20000)
+        'multiple-choice': Number(process.env.OPENAI_TIMEOUT_MCQ_MS ?? 20000),
+        'true-false': Number(process.env.OPENAI_TIMEOUT_TRUE_FALSE_MS ?? 15000)
       },
       retries: { attempts: 3, backoffBaseMs: 500 }
     };
@@ -144,6 +147,25 @@ export async function POST(request: NextRequest) {
           correctOrder: questionData.correctOrder || [],
           variants: []
         };
+      } else if (questionData.type === 'true-false') {
+        const opts = questionData.options || ['True', 'False'];
+        const ansNum = parseInt(questionData.answer);
+        let idx = -1;
+        if (!isNaN(ansNum)) {
+          if (ansNum >= 1 && ansNum <= opts.length) idx = ansNum - 1;
+          else if (ansNum >= 0 && ansNum < opts.length) idx = ansNum;
+        }
+        return {
+          id: (index + 1).toString(),
+          type: questionData.type,
+          question: questionData.question || 'Is this statement true or false?',
+          options: opts,
+          correctAnswer: idx >= 0 ? opts[idx] : null,
+          explanation: questionData.explanation || '',
+          difficulty: 'medium',
+          codeContext: questionData.codeContext || q.codeContext,
+          variants: []
+        } as any;
       } else {
         return {
           id: (index + 1).toString(),

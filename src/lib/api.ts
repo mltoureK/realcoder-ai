@@ -15,7 +15,7 @@ export interface UploadedFile {
 
 export interface QuizQuestion {
   id: string;
-  type: 'multiple-choice' | 'fill-blank' | 'select-all' | 'predict-output' | 'drag-drop' | 'code-execution' | 'function-rearrange';
+  type: 'multiple-choice' | 'fill-blank' | 'select-all' | 'predict-output' | 'drag-drop' | 'code-execution' | 'function-rearrange' | 'true-false';
   question: string;
   options?: string[];
   correctAnswer: string | string[];

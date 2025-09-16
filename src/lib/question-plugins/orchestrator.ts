@@ -84,6 +84,10 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
   if (plugins.some(p => p.type === 'fill-blank')) {
     requiredByType['fill-blank'] = 1;
   }
+  // Require at least one true-false if that plugin was requested (cost-effective)
+  if (plugins.some(p => p.type === 'true-false')) {
+    requiredByType['true-false'] = 1;
+  }
 
   const isComplete = (): boolean => {
     if (results.length < numQuestions) {

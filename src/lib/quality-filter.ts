@@ -84,12 +84,18 @@ CRITERIA FOR LOW QUALITY (1-4):
 - Tests game-specific mechanics (lives, refills, etc.)
 - Unclear or ambiguous questions
 - Poor explanations
+- IDENTICAL CODE VARIANTS: All variants have the same or nearly identical code
+- EMPTY/INCOMPLETE CODE: Variants contain only function signatures or empty implementations
+- MEANINGLESS DIFFERENCES: Variants differ only in comments, whitespace, or variable names
 
 QUESTION TO RATE:
 Type: ${question.type}
 Question: ${question.question}
 ${question.options ? `Options: ${question.options.join(', ')}` : ''}
-${question.variants ? `Variants: ${question.variants.length} code variants` : ''}
+${question.variants && question.variants.length > 0 ? 
+  `Code Variants:\n${question.variants.map((v: any, i: number) => 
+    `Variant ${i + 1} (${v.isCorrect ? 'CORRECT' : 'INCORRECT'}):\n${v.code}\nExplanation: ${v.explanation}`
+  ).join('\n\n')}` : ''}
 ${question.snippet ? `Code snippet: ${question.snippet}` : ''}
 ${question.explanation ? `Explanation: ${question.explanation}` : ''}
 

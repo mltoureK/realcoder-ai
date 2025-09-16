@@ -7,7 +7,8 @@ export type QuestionType =
   | 'code-execution'
   | 'function-rearrange'
   | 'function-variant'
-  | 'order-sequence';
+  | 'order-sequence'
+  | 'true-false';
 
 export interface RepoContext {
   owner?: string;

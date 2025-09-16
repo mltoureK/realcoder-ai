@@ -82,6 +82,14 @@ export function validateQuestionStructure(question: any): boolean {
     );
   }
 
+  if (question.quiz.type === 'true-false') {
+    if (!Array.isArray(question.quiz.options) || question.quiz.options.length !== 2) return false;
+    if (!question.quiz.answer || !question.quiz.explanation) return false;
+    // Ensure options are "True" and "False"
+    const options = question.quiz.options;
+    return options.includes('True') && options.includes('False');
+  }
+
   return false;
 }
 
