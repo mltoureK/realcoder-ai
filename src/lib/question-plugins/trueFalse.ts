@@ -18,7 +18,7 @@ const SYSTEM_PROMPT = 'You are a JSON generator. You MUST return ONLY valid JSON
  * Creates the user prompt for true/false question generation
  */
 function createUserPrompt(chunk: string): string {
-  return `Generate 1 true/false question based on this code chunk:
+  return `Generate 1 challenging true/false question based on this code chunk:
 
 ${chunk}
 
@@ -35,56 +35,23 @@ IMPORTANT REQUIREMENTS:
 8. Create realistic scenarios that explain WHY this question matters
 9. CODE FORMATTING: Format the codeContext with proper indentation and line breaks for readability
 
-QUESTION TYPES TO FOCUS ON (MAKE THEM HARDER - NO OBVIOUS ANSWERS):
-- COMPLEX CONDITIONAL LOGIC: Test nested if/else chains, multiple conditions, logical operators (&&, ||, !)
-- SIDE EFFECTS: Test what happens when functions modify external state, arrays, objects
-- EXECUTION ORDER: Test when callbacks fire, promise resolution timing, async/await behavior
-- EDGE CASE SCENARIOS: Test boundary values, empty arrays, null objects, undefined properties
-- STATE MUTATIONS: Test when objects/arrays are modified vs when new ones are created
-- ERROR PROPAGATION: Test what happens when nested functions throw, try/catch behavior
-- SCOPE AND CLOSURES: Test variable access, closure behavior, lexical scoping
-- TYPE COERCION: Test implicit conversions, truthy/falsy values, comparison operators
-
-FORBIDDEN EASY PATTERNS (AUTOMATIC REJECTION):
-- Questions answerable by reading just one line of code
-- Simple if/return statement analysis ("if X then return Y")
-- Obvious function name descriptions ("validateUser validates users")
-- Direct variable assignments ("x = 5 sets x to 5")
-- Surface-level observations that don't require understanding
-
-AVOID (THESE ARE TOO EASY):
-- Repository-specific trivia
-- Domain-specific business logic  
-- Obvious statements that don't test understanding (e.g., "this function returns a value")
-- Questions about external dependencies not shown in code
-- Cosmetic formatting differences
-- Game-specific mechanics
-- SIMPLE IF/RETURN ANALYSIS: "if X < Y return false" type questions
-- DIRECT CODE READING: Questions answerable by reading one line
-- FUNCTION NAME DESCRIPTIONS: "validateUser validates users"
-- VARIABLE ASSIGNMENT TESTS: "x = 5 sets x to 5"
-- SURFACE-LEVEL OBSERVATIONS: Anything obvious from skimming code
-
-EXPLANATION REQUIREMENTS:
-- Explain WHY the statement is true or false based on the actual code
-- Include practical examples of what would happen
-- Focus on learning value and understanding
-- Keep explanations concise but educational
-
-Format:
+FORMAT (strict JSON):
 [
   {
     "snippet": "key function or concept from code",
     "quiz": {
       "type": "true-false",
-      "question": "This function will execute all validation steps even when the first validation fails.",
-      "codeContext": "function validateUserData(data) {\n  const errors = [];\n  if (!data.email) errors.push('Email required');\n  if (!data.password) errors.push('Password required');\n  if (data.password && data.password.length < 8) errors.push('Password too short');\n  if (errors.length > 0) throw new Error(errors.join(', '));\n  return true;\n}",
+      "question": "A true or false question about the code, that is not obvious and requires understanding the code concepts.",
+      "codeContext": "function { ... } OR code snippet",
       "options": ["True", "False"],
-      "answer": "1",
-      "explanation": "TRUE. Unlike early-return patterns, this function collects ALL validation errors before throwing. Even if email is missing, it still checks password requirements. This allows users to see all validation issues at once rather than fixing them one by one."
+      "answer": "TRUE",
+      "explanation": "Answer. The reason on why this is true or false."
     }
   }
-]`;
+]
+
+CRITICAL: Use "TRUE" or "FALSE" for the answer field (case insensitive). Do NOT use numbers like "0" or "1".
+`;
 }
 
 /**

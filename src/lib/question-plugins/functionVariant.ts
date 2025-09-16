@@ -34,14 +34,7 @@ export const functionVariantPlugin: QuestionPlugin = {
 11. BALANCED EXPLANATIONS: Make ALL explanations roughly the same length. Don't make correct explanation obviously more detailed.
 
 FOCUS ON UNIVERSAL PROGRAMMING CONCEPTS:
-- Error handling and validation
-- Async/await patterns
-- Data transformation and processing
-- API interactions
-- State management
-- Data structures and algorithms
-- Security considerations
-- Performance optimization
+
 
 AVOID:
 - Repository-specific trivia

@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       .map((t: string) => availablePlugins[t])
       .filter(Boolean);
 
-    const desiredTotal = typeof numQuestions === 'number' && numQuestions > 0 ? numQuestions : 15;
+    const desiredTotal = typeof numQuestions === 'number' && numQuestions > 0 ? numQuestions :30;
     const settings = {
       concurrency: Number(process.env.OPENAI_CONCURRENCY ?? 4),
       maxCalls: Number(process.env.OPENAI_MAX_CALLS_PER_REQUEST ?? 30),
@@ -149,12 +149,16 @@ export async function POST(request: NextRequest) {
         };
       } else if (questionData.type === 'true-false') {
         const opts = questionData.options || ['True', 'False'];
-        const ansNum = parseInt(questionData.answer);
+        const answer = questionData.answer;
         let idx = -1;
-        if (!isNaN(ansNum)) {
-          if (ansNum >= 1 && ansNum <= opts.length) idx = ansNum - 1;
-          else if (ansNum >= 0 && ansNum < opts.length) idx = ansNum;
+        
+        // Handle string answers (TRUE, FALSE, True, False, etc.) - case insensitive
+        if (typeof answer === 'string') {
+          const normalizedAnswer = answer.toLowerCase().trim();
+          if (normalizedAnswer === 'true') idx = 0;
+          else if (normalizedAnswer === 'false') idx = 1;
         }
+        
         return {
           id: (index + 1).toString(),
           type: questionData.type,
