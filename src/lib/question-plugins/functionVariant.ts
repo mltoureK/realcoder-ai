@@ -28,9 +28,10 @@ export const functionVariantPlugin: QuestionPlugin = {
                 { role: 'system', content: 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.' },
                 { role: 'user', content: `Generate ${questionsPerChunk} function-variant quiz questions that test programming knowledge based on this code chunk:\n\n${chunk}\n\nCRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.\n\nIMPORTANT REQUIREMENTS:\n1. ONLY generate questions about functions that actually exist in the provided code chunk\n2. The function name in \"snippet\" must match a real function from the code\n3. The correct variant must be the actual function implementation from the code\n4. Incorrect variants should have realistic bugs (off-by-one, wrong variable names, missing checks, etc.)\n5. ALL variants must be similar in length (±30 characters and/or ±2 lines)\n
                 6. Each variant must be syntactically valid code in the programming language used\n
-                7. LENGTH BALANCING RULE: Randomize the length of the correct answer. The correct answer should NOT always be the longest or most verbose option.\n8. SCENARIO CONTEXT: Create realistic development scenarios that explain WHY this function exists
+                7. CRITICAL LENGTH RULE: ALL variants must be roughly the same length (±20% line count). The correct answer should NEVER be obviously longer or more detailed than incorrect options.\n8. EQUAL COMPLEXITY: Make all variants equally complex-looking. Avoid making correct answer obviously more sophisticated.\n9. SCENARIO CONTEXT: Create realistic development scenarios that explain WHY this function exists
 9. GENERIC PATTERNS: Focus on universal programming patterns, not specific app functionality. Test concepts like error handling, data validation, async operations, state management, etc.
 10. AVOID REPO-SPECIFIC: Don't use specific function names in the question. Instead, describe the general pattern or concept being tested.
+11. BALANCED EXPLANATIONS: Make ALL explanations roughly the same length. Don't make correct explanation obviously more detailed.
 
 FOCUS ON UNIVERSAL PROGRAMMING CONCEPTS:
 - Error handling and validation

@@ -123,10 +123,18 @@ SPECIAL INSTRUCTIONS FOR TRUE/FALSE QUESTIONS - MAKE THEM HARDER:
 - REQUIRE CODE ANALYSIS: Questions should need careful reading of the logic, not just surface-level observation
 - CHECK CONDITIONAL LOGIC: Test understanding of if/else branches, loop termination, and guard clauses
 - EXAMINE ERROR HANDLING: Focus on what happens when things go wrong, not just the happy path
+- REJECT OBVIOUS QUESTIONS: If answerable by reading one line of code, rate 2/10 for "too easy"
 - WRONG ANSWERS in true/false questions are AUTOMATIC 1/10 - there's no excuse for incorrect logic
+
+SPECIAL INSTRUCTIONS FOR MULTIPLE CHOICE QUESTIONS:
+- CHECK ANSWER RANDOMIZATION: If correct answer is always in position A/B or always the longest option, rate 4/10 for predictable patterns
+- VERIFY OPTION QUALITY: All options should be plausible and similar in length/detail
+- AVOID OBVIOUS PATTERNS: Correct answer shouldn't always be the most detailed or technical-sounding option
 
 SPECIAL INSTRUCTIONS FOR FUNCTION-VARIANT QUESTIONS:
 - CHECK FOR FUNCTIONAL EQUIVALENCE: If multiple variants achieve the same result with different syntax, they should both be marked correct
+- CHECK LENGTH BALANCE: If correct answer is obviously longer/more detailed than incorrect options, rate 4/10 for predictable patterns
+- VERIFY EQUAL COMPLEXITY: All variants should appear equally sophisticated - avoid making correct answer obviously more complete
 - COMMON EQUIVALENT PATTERNS TO WATCH FOR:
   * [...array, item] vs array.concat(item) - BOTH create new arrays
   * array.push(item) vs array.concat(item) - Different! push mutates, concat doesn't

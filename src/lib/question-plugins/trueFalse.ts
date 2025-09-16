@@ -35,25 +35,35 @@ IMPORTANT REQUIREMENTS:
 8. Create realistic scenarios that explain WHY this question matters
 9. CODE FORMATTING: Format the codeContext with proper indentation and line breaks for readability
 
-QUESTION TYPES TO FOCUS ON (MAKE THEM HARDER):
-- Code behavior analysis: Test edge cases, boundary conditions, error scenarios
-- Performance implications: Test algorithmic complexity, memory usage, bottlenecks
-- Security considerations: Test input validation, boundary conditions, overflow scenarios
-- Best practices: Test maintainability implications, code smell identification
-- Edge case handling: Test boundary values, empty inputs, null/undefined scenarios
-- Execution order: Test sequence dependencies, timing issues, race conditions
-- Data flow: Test unexpected transformations, pipeline failures, data corruption
-- Language-specific behavior: Test type systems, memory management, compilation behavior
+QUESTION TYPES TO FOCUS ON (MAKE THEM HARDER - NO OBVIOUS ANSWERS):
+- COMPLEX CONDITIONAL LOGIC: Test nested if/else chains, multiple conditions, logical operators (&&, ||, !)
+- SIDE EFFECTS: Test what happens when functions modify external state, arrays, objects
+- EXECUTION ORDER: Test when callbacks fire, promise resolution timing, async/await behavior
+- EDGE CASE SCENARIOS: Test boundary values, empty arrays, null objects, undefined properties
+- STATE MUTATIONS: Test when objects/arrays are modified vs when new ones are created
+- ERROR PROPAGATION: Test what happens when nested functions throw, try/catch behavior
+- SCOPE AND CLOSURES: Test variable access, closure behavior, lexical scoping
+- TYPE COERCION: Test implicit conversions, truthy/falsy values, comparison operators
 
-AVOID:
+FORBIDDEN EASY PATTERNS (AUTOMATIC REJECTION):
+- Questions answerable by reading just one line of code
+- Simple if/return statement analysis ("if X then return Y")
+- Obvious function name descriptions ("validateUser validates users")
+- Direct variable assignments ("x = 5 sets x to 5")
+- Surface-level observations that don't require understanding
+
+AVOID (THESE ARE TOO EASY):
 - Repository-specific trivia
-- Domain-specific business logic
+- Domain-specific business logic  
 - Obvious statements that don't test understanding (e.g., "this function returns a value")
 - Questions about external dependencies not shown in code
 - Cosmetic formatting differences
 - Game-specific mechanics
-- Simple surface-level observations
-- Questions answerable without reading the code logic
+- SIMPLE IF/RETURN ANALYSIS: "if X < Y return false" type questions
+- DIRECT CODE READING: Questions answerable by reading one line
+- FUNCTION NAME DESCRIPTIONS: "validateUser validates users"
+- VARIABLE ASSIGNMENT TESTS: "x = 5 sets x to 5"
+- SURFACE-LEVEL OBSERVATIONS: Anything obvious from skimming code
 
 EXPLANATION REQUIREMENTS:
 - Explain WHY the statement is true or false based on the actual code
@@ -67,11 +77,11 @@ Format:
     "snippet": "key function or concept from code",
     "quiz": {
       "type": "true-false",
-      "question": "This function will throw an error when accessing user.name if the user object has a null name property.",
-      "codeContext": "function validateUser(user) {\n  if (!user) {\n    throw new Error('User is required');\n  }\n  return user.name;\n}",
+      "question": "This function will execute all validation steps even when the first validation fails.",
+      "codeContext": "function validateUserData(data) {\n  const errors = [];\n  if (!data.email) errors.push('Email required');\n  if (!data.password) errors.push('Password required');\n  if (data.password && data.password.length < 8) errors.push('Password too short');\n  if (errors.length > 0) throw new Error(errors.join(', '));\n  return true;\n}",
       "options": ["True", "False"],
-      "answer": "2",
-      "explanation": "The function checks if user exists but NOT if user.name exists. If user.name is null, it will return null (not throw an error). Only undefined properties would cause issues, and null is a valid return value. Statement is FALSE."
+      "answer": "1",
+      "explanation": "TRUE. Unlike early-return patterns, this function collects ALL validation errors before throwing. Even if email is missing, it still checks password requirements. This allows users to see all validation issues at once rather than fixing them one by one."
     }
   }
 ]`;

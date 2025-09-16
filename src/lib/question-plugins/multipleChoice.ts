@@ -34,10 +34,12 @@ IMPORTANT REQUIREMENTS:
 7. SCENARIO CONTEXT: Create realistic development scenarios that explain WHY this function exists
 8. CODE FORMATTING: Format the codeContext with proper indentation and line breaks for readability
 9. CHALLENGING DISTRACTORS: Make incorrect options subtle and plausible - they should test understanding of the function's behavior, not just obvious differences
-10. RANDOMIZE ANSWERS: Place the correct answer in a random position (1-4), not always first
-11. TEST UNDERSTANDING: Focus on edge cases, side effects, data flow, or implementation details rather than obvious function purposes
-12. SUBTLE DIFFERENCES: Incorrect options should differ in subtle ways - wrong data types, missing edge cases, incorrect side effects, wrong return values, or different execution order
-13. RANDOM POSITIONING: Always randomize which option number (1-4) contains the correct answer
+10. RANDOMIZE ANSWERS: CRITICAL - Place the correct answer in a random position (1-4), not always first or last
+11. AVOID PATTERNS: Do NOT make the correct answer always the longest, shortest, or most detailed option
+12. TEST UNDERSTANDING: Focus on edge cases, side effects, data flow, or implementation details rather than obvious function purposes
+13. SUBTLE DIFFERENCES: Incorrect options should differ in subtle ways - wrong data types, missing edge cases, incorrect side effects, wrong return values, or different execution order
+14. RANDOM POSITIONING: MANDATORY - Vary the correct answer position across questions (sometimes A, B, C, or D)
+15. EQUAL LENGTH OPTIONS: Make all options roughly the same length to avoid length-based guessing
 
 FOCUS ON UNIVERSAL PROGRAMMING CONCEPTS:
 - Error handling and validation
@@ -206,6 +208,44 @@ async function makeApiRequest(
 }
 
 /**
+ * Randomizes answer position to prevent predictable patterns
+ */
+function randomizeAnswerPosition(questionData: any): void {
+  if (!questionData.quiz || !questionData.quiz.options || !Array.isArray(questionData.quiz.options)) {
+    return;
+  }
+  
+  const options = questionData.quiz.options;
+  const currentAnswerIndex = parseInt(questionData.quiz.answer) - 1; // Convert 1-based to 0-based
+  
+  if (isNaN(currentAnswerIndex) || currentAnswerIndex < 0 || currentAnswerIndex >= options.length) {
+    return;
+  }
+  
+  // Generate a random new position (different from current if possible)
+  const possiblePositions = Array.from({length: options.length}, (_, i) => i);
+  let newPosition = Math.floor(Math.random() * options.length);
+  
+  // If we have multiple options and randomly got the same position, try to get a different one
+  if (options.length > 1 && newPosition === currentAnswerIndex && Math.random() < 0.7) {
+    const otherPositions = possiblePositions.filter(pos => pos !== currentAnswerIndex);
+    newPosition = otherPositions[Math.floor(Math.random() * otherPositions.length)];
+  }
+  
+  // Swap the correct answer to the new position
+  if (newPosition !== currentAnswerIndex) {
+    const temp = options[currentAnswerIndex];
+    options[currentAnswerIndex] = options[newPosition];
+    options[newPosition] = temp;
+    
+    // Update the answer index (convert back to 1-based)
+    questionData.quiz.answer = (newPosition + 1).toString();
+    
+    console.log(`🔀 Randomized answer position from ${currentAnswerIndex + 1} to ${newPosition + 1}`);
+  }
+}
+
+/**
  * Processes AI response and extracts valid questions
  */
 async function processAiResponse(response: Response, generated: RawQuestion[]): Promise<void> {
@@ -224,6 +264,9 @@ async function processAiResponse(response: Response, generated: RawQuestion[]): 
           if (questionData.quiz && questionData.quiz.codeContext) {
             questionData.quiz.codeContext = formatCodeContext(questionData.quiz.codeContext);
           }
+          
+          // Randomize answer position to prevent predictable patterns
+          randomizeAnswerPosition(questionData);
           
           console.log('🔍 Multiple Choice AI generated:', JSON.stringify(question, null, 2));
           generated.push(question as RawQuestion);

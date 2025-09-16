@@ -26,31 +26,63 @@ export function balanceVariantVerbosity(variants: any[]): any[] {
   const incorrectVariants = variants.filter((v: any) => v && !v.isCorrect);
   if (!correctVariant || incorrectVariants.length === 0) return variants;
 
-  const avgIncorrectLength = incorrectVariants.reduce((sum: number, v: any) => sum + (v.code?.length || 0), 0) / incorrectVariants.length;
-  const correctLength = correctVariant.code?.length || 0;
+  // Calculate lengths more strictly (line count + character count)
+  const getVariantComplexity = (variant: any) => {
+    const code = variant.code || '';
+    const lines = code.split('\n').filter(line => line.trim().length > 0).length;
+    const chars = code.length;
+    return { lines, chars, code };
+  };
 
-  if (correctLength > avgIncorrectLength * 1.5) {
-    const longestIncorrect = incorrectVariants.reduce((longest: any, current: any) =>
-      (current.code?.length || 0) > (longest.code?.length || 0) ? current : longest
-    );
-    if (longestIncorrect && typeof longestIncorrect.code === 'string' && longestIncorrect.code.includes('return')) {
-      longestIncorrect.code = longestIncorrect.code.replace(
-        /return ([^;]+);/,
-        'const result = $1;\n  return result;'
-      );
-    }
+  const correctComplexity = getVariantComplexity(correctVariant);
+  const incorrectComplexities = incorrectVariants.map(getVariantComplexity);
+  const avgIncorrectLines = incorrectComplexities.reduce((sum, c) => sum + c.lines, 0) / incorrectComplexities.length;
+  const avgIncorrectChars = incorrectComplexities.reduce((sum, c) => sum + c.chars, 0) / incorrectComplexities.length;
+
+  // Much stricter threshold: 20% difference instead of 50%
+  const lineThreshold = 0.2;
+  const charThreshold = 0.3;
+
+  // If correct answer is significantly longer, pad shorter incorrect answers
+  if (correctComplexity.lines > avgIncorrectLines * (1 + lineThreshold) || 
+      correctComplexity.chars > avgIncorrectChars * (1 + charThreshold)) {
+    
+    console.log(`⚖️ Correct answer too long (${correctComplexity.lines} lines vs avg ${avgIncorrectLines.toFixed(1)}), padding incorrect answers`);
+    
+    incorrectVariants.forEach((variant, index) => {
+      const complexity = incorrectComplexities[index];
+      if (complexity.lines < correctComplexity.lines * 0.8) {
+        // Add padding to make it look more substantial
+        if (variant.code.includes('return') && !variant.code.includes('const result')) {
+          variant.code = variant.code.replace(
+            /return ([^;\n]+);?/,
+            'const result = $1;\n  return result;'
+          );
+        } else if (variant.code.includes('{') && !variant.code.includes('//')) {
+          // Add a comment to increase apparent complexity
+          variant.code = variant.code.replace('{', '{\n  // Validate input parameters');
+        }
+      }
+    });
   }
 
-  if (correctLength < avgIncorrectLength * 0.7) {
-    const shortestIncorrect = incorrectVariants.reduce((shortest: any, current: any) =>
-      (current.code?.length || 0) < (shortest.code?.length || 0) ? current : shortest
-    );
-    if (shortestIncorrect && typeof shortestIncorrect.code === 'string' && shortestIncorrect.code.includes('if (')) {
-      shortestIncorrect.code = shortestIncorrect.code.replace(
-        /if \(([^)]+)\)\s*{([^}]+)}/,
-        'return $1 ? $2 : false;'
-      );
-    }
+  // If correct answer is significantly shorter, trim longer incorrect answers  
+  if (correctComplexity.lines < avgIncorrectLines * (1 - lineThreshold) ||
+      correctComplexity.chars < avgIncorrectChars * (1 - charThreshold)) {
+    
+    console.log(`⚖️ Correct answer too short (${correctComplexity.lines} lines vs avg ${avgIncorrectLines.toFixed(1)}), trimming incorrect answers`);
+    
+    incorrectVariants.forEach(variant => {
+      // Simplify overly verbose incorrect answers
+      if (variant.code.includes('const result') && variant.code.includes('return result')) {
+        variant.code = variant.code.replace(
+          /const result = ([^;\n]+);?\s*return result;?/,
+          'return $1;'
+        );
+      }
+      // Remove unnecessary comments
+      variant.code = variant.code.replace(/\s*\/\/[^\n]*\n/g, '\n');
+    });
   }
 
   return variants;
