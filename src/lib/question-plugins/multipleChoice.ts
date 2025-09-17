@@ -6,7 +6,7 @@ import { delay, validateQuestionStructure } from './utils';
  */
 const OPENAI_MODEL = 'gpt-4o-mini';
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
-const TEMPERATURE = 0.3;
+const TEMPERATURE = 0.8;
 const MAX_TOKENS = 1500;
 
 /**

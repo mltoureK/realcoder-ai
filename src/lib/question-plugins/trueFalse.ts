@@ -6,7 +6,7 @@ import { delay, validateQuestionStructure } from './utils';
  */
 const OPENAI_MODEL = 'gpt-4o-mini';
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
-const TEMPERATURE = 0.5;
+const TEMPERATURE = 0.7;
 const MAX_TOKENS = 1500;
 
 /**
@@ -42,7 +42,7 @@ FORMAT (strict JSON):
     "quiz": {
       "type": "true-false",
       "question": "A true or false question about the code, that is not obvious and requires understanding the code concepts.",
-      "codeContext": "relevant function OR code snippet",
+      "codeContext": "relevant full function OR code snippet",
       "options": ["True", "False"],
       "answer": "TRUE",
       "explanation": "Answer. The reason on why this is true or false."
