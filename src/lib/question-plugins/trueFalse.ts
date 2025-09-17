@@ -42,7 +42,7 @@ FORMAT (strict JSON):
     "quiz": {
       "type": "true-false",
       "question": "A true or false question about the code, that is not obvious and requires understanding the code concepts.",
-      "codeContext": "function { ... } OR code snippet",
+      "codeContext": "relevant function OR code snippet",
       "options": ["True", "False"],
       "answer": "TRUE",
       "explanation": "Answer. The reason on why this is true or false."
