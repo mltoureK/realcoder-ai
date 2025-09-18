@@ -96,7 +96,7 @@ function preFilterQuestion(question: QualityRatingRequest): boolean {
  */
 export async function rateQuestionQuality(question: QualityRatingRequest): Promise<QualityRatingResponse> {
   try {
-    const prompt = `You are an expert programming education evaluator. Rate this quiz question on a scale of 1-10 based on:
+    const prompt = `You are an expert programming education evaluator. Rate this quiz question on a scale of 1-10 based on whether:
 
 CRITERIA FOR HIGH QUALITY (8-10):
 - Tests universal programming concepts (async/await, error handling, state management, API calls, data structures, execution order)
