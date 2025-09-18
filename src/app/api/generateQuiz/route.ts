@@ -9,6 +9,7 @@ import { multipleChoicePlugin } from '@/lib/question-plugins/multipleChoice';
 import { fillBlankPlugin } from '@/lib/question-plugins/fillBlank';
 import { orderSequencePlugin } from '@/lib/question-plugins/orderSequence';
 import { trueFalsePlugin } from '@/lib/question-plugins/trueFalse';
+import { selectAllPlugin } from '@/lib/question-plugins/selectAll';
 import { 
   cleanCodeForChunking,
   createSmartCodeChunks,
@@ -60,11 +61,21 @@ export async function POST(request: NextRequest) {
       'multiple-choice': multipleChoicePlugin,
       'fill-blank': fillBlankPlugin,
       'order-sequence': orderSequencePlugin,
-      'true-false': trueFalsePlugin
+      'true-false': trueFalsePlugin,
+      'select-all': selectAllPlugin
     };
-    const selectedPlugins = (Array.isArray(questionTypes) ? questionTypes : [])
-      .map((t: string) => availablePlugins[t])
-      .filter(Boolean);
+    // Check if we should force only select-all for testing
+    const forceSelectAllOnly = process.env.FORCE_SELECT_ALL_ONLY === 'true';
+    
+    let selectedPlugins;
+    if (forceSelectAllOnly) {
+      console.log('🎯 FORCE_SELECT_ALL_ONLY=true, generating only select-all questions');
+      selectedPlugins = [selectAllPlugin];
+    } else {
+      selectedPlugins = (Array.isArray(questionTypes) ? questionTypes : [])
+        .map((t: string) => availablePlugins[t])
+        .filter(Boolean);
+    }
 
     const desiredTotal = typeof numQuestions === 'number' && numQuestions > 0 ? numQuestions :30;
     const settings = {
@@ -73,7 +84,8 @@ export async function POST(request: NextRequest) {
       timeouts: {
         'function-variant': Number(process.env.OPENAI_TIMEOUT_FUNCTION_VARIANT_MS ?? 30000),
         'multiple-choice': Number(process.env.OPENAI_TIMEOUT_MCQ_MS ?? 20000),
-        'true-false': Number(process.env.OPENAI_TIMEOUT_TRUE_FALSE_MS ?? 15000)
+        'true-false': Number(process.env.OPENAI_TIMEOUT_TRUE_FALSE_MS ?? 15000),
+        'select-all': Number(process.env.OPENAI_TIMEOUT_SELECT_ALL_MS ?? 45000)
       },
       retries: { attempts: 3, backoffBaseMs: 500 }
     };
@@ -147,7 +159,7 @@ export async function POST(request: NextRequest) {
           correctOrder: questionData.correctOrder || [],
           variants: []
         };
-      } else if (questionData.type === 'true-false') {
+        } else if (questionData.type === 'true-false') {
         const opts = questionData.options || ['True', 'False'];
         const answer = questionData.answer;
         let idx = -1;
@@ -165,6 +177,22 @@ export async function POST(request: NextRequest) {
           question: questionData.question || 'Is this statement true or false?',
           options: opts,
           correctAnswer: idx >= 0 ? opts[idx] : null,
+          explanation: questionData.explanation || '',
+          difficulty: 'medium',
+          codeContext: questionData.codeContext || q.codeContext,
+          variants: []
+        } as any;
+      } else if (questionData.type === 'select-all') {
+        const opts = questionData.options || [];
+        const correctAnswers = questionData.correctAnswers || [];
+        
+        return {
+          id: (index + 1).toString(),
+          type: questionData.type,
+          question: questionData.question || 'Select all that apply',
+          options: opts,
+          correctAnswers: correctAnswers, // Array of indices
+          correctAnswer: null, // Not used for select-all
           explanation: questionData.explanation || '',
           difficulty: 'medium',
           codeContext: questionData.codeContext || q.codeContext,
@@ -242,6 +270,31 @@ export async function POST(request: NextRequest) {
       apiKey: openaiApiKey,
       options: { difficulty: difficulty || 'medium' }
     });
+
+    // Fallback: if select-all was requested but none were produced, try one direct call on the first chunk
+    if (Array.isArray(questionTypes) && questionTypes.includes('select-all')) {
+      const hasSelectAll = rawGenerated.some((q: any) => q?.quiz?.type === 'select-all');
+      if (!hasSelectAll && chunks.length > 0) {
+        try {
+          console.log('🛟 Fallback: attempting direct select-all generation on first chunk');
+          const sa = await selectAllPlugin.generate({
+            chunk: chunks[0],
+            options: { difficulty: difficulty || 'medium', numQuestions: desiredTotal },
+            apiKey: openaiApiKey,
+            timeoutMs: Number(process.env.OPENAI_TIMEOUT_SELECT_ALL_MS ?? 45000),
+            retry: { attempts: 2, backoffBaseMs: 600 }
+          } as any);
+          if (Array.isArray(sa) && sa.length > 0) {
+            rawGenerated = [...rawGenerated, sa[0]];
+            console.log('✅ Fallback select-all produced 1 question');
+          } else {
+            console.log('⚠️ Fallback select-all returned no questions');
+          }
+        } catch (e) {
+          console.warn('❌ Fallback select-all generation failed:', e);
+        }
+      }
+    }
 
     // Fallback: if fill-blank was requested but none were produced, try one direct call on the first chunk
     if (Array.isArray(questionTypes) && questionTypes.includes('fill-blank')) {
@@ -360,6 +413,45 @@ export async function POST(request: NextRequest) {
             correctOrder: questionData.correctOrder || [],
             variants: []
           };
+        } else if (questionData.type === 'true-false') {
+          const opts = questionData.options || ['True', 'False'];
+          const answer = questionData.answer;
+          let idx = -1;
+          
+          // Handle string answers (TRUE, FALSE, True, False, etc.) - case insensitive
+          if (typeof answer === 'string') {
+            const normalizedAnswer = answer.toLowerCase().trim();
+            if (normalizedAnswer === 'true') idx = 0;
+            else if (normalizedAnswer === 'false') idx = 1;
+          }
+          
+          return {
+            id: (index + 1).toString(),
+            type: questionData.type,
+            question: questionData.question || 'Is this statement true or false?',
+            options: opts,
+            correctAnswer: idx >= 0 ? opts[idx] : null,
+            explanation: questionData.explanation || '',
+            difficulty: 'medium',
+            codeContext: questionData.codeContext || q.codeContext,
+            variants: []
+          } as any;
+        } else if (questionData.type === 'select-all') {
+          const opts = questionData.options || [];
+          const correctAnswers = questionData.correctAnswers || [];
+          
+          return {
+            id: (index + 1).toString(),
+            type: questionData.type,
+            question: questionData.question || 'Select all that apply',
+            options: opts,
+            correctAnswers: correctAnswers, // Array of indices
+            correctAnswer: null, // Not used for select-all
+            explanation: questionData.explanation || '',
+            difficulty: 'medium',
+            codeContext: questionData.codeContext || q.codeContext,
+            variants: []
+          } as any;
         } else {
           // Fallback for unknown question types
           console.warn(`⚠️ Question ${index + 1} has unknown type: ${questionData.type}`);

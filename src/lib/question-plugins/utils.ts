@@ -89,39 +89,106 @@ export function balanceVariantVerbosity(variants: any[]): any[] {
 }
 
 export function validateQuestionStructure(question: any): boolean {
-  if (!question || typeof question !== 'object') return false;
-  if (!question.quiz || typeof question.quiz !== 'object') return false;
-  if (!question.quiz.type || !question.quiz.question) return false;
+  if (!question || typeof question !== 'object') {
+    console.log('🚫 Validator: Question is not an object:', question);
+    return false;
+  }
+  if (!question.quiz || typeof question.quiz !== 'object') {
+    console.log('🚫 Validator: Question.quiz is missing or not an object:', question);
+    return false;
+  }
+  if (!question.quiz.type || !question.quiz.question) {
+    console.log('🚫 Validator: Missing type or question:', { type: question.quiz?.type, question: question.quiz?.question });
+    return false;
+  }
 
   if (question.quiz.type === 'function-variant') {
-    if (!Array.isArray(question.quiz.variants) || question.quiz.variants.length === 0) return false;
-    return question.quiz.variants.every((variant: any) =>
+    if (!Array.isArray(question.quiz.variants) || question.quiz.variants.length === 0) {
+      console.log('🚫 Validator: function-variant missing variants:', question.quiz);
+      return false;
+    }
+    const valid = question.quiz.variants.every((variant: any) =>
       variant && variant.id && variant.code && typeof variant.isCorrect === 'boolean' && variant.explanation
     );
+    if (!valid) {
+      console.log('🚫 Validator: function-variant has invalid variants:', question.quiz.variants);
+    }
+    return valid;
   }
 
   if (question.quiz.type === 'multiple-choice') {
-    if (!Array.isArray(question.quiz.options) || question.quiz.options.length === 0) return false;
-    if (!question.quiz.answer || !question.quiz.explanation) return false;
+    if (!Array.isArray(question.quiz.options) || question.quiz.options.length === 0) {
+      console.log('🚫 Validator: multiple-choice missing options:', question.quiz);
+      return false;
+    }
+    if (!question.quiz.answer || !question.quiz.explanation) {
+      console.log('🚫 Validator: multiple-choice missing answer/explanation:', { answer: question.quiz.answer, explanation: question.quiz.explanation });
+      return false;
+    }
     return true;
   }
 
   if (question.quiz.type === 'order-sequence') {
-    if (!Array.isArray(question.quiz.steps) || question.quiz.steps.length === 0) return false;
-    if (!Array.isArray(question.quiz.correctOrder) || question.quiz.correctOrder.length === 0) return false;
-    return question.quiz.steps.every((step: any) =>
+    if (!Array.isArray(question.quiz.steps) || question.quiz.steps.length === 0) {
+      console.log('🚫 Validator: order-sequence missing steps:', question.quiz);
+      return false;
+    }
+    if (!Array.isArray(question.quiz.correctOrder) || question.quiz.correctOrder.length === 0) {
+      console.log('🚫 Validator: order-sequence missing correctOrder:', question.quiz);
+      return false;
+    }
+    const valid = question.quiz.steps.every((step: any) =>
       step && step.id && step.code && step.explanation
     );
+    if (!valid) {
+      console.log('🚫 Validator: order-sequence has invalid steps:', question.quiz.steps);
+    }
+    return valid;
   }
 
   if (question.quiz.type === 'true-false') {
-    if (!Array.isArray(question.quiz.options) || question.quiz.options.length !== 2) return false;
-    if (!question.quiz.answer || !question.quiz.explanation) return false;
+    if (!Array.isArray(question.quiz.options) || question.quiz.options.length !== 2) {
+      console.log('🚫 Validator: true-false wrong options count:', question.quiz);
+      return false;
+    }
+    if (!question.quiz.answer || !question.quiz.explanation) {
+      console.log('🚫 Validator: true-false missing answer/explanation:', { answer: question.quiz.answer, explanation: question.quiz.explanation });
+      return false;
+    }
     // Ensure options are "True" and "False"
     const options = question.quiz.options;
-    return options.includes('True') && options.includes('False');
+    const hasTrueFalse = options.includes('True') && options.includes('False');
+    if (!hasTrueFalse) {
+      console.log('🚫 Validator: true-false options not True/False:', options);
+    }
+    return hasTrueFalse;
   }
 
+  // Support for select-all questions
+  if (question.quiz.type === 'select-all') {
+    const options = question.quiz.options;
+    const indices = question.quiz.correctAnswers;
+    if (!Array.isArray(options) || options.length === 0) {
+      console.log('🚫 Validator: select-all missing options:', question.quiz);
+      return false;
+    }
+    if (!Array.isArray(indices)) {
+      console.log('🚫 Validator: select-all missing correctAnswers array:', question.quiz);
+      return false;
+    }
+    if (!question.quiz.explanation) {
+      console.log('🚫 Validator: select-all missing explanation:', question.quiz);
+      return false;
+    }
+    // Validate that all indices are integers within bounds
+    const validIndices = indices.every((i: any) => Number.isInteger(i) && i >= 0 && i < options.length);
+    if (!validIndices) {
+      console.log('🚫 Validator: select-all invalid indices:', { indices, optionsLength: options.length });
+    }
+    return validIndices;
+  }
+
+  console.log('🚫 Validator: Unknown question type:', question.quiz.type);
   return false;
 }
 
