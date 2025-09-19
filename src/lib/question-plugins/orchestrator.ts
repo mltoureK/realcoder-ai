@@ -42,7 +42,7 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
   Object.keys(tasksByType).forEach(k => (perTypePointers[k] = 0));
 
   const budgetedTasks: Array<{ plugin: QuestionPlugin; chunk: string }> = [];
-  const budget = Math.min(settings.maxCalls, shuffledTasks.length);
+  const budget = settings.maxCalls; // Use full API call budget, not limited by task count
   
   console.log(`🎯 Quality Generation Target: ${numQuestions} excellent questions (8/10+)`);
   console.log(`📊 Generation Budget: ${budget} API calls across ${chunks.length} chunks and ${plugins.length} plugins`);
@@ -59,7 +59,7 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
       }
     }
   }
-  // Second pass: fill remaining slots round-robin
+  // Second pass: fill remaining slots round-robin, cycling through chunks if needed
   while (budgetedTasks.length < budget) {
     let progressed = false;
     for (const type of typesInOrder) {
@@ -69,6 +69,11 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
       if (list && ptr < list.length) {
         budgetedTasks.push(list[ptr]);
         perTypePointers[type] = ptr + 1;
+        progressed = true;
+      } else if (list && list.length > 0) {
+        // Cycle back to the beginning of this plugin's tasks
+        budgetedTasks.push(list[0]);
+        perTypePointers[type] = 1;
         progressed = true;
       }
     }
