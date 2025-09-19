@@ -91,7 +91,7 @@ IMPORTANT REQUIREMENTS:
 4. Include the actual function code in the "codeContext" field with PROPER FORMATTING
 5. Create exactly ${optionCount} options total
 6. Exactly ${correctCount} options should be correct (this is MANDATORY - not more, not less)
-7. Create realistic incorrect options that are plausible but wrong
+7. Create realistic incorrect options that test deep understanding
 8. SCENARIO CONTEXT: Create realistic development scenarios that explain WHY this function exists
 9. CODE FORMATTING: Format the codeContext with proper indentation and line breaks for readability
 
@@ -102,7 +102,7 @@ CORRECT ANSWER LOGIC:
 - Otherwise: Mix correct and incorrect options to reach exactly ${correctCount} correct answers
 
 CHALLENGING DISTRACTORS: 
-- Make incorrect options subtle and plausible - they should test deep understanding
+- Make incorrect options subtle - they should test deep understanding
 - Focus on edge cases, side effects, data flow, parameter validation, error handling
 - Avoid obvious differences - make options require careful analysis
 - Test understanding of function behavior, not just obvious purposes
