@@ -142,7 +142,7 @@ Format:
         { "text": "Second statement about the function", "isCorrect": false },
         { "text": "Third statement about the function",  "isCorrect": false },
         { "text": "Fourth statement about the function", "isCorrect": true },
-        { "text": "Fifth statement about the function",  "isCorrect": false }${optionCount === 6 ? ',\n        { "text": "Sixth statement about the function", "isCorrect": false }' : ''}
+        { "text": "Fifth statement about the function",  "isCorrect": false }${optionCount >= 6 ? ',\n        { "text": "Sixth statement about the function", "isCorrect": false }' : ''}
       ],
       "correctAnswers": [],
       "explanation": "Detailed explanation of why each correct answer is right and each incorrect answer is wrong"
@@ -346,12 +346,17 @@ async function processAiResponse(response: Response, generated: RawQuestion[]): 
       });
     }
   } catch (error) {
+    console.warn('❌ JSON parse failed:', error);
+    console.warn('📝 Raw GPT response:', content);
+    console.warn('🧹 Cleaned content:', cleanAiResponse(content));
+    
     // Fallback: attempt to repair common escaping issues (e.g., unescaped backslashes in codeContext)
     try {
       let cleanContent = cleanAiResponse(content);
       // Escape stray backslashes not followed by a valid escape char
       // This turns \x into \\\x so JSON.parse won't choke
       cleanContent = cleanContent.replace(/\\(?!["\\\/bfnrtu])/g, '\\\\');
+      console.warn('🔧 Repaired content:', cleanContent);
       const parsed2 = JSON.parse(cleanContent);
       if (Array.isArray(parsed2)) {
         parsed2.forEach((question: any) => {
@@ -380,8 +385,10 @@ async function processAiResponse(response: Response, generated: RawQuestion[]): 
         });
       }
     } catch (e2) {
-      console.warn('Failed to process Select-All AI response:', error);
-      console.warn('Secondary parse (repaired) also failed:', e2);
+      console.warn('❌ Failed to process Select-All AI response:', error);
+      console.warn('❌ Secondary parse (repaired) also failed:', e2);
+      console.warn('📝 Raw GPT response:', content);
+      console.warn('🧹 Cleaned content:', cleanAiResponse(content));
     }
   }
 }

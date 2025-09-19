@@ -77,6 +77,9 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
 
   const results: RawQuestion[] = [];
   let stopRequested = false;
+  let apiCallsMade = 0;
+  let apiCallsSuccessful = 0;
+  let apiCallsRejected = 0;
   // Track counts per question type to enforce minimum quotas (e.g., ensure at least one fill-blank)
   const countsByType: Record<string, number> = {};
   const requiredByType: Record<string, number> = {};
@@ -90,19 +93,22 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
   }
 
   const isComplete = (): boolean => {
-    if (results.length < numQuestions) {
-      console.log(`📊 Quality Generation Status: ${results.length}/${numQuestions} questions (need ${numQuestions - results.length} more)`);
-      return false;
-    }
-    for (const [type, min] of Object.entries(requiredByType)) {
-      if ((countsByType[type] || 0) < min) {
-        console.log(`📊 Type requirement not met: ${type} has ${countsByType[type] || 0}/${min}`);
-        return false;
+    // Only stop early if we have enough questions AND have met type requirements
+    if (results.length >= numQuestions) {
+      for (const [type, min] of Object.entries(requiredByType)) {
+        if ((countsByType[type] || 0) < min) {
+          console.log(`📊 Type requirement not met: ${type} has ${countsByType[type] || 0}/${min}`);
+          return false;
+        }
       }
+      console.log(`✅ Quality Generation Complete: ${results.length} excellent questions (7/10+) generated`);
+      displayQualityRatingSummary();
+      return true;
     }
-    console.log(`✅ Quality Generation Complete: ${results.length} excellent questions (7/10+) generated`);
-    displayQualityRatingSummary();
-    return true;
+    
+    // Continue making calls until we reach target or exhaust budget
+    console.log(`📊 Quality Generation Status: ${results.length}/${numQuestions} questions (need ${numQuestions - results.length} more)`);
+    return false;
   };
 
   let nextIndex = 0;
@@ -118,6 +124,9 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
     const p = (async () => {
       if (stopRequested) return;
       try {
+        apiCallsMade++;
+        console.log(`📞 API Call ${apiCallsMade}/${budgetedTasks.length} (${task.plugin.type})`);
+        
         const generated = await task.plugin.generate({
           chunk: task.chunk,
           options: { difficulty: options.difficulty, numQuestions },
@@ -147,11 +156,14 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
             try {
               accept = await shouldKeepQuestion(qualityInput);
               if (!accept) {
+                apiCallsRejected++;
                 console.log(`🚫 Question rejected by quality filter: ${quiz.question?.substring(0, 50)}...`);
                 continue;
               }
+              apiCallsSuccessful++;
               console.log(`✅ Question passed quality filter: ${quiz.question?.substring(0, 50)}...`);
             } catch (error) {
+              apiCallsRejected++;
               console.error('❌ Error in quality filter:', error);
               // If quality filter fails, reject the question for safety
               continue;
@@ -197,6 +209,18 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
 
   if (stopRequested) abortAll();
   await Promise.allSettled(active);
+
+  // Log API call summary
+  console.log('\n📊 API CALL SUMMARY:');
+  console.log(`📞 Total API calls made: ${apiCallsMade}/${budgetedTasks.length} (${Math.round(apiCallsMade/budgetedTasks.length*100)}% of budget)`);
+  console.log(`✅ Successful questions: ${apiCallsSuccessful}`);
+  console.log(`🚫 Rejected questions: ${apiCallsRejected}`);
+  console.log(`📋 Final questions generated: ${results.length}/${numQuestions} (${Math.round(results.length/numQuestions*100)}% of target)`);
+  console.log(`🎯 Quality filter enabled: ${process.env.ENABLE_QUALITY_FILTER !== 'false' ? 'YES' : 'NO'}`);
+  
+  if (results.length < numQuestions && apiCallsMade < budgetedTasks.length) {
+    console.log(`⚠️  WARNING: Stopped early with ${budgetedTasks.length - apiCallsMade} unused API calls remaining`);
+  }
 
   return results.slice(0, numQuestions);
 }
