@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     
     // Clean + chunk code
     const cleanCode = cleanCodeForChunking(code || '');
-    const chunks = createSmartCodeChunks(cleanCode || '', 2000);
+    const chunks = createSmartCodeChunks(cleanCode || '', 4000);
 
     // Select plugins per requested types
     const availablePlugins: Record<string, any> = {
