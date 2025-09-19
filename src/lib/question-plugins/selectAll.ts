@@ -78,7 +78,7 @@ function createUserPrompt(chunk: string): string {
   const optionCount = Math.random() < 0.6 ? 5 : 6;
   const correctCount = generateRandomCorrectCount(optionCount);
   
-  return `Generate 1 "select all that apply" question based on this code chunk:
+  return `Generate 5 "select all that apply" questions based on this code chunk:
 
 ${chunk}
 
@@ -137,6 +137,40 @@ Format:
       "type": "select-all",
       "question": "In a [REALISTIC_APP_CONTEXT], which statements about the function [FUNCTION_NAME] are correct? Select all that apply.",
       "codeContext": "function functionName = (param) => {\n  // properly formatted code with\n  // proper indentation and line breaks\n  return result;\n};",
+      "options": [
+        { "text": "First statement about the function",  "isCorrect": true },
+        { "text": "Second statement about the function", "isCorrect": false },
+        { "text": "Third statement about the function",  "isCorrect": false },
+        { "text": "Fourth statement about the function", "isCorrect": true },
+        { "text": "Fifth statement about the function",  "isCorrect": false }${optionCount >= 6 ? ',\n        { "text": "Sixth statement about the function", "isCorrect": false }' : ''}
+      ],
+      "correctAnswers": [],
+      "explanation": "Detailed explanation of why each correct answer is right and each incorrect answer is wrong"
+    }
+  },
+  {
+    "snippet": "anotherFunction",
+    "quiz": {
+      "type": "select-all",
+      "question": "In a [REALISTIC_APP_CONTEXT], which statements about the function anotherFunction are correct? Select all that apply.",
+      "codeContext": "function anotherFunction = (param) => {\n  // properly formatted code with\n  // proper indentation and line breaks\n  return result;\n};",
+      "options": [
+        { "text": "First statement about the function",  "isCorrect": true },
+        { "text": "Second statement about the function", "isCorrect": false },
+        { "text": "Third statement about the function",  "isCorrect": false },
+        { "text": "Fourth statement about the function", "isCorrect": true },
+        { "text": "Fifth statement about the function",  "isCorrect": false }${optionCount >= 6 ? ',\n        { "text": "Sixth statement about the function", "isCorrect": false }' : ''}
+      ],
+      "correctAnswers": [],
+      "explanation": "Detailed explanation of why each correct answer is right and each incorrect answer is wrong"
+    }
+  },
+  {
+    "snippet": "thirdFunction",
+    "quiz": {
+      "type": "select-all",
+      "question": "In a [REALISTIC_APP_CONTEXT], which statements about the function thirdFunction are correct? Select all that apply.",
+      "codeContext": "function thirdFunction = (param) => {\n  // properly formatted code with\n  // proper indentation and line breaks\n  return result;\n};",
       "options": [
         { "text": "First statement about the function",  "isCorrect": true },
         { "text": "Second statement about the function", "isCorrect": false },

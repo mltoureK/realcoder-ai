@@ -144,6 +144,13 @@ SPECIAL INSTRUCTIONS FOR FUNCTION-VARIANT QUESTIONS:
   * Template literals vs string concatenation - Usually equivalent
 - If explanations claim one equivalent method is "wrong" for incorrect technical reasons, rate 1-3/10
 
+SPECIAL INSTRUCTIONS FOR SELECT-ALL QUESTIONS:
+- VERIFY EACH OPTION: Actually analyze the code logic to confirm each statement is True or False
+- CHECK STATE MANAGEMENT: Distinguish between functions that update state vs functions that directly modify data
+- EXAMINE EXECUTION FLOW: Understand what the function actually does vs what happens as a result
+- TEST LOGICAL REASONING: Ensure correct/incorrect markings match the actual code behavior
+- WRONG MARKINGS: If any option is incorrectly marked as correct/incorrect based on the code, rate 1-3/10
+
 CRITERIA FOR LOW QUALITY (1-4):
 - Tests repository-specific trivia, instead of universal programming concepts/knowledge (bracket vs parentheses, specific variable names)
 - Tests domain-specific business logic that doesn't transfer
