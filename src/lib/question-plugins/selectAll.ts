@@ -6,7 +6,7 @@ import { delay, validateQuestionStructure } from './utils';
  */
 const OPENAI_MODEL = process.env.OPENAI_MODEL_SELECT_ALL || 'gpt-4o-mini';
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
-const TEMPERATURE = 0.3;
+const TEMPERATURE = 0.5;
 const MAX_TOKENS = 2000;
 
 /**
@@ -78,7 +78,7 @@ function createUserPrompt(chunk: string): string {
   const optionCount = Math.random() < 0.6 ? 5 : 6;
   const correctCount = generateRandomCorrectCount(optionCount);
   
-  return `Generate 5 "select all that apply" questions based on this code chunk:
+  return `Generate 3 pro grade "select all that apply" questions based on this code chunk:
 
 ${chunk}
 
@@ -132,51 +132,17 @@ EXPLANATION REQUIREMENTS:
 Format:
 [
   {
-    "snippet": "function name from code",
+    "snippet": "functionName",
     "quiz": {
       "type": "select-all",
-      "question": "In a [REALISTIC_APP_CONTEXT], which statements about the function [FUNCTION_NAME] are correct? Select all that apply.",
+      "question": "In a [REALISTIC_APP_CONTEXT], which statements about the function functionName are correct? Select all that apply.",
       "codeContext": "function functionName = (param) => {\n  // properly formatted code with\n  // proper indentation and line breaks\n  return result;\n};",
       "options": [
-        { "text": "First statement about the function",  "isCorrect": true },
-        { "text": "Second statement about the function", "isCorrect": false },
-        { "text": "Third statement about the function",  "isCorrect": false },
-        { "text": "Fourth statement about the function", "isCorrect": true },
-        { "text": "Fifth statement about the function",  "isCorrect": false }${optionCount >= 6 ? ',\n        { "text": "Sixth statement about the function", "isCorrect": false }' : ''}
-      ],
-      "correctAnswers": [],
-      "explanation": "Detailed explanation of why each correct answer is right and each incorrect answer is wrong"
-    }
-  },
-  {
-    "snippet": "anotherFunction",
-    "quiz": {
-      "type": "select-all",
-      "question": "In a [REALISTIC_APP_CONTEXT], which statements about the function anotherFunction are correct? Select all that apply.",
-      "codeContext": "function anotherFunction = (param) => {\n  // properly formatted code with\n  // proper indentation and line breaks\n  return result;\n};",
-      "options": [
-        { "text": "First statement about the function",  "isCorrect": true },
-        { "text": "Second statement about the function", "isCorrect": false },
-        { "text": "Third statement about the function",  "isCorrect": false },
-        { "text": "Fourth statement about the function", "isCorrect": true },
-        { "text": "Fifth statement about the function",  "isCorrect": false }${optionCount >= 6 ? ',\n        { "text": "Sixth statement about the function", "isCorrect": false }' : ''}
-      ],
-      "correctAnswers": [],
-      "explanation": "Detailed explanation of why each correct answer is right and each incorrect answer is wrong"
-    }
-  },
-  {
-    "snippet": "thirdFunction",
-    "quiz": {
-      "type": "select-all",
-      "question": "In a [REALISTIC_APP_CONTEXT], which statements about the function thirdFunction are correct? Select all that apply.",
-      "codeContext": "function thirdFunction = (param) => {\n  // properly formatted code with\n  // proper indentation and line breaks\n  return result;\n};",
-      "options": [
-        { "text": "First statement about the function",  "isCorrect": true },
-        { "text": "Second statement about the function", "isCorrect": false },
-        { "text": "Third statement about the function",  "isCorrect": false },
-        { "text": "Fourth statement about the function", "isCorrect": true },
-        { "text": "Fifth statement about the function",  "isCorrect": false }${optionCount >= 6 ? ',\n        { "text": "Sixth statement about the function", "isCorrect": false }' : ''}
+        { "text": "First statement about the function, that can be unambiguously true or false",  "isCorrect": true },
+        { "text": "Second statement about the function, that can be unambiguously true or false", "isCorrect": false },
+        { "text": "Third statement about the function, that can be unambiguously true or false",  "isCorrect": false },
+        { "text": "Fourth statement about the function, that can be unambiguously true or false", "isCorrect": true },
+        { "text": "Fifth statement about the function, that can be unambiguously true or false",  "isCorrect": false }${optionCount >= 6 ? ',\n        { "text": "Sixth statement about the function, that can be unambiguously true or false", "isCorrect": false }' : ''}
       ],
       "correctAnswers": [],
       "explanation": "Detailed explanation of why each correct answer is right and each incorrect answer is wrong"

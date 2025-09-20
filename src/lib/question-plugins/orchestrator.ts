@@ -1,7 +1,7 @@
 import { GenerateParams, QuestionPlugin, RawQuestion } from './QuestionPlugin';
 import { shuffleVariants } from './utils';
 import { tinyJudge } from '../judge';
-import { shouldKeepQuestion, displayQualityRatingSummary } from '../quality-filter';
+import { qualityFilterOrchestrator } from '../quality-filters/QualityFilterOrchestrator';
 
 interface OrchestrateArgs {
   chunks: string[];
@@ -107,7 +107,7 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
         }
       }
       console.log(`✅ Quality Generation Complete: ${results.length} excellent questions (7/10+) generated`);
-      displayQualityRatingSummary();
+      qualityFilterOrchestrator.displayQualityRatingSummary();
       return true;
     }
     
@@ -159,7 +159,7 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
             };
             
             try {
-              accept = await shouldKeepQuestion(qualityInput);
+              accept = await qualityFilterOrchestrator.shouldKeepQuestion(qualityInput);
               if (!accept) {
                 apiCallsRejected++;
                 console.log(`🚫 Question rejected by quality filter: ${quiz.question?.substring(0, 50)}...`);
@@ -170,6 +170,12 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
             } catch (error) {
               apiCallsRejected++;
               console.error('❌ Error in quality filter:', error);
+              
+              // Log JSON parsing errors specifically
+              if (error instanceof SyntaxError && error.message.includes('JSON')) {
+                qualityFilterOrchestrator.logJsonParsingError(q, error.message);
+              }
+              
               // If quality filter fails, reject the question for safety
               continue;
             }
