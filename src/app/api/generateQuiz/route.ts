@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     const desiredTotal = typeof numQuestions === 'number' && numQuestions > 0 ? numQuestions :30;
     const settings = {
       concurrency: Number(process.env.OPENAI_CONCURRENCY ?? 4),
-      maxCalls: Number(process.env.OPENAI_MAX_CALLS_PER_REQUEST ?? 30),
+      maxCalls: Number(process.env.OPENAI_MAX_CALLS_PER_REQUEST ?? 15),
       timeouts: {
         'function-variant': Number(process.env.OPENAI_TIMEOUT_FUNCTION_VARIANT_MS ?? 30000),
         'multiple-choice': Number(process.env.OPENAI_TIMEOUT_MCQ_MS ?? 20000),

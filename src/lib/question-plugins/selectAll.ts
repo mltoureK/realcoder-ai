@@ -101,16 +101,9 @@ CORRECT ANSWER LOGIC:
 - If correctCount is ${optionCount}: All options should be true/correct statements  
 - Otherwise: Mix correct and incorrect options to reach exactly ${correctCount} correct answers
 
-CHALLENGING DISTRACTORS: 
-- Make incorrect options subtle - they should test deep understanding
-- Focus on edge cases, side effects, data flow, parameter validation, error handling
-- Avoid obvious differences - make options require careful analysis
-- Test understanding of function behavior, not just obvious purposes
 
 OPTION QUALITY:
 - All options should be roughly the same length to avoid length-based guessing
-- Use parallel structure and consistent wording
-- Focus on specific, testable aspects of the function
 - Avoid vague or subjective statements
 
 FOCUS ON UNIVERSAL PROGRAMMING CONCEPTS:
@@ -123,11 +116,7 @@ AVOID:
 - Game-specific mechanics
 - Chatbot/AI-specific implementations
 
-EXPLANATION REQUIREMENTS:
-- Explain WHY each correct option is right
-- Explain WHY each incorrect option is wrong  
-- Include practical examples
-- Focus on learning value
+
 
 Format:
 [

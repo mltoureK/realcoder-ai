@@ -81,14 +81,14 @@ export abstract class BaseQualityFilter {
   protected getCommonCriteria(): string {
     return `
 CRITERIA FOR HIGH QUALITY (8-10):
-- Tests universal programming concepts (async/await, error handling, state management, API calls, data structures, execution order)
+- Tests universal programming concepts
 - Has clear, unambiguous correct answer
 - Educational value - teaches something useful to developers
 - Good explanations that help learning
 - Tests practical skills developers use daily
 
 CRITERIA FOR MEDIUM QUALITY (6-7):
-- Tests reasonable programming concepts, even if domain-specific (GitHub API, file processing, data fetching)
+- Tests reasonable programming concepts, even if domain-specific 
 - Generally clear but might have minor ambiguities
 - Moderate educational value
 
@@ -97,8 +97,7 @@ CRITERIA FOR LOW QUALITY (1-4):
 - Tests domain-specific business logic that doesn't transfer
 - Tests cosmetic formatting differences
 - Tests game-specific mechanics (lives, refills, etc.)
-- Unclear or ambiguous questions
-- Poor explanations
+- Unclear or ambiguous options
 - INSUFFICIENT CONTEXT: Question cannot be answered without additional context about variables, data structures, or function parameters (AUTOMATIC 5/10)
 
 CRITICAL: Be GENEROUS with universal programming patterns, even in specific contexts. API integration, async handling, and execution order questions should score 8+ if they teach transferable skills.`;
