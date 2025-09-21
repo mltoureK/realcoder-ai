@@ -60,12 +60,42 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     } else if (currentQuestion.type === 'select-all') {
       // For select-all, check if selected answers match the correct indices
       const correctAnswers = currentQuestion.correctAnswers || [];
-      const correctOptions = correctAnswers.map((index: number) => currentQuestion.options[index]);
+      
+      // Debug: Log the actual data structure
+      console.log('🔍 Select-All Debug:', {
+        correctAnswers,
+        correctAnswersType: typeof correctAnswers[0],
+        selectedAnswers,
+        options: currentQuestion.options
+      });
+      
+      // Convert letter answers (A, B, C) to option indices
+      const correctIndices = correctAnswers.map((letter: string) => {
+        const charCode = letter.charCodeAt(0);
+        return charCode - 65; // A=0, B=1, C=2, etc.
+      });
+      
+      // Get the actual option texts that are correct
+      const correctOptions = correctIndices.map((index: number) => currentQuestion.options[index]);
+      
+      console.log('🔍 Select-All Debug (processed):', {
+        correctIndices,
+        correctOptions
+      });
       
       // Check if selected answers exactly match correct answers
       isCorrect = selectedAnswers.length === correctOptions.length &&
         selectedAnswers.every((answer: string) => correctOptions.includes(answer)) &&
         correctOptions.every((answer: string) => selectedAnswers.includes(answer));
+      
+      console.log('🔍 Select-All Final Debug:', {
+        selectedAnswers,
+        correctOptions,
+        lengthMatch: selectedAnswers.length === correctOptions.length,
+        everySelectedInCorrect: selectedAnswers.every((answer: string) => correctOptions.includes(answer)),
+        everyCorrectInSelected: correctOptions.every((answer: string) => selectedAnswers.includes(answer)),
+        finalResult: isCorrect
+      });
     } else {
       // For other question types
       isCorrect = Array.isArray(currentQuestion.correctAnswer)
