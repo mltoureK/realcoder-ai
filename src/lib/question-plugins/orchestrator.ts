@@ -148,6 +148,19 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
           let accept = true;
           if (process.env.ENABLE_QUALITY_FILTER !== 'false') {
             const quiz: any = (q as any).quiz || {};
+            
+            // Convert letter-based correctAnswers to numbers for quality filter
+            let correctAnswersForFilter = quiz.correctAnswers;
+            if (Array.isArray(quiz.correctAnswers) && quiz.correctAnswers.length > 0) {
+              if (typeof quiz.correctAnswers[0] === 'string') {
+                // Convert letters to numbers for quality filter
+                correctAnswersForFilter = quiz.correctAnswers.map((letter: string) => {
+                  const charCode = letter.charCodeAt(0);
+                  return charCode - 65; // A=0, B=1, C=2, etc.
+                });
+              }
+            }
+            
             const qualityInput = {
               type: quiz.type,
               question: quiz.question,
@@ -155,7 +168,8 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
               variants: quiz.variants,
               codeContext: (q as any).codeContext,
               snippet: (q as any).snippet,
-              explanation: quiz.explanation
+              explanation: quiz.explanation,
+              correctAnswers: correctAnswersForFilter
             };
             
             try {

@@ -8,6 +8,7 @@ export interface QualityRatingRequest {
   codeContext?: string;
   snippet?: string;
   explanation?: string;
+  correctAnswers?: number[];
 }
 
 export interface QualityRatingResponse {
@@ -120,6 +121,7 @@ QUESTION TO RATE:
 Type: ${question.type}
 Question: ${question.question}
 ${question.options ? `Options: ${question.options.join(', ')}` : ''}
+${question.correctAnswers ? `Correct Answers (0-based indices): ${question.correctAnswers.join(', ')}` : ''}
 ${question.variants && question.variants.length > 0 ? 
   `Code Variants:\n${question.variants.map((v: any, i: number) => 
     `Variant ${i + 1} (${v.isCorrect ? 'CORRECT' : 'INCORRECT'}):\n${v.code}\nExplanation: ${v.explanation}`

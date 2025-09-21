@@ -88,12 +88,12 @@ IMPORTANT REQUIREMENTS:
 1. IGNORE any code that is not in the primary programming language of this repository.
 2. ONLY generate questions about functions that actually exist in the provided code chunk
 3. The function name in "snippet" must match a real function from the code
-4. Include the actual function code in the "codeContext" field with PROPER FORMATTING
+4. Include the actual function code in the "codeContext" field with PROPER JSON ESCAPING
 5. Create exactly ${optionCount} options total
 6. Exactly ${correctCount} options should be correct (this is MANDATORY - not more, not less)
 7. Create realistic incorrect options that test deep understanding
 8. SCENARIO CONTEXT: Create realistic development scenarios that explain WHY this function exists
-9. CODE FORMATTING: Format the codeContext with proper indentation and line breaks for readability
+9. JSON ESCAPING: ALL special characters in codeContext MUST be properly escaped for JSON
 
 CORRECT ANSWER LOGIC:
 - You MUST have exactly ${correctCount} correct answers out of ${optionCount} total options
@@ -101,13 +101,11 @@ CORRECT ANSWER LOGIC:
 - If correctCount is ${optionCount}: All options should be true/correct statements  
 - Otherwise: Mix correct and incorrect options to reach exactly ${correctCount} correct answers
 
-
 OPTION QUALITY:
 - All options should be roughly the same length to avoid length-based guessing
 - Avoid vague or subjective statements
 
 FOCUS ON UNIVERSAL PROGRAMMING CONCEPTS:
-
 
 AVOID:
 - Repository-specific trivia
@@ -116,7 +114,13 @@ AVOID:
 - Game-specific mechanics
 - Chatbot/AI-specific implementations
 
-
+JSON ESCAPING RULES FOR CODE CONTEXT:
+- Newlines must be escaped as \\n
+- Tabs must be escaped as \\t
+- Backslashes must be escaped as \\\\
+- Quotes must be escaped as \\"
+- NEVER use string concatenation with + in codeContext
+- Put the ENTIRE function code in ONE string with proper escaping
 
 Format:
 [
@@ -125,7 +129,7 @@ Format:
     "quiz": {
       "type": "select-all",
       "question": "In a [REALISTIC_APP_CONTEXT], which statements about the function functionName are correct? Select all that apply.",
-      "codeContext": "function functionName = (param) => {\n  // properly formatted code with\n  // proper indentation and line breaks\n  return result;\n};",
+      "codeContext": "public void functionName(ParamType param) {\\n    // properly escaped code\\n    return result;\\n}",
       "options": [
         { "text": "First statement about the function, that can be unambiguously true or false",  "isCorrect": true },
         { "text": "Second statement about the function, that can be unambiguously true or false", "isCorrect": false },
@@ -142,7 +146,9 @@ Format:
 CRITICAL:
 - The "options" array MUST be objects with fields { text: string, isCorrect: boolean }.
 - Ensure EXACTLY ${correctCount} options have isCorrect=true.
-- Set quiz.correctAnswers to an empty array; the application will compute indices from isCorrect.`;
+- Set quiz.correctAnswers to an empty array; the application will compute letters from isCorrect.
+- ALL code in codeContext MUST be properly JSON-escaped with \\n for newlines, \\t for tabs, \\\\ for backslashes, and \\" for quotes.
+- For Java code: NEVER use string concatenation with + and escape ALL special characters properly.`;
 }
 
 /**
@@ -152,11 +158,11 @@ function formatCodeContext(codeContext: string): string {
   if (!codeContext) return codeContext;
   
   // Replace escaped newlines with actual newlines
-  let formatted = codeContext.replace(/\\n/g, '\n');
+  const formatted = codeContext.replace(/\\n/g, '\n');
   
   // Ensure proper indentation (basic formatting)
   const lines = formatted.split('\n');
-  const formattedLines = lines.map((line, index) => {
+  const formattedLines = lines.map((line) => {
     // Skip empty lines
     if (line.trim() === '') return line;
     
@@ -198,6 +204,14 @@ function cleanAiResponse(content: string): string {
   if (jsonEnd > 0 && jsonEnd < cleanContent.length - 1) {
     cleanContent = cleanContent.substring(0, jsonEnd + 1);
   }
+  
+  // Fix common JSON escaping issues for Java code
+  // Fix string concatenation issues (remove + operators that break JSON)
+  cleanContent = cleanContent.replace(/"\s*\+\s*\n\s*"/g, '');
+  cleanContent = cleanContent.replace(/"\s*\+\s*"/g, '');
+  
+  // Fix unescaped backslashes in code context
+  cleanContent = cleanContent.replace(/(?<!")\\(?!["\\\/bfnrtu])/g, '\\\\');
   
   return cleanContent;
 }
@@ -282,11 +296,16 @@ function validateSelectAllStructure(question: any): boolean {
     return false;
   }
   
-  // Validate that correctAnswers indices are valid
+  // Validate that correctAnswers are valid letters (A, B, C, D, E, F)
   const options = quiz.options || [];
-  for (const index of quiz.correctAnswers) {
-    if (typeof index !== 'number' || index < 0 || index >= options.length) {
-      console.warn('Select-all question has invalid correctAnswers index:', index);
+  for (const letter of quiz.correctAnswers) {
+    if (typeof letter !== 'string' || letter.length !== 1) {
+      console.warn('Select-all question has invalid correctAnswers letter:', letter);
+      return false;
+    }
+    const charCode = letter.charCodeAt(0);
+    if (charCode < 65 || charCode >= 65 + options.length) { // A=65, check if within A-F range
+      console.warn('Select-all question has out-of-range correctAnswers letter:', letter);
       return false;
     }
   }
@@ -313,11 +332,11 @@ async function processAiResponse(response: Response, generated: RawQuestion[]): 
             const opts = question.quiz.options;
             if (opts.length > 0 && typeof opts[0] === 'object' && 'text' in opts[0]) {
               const flatOptions: string[] = opts.map((o: any) => String(o.text));
-              const indices: number[] = opts
-                .map((o: any, i: number) => (o.isCorrect ? i : -1))
-                .filter((i: number) => i >= 0);
+              const letters: string[] = opts
+                .map((o: any, i: number) => (o.isCorrect ? String.fromCharCode(65 + i) : null))
+                .filter((letter: string | null) => letter !== null);
               question.quiz.options = flatOptions;
-              question.quiz.correctAnswers = indices;
+              question.quiz.correctAnswers = letters;
             }
           }
         } catch {}
@@ -354,11 +373,11 @@ async function processAiResponse(response: Response, generated: RawQuestion[]): 
               const opts = question.quiz.options;
               if (opts.length > 0 && typeof opts[0] === 'object' && 'text' in opts[0]) {
                 const flatOptions: string[] = opts.map((o: any) => String(o.text));
-                const indices: number[] = opts
-                  .map((o: any, i: number) => (o.isCorrect ? i : -1))
-                  .filter((i: number) => i >= 0);
+                const letters: string[] = opts
+                  .map((o: any, i: number) => (o.isCorrect ? String.fromCharCode(65 + i) : null))
+                  .filter((letter: string | null) => letter !== null);
                 question.quiz.options = flatOptions;
-                question.quiz.correctAnswers = indices;
+                question.quiz.correctAnswers = letters;
               }
             }
           } catch {}
