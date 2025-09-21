@@ -83,17 +83,20 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         correctOptions
       });
       
-      // Check if selected answers exactly match correct answers
-      isCorrect = selectedAnswers.length === correctOptions.length &&
-        selectedAnswers.every((answer: string) => correctOptions.includes(answer)) &&
-        correctOptions.every((answer: string) => selectedAnswers.includes(answer));
+      // For select-all questions, give partial credit:
+      // - No incorrect selections (all selected must be correct)
+      // - At least one correct selection
+      const hasCorrectSelections = selectedAnswers.some((answer: string) => correctOptions.includes(answer));
+      const hasIncorrectSelections = selectedAnswers.some((answer: string) => !correctOptions.includes(answer));
+      
+      // Answer is correct if: has correct selections AND no incorrect selections
+      isCorrect = hasCorrectSelections && !hasIncorrectSelections;
       
       console.log('🔍 Select-All Final Debug:', {
         selectedAnswers,
         correctOptions,
-        lengthMatch: selectedAnswers.length === correctOptions.length,
-        everySelectedInCorrect: selectedAnswers.every((answer: string) => correctOptions.includes(answer)),
-        everyCorrectInSelected: correctOptions.every((answer: string) => selectedAnswers.includes(answer)),
+        hasCorrectSelections,
+        hasIncorrectSelections,
         finalResult: isCorrect
       });
     } else {
@@ -927,7 +930,14 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               <div className="space-y-3">
                 {currentQuestion.options?.map((option: string, index: number) => {
                   const correctAnswers = currentQuestion.correctAnswers || [];
-                  const isCorrectOption = correctAnswers.includes(index);
+                  
+                  // Convert letter answers (A, B, C) to option indices for comparison
+                  const correctIndices = correctAnswers.map((letter: string) => {
+                    const charCode = letter.charCodeAt(0);
+                    return charCode - 65; // A=0, B=1, C=2, etc.
+                  });
+                  
+                  const isCorrectOption = correctIndices.includes(index);
                   const isSelectedOption = selectedAnswers.includes(option);
                   const isUserCorrect = isSelectedOption === isCorrectOption;
                   
