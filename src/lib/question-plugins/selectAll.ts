@@ -129,9 +129,9 @@ Format:
     "quiz": {
       "type": "select-all",
       "question": "In a [REALISTIC_APP_CONTEXT], which statements about the function functionName are correct? Select all that apply.",
-      "codeContext": "public void functionName(ParamType param) {\\n    // properly escaped code\\n    return result;\\n}",
+      "codeContext": "Show FULL COMPLETE FUNCTION CODE HERE, and properly formatted code with proper indentation and line breaks",
       "options": [
-        { "text": "First statement about the function, that can be unambiguously true or false",  "isCorrect": true },
+        { "text": "First statement about the function, that can be unambiguously true or false",  "isCorrect": true | false },
         { "text": "Second statement about the function, that can be unambiguously true or false", "isCorrect": false },
         { "text": "Third statement about the function, that can be unambiguously true or false",  "isCorrect": false },
         { "text": "Fourth statement about the function, that can be unambiguously true or false", "isCorrect": true },
