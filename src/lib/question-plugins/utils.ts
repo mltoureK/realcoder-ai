@@ -167,25 +167,35 @@ export function validateQuestionStructure(question: any): boolean {
   // Support for select-all questions
   if (question.quiz.type === 'select-all') {
     const options = question.quiz.options;
-    const indices = question.quiz.correctAnswers;
+    const correctAnswers = question.quiz.correctAnswers;
     if (!Array.isArray(options) || options.length === 0) {
       console.log('🚫 Validator: select-all missing options:', question.quiz);
       return false;
     }
-    if (!Array.isArray(indices)) {
+    if (!Array.isArray(correctAnswers)) {
       console.log('🚫 Validator: select-all missing correctAnswers array:', question.quiz);
       return false;
     }
-    if (!question.quiz.explanation) {
-      console.log('🚫 Validator: select-all missing explanation:', question.quiz);
+    
+    // Allow empty correctAnswers if options have isCorrect flags (will be processed later)
+    if (correctAnswers.length === 0) {
+      if (Array.isArray(options) && options.length > 0 && typeof options[0] === 'object' && 'isCorrect' in options[0]) {
+        return true; // Valid - will be processed later
+      }
+      console.log('🚫 Validator: select-all empty correctAnswers and no isCorrect flags:', question.quiz);
       return false;
     }
-    // Validate that all indices are integers within bounds
-    const validIndices = indices.every((i: any) => Number.isInteger(i) && i >= 0 && i < options.length);
-    if (!validIndices) {
-      console.log('🚫 Validator: select-all invalid indices:', { indices, optionsLength: options.length });
+    
+    // Validate that all correctAnswers are valid letters (A, B, C, D, E, F)
+    const validLetters = correctAnswers.every((letter: any) => {
+      if (typeof letter !== 'string' || letter.length !== 1) return false;
+      const charCode = letter.charCodeAt(0);
+      return charCode >= 65 && charCode < 65 + options.length; // A=65, check if within A-F range
+    });
+    if (!validLetters) {
+      console.log('🚫 Validator: select-all invalid letters:', { correctAnswers, optionsLength: options.length });
     }
-    return validIndices;
+    return validLetters;
   }
 
   console.log('🚫 Validator: Unknown question type:', question.quiz.type);

@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
         'function-variant': Number(process.env.OPENAI_TIMEOUT_FUNCTION_VARIANT_MS ?? 30000),
         'multiple-choice': Number(process.env.OPENAI_TIMEOUT_MCQ_MS ?? 20000),
         'true-false': Number(process.env.OPENAI_TIMEOUT_TRUE_FALSE_MS ?? 15000),
-        'select-all': Number(process.env.OPENAI_TIMEOUT_SELECT_ALL_MS ?? 45000)
+        'select-all': Number(process.env.OPENAI_TIMEOUT_SELECT_ALL_MS ?? 60000)
       },
       retries: { attempts: 3, backoffBaseMs: 500 }
     };

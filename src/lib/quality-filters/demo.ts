@@ -40,14 +40,14 @@ const sampleQuestions: Record<string, QualityRatingRequest> = {
       'Reducing memory usage',
       'Converting synchronous code to asynchronous'
     ],
-    correctAnswer: 'Handling asynchronous operations more elegantly',
+    correctAnswers: [1], // Second option (index 1) is correct
     explanation: 'async/await provides a cleaner syntax for handling promises and asynchronous operations'
   },
   
   'true-false': {
     type: 'true-false',
     question: 'The fetch() API always returns a resolved promise, even for HTTP error status codes like 404.',
-    correctAnswer: false,
+    correctAnswers: [0], // First option (false) is correct
     explanation: 'fetch() only rejects on network errors, not HTTP error status codes. You need to check response.ok for HTTP errors.',
     snippet: 'fetch("/api/data").then(response => { if (!response.ok) throw new Error("HTTP error"); })'
   },
@@ -61,7 +61,7 @@ const sampleQuestions: Record<string, QualityRatingRequest> = {
       'if/else statements',
       'Error boundaries'
     ],
-    correctAnswers: [true, true, false, false], // try/catch and Promise.catch() are valid
+    correctAnswers: [0, 1], // First two options (indices 0 and 1) are correct
     explanation: 'try/catch and Promise.catch() are standard error handling patterns for async functions'
   },
   
@@ -69,7 +69,7 @@ const sampleQuestions: Record<string, QualityRatingRequest> = {
     type: 'fill-blank',
     question: 'Complete the function: function fetchData() { return ____.fetch(url); }',
     options: ['window', 'global', 'this', 'fetch'],
-    correctAnswer: 'window',
+    correctAnswers: [0], // First option (window) is correct
     explanation: 'fetch is available on the window object in browsers',
     snippet: 'function fetchData(url) { return window.fetch(url); }'
   }

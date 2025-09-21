@@ -11,7 +11,7 @@ import { OrderSequenceQualityFilter } from './OrderSequenceQualityFilter';
  */
 export class QualityFilterOrchestrator {
   private filters: Map<string, BaseQualityFilter>;
-  private defaultFilter: BaseQualityFilter;
+  private defaultFilter: SelectAllQualityFilter; // Use a concrete implementation as default
   
   // Global counters and rating tracking for logging
   private questionsAccepted = 0;
@@ -28,17 +28,16 @@ export class QualityFilterOrchestrator {
 
   constructor() {
     // Initialize type-specific filters
-    this.filters = new Map([
-      ['function-variant', new FunctionVariantQualityFilter()],
-      ['multiple-choice', new MultipleChoiceQualityFilter()],
-      ['true-false', new TrueFalseQualityFilter()],
-      ['select-all', new SelectAllQualityFilter()],
-      ['fill-blank', new FillBlankQualityFilter()],
-      ['order-sequence', new OrderSequenceQualityFilter()],
-    ]);
+    this.filters = new Map<string, BaseQualityFilter>();
+    this.filters.set('function-variant', new FunctionVariantQualityFilter());
+    this.filters.set('multiple-choice', new MultipleChoiceQualityFilter());
+    this.filters.set('true-false', new TrueFalseQualityFilter());
+    this.filters.set('select-all', new SelectAllQualityFilter());
+    this.filters.set('fill-blank', new FillBlankQualityFilter());
+    this.filters.set('order-sequence', new OrderSequenceQualityFilter());
 
     // Default filter for unknown types (falls back to base quality criteria)
-    this.defaultFilter = new BaseQualityFilter();
+    this.defaultFilter = new SelectAllQualityFilter();
   }
 
   /**

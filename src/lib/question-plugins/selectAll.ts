@@ -138,7 +138,7 @@ Format:
         { "text": "Fifth statement about the function, that can be unambiguously true or false",  "isCorrect": false }${optionCount >= 6 ? ',\n        { "text": "Sixth statement about the function, that can be unambiguously true or false", "isCorrect": false }' : ''}
       ],
       "correctAnswers": [],
-      "explanation": "Detailed explanation of why each correct answer is right and each incorrect answer is wrong"
+      "explanation": "Detailed explanation of why each correct answer is right and each incorrect answer is wrong. This field is REQUIRED and cannot be empty."
     }
   }
 ]
@@ -147,6 +147,7 @@ CRITICAL:
 - The "options" array MUST be objects with fields { text: string, isCorrect: boolean }.
 - Ensure EXACTLY ${correctCount} options have isCorrect=true.
 - Set quiz.correctAnswers to an empty array; the application will compute letters from isCorrect.
+- The "explanation" field is MANDATORY and must contain a detailed explanation of why each correct answer is right and each incorrect answer is wrong.
 - ALL code in codeContext MUST be properly JSON-escaped with \\n for newlines, \\t for tabs, \\\\ for backslashes, and \\" for quotes.
 - For Java code: NEVER use string concatenation with + and escape ALL special characters properly.`;
 }
@@ -298,6 +299,17 @@ function validateSelectAllStructure(question: any): boolean {
   
   // Validate that correctAnswers are valid letters (A, B, C, D, E, F)
   const options = quiz.options || [];
+  
+  // If correctAnswers is empty, that's okay - it will be computed from isCorrect flags
+  if (quiz.correctAnswers.length === 0) {
+    // Check if options have isCorrect flags instead
+    if (Array.isArray(options) && options.length > 0 && typeof options[0] === 'object' && 'isCorrect' in options[0]) {
+      return true; // Valid - will be processed later
+    }
+    console.warn('Select-all question has empty correctAnswers and no isCorrect flags');
+    return false;
+  }
+  
   for (const letter of quiz.correctAnswers) {
     if (typeof letter !== 'string' || letter.length !== 1) {
       console.warn('Select-all question has invalid correctAnswers letter:', letter);
