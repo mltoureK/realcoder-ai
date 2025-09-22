@@ -15,8 +15,7 @@ export class SelectAllQualityFilter extends BaseQualityFilter {
     return `
 SPECIAL INSTRUCTIONS FOR SELECT-ALL QUESTIONS:
 - VERIFY EACH OPTION: Actually analyze the code logic to confirm each statement is True or False
-- EXAMINE EXECUTION FLOW: Understand what the function actually does vs what happens as a result
-- TEST LOGICAL REASONING: Ensure correct/incorrect markings match the actual code behavior
+- TEST LOGICAL REASONING: Ensure correct/incorrect markings match the actual code context given behavior
 - ENSURE BALANCED CORRECTNESS: Avoid having all options correct or all options incorrect (unless genuinely warranted)
 - TEST COMPREHENSIVE UNDERSTANDING: Questions should test understanding of multiple aspects of the code
 - VERIFY INDEPENDENT OPTIONS: Each option should be independently verifiable
@@ -24,9 +23,8 @@ SPECIAL INSTRUCTIONS FOR SELECT-ALL QUESTIONS:
 AUTOMATIC LOW RATINGS FOR SELECT-ALL:
 - WRONG MARKINGS: If any option is incorrectly marked as correct/incorrect based on the code, rate 1-3/10
 - ALL CORRECT/INCORRECT: All options marked as correct or incorrect without proper justification (AUTOMATIC 3/10)
-- TRIVIAL STATEMENTS: Options that test obvious facts rather than programming understanding (AUTOMATIC 2/10)
 - INSUFFICIENT OPTIONS: Less than 3 options provided (AUTOMATIC 3/10)
 - AMBIGUOUS OPTIONS: Options that could reasonably be interpreted as either correct or incorrect (AUTOMATIC 4/10)
-- MISSING CONTEXT: Options that can't be verified without additional context not provided (AUTOMATIC 4/10)`;
+- MISSING CONTEXT: Options that can't be verified without additional code context not provided (AUTOMATIC 4/10)`;
   }
 }

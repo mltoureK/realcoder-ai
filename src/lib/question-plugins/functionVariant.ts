@@ -53,8 +53,8 @@ Format:\n[\n  {\n    \"snippet\": \"actual function name from the code chunk\",\
                  \"question\": \"In [REALISTIC_APP_CONTEXT] with [SPECIFIC_CONTEXT], how should this function be implemented to accomplish[UNIVERSAL_GOAL/CONSTRAINT]?\",
       \"variants\": [\n        {\n          \"id\": \"A\",\n          \"code\": \"the actual function implementation from the code chunk\",\n          \"isCorrect\": true,\n          \"explanation\": \"Detailed explanation on why this is correct implementation from the original code\"\n        },\n        {\n          \"id\": \"B\",\n          \"code\": \"function with realistic bug (similar length)\",\n          \"isCorrect\": false,\n          \"explanation\": \"Detailed explanation on why this specific bug is wrong, and here is an example to further explain that\"\n        },\n        {\n          \"id\": \"C\",\n          \"code\": \"function with different realistic bug (similar length)\",\n          \"isCorrect\": false,\n          \"explanation\": \"Detailed explanation on why this specific bug is wrong, and here is an example to further explain that\"\n        },\n        {\n          \"id\": \"D\",\n          \"code\": \"function with another realistic bug (similar length)\",\n          \"isCorrect\": false,\n          \"explanation\": \"Here is why this specific bug is wrong, and here is an example to further explain that\"\n        }\n      ]\n    }\n  }\n]` }
               ],
-              temperature: 0.5,
-              max_tokens: 2500
+              temperature: 0.8,
+              max_tokens: 2000
             }),
             signal: controller.signal
           });

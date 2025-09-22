@@ -129,13 +129,13 @@ Format:
     "quiz": {
       "type": "select-all",
       "question": "In a [REALISTIC_APP_CONTEXT], which statements about the function functionName are correct? Select all that apply.",
-      "codeContext": "Show FULL COMPLETE FUNCTION CODE HERE, and properly formatted code with proper indentation and line breaks",
+      "codeContext": "Show FULL COMPLETE FUNCTION CODE HERE, it should be properly formatted for readability",
       "options": [
-        { "text": "First statement about the function, that can be unambiguously true or false",  "isCorrect": true | false },
-        { "text": "Second statement about the function, that can be unambiguously true or false", "isCorrect": false },
-        { "text": "Third statement about the function, that can be unambiguously true or false",  "isCorrect": false },
-        { "text": "Fourth statement about the function, that can be unambiguously true or false", "isCorrect": true },
-        { "text": "Fifth statement about the function, that can be unambiguously true or false",  "isCorrect": false }${optionCount >= 6 ? ',\n        { "text": "Sixth statement about the function, that can be unambiguously true or false", "isCorrect": false }' : ''}
+        { "text": "unambiguous statement about the function, that is true or false",  "isCorrect": true | false },
+        { "text": "unambiguous statement about the function, that is true or false", "isCorrect": false },
+        { "text": "unambiguous statement about the function, that is true or false",  "isCorrect": false },
+        { "text": "unambiguous statement about the function, that   is true or false", "isCorrect": true },
+        { "text": "unambiguous statement about the function, that is true or false",  "isCorrect": false }${optionCount >= 6 ? ',\n        { "text": "unambiguous statement about the function, that is true or false", "isCorrect": false }' : ''}
       ],
       "correctAnswers": [],
       "explanation": "Detailed explanation of why each correct answer is right and each incorrect answer is wrong. This field is REQUIRED and cannot be empty."

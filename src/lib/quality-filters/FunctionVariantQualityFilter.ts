@@ -67,7 +67,7 @@ export class FunctionVariantQualityFilter extends BaseQualityFilter {
    * Function-variant specific quality criteria
    */
   protected getTypeSpecificInstructions(): string {
-    return `
+    return ` 
 SPECIAL INSTRUCTIONS FOR FUNCTION-VARIANT QUESTIONS:
 - CHECK FOR FUNCTIONAL EQUIVALENCE: If multiple variants achieve the same result with different syntax, they should both be marked correct
 - CHECK LENGTH BALANCE: If correct answer is obviously longer/more detailed than incorrect options, rate 4/10 for predictable patterns
