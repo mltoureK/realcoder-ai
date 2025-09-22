@@ -42,26 +42,15 @@ IMPORTANT REQUIREMENTS:
 15. EQUAL LENGTH OPTIONS: Make all options roughly the same length to avoid length-based guessing
 
 FOCUS ON UNIVERSAL PROGRAMMING CONCEPTS:
-- Error handling and validation
-- Async/await patterns
-- Data transformation and processing
-- API interactions
-- State management
-- Data structures and algorithms
-- Security considerations
-- Performance optimization
+
 
 AVOID:
 - Repository-specific trivia
-- Domain-specific business logic
-- Cosmetic formatting differences
-- Game-specific mechanics
-- Chatbot/AI-specific implementations
+
 
 EXPLANATION REQUIREMENTS:
 - Explain WHY the correct answer is right
 - Explain WHY incorrect answers are wrong
-- Include practical examples
 - Focus on learning value
 
 Format:

@@ -6,13 +6,25 @@ import { delay, validateQuestionStructure } from './utils';
  */
 const OPENAI_MODEL = 'gpt-4o-mini';
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
-const TEMPERATURE = 0.5;
+const TEMPERATURE = 0.7;
 const MAX_TOKENS = 1500;
 
 /**
  * System prompt for consistent AI behavior
  */
 const SYSTEM_PROMPT = 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.';
+
+/**
+ * Randomly selects TRUE or FALSE for balanced distribution
+ */
+function getRandomTrueFalse(): { answer: string, isTrue: boolean } {
+  const options = ["TRUE", "FALSE"];
+  const randomIndex = Math.floor(Math.random() * options.length);
+  const answer = options[randomIndex];
+  const isTrue = answer === "TRUE";
+  
+  return { answer, isTrue };
+}
 
 /**
  * Creates the user prompt for true/false question generation
@@ -34,6 +46,7 @@ IMPORTANT REQUIREMENTS:
 7. The correct answer should be based on the actual code implementation
 8. Create realistic scenarios that explain WHY this question matters
 9. CODE FORMATTING: Format the codeContext with proper indentation and line breaks for readability
+10. CRITICAL: The answer MUST be "${answer}" - create a statement that is actually ${isTrue ? 'true' : 'false'} based on the code
 
 FORMAT (strict JSON):
 [
@@ -42,9 +55,9 @@ FORMAT (strict JSON):
     "quiz": {
       "type": "true-false",
       "question": "A true or false question about the code, that is not obvious and requires understanding the code concepts.",
-      "codeContext": "function { ... } OR code snippet",
+      "codeContext": "relevant full function OR code snippet",
       "options": ["True", "False"],
-      "answer": "TRUE",
+      "answer": "${answer}",
       "explanation": "Answer. The reason on why this is true or false."
     }
   }
@@ -184,7 +197,24 @@ async function processAiResponse(response: Response, generated: RawQuestion[]): 
   const content = data.choices[0].message.content as string;
   
   try {
-    const cleanContent = cleanAiResponse(content);
+    let cleanContent = cleanAiResponse(content);
+    
+    // Additional cleaning for common issues
+    cleanContent = cleanContent.trim();
+    if (cleanContent.startsWith('```json')) {
+      cleanContent = cleanContent.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+    }
+    if (cleanContent.startsWith('```')) {
+      cleanContent = cleanContent.replace(/^```\s*/, '').replace(/\s*```$/, '');
+    }
+    
+    // Find JSON array boundaries
+    const jsonStart = cleanContent.indexOf('[');
+    const jsonEnd = cleanContent.lastIndexOf(']');
+    if (jsonStart >= 0 && jsonEnd > jsonStart) {
+      cleanContent = cleanContent.substring(jsonStart, jsonEnd + 1);
+    }
+    
     const parsed = JSON.parse(cleanContent);
     
     if (Array.isArray(parsed)) {
