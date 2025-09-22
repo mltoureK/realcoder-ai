@@ -6,9 +6,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { orchestrateGeneration } from '@/lib/question-plugins/orchestrator';
 import { functionVariantPlugin } from '@/lib/question-plugins/functionVariant';
 import { multipleChoicePlugin } from '@/lib/question-plugins/multipleChoice';
-import { fillBlankPlugin } from '@/lib/question-plugins/fillBlank';
 import { orderSequencePlugin } from '@/lib/question-plugins/orderSequence';
 import { trueFalsePlugin } from '@/lib/question-plugins/trueFalse';
+import { selectAllPlugin } from '@/lib/question-plugins/selectAll';
 import { 
   cleanCodeForChunking,
   createSmartCodeChunks,
@@ -52,28 +52,36 @@ export async function POST(request: NextRequest) {
     
     // Clean + chunk code
     const cleanCode = cleanCodeForChunking(code || '');
-    const chunks = createSmartCodeChunks(cleanCode || '', 4000);
+    const chunks = createSmartCodeChunks(cleanCode || '', 2000);
 
     // Select plugins per requested types
     const availablePlugins: Record<string, any> = {
       'function-variant': functionVariantPlugin,
       'multiple-choice': multipleChoicePlugin,
-      'fill-blank': fillBlankPlugin,
       'order-sequence': orderSequencePlugin,
-      'true-false': trueFalsePlugin
+      'true-false': trueFalsePlugin,
+      'select-all': selectAllPlugin
     };
-    const selectedPlugins = (Array.isArray(questionTypes) ? questionTypes : [])
+    // Force function-variant only to maximize function-variant generation
+    const defaultQuestionTypes = ['function-variant'];
+    const requestedTypes = ['function-variant'];
+    
+    const selectedPlugins = requestedTypes
       .map((t: string) => availablePlugins[t])
       .filter(Boolean);
+    
+    console.log('🎯 Selected question types:', requestedTypes);
 
     const desiredTotal = typeof numQuestions === 'number' && numQuestions > 0 ? numQuestions :30;
     const settings = {
       concurrency: Number(process.env.OPENAI_CONCURRENCY ?? 4),
-      maxCalls: Number(process.env.OPENAI_MAX_CALLS_PER_REQUEST ?? 30),
+      maxCalls: Number(process.env.OPENAI_MAX_CALLS_PER_REQUEST ?? 15),
       timeouts: {
         'function-variant': Number(process.env.OPENAI_TIMEOUT_FUNCTION_VARIANT_MS ?? 30000),
         'multiple-choice': Number(process.env.OPENAI_TIMEOUT_MCQ_MS ?? 20000),
-        'true-false': Number(process.env.OPENAI_TIMEOUT_TRUE_FALSE_MS ?? 15000)
+        'true-false': Number(process.env.OPENAI_TIMEOUT_TRUE_FALSE_MS ?? 15000),
+        'select-all': Number(process.env.OPENAI_TIMEOUT_SELECT_ALL_MS ?? 60000),
+        'order-sequence': Number(process.env.OPENAI_TIMEOUT_ORDER_SEQUENCE_MS ?? 25000)
       },
       retries: { attempts: 3, backoffBaseMs: 500 }
     };
@@ -115,25 +123,6 @@ export async function POST(request: NextRequest) {
           codeContext: questionData.codeContext || q.codeContext,
           variants: []
         } as any;
-      } else if (questionData.type === 'fill-blank') {
-        const opts = questionData.options || [];
-        const ansNum = parseInt(questionData.answer);
-        let idx = -1;
-        if (!isNaN(ansNum)) {
-          if (ansNum >= 1 && ansNum <= opts.length) idx = ansNum - 1;
-          else if (ansNum >= 0 && ansNum < opts.length) idx = ansNum;
-        }
-        return {
-          id: (index + 1).toString(),
-          type: questionData.type,
-          question: questionData.question || 'Complete the code',
-          options: opts,
-          correctAnswer: idx >= 0 ? opts[idx] : null,
-          explanation: questionData.explanation || '',
-          difficulty: 'medium',
-          codeContext: undefined,
-          variants: []
-        } as any;
       } else if (questionData.type === 'order-sequence') {
         return {
           id: (index + 1).toString(),
@@ -147,7 +136,7 @@ export async function POST(request: NextRequest) {
           correctOrder: questionData.correctOrder || [],
           variants: []
         };
-      } else if (questionData.type === 'true-false') {
+        } else if (questionData.type === 'true-false') {
         const opts = questionData.options || ['True', 'False'];
         const answer = questionData.answer;
         let idx = -1;
@@ -165,6 +154,22 @@ export async function POST(request: NextRequest) {
           question: questionData.question || 'Is this statement true or false?',
           options: opts,
           correctAnswer: idx >= 0 ? opts[idx] : null,
+          explanation: questionData.explanation || '',
+          difficulty: 'medium',
+          codeContext: questionData.codeContext || q.codeContext,
+          variants: []
+        } as any;
+      } else if (questionData.type === 'select-all') {
+        const opts = questionData.options || [];
+        const correctAnswers = questionData.correctAnswers || [];
+        
+        return {
+          id: (index + 1).toString(),
+          type: questionData.type,
+          question: questionData.question || 'Select all that apply',
+          options: opts,
+          correctAnswers: correctAnswers, // Array of indices
+          correctAnswer: null, // Not used for select-all
           explanation: questionData.explanation || '',
           difficulty: 'medium',
           codeContext: questionData.codeContext || q.codeContext,
@@ -243,24 +248,31 @@ export async function POST(request: NextRequest) {
       options: { difficulty: difficulty || 'medium' }
     });
 
-    // Fallback: if fill-blank was requested but none were produced, try one direct call on the first chunk
-    if (Array.isArray(questionTypes) && questionTypes.includes('fill-blank')) {
-      const hasFillBlank = rawGenerated.some((q: any) => q?.quiz?.type === 'fill-blank');
-      if (!hasFillBlank && chunks.length > 0) {
+    // Fallback: disabled for non-function-variant types while focusing solely on function-variant
+    if (Array.isArray(requestedTypes) && requestedTypes.includes('select-all')) {
+      const hasSelectAll = rawGenerated.some((q: any) => q?.quiz?.type === 'select-all');
+      if (!hasSelectAll && chunks.length > 0) {
         try {
-          const fb = await fillBlankPlugin.generate({
+          console.log('🛟 Fallback: attempting direct select-all generation on first chunk');
+          const sa = await selectAllPlugin.generate({
             chunk: chunks[0],
             options: { difficulty: difficulty || 'medium', numQuestions: desiredTotal },
             apiKey: openaiApiKey,
-            timeoutMs: Number(process.env.OPENAI_TIMEOUT_FILLBLANK_MS ?? 20000),
-            retry: { attempts: 3, backoffBaseMs: 500 }
+            timeoutMs: Number(process.env.OPENAI_TIMEOUT_SELECT_ALL_MS ?? 45000),
+            retry: { attempts: 2, backoffBaseMs: 600 }
           } as any);
-          if (Array.isArray(fb) && fb.length > 0) {
-            rawGenerated = [...rawGenerated, fb[0]];
+          if (Array.isArray(sa) && sa.length > 0) {
+            rawGenerated = [...rawGenerated, sa[0]];
+            console.log('✅ Fallback select-all produced 1 question');
+          } else {
+            console.log('⚠️ Fallback select-all returned no questions');
           }
-        } catch {}
+        } catch (e) {
+          console.warn('❌ Fallback select-all generation failed:', e);
+        }
       }
     }
+
 
     const shuffledGeneratedQuestions = shuffleVariants(rawGenerated);
     console.log(`🎲 Randomized ${shuffledGeneratedQuestions.length} questions for variety`);
@@ -327,26 +339,6 @@ export async function POST(request: NextRequest) {
             codeContext: finalCodeContext,
             variants: []
           };
-        } else if (questionData.type === 'fill-blank') {
-          const opts = questionData.options || [];
-          const ansNum = parseInt(questionData.answer);
-          let idx = -1;
-          if (!isNaN(ansNum)) {
-            if (ansNum >= 1 && ansNum <= opts.length) idx = ansNum - 1; // 1-based
-            else if (ansNum >= 0 && ansNum < opts.length) idx = ansNum; // 0-based
-          }
-          return {
-            id: (index + 1).toString(),
-            type: questionData.type,
-            question: questionData.question || 'Complete the code',
-            options: opts,
-            correctAnswer: idx >= 0 ? opts[idx] : null,
-            explanation: questionData.explanation || '',
-            difficulty: 'medium',
-            // Hide codeContext for fill-blank in UI layer
-            codeContext: undefined,
-            variants: []
-          };
         } else if (questionData.type === 'order-sequence') {
           return {
             id: (index + 1).toString(),
@@ -360,6 +352,45 @@ export async function POST(request: NextRequest) {
             correctOrder: questionData.correctOrder || [],
             variants: []
           };
+        } else if (questionData.type === 'true-false') {
+          const opts = questionData.options || ['True', 'False'];
+          const answer = questionData.answer;
+          let idx = -1;
+          
+          // Handle string answers (TRUE, FALSE, True, False, etc.) - case insensitive
+          if (typeof answer === 'string') {
+            const normalizedAnswer = answer.toLowerCase().trim();
+            if (normalizedAnswer === 'true') idx = 0;
+            else if (normalizedAnswer === 'false') idx = 1;
+          }
+          
+          return {
+            id: (index + 1).toString(),
+            type: questionData.type,
+            question: questionData.question || 'Is this statement true or false?',
+            options: opts,
+            correctAnswer: idx >= 0 ? opts[idx] : null,
+            explanation: questionData.explanation || '',
+            difficulty: 'medium',
+            codeContext: questionData.codeContext || q.codeContext,
+            variants: []
+          } as any;
+        } else if (questionData.type === 'select-all') {
+          const opts = questionData.options || [];
+          const correctAnswers = questionData.correctAnswers || [];
+          
+          return {
+            id: (index + 1).toString(),
+            type: questionData.type,
+            question: questionData.question || 'Select all that apply',
+            options: opts,
+            correctAnswers: correctAnswers, // Array of indices
+            correctAnswer: null, // Not used for select-all
+            explanation: questionData.explanation || '',
+            difficulty: 'medium',
+            codeContext: questionData.codeContext || q.codeContext,
+            variants: []
+          } as any;
         } else {
           // Fallback for unknown question types
           console.warn(`⚠️ Question ${index + 1} has unknown type: ${questionData.type}`);

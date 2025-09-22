@@ -5,7 +5,7 @@ export const orderSequencePlugin: QuestionPlugin = {
   type: 'order-sequence',
   async generate(params: GenerateParams): Promise<RawQuestion[]> {
     const { chunk, apiKey, timeoutMs, retry, abortSignal } = params;
-    const questionsPerChunk = 2;
+    const questionsPerChunk = 3;
 
     const generated: RawQuestion[] = [];
     try {

@@ -272,7 +272,7 @@ export default function Home() {
           },
           body: JSON.stringify({
             code: combinedCode,
-            questionTypes: ['function-variant', 'multiple-choice', 'order-sequence', 'true-false'/*, 'fill-blank'*/],
+            questionTypes: ['function-variant', 'multiple-choice', 'order-sequence', 'true-false', 'select-all'],
             difficulty: 'medium',
             numQuestions: 15
           })
@@ -358,7 +358,7 @@ export default function Home() {
           },
           body: JSON.stringify({
             code: combinedCode,
-            questionTypes: ['function-variant', 'multiple-choice', 'order-sequence', 'true-false'/*, 'fill-blank'*/],
+            questionTypes: ['function-variant', 'multiple-choice', 'order-sequence', 'true-false', 'select-all'],
             difficulty: 'medium',
             numQuestions: 10
           })
@@ -503,6 +503,12 @@ export default function Home() {
             >
               🐙 GitHub Repo
             </button>
+          </div>
+
+          {/* Controls Row */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+            </div>
           </div>
 
           {/* Upload Files Tab */}

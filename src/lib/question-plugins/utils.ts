@@ -21,113 +21,127 @@ export function removeComments(code: string): string {
 }
 
 export function balanceVariantVerbosity(variants: any[]): any[] {
-  if (variants.length < 2) return variants;
-  const correctVariant = variants.find((v: any) => v && v.isCorrect);
-  const incorrectVariants = variants.filter((v: any) => v && !v.isCorrect);
-  if (!correctVariant || incorrectVariants.length === 0) return variants;
-
-  // Calculate lengths more strictly (line count + character count)
-  const getVariantComplexity = (variant: any) => {
-    const code = variant.code || '';
-    const lines = code.split('\n').filter(line => line.trim().length > 0).length;
-    const chars = code.length;
-    return { lines, chars, code };
-  };
-
-  const correctComplexity = getVariantComplexity(correctVariant);
-  const incorrectComplexities = incorrectVariants.map(getVariantComplexity);
-  const avgIncorrectLines = incorrectComplexities.reduce((sum, c) => sum + c.lines, 0) / incorrectComplexities.length;
-  const avgIncorrectChars = incorrectComplexities.reduce((sum, c) => sum + c.chars, 0) / incorrectComplexities.length;
-
-  // Much stricter threshold: 20% difference instead of 50%
-  const lineThreshold = 0.2;
-  const charThreshold = 0.3;
-
-  // If correct answer is significantly longer, pad shorter incorrect answers
-  if (correctComplexity.lines > avgIncorrectLines * (1 + lineThreshold) || 
-      correctComplexity.chars > avgIncorrectChars * (1 + charThreshold)) {
-    
-    console.log(`⚖️ Correct answer too long (${correctComplexity.lines} lines vs avg ${avgIncorrectLines.toFixed(1)}), padding incorrect answers`);
-    
-    incorrectVariants.forEach((variant, index) => {
-      const complexity = incorrectComplexities[index];
-      if (complexity.lines < correctComplexity.lines * 0.8) {
-        // Add padding to make it look more substantial
-        if (variant.code.includes('return') && !variant.code.includes('const result')) {
-          variant.code = variant.code.replace(
-            /return ([^;\n]+);?/,
-            'const result = $1;\n  return result;'
-          );
-        } else if (variant.code.includes('{') && !variant.code.includes('//')) {
-          // Add a comment to increase apparent complexity
-          variant.code = variant.code.replace('{', '{\n  // Validate input parameters');
-        }
-      }
-    });
-  }
-
-  // If correct answer is significantly shorter, trim longer incorrect answers  
-  if (correctComplexity.lines < avgIncorrectLines * (1 - lineThreshold) ||
-      correctComplexity.chars < avgIncorrectChars * (1 - charThreshold)) {
-    
-    console.log(`⚖️ Correct answer too short (${correctComplexity.lines} lines vs avg ${avgIncorrectLines.toFixed(1)}), trimming incorrect answers`);
-    
-    incorrectVariants.forEach(variant => {
-      // Simplify overly verbose incorrect answers
-      if (variant.code.includes('const result') && variant.code.includes('return result')) {
-        variant.code = variant.code.replace(
-          /const result = ([^;\n]+);?\s*return result;?/,
-          'return $1;'
-        );
-      }
-      // Remove unnecessary comments
-      variant.code = variant.code.replace(/\s*\/\/[^\n]*\n/g, '\n');
-    });
-  }
-
+  // Disabled: do not alter variant lengths; return as-is
   return variants;
 }
 
 export function validateQuestionStructure(question: any): boolean {
-  if (!question || typeof question !== 'object') return false;
-  if (!question.quiz || typeof question.quiz !== 'object') return false;
-  if (!question.quiz.type || !question.quiz.question) return false;
+  if (!question || typeof question !== 'object') {
+    console.log('🚫 Validator: Question is not an object:', question);
+    return false;
+  }
+  if (!question.quiz || typeof question.quiz !== 'object') {
+    console.log('🚫 Validator: Question.quiz is missing or not an object:', question);
+    return false;
+  }
+  if (!question.quiz.type || !question.quiz.question) {
+    console.log('🚫 Validator: Missing type or question:', { type: question.quiz?.type, question: question.quiz?.question });
+    return false;
+  }
 
   if (question.quiz.type === 'function-variant') {
-    if (!Array.isArray(question.quiz.variants) || question.quiz.variants.length === 0) return false;
-    return question.quiz.variants.every((variant: any) =>
+    if (!Array.isArray(question.quiz.variants) || question.quiz.variants.length === 0) {
+      console.log('🚫 Validator: function-variant missing variants:', question.quiz);
+      return false;
+    }
+    const valid = question.quiz.variants.every((variant: any) =>
       variant && variant.id && variant.code && typeof variant.isCorrect === 'boolean' && variant.explanation
     );
+    if (!valid) {
+      console.log('🚫 Validator: function-variant has invalid variants:', question.quiz.variants);
+    }
+    return valid;
   }
 
   if (question.quiz.type === 'multiple-choice') {
-    if (!Array.isArray(question.quiz.options) || question.quiz.options.length === 0) return false;
-    if (!question.quiz.answer || !question.quiz.explanation) return false;
+    if (!Array.isArray(question.quiz.options) || question.quiz.options.length === 0) {
+      console.log('🚫 Validator: multiple-choice missing options:', question.quiz);
+      return false;
+    }
+    if (!question.quiz.answer || !question.quiz.explanation) {
+      console.log('🚫 Validator: multiple-choice missing answer/explanation:', { answer: question.quiz.answer, explanation: question.quiz.explanation });
+      return false;
+    }
     return true;
   }
 
   if (question.quiz.type === 'order-sequence') {
-    if (!Array.isArray(question.quiz.steps) || question.quiz.steps.length === 0) return false;
-    if (!Array.isArray(question.quiz.correctOrder) || question.quiz.correctOrder.length === 0) return false;
-    return question.quiz.steps.every((step: any) =>
+    if (!Array.isArray(question.quiz.steps) || question.quiz.steps.length === 0) {
+      console.log('🚫 Validator: order-sequence missing steps:', question.quiz);
+      return false;
+    }
+    if (!Array.isArray(question.quiz.correctOrder) || question.quiz.correctOrder.length === 0) {
+      console.log('🚫 Validator: order-sequence missing correctOrder:', question.quiz);
+      return false;
+    }
+    const valid = question.quiz.steps.every((step: any) =>
       step && step.id && step.code && step.explanation
     );
+    if (!valid) {
+      console.log('🚫 Validator: order-sequence has invalid steps:', question.quiz.steps);
+    }
+    return valid;
   }
 
   if (question.quiz.type === 'true-false') {
-    if (!Array.isArray(question.quiz.options) || question.quiz.options.length !== 2) return false;
-    if (!question.quiz.answer || !question.quiz.explanation) return false;
+    if (!Array.isArray(question.quiz.options) || question.quiz.options.length !== 2) {
+      console.log('🚫 Validator: true-false wrong options count:', question.quiz);
+      return false;
+    }
+    if (!question.quiz.answer || !question.quiz.explanation) {
+      console.log('🚫 Validator: true-false missing answer/explanation:', { answer: question.quiz.answer, explanation: question.quiz.explanation });
+      return false;
+    }
     // Ensure options are "True" and "False"
     const options = question.quiz.options;
-    return options.includes('True') && options.includes('False');
+    const hasTrueFalse = options.includes('True') && options.includes('False');
+    if (!hasTrueFalse) {
+      console.log('🚫 Validator: true-false options not True/False:', options);
+    }
+    return hasTrueFalse;
   }
 
+  // Support for select-all questions
+  if (question.quiz.type === 'select-all') {
+    const options = question.quiz.options;
+    const correctAnswers = question.quiz.correctAnswers;
+    if (!Array.isArray(options) || options.length === 0) {
+      console.log('🚫 Validator: select-all missing options:', question.quiz);
+      return false;
+    }
+    if (!Array.isArray(correctAnswers)) {
+      console.log('🚫 Validator: select-all missing correctAnswers array:', question.quiz);
+      return false;
+    }
+    
+    // Allow empty correctAnswers if options have isCorrect flags (will be processed later)
+    if (correctAnswers.length === 0) {
+      if (Array.isArray(options) && options.length > 0 && typeof options[0] === 'object' && 'isCorrect' in options[0]) {
+        return true; // Valid - will be processed later
+      }
+      console.log('🚫 Validator: select-all empty correctAnswers and no isCorrect flags:', question.quiz);
+      return false;
+    }
+    
+    // Validate that all correctAnswers are valid letters (A, B, C, D, E, F)
+    const validLetters = correctAnswers.every((letter: any) => {
+      if (typeof letter !== 'string' || letter.length !== 1) return false;
+      const charCode = letter.charCodeAt(0);
+      return charCode >= 65 && charCode < 65 + options.length; // A=65, check if within A-F range
+    });
+    if (!validLetters) {
+      console.log('🚫 Validator: select-all invalid letters:', { correctAnswers, optionsLength: options.length });
+    }
+    return validLetters;
+  }
+
+  console.log('🚫 Validator: Unknown question type:', question.quiz.type);
   return false;
 }
 
 export function createSmartCodeChunks(code: string, maxTokensPerChunk: number = 25000): string[] {
   const fileRegex = /\/\/ ([^\n]+)\n([\s\S]*?)(?=\/\/ [^\n]+\n|$)/g;
-  const files: { name: string; content: string; size: number }[] = [];
+  const files: { name: string; content: string; size: number; functionCount: number }[] = [];
 
   let match: RegExpExecArray | null;
   while ((match = fileRegex.exec(code)) !== null) {
@@ -135,25 +149,36 @@ export function createSmartCodeChunks(code: string, maxTokensPerChunk: number = 
     const content = match[2].trim();
     if (isIrrelevantFile(filename)) continue;
     const estimatedTokens = Math.ceil(content.length / 4);
-    files.push({ name: filename, content, size: estimatedTokens });
+    const functionCount = (content.match(/function\s+\w+|const\s+\w+\s*=\s*\(|class\s+\w+|public\s+\w+\s*\(|private\s+\w+\s*\(/g) || []).length;
+    files.push({ name: filename, content, size: estimatedTokens, functionCount });
   }
 
   if (files.length === 0) {
     const estimatedTokens = Math.ceil(code.length / 4);
-    files.push({ name: 'main.js', content: code, size: estimatedTokens });
+    const functionCount = (code.match(/function\s+\w+|const\s+\w+\s*=\s*\(|class\s+\w+|public\s+\w+\s*\(|private\s+\w+\s*\(/g) || []).length;
+    files.push({ name: 'main.js', content: code, size: estimatedTokens, functionCount });
   }
+
+  // Sort files by function count (descending) to prioritize function-rich files
+  files.sort((a, b) => b.functionCount - a.functionCount);
 
   const chunks: string[] = [];
   let currentChunk = '';
   let currentChunkTokens = 0;
+  let currentChunkFunctions = 0;
+  
   for (const file of files) {
-    if (currentChunkTokens + file.size > maxTokensPerChunk && currentChunk) {
+    // If adding this file would exceed limits, start a new chunk
+    if ((currentChunkTokens + file.size > maxTokensPerChunk || currentChunkFunctions > 0) && currentChunk) {
       chunks.push(currentChunk.trim());
       currentChunk = '';
       currentChunkTokens = 0;
+      currentChunkFunctions = 0;
     }
+    
     currentChunk += `// ${file.name}\n${file.content}\n\n`;
     currentChunkTokens += file.size;
+    currentChunkFunctions += file.functionCount;
   }
   if (currentChunk) chunks.push(currentChunk.trim());
   return chunks;

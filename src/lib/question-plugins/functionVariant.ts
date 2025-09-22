@@ -5,7 +5,7 @@ export const functionVariantPlugin: QuestionPlugin = {
   type: 'function-variant',
   async generate(params: GenerateParams): Promise<RawQuestion[]> {
     const { chunk, apiKey, timeoutMs, retry, abortSignal } = params;
-    const questionsPerChunk = 2;
+    const questionsPerChunk = 3;
 
     const generated: RawQuestion[] = [];
     try {
@@ -26,22 +26,15 @@ export const functionVariantPlugin: QuestionPlugin = {
               model: 'gpt-4o-mini',
               messages: [
                 { role: 'system', content: 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.' },
-                { role: 'user', content: `Generate ${questionsPerChunk} function-variant quiz questions that test programming knowledge based on this code chunk:\n\n${chunk}\n\nCRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.\n\nIMPORTANT REQUIREMENTS:\n1. ONLY generate questions about functions that actually exist in the provided code chunk\n2. The function name in \"snippet\" must match a real function from the code\n3. The correct variant must be the actual function implementation from the code\n4. Incorrect variants should have realistic bugs (off-by-one, wrong variable names, missing checks, etc.)\n5. ALL variants must be similar in length (±30 characters and/or ±2 lines)\n
-                6. Each variant must be syntactically valid code in the programming language used\n
-                7. CRITICAL LENGTH RULE: ALL variants must be roughly the same length (±20% line count). The correct answer should NEVER be obviously longer or more detailed than incorrect options.\n8. EQUAL COMPLEXITY: Make all variants equally complex-looking. Avoid making correct answer obviously more sophisticated.\n9. SCENARIO CONTEXT: Create realistic development scenarios that explain WHY this function exists
-9. GENERIC PATTERNS: Focus on universal programming patterns, not specific app functionality. Test concepts like error handling, data validation, async operations, state management, etc.
-10. AVOID REPO-SPECIFIC: Don't use specific function names in the question. Instead, describe the general pattern or concept being tested.
-11. BALANCED EXPLANATIONS: Make ALL explanations roughly the same length. Don't make correct explanation obviously more detailed.
+                { role: 'user', content: `Generate ${questionsPerChunk} function-variant quiz questions that test programming knowledge based on this code chunk:\n\n${chunk}\n\nCRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.\n\nIMPORTANT REQUIREMENTS:\n1. ONLY generate questions about functions that actually exist in the provided code chunk\n2. The function name in \"snippet\" must match a real function from the code\n3. The correct variant must be the actual function implementation from the code\n4. Incorrect variants should have realistic bugs\n
+                 The correct answer should NEVER be obviously longer or more detailed than incorrect options.\n.\n9. SCENARIO CONTEXT: Create realistic development scenarios that explain WHY this function exists
 
 FOCUS ON UNIVERSAL PROGRAMMING CONCEPTS:
 
 
 AVOID:
 - Repository-specific trivia
-- Domain-specific business logic
-- Cosmetic formatting differences
-- Game-specific mechanics
-- Chatbot/AI-specific implementations
+
 
 EXPLANATION REQUIREMENTS:
 - Explain WHY the correct answer is right
@@ -51,7 +44,7 @@ EXPLANATION REQUIREMENTS:
 
 Format:\n[\n  {\n    \"snippet\": \"actual function name from the code chunk\",\n    \"quiz\": {\n      \"type\": \"function-variant\",\n     
                  \"question\": \"In [REALISTIC_APP_CONTEXT] with [SPECIFIC_CONTEXT], how should this function be implemented to accomplish[UNIVERSAL_GOAL/CONSTRAINT]?\",
-      \"variants\": [\n        {\n          \"id\": \"A\",\n          \"code\": \"the actual function implementation from the code chunk\",\n          \"isCorrect\": true,\n          \"explanation\": \"Detailed explanation on why this is correct implementation from the original code\"\n        },\n        {\n          \"id\": \"B\",\n          \"code\": \"function with realistic bug (similar length)\",\n          \"isCorrect\": false,\n          \"explanation\": \"Detailed explanation on why this specific bug is wrong, and here is an example to further explain that\"\n        },\n        {\n          \"id\": \"C\",\n          \"code\": \"function with different realistic bug (similar length)\",\n          \"isCorrect\": false,\n          \"explanation\": \"Detailed explanation on why this specific bug is wrong, and here is an example to further explain that\"\n        },\n        {\n          \"id\": \"D\",\n          \"code\": \"function with another realistic bug (similar length)\",\n          \"isCorrect\": false,\n          \"explanation\": \"Here is why this specific bug is wrong, and here is an example to further explain that\"\n        }\n      ]\n    }\n  }\n]` }
+      \"variants\": [\n        {\n          \"id\": \"A\",\n          \"code\": \"the actual function implementation from the code chunk\",\n          \"isCorrect\": true,\n          \"explanation\": \"Detailed explanation on why this is correct implementation from the original code\"\n        },\n        {\n          \"id\": \"B\",\n          \"code\": \"the function with a functional error that can be desciphered from the code context\",\n          \"isCorrect\": false,\n          \"explanation\": \"Detailed explanation on why this specific bug is wrong, and here is an example to further explain that\"\n        },\n        {\n          \"id\": \"C\",\n          \"code\": \"function with a functional error that cane be desciphered from the code context\\",\n          \"isCorrect\": false,\n          \"explanation\": \"Detailed explanation on why this specific bug is wrong, and here is an example to further explain that\"\n        },\n        {\n          \"id\": \"D\",\n          \"code\": \"function with a functional error that can be desciphered from the code context\",\n          \"isCorrect\": false,\n          \"explanation\": \"Here is why this specific bug is wrong, and here is an example to further explain that\"\n        }\n      ]\n    }\n  }\n]` }
               ],
               temperature: 0.8,
               max_tokens: 2000

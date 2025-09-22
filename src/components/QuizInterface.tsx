@@ -57,6 +57,48 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
       const correctOrder = currentQuestion.correctOrder || [];
       isCorrect = selectedAnswers.length === correctOrder.length &&
         selectedAnswers.every((stepId, index) => stepId === correctOrder[index]);
+    } else if (currentQuestion.type === 'select-all') {
+      // For select-all, check if selected answers match the correct indices
+      const correctAnswers = currentQuestion.correctAnswers || [];
+      
+      // Debug: Log the actual data structure
+      console.log('🔍 Select-All Debug:', {
+        correctAnswers,
+        correctAnswersType: typeof correctAnswers[0],
+        selectedAnswers,
+        options: currentQuestion.options
+      });
+      
+      // Convert letter answers (A, B, C) to option indices
+      const correctIndices = correctAnswers.map((letter: string) => {
+        const charCode = letter.charCodeAt(0);
+        return charCode - 65; // A=0, B=1, C=2, etc.
+      });
+      
+      // Get the actual option texts that are correct
+      const correctOptions = correctIndices.map((index: number) => currentQuestion.options[index]);
+      
+      console.log('🔍 Select-All Debug (processed):', {
+        correctIndices,
+        correctOptions
+      });
+      
+      // For select-all questions, give partial credit:
+      // - No incorrect selections (all selected must be correct)
+      // - At least one correct selection
+      const hasCorrectSelections = selectedAnswers.some((answer: string) => correctOptions.includes(answer));
+      const hasIncorrectSelections = selectedAnswers.some((answer: string) => !correctOptions.includes(answer));
+      
+      // Answer is correct if: has correct selections AND no incorrect selections
+      isCorrect = hasCorrectSelections && !hasIncorrectSelections;
+      
+      console.log('🔍 Select-All Final Debug:', {
+        selectedAnswers,
+        correctOptions,
+        hasCorrectSelections,
+        hasIncorrectSelections,
+        finalResult: isCorrect
+      });
     } else {
       // For other question types
       isCorrect = Array.isArray(currentQuestion.correctAnswer)
@@ -485,6 +527,61 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
           </div>
         );
 
+      case 'select-all':
+        return (
+          <div className="space-y-6">
+            {/* Instructions */}
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+              <p className="text-blue-800 dark:text-blue-200 text-sm font-medium">
+                📝 Select all statements that are correct. You can select multiple options.
+              </p>
+              <p className="text-blue-700 dark:text-blue-300 text-xs mt-1">
+                Read each option carefully and check all that apply to the given code.
+              </p>
+            </div>
+
+            {/* Checkbox Options */}
+            <div className="space-y-3">
+              {currentQuestion.options?.map((option: string, index: number) => (
+                <button
+                  key={index}
+                  onClick={() => handleAnswerSelect(option)}
+                  className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                    selectedAnswers.includes(option)
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                      : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                  }`}
+                >
+                  <div className="flex items-start space-x-3">
+                    <div className={`w-6 h-6 border-2 rounded-md flex items-center justify-center mt-0.5 flex-shrink-0 ${
+                      selectedAnswers.includes(option)
+                        ? 'border-blue-500 bg-blue-500'
+                        : 'border-gray-300 dark:border-gray-600'
+                    }`}>
+                      {selectedAnswers.includes(option) && (
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </div>
+                    <span className="text-base leading-relaxed">{option}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* Selection Counter */}
+            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
+                {selectedAnswers.length === 0 
+                  ? "No options selected yet"
+                  : `${selectedAnswers.length} option${selectedAnswers.length === 1 ? '' : 's'} selected`
+                }
+              </p>
+            </div>
+          </div>
+        );
+
       default:
         return <div>Question type not supported</div>;
     }
@@ -620,7 +717,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               {currentQuestion.question}
             </h2>
             
-            {currentQuestion.codeContext && (currentQuestion.type === 'function-variant' || currentQuestion.type === 'multiple-choice' || currentQuestion.type === 'true-false') && (
+            {currentQuestion.codeContext && (currentQuestion.type === 'function-variant' || currentQuestion.type === 'multiple-choice' || currentQuestion.type === 'true-false' || currentQuestion.type === 'select-all') && (
               <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mb-4">
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Code Context:</p>
                 <pre className="text-sm text-gray-800 dark:text-gray-200 overflow-x-auto">
@@ -819,6 +916,91 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                       </p>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Explanations for Select All */}
+          {showExplanations && currentQuestion.type === 'select-all' && (
+            <div className="mb-8 bg-gray-50 dark:bg-gray-700 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                Answer Explanation
+              </h3>
+              <div className="space-y-3">
+                {currentQuestion.options?.map((option: string, index: number) => {
+                  const correctAnswers = currentQuestion.correctAnswers || [];
+                  
+                  // Convert letter answers (A, B, C) to option indices for comparison
+                  const correctIndices = correctAnswers.map((letter: string) => {
+                    const charCode = letter.charCodeAt(0);
+                    return charCode - 65; // A=0, B=1, C=2, etc.
+                  });
+                  
+                  const isCorrectOption = correctIndices.includes(index);
+                  const isSelectedOption = selectedAnswers.includes(option);
+                  const isUserCorrect = isSelectedOption === isCorrectOption;
+                  
+                  return (
+                    <div
+                      key={index}
+                      className={`p-4 rounded-lg border-2 ${
+                        isCorrectOption
+                          ? 'border-green-200 bg-green-50 dark:bg-green-900/20'
+                          : 'border-red-200 bg-red-50 dark:bg-red-900/20'
+                      }`}
+                    >
+                      <div className="flex items-start space-x-3">
+                        <div className={`w-6 h-6 border-2 rounded-md flex items-center justify-center flex-shrink-0 ${
+                          isCorrectOption
+                            ? 'border-green-500 bg-green-500'
+                            : 'border-red-500 bg-red-500'
+                        }`}>
+                          {isCorrectOption && (
+                            <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          {!isCorrectOption && (
+                            <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <span className="font-semibold text-gray-900 dark:text-white">
+                              {isCorrectOption ? 'Correct' : 'Incorrect'}
+                            </span>
+                            {isSelectedOption && (
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                isUserCorrect
+                                  ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                  : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                              }`}>
+                                {isUserCorrect ? 'You selected ✓' : 'You selected ✗'}
+                              </span>
+                            )}
+                            {!isSelectedOption && isCorrectOption && (
+                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                You missed this ⚠️
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
+                            {option}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+                
+                {/* Overall explanation */}
+                <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                  <p className="text-sm text-blue-800 dark:text-blue-200">
+                    <strong>Overall Explanation:</strong> {currentQuestion.explanation}
+                  </p>
                 </div>
               </div>
             </div>

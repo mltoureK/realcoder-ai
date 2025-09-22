@@ -30,9 +30,7 @@ function getRandomTrueFalse(): { answer: string, isTrue: boolean } {
  * Creates the user prompt for true/false question generation
  */
 function createUserPrompt(chunk: string): string {
-  const { answer, isTrue } = getRandomTrueFalse();
-  
-  return `Generate 1 challenging true/false question where the answer is ${answer} based on this code chunk:
+  return `Generate 4 challenging true/false question based on this code chunk:
 
 ${chunk}
 
