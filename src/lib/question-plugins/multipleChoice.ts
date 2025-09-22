@@ -7,7 +7,7 @@ import { delay, validateQuestionStructure } from './utils';
 const OPENAI_MODEL = 'gpt-4o-mini';
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 const TEMPERATURE = 0.3;
-const MAX_TOKENS = 1500;
+const MAX_TOKENS = 2000;
 
 /**
  * System prompt for consistent AI behavior
@@ -18,7 +18,7 @@ const SYSTEM_PROMPT = 'You are a JSON generator. You MUST return ONLY valid JSON
  * Creates the user prompt for multiple choice question generation
  */
 function createUserPrompt(chunk: string): string {
-  return `Generate 1 multiple-choice question based on this code chunk:
+  return `Generate 3 multiple-choice question based on this code chunk:
 
 ${chunk}
 

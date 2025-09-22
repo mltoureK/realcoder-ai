@@ -18,7 +18,7 @@ const SYSTEM_PROMPT = 'You are a JSON generator. You MUST return ONLY valid JSON
  * Creates the user prompt for true/false question generation
  */
 function createUserPrompt(chunk: string): string {
-  return `Generate 1 challenging true/false question based on this code chunk:
+  return `Generate 4 challenging true/false question based on this code chunk:
 
 ${chunk}
 

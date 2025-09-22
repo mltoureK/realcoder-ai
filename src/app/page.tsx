@@ -19,7 +19,6 @@ export default function Home() {
   const [isLoadingBranches, setIsLoadingBranches] = useState(false);
   const [activeTab, setActiveTab] = useState<'upload' | 'github'>('upload');
   const [quizSession, setQuizSession] = useState<any>(null);
-  const [forceSelectAll, setForceSelectAll] = useState<boolean>(true);
   const [streamingQuiz, setStreamingQuiz] = useState<{
     code: string;
     questionTypes: string[];
@@ -273,9 +272,7 @@ export default function Home() {
           },
           body: JSON.stringify({
             code: combinedCode,
-            questionTypes: forceSelectAll
-              ? ['select-all']
-              : ['function-variant', 'multiple-choice', 'order-sequence', 'true-false'/*, 'fill-blank'*/],
+            questionTypes: ['function-variant', 'multiple-choice', 'order-sequence', 'true-false', 'select-all'],
             difficulty: 'medium',
             numQuestions: 15
           })
@@ -361,9 +358,7 @@ export default function Home() {
           },
           body: JSON.stringify({
             code: combinedCode,
-            questionTypes: forceSelectAll
-              ? ['select-all']
-              : ['function-variant', 'multiple-choice', 'order-sequence', 'true-false'/*, 'fill-blank'*/],
+            questionTypes: ['function-variant', 'multiple-choice', 'order-sequence', 'true-false', 'select-all'],
             difficulty: 'medium',
             numQuestions: 10
           })
@@ -513,17 +508,6 @@ export default function Home() {
           {/* Controls Row */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
-              <label className="inline-flex items-center space-x-2 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={forceSelectAll}
-                  onChange={(e) => setForceSelectAll(e.target.checked)}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  Generate only "Select all that apply"
-                </span>
-              </label>
             </div>
           </div>
 
