@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     
     // Clean + chunk code
     const cleanCode = cleanCodeForChunking(code || '');
-    const chunks = createSmartCodeChunks(cleanCode || '', 4000);
+    const chunks = createSmartCodeChunks(cleanCode || '', 2000);
 
     // Select plugins per requested types
     const availablePlugins: Record<string, any> = {
@@ -62,12 +62,9 @@ export async function POST(request: NextRequest) {
       'true-false': trueFalsePlugin,
       'select-all': selectAllPlugin
     };
-    // Select plugins based on requested question types
-    // Default to all 5 question types if none specified
-    const defaultQuestionTypes = ['select-all', 'multiple-choice', 'function-variant', 'true-false', 'order-sequence'];
-    const requestedTypes = Array.isArray(questionTypes) && questionTypes.length > 0 
-      ? questionTypes 
-      : defaultQuestionTypes;
+    // Force function-variant only to maximize function-variant generation
+    const defaultQuestionTypes = ['function-variant'];
+    const requestedTypes = ['function-variant'];
     
     const selectedPlugins = requestedTypes
       .map((t: string) => availablePlugins[t])
@@ -251,8 +248,8 @@ export async function POST(request: NextRequest) {
       options: { difficulty: difficulty || 'medium' }
     });
 
-    // Fallback: if select-all was requested but none were produced, try one direct call on the first chunk
-    if (Array.isArray(questionTypes) && questionTypes.includes('select-all')) {
+    // Fallback: disabled for non-function-variant types while focusing solely on function-variant
+    if (Array.isArray(requestedTypes) && requestedTypes.includes('select-all')) {
       const hasSelectAll = rawGenerated.some((q: any) => q?.quiz?.type === 'select-all');
       if (!hasSelectAll && chunks.length > 0) {
         try {

@@ -146,7 +146,7 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
           
           // Quality filter: Rate ALL questions and only keep 8/10+ ones (if enabled)
           let accept = true;
-          if (process.env.ENABLE_QUALITY_FILTER !== 'false') {
+          if (false) { // Disabled quality filter temporarily
             const quiz: any = (q as any).quiz || {};
             
             // Convert letter-based correctAnswers to numbers for quality filter
@@ -186,8 +186,8 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
               console.error('❌ Error in quality filter:', error);
               
               // Log JSON parsing errors specifically
-              if (error instanceof SyntaxError && error.message.includes('JSON')) {
-                qualityFilterOrchestrator.logJsonParsingError(q, error.message);
+              if (error instanceof SyntaxError && (error as Error).message.includes('JSON')) {
+                qualityFilterOrchestrator.logJsonParsingError(q, (error as Error).message);
               }
               
               // If quality filter fails, reject the question for safety

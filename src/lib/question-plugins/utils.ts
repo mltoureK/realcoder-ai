@@ -21,70 +21,7 @@ export function removeComments(code: string): string {
 }
 
 export function balanceVariantVerbosity(variants: any[]): any[] {
-  if (variants.length < 2) return variants;
-  const correctVariant = variants.find((v: any) => v && v.isCorrect);
-  const incorrectVariants = variants.filter((v: any) => v && !v.isCorrect);
-  if (!correctVariant || incorrectVariants.length === 0) return variants;
-
-  // Calculate lengths more strictly (line count + character count)
-  const getVariantComplexity = (variant: any) => {
-    const code = variant.code || '';
-    const lines = code.split('\n').filter(line => line.trim().length > 0).length;
-    const chars = code.length;
-    return { lines, chars, code };
-  };
-
-  const correctComplexity = getVariantComplexity(correctVariant);
-  const incorrectComplexities = incorrectVariants.map(getVariantComplexity);
-  const avgIncorrectLines = incorrectComplexities.reduce((sum, c) => sum + c.lines, 0) / incorrectComplexities.length;
-  const avgIncorrectChars = incorrectComplexities.reduce((sum, c) => sum + c.chars, 0) / incorrectComplexities.length;
-
-  // Much stricter threshold: 20% difference instead of 50%
-  const lineThreshold = 0.2;
-  const charThreshold = 0.3;
-
-  // If correct answer is significantly longer, pad shorter incorrect answers
-  if (correctComplexity.lines > avgIncorrectLines * (1 + lineThreshold) || 
-      correctComplexity.chars > avgIncorrectChars * (1 + charThreshold)) {
-    
-    console.log(`⚖️ Correct answer too long (${correctComplexity.lines} lines vs avg ${avgIncorrectLines.toFixed(1)}), padding incorrect answers`);
-    
-    incorrectVariants.forEach((variant, index) => {
-      const complexity = incorrectComplexities[index];
-      if (complexity.lines < correctComplexity.lines * 0.8) {
-        // Add padding to make it look more substantial
-        if (variant.code.includes('return') && !variant.code.includes('const result')) {
-          variant.code = variant.code.replace(
-            /return ([^;\n]+);?/,
-            'const result = $1;\n  return result;'
-          );
-        } else if (variant.code.includes('{') && !variant.code.includes('//')) {
-          // Add a comment to increase apparent complexity
-          variant.code = variant.code.replace('{', '{\n  // Validate input parameters');
-        }
-      }
-    });
-  }
-
-  // If correct answer is significantly shorter, trim longer incorrect answers  
-  if (correctComplexity.lines < avgIncorrectLines * (1 - lineThreshold) ||
-      correctComplexity.chars < avgIncorrectChars * (1 - charThreshold)) {
-    
-    console.log(`⚖️ Correct answer too short (${correctComplexity.lines} lines vs avg ${avgIncorrectLines.toFixed(1)}), trimming incorrect answers`);
-    
-    incorrectVariants.forEach(variant => {
-      // Simplify overly verbose incorrect answers
-      if (variant.code.includes('const result') && variant.code.includes('return result')) {
-        variant.code = variant.code.replace(
-          /const result = ([^;\n]+);?\s*return result;?/,
-          'return $1;'
-        );
-      }
-      // Remove unnecessary comments
-      variant.code = variant.code.replace(/\s*\/\/[^\n]*\n/g, '\n');
-    });
-  }
-
+  // Disabled: do not alter variant lengths; return as-is
   return variants;
 }
 
@@ -204,7 +141,7 @@ export function validateQuestionStructure(question: any): boolean {
 
 export function createSmartCodeChunks(code: string, maxTokensPerChunk: number = 25000): string[] {
   const fileRegex = /\/\/ ([^\n]+)\n([\s\S]*?)(?=\/\/ [^\n]+\n|$)/g;
-  const files: { name: string; content: string; size: number }[] = [];
+  const files: { name: string; content: string; size: number; functionCount: number }[] = [];
 
   let match: RegExpExecArray | null;
   while ((match = fileRegex.exec(code)) !== null) {
@@ -212,25 +149,36 @@ export function createSmartCodeChunks(code: string, maxTokensPerChunk: number = 
     const content = match[2].trim();
     if (isIrrelevantFile(filename)) continue;
     const estimatedTokens = Math.ceil(content.length / 4);
-    files.push({ name: filename, content, size: estimatedTokens });
+    const functionCount = (content.match(/function\s+\w+|const\s+\w+\s*=\s*\(|class\s+\w+|public\s+\w+\s*\(|private\s+\w+\s*\(/g) || []).length;
+    files.push({ name: filename, content, size: estimatedTokens, functionCount });
   }
 
   if (files.length === 0) {
     const estimatedTokens = Math.ceil(code.length / 4);
-    files.push({ name: 'main.js', content: code, size: estimatedTokens });
+    const functionCount = (code.match(/function\s+\w+|const\s+\w+\s*=\s*\(|class\s+\w+|public\s+\w+\s*\(|private\s+\w+\s*\(/g) || []).length;
+    files.push({ name: 'main.js', content: code, size: estimatedTokens, functionCount });
   }
+
+  // Sort files by function count (descending) to prioritize function-rich files
+  files.sort((a, b) => b.functionCount - a.functionCount);
 
   const chunks: string[] = [];
   let currentChunk = '';
   let currentChunkTokens = 0;
+  let currentChunkFunctions = 0;
+  
   for (const file of files) {
-    if (currentChunkTokens + file.size > maxTokensPerChunk && currentChunk) {
+    // If adding this file would exceed limits, start a new chunk
+    if ((currentChunkTokens + file.size > maxTokensPerChunk || currentChunkFunctions > 0) && currentChunk) {
       chunks.push(currentChunk.trim());
       currentChunk = '';
       currentChunkTokens = 0;
+      currentChunkFunctions = 0;
     }
+    
     currentChunk += `// ${file.name}\n${file.content}\n\n`;
     currentChunkTokens += file.size;
+    currentChunkFunctions += file.functionCount;
   }
   if (currentChunk) chunks.push(currentChunk.trim());
   return chunks;
