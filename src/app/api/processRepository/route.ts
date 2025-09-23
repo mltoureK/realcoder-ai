@@ -5,6 +5,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { FileProcessor, FileInfo } from '@/lib/fileProcessor';
 import { processGitHubRepositoryWithCache, clearExpiredCache, getCacheStats } from '@/lib/github-tarball-service';
 
+// Increase timeout for large repositories
+export const maxDuration = 300; // 5 minutes
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
