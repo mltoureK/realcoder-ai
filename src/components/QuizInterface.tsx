@@ -653,7 +653,14 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               {/* Progress */}
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 {hasQuestion ? (
-                  <>Question {currentQuestionIndex + 1} of {totalQuestions}</>
+                  <>
+                    Question {currentQuestionIndex + 1} of {totalQuestions}
+                    {currentQuestion.qualityRating && (
+                      <span className="ml-3 px-2 py-1 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full">
+                        Quality: {currentQuestion.qualityRating}/10
+                      </span>
+                    )}
+                  </>
                 ) : (
                   <>Loading questions…</>
                 )}

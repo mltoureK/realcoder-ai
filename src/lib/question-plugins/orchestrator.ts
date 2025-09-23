@@ -44,7 +44,7 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
   const budgetedTasks: Array<{ plugin: QuestionPlugin; chunk: string }> = [];
   const budget = settings.maxCalls; // Use full API call budget, not limited by task count
   
-  console.log(`🎯 Quality Generation Target: ${numQuestions} excellent questions (8/10+)`);
+  console.log(`🎯 Quality Generation Target: ${numQuestions} questions (rated 1-10)`);
   console.log(`📊 Generation Budget: ${budget} API calls across ${chunks.length} chunks and ${plugins.length} plugins`);
   // First pass: reserve up to 2 tasks per plugin
   const typesInOrder = plugins.map(p => p.type);
@@ -106,13 +106,13 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
           return false;
         }
       }
-      console.log(`✅ Quality Generation Complete: ${results.length} excellent questions (7/10+) generated`);
+      console.log(`✅ Quality Generation Complete: ${results.length} questions generated and rated`);
       qualityFilterOrchestrator.displayQualityRatingSummary();
       return true;
     }
     
     // Continue making calls until we reach target or exhaust budget
-    console.log(`📊 Quality Generation Status: ${results.length}/${numQuestions} questions (need ${numQuestions - results.length} more)`);
+    console.log(`📊 Generation Status: ${results.length}/${numQuestions} questions (need ${numQuestions - results.length} more)`);
     return false;
   };
 
@@ -144,55 +144,41 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
         for (const q of generated) {
           if (stopRequested) break;
           
-          // Quality filter: Rate ALL questions and only keep 8/10+ ones (if enabled)
-          let accept = true;
-          if (false) { // Disabled quality filter temporarily
-            const quiz: any = (q as any).quiz || {};
-            
-            // Convert letter-based correctAnswers to numbers for quality filter
-            let correctAnswersForFilter = quiz.correctAnswers;
-            if (Array.isArray(quiz.correctAnswers) && quiz.correctAnswers.length > 0) {
-              if (typeof quiz.correctAnswers[0] === 'string') {
-                // Convert letters to numbers for quality filter
-                correctAnswersForFilter = quiz.correctAnswers.map((letter: string) => {
-                  const charCode = letter.charCodeAt(0);
-                  return charCode - 65; // A=0, B=1, C=2, etc.
-                });
-              }
+          // Simple quality rating: Just rate the question 1-10 without filtering
+          const quiz: any = (q as any).quiz || {};
+          
+          // Convert letter-based correctAnswers to numbers for quality filter
+          let correctAnswersForFilter = quiz.correctAnswers;
+          if (Array.isArray(quiz.correctAnswers) && quiz.correctAnswers.length > 0) {
+            if (typeof quiz.correctAnswers[0] === 'string') {
+              // Convert letters to numbers for quality filter
+              correctAnswersForFilter = quiz.correctAnswers.map((letter: string) => {
+                const charCode = letter.charCodeAt(0);
+                return charCode - 65; // A=0, B=1, C=2, etc.
+              });
             }
-            
-            const qualityInput = {
-              type: quiz.type,
-              question: quiz.question,
-              options: quiz.options,
-              variants: quiz.variants,
-              codeContext: (q as any).codeContext,
-              snippet: (q as any).snippet,
-              explanation: quiz.explanation,
-              correctAnswers: correctAnswersForFilter
-            };
-            
-            try {
-              accept = await qualityFilterOrchestrator.shouldKeepQuestion(qualityInput);
-              if (!accept) {
-                apiCallsRejected++;
-                console.log(`🚫 Question rejected by quality filter: ${quiz.question?.substring(0, 50)}...`);
-                continue;
-              }
-              apiCallsSuccessful++;
-              console.log(`✅ Question passed quality filter: ${quiz.question?.substring(0, 50)}...`);
-            } catch (error) {
-              apiCallsRejected++;
-              console.error('❌ Error in quality filter:', error);
-              
-              // Log JSON parsing errors specifically
-              if (error instanceof SyntaxError && (error as Error).message.includes('JSON')) {
-                qualityFilterOrchestrator.logJsonParsingError(q, (error as Error).message);
-              }
-              
-              // If quality filter fails, reject the question for safety
-              continue;
-            }
+          }
+          
+          const qualityInput = {
+            type: quiz.type,
+            question: quiz.question,
+            options: quiz.options,
+            variants: quiz.variants,
+            codeContext: (q as any).codeContext,
+            snippet: (q as any).snippet,
+            explanation: quiz.explanation,
+            correctAnswers: correctAnswersForFilter
+          };
+          
+          try {
+            const rating = await qualityFilterOrchestrator.rateQuestionQuality(qualityInput);
+            console.log(`📊 Question rated ${rating.score}/10: ${quiz.question?.substring(0, 50)}...`);
+            // Store the rating in the question object
+            q.qualityRating = rating.score;
+            apiCallsSuccessful++;
+          } catch (error) {
+            console.error('❌ Error in quality rating:', error);
+            apiCallsSuccessful++; // Still count as successful since we're not filtering
           }
           results.push(q);
           try {
@@ -241,7 +227,7 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
   console.log(`✅ Successful questions: ${apiCallsSuccessful}`);
   console.log(`🚫 Rejected questions: ${apiCallsRejected}`);
   console.log(`📋 Final questions generated: ${results.length}/${numQuestions} (${Math.round(results.length/numQuestions*100)}% of target)`);
-  console.log(`🎯 Quality filter enabled: ${process.env.ENABLE_QUALITY_FILTER !== 'false' ? 'YES' : 'NO'}`);
+  console.log(`🎯 Quality rating enabled: YES (1-10 scale)`);
   
   if (results.length < numQuestions && apiCallsMade < budgetedTasks.length) {
     console.log(`⚠️  WARNING: Stopped early with ${budgetedTasks.length - apiCallsMade} unused API calls remaining`);

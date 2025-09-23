@@ -99,6 +99,7 @@ export async function POST(request: NextRequest) {
           correctAnswer: null,
           explanation: '',
           difficulty: 'medium',
+          qualityRating: q.qualityRating || null,
           variants: (questionData.variants || []).map((v: any) => ({
             ...v,
             code: typeof v.code === 'string' ? removeComments(v.code) : v.code
@@ -120,6 +121,7 @@ export async function POST(request: NextRequest) {
           correctAnswer: idx >= 0 ? opts[idx] : null,
           explanation: questionData.explanation || '',
           difficulty: 'medium',
+          qualityRating: q.qualityRating || null,
           codeContext: questionData.codeContext || q.codeContext,
           variants: []
         } as any;
@@ -132,6 +134,7 @@ export async function POST(request: NextRequest) {
           correctAnswer: questionData.correctOrder || [],
           explanation: questionData.explanation || '',
           difficulty: 'medium',
+          qualityRating: q.qualityRating || null,
           steps: questionData.steps || [],
           correctOrder: questionData.correctOrder || [],
           variants: []
@@ -156,6 +159,7 @@ export async function POST(request: NextRequest) {
           correctAnswer: idx >= 0 ? opts[idx] : null,
           explanation: questionData.explanation || '',
           difficulty: 'medium',
+          qualityRating: q.qualityRating || null,
           codeContext: questionData.codeContext || q.codeContext,
           variants: []
         } as any;
@@ -172,6 +176,7 @@ export async function POST(request: NextRequest) {
           correctAnswer: null, // Not used for select-all
           explanation: questionData.explanation || '',
           difficulty: 'medium',
+          qualityRating: q.qualityRating || null,
           codeContext: questionData.codeContext || q.codeContext,
           variants: []
         } as any;
