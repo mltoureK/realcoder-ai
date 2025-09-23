@@ -6,6 +6,7 @@ export const functionVariantPlugin: QuestionPlugin = {
   async generate(params: GenerateParams): Promise<RawQuestion[]> {
     const { chunk, apiKey, timeoutMs, retry, abortSignal } = params;
     const questionsPerChunk = 3;
+    const randomTextForPrompt = [" longer", "sameish length", "slightly longer"]
 
     const generated: RawQuestion[] = [];
     try {
@@ -26,7 +27,7 @@ export const functionVariantPlugin: QuestionPlugin = {
               model: 'gpt-4o-mini',
               messages: [
                 { role: 'system', content: 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.' },
-                { role: 'user', content: `Generate ${questionsPerChunk} function-variant quiz questions that test programming knowledge based on this code chunk:\n\n${chunk}\n\nCRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.\n\nIMPORTANT REQUIREMENTS:\n1. ONLY generate questions about functions that actually exist in the provided code chunk\n2. The function name in \"snippet\" must match a real function from the code\n3. The correct variant must be the actual function implementation from the code\n4. Incorrect variants should have realistic bugs\n
+                { role: 'user', content: `Generate ${questionsPerChunk} function-variant quiz questions that can be answered based on this code chunk:\n\n${chunk}\n\nCRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.\n\nIMPORTANT REQUIREMENTS:\n1. ONLY generate questions about functions that actually exist in the provided code chunk\n2. The function name in \"snippet\" A functionfrom the code\n3. The correct variant must be the actual function implementation from the code\n4. Incorrect variants should have realistic bugs\n
                  The correct answer should NEVER be obviously longer or more detailed than incorrect options.\n.\n9. SCENARIO CONTEXT: Create realistic development scenarios that explain WHY this function exists
 
 FOCUS ON UNIVERSAL PROGRAMMING CONCEPTS:
@@ -43,10 +44,10 @@ EXPLANATION REQUIREMENTS:
 - Focus on learning value
 
 Format:\n[\n  {\n    \"snippet\": \"actual function name from the code chunk\",\n    \"quiz\": {\n      \"type\": \"function-variant\",\n     
-                 \"question\": \"In [REALISTIC_APP_CONTEXT] with [SPECIFIC_CONTEXT], how should this function be implemented to accomplish[UNIVERSAL_GOAL/CONSTRAINT]?\",
-      \"variants\": [\n        {\n          \"id\": \"A\",\n          \"code\": \"the actual function implementation from the code chunk\",\n          \"isCorrect\": true,\n          \"explanation\": \"Detailed explanation on why this is correct implementation from the original code\"\n        },\n        {\n          \"id\": \"B\",\n          \"code\": \"the function with a functional error that can be desciphered from the code context\",\n          \"isCorrect\": false,\n          \"explanation\": \"Detailed explanation on why this specific bug is wrong, and here is an example to further explain that\"\n        },\n        {\n          \"id\": \"C\",\n          \"code\": \"function with a functional error that cane be desciphered from the code context\\",\n          \"isCorrect\": false,\n          \"explanation\": \"Detailed explanation on why this specific bug is wrong, and here is an example to further explain that\"\n        },\n        {\n          \"id\": \"D\",\n          \"code\": \"function with a functional error that can be desciphered from the code context\",\n          \"isCorrect\": false,\n          \"explanation\": \"Here is why this specific bug is wrong, and here is an example to further explain that\"\n        }\n      ]\n    }\n  }\n]` }
+                 \"question\": \"Give a scenario that asks the question about the function, and the question should be specific enough to weed out all the wrong answers and give the right one.?\",
+      \"variants\": [\n        {\n          \"id\": \"A\",\n          \"code\": \"the actual function from the code chunk\",\n          \"isCorrect\": true,\n          \"explanation\": \"Detailed explanation with a humorous snarky tone that makes user feel smart for getting it right\"\n        },\n        {\n          \"id\": \"B\",\n          \"code\": \"the function with a functional error that can be desciphered from the code context\",\n          \"isCorrect\": false,\n          \"explanation\": \"Detailed explanation on why this specific bug is wrong, with an analogy that's condescending\"\n        },\n        {\n          \"id\": \"C\",\n          \"code\": \"function with a functional error that cane be desciphered from the code context\\",\n          \"isCorrect\": false,\n          \"explanation\": \"Encouraging and funny explanation on why this specific bug is wrong. \"\n        },\n        {\n          \"id\": \"D\",\n          \"code\": \"function with a functional error that can be desciphered from the code context\",\n          \"isCorrect\": false,\n          \"explanation\": \"Here is why this specific bug is wrong, and here is an example to further explain that\"\n        }\n      ]\n    }\n  }\n]` }
               ],
-              temperature: 0.8,
+              temperature: 0.7,
               max_tokens: 2000
             }),
             signal: controller.signal
@@ -78,6 +79,25 @@ Format:\n[\n  {\n    \"snippet\": \"actual function name from the code chunk\",\
           const parsed = JSON.parse(cleanContent);
 
           parsed.forEach((question: any) => {
+            // Normalize AI response - fix common field name issues
+            if (question.quiz && question.quiz.variants && Array.isArray(question.quiz.variants)) {
+              question.quiz.variants.forEach((variant: any) => {
+                // Fix label -> id
+                if (variant.label && !variant.id) {
+                  variant.id = variant.label;
+                  delete variant.label;
+                }
+                // Ensure isCorrect is boolean
+                if (typeof variant.isCorrect === 'string') {
+                  variant.isCorrect = variant.isCorrect.toLowerCase() === 'true';
+                }
+                // Add missing explanation if needed
+                if (!variant.explanation) {
+                  variant.explanation = variant.isCorrect ? 'This is the correct implementation.' : 'This implementation has an error.';
+                }
+              });
+            }
+            
             if (!validateQuestionStructure(question)) return;
             if (question.quiz.variants && Array.isArray(question.quiz.variants)) {
               // Remove duplicate variants before processing
@@ -97,12 +117,13 @@ Format:\n[\n  {\n    \"snippet\": \"actual function name from the code chunk\",\
             generated.push(question);
           });
         } catch (err) {
-          // swallow parse errors per-chunk
+          console.error('❌ JSON parse error for function-variant:', err);
         }
       }
     } catch (error) {
-      // swallow plugin-level errors to let orchestrator continue
+      console.error('❌ Plugin-level error in function-variant:', error);
     }
+    console.log(`📊 FunctionVariant: Generated ${generated.length} questions from this chunk`);
     return generated;
   }
 };
