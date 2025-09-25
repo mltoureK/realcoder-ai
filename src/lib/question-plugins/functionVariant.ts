@@ -114,8 +114,8 @@ Format:\n[\n  {\n    \"snippet\": \"show complete function(and code)  that the q
               if (correctVariant && correctVariant.code) {
                 const cleanCode = removeComments(correctVariant.code).trim();
                 // Check if function body is empty (just braces with whitespace)
-                // Matches both: "function name() { }" and "returnType functionName() { }"
-                if (cleanCode.match(/^\s*(?:\w+\s+)?\w+\s*\([^)]*\)\s*\{\s*\}\s*$/)) {
+                // Matches: "function name() { }", "returnType functionName() { }", "public static void main(String[] args) { }", etc.
+                if (cleanCode.match(/^\s*(?:(?:public|private|protected|static|final|abstract|synchronized|native|strictfp|[\w<>\[\]]+)\s+)*[\w_]+\s*\([^)]*\)\s*(?:throws\s+\w+(?:\s*,\s*\w+)*)?\s*\{\s*\}\s*$/)) {
                   console.warn('⚠️ Skipping question - correct answer is an empty function body');
                   return;
                 }
