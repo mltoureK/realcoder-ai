@@ -27,8 +27,8 @@ export const functionVariantPlugin: QuestionPlugin = {
               model: 'gpt-4o-mini',
               messages: [
                 { role: 'system', content: 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.' },
-                { role: 'user', content: `Generate ${questionsPerChunk} function-variant quiz questions that can be answered based on this code chunk:\n\n${chunk}\n\nCRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.\n\nIMPORTANT REQUIREMENTS:\n1. ONLY generate questions about functions that actually exist in the provided code chunk\n2. The function name in \"snippet\" A functionfrom the code\n3. The correct variant must be the actual function implementation from the code\n4. Incorrect variants should have realistic bugs\n
-                 The correct answer should NEVER be obviously longer or more detailed than incorrect options.\n.\n9. SCENARIO CONTEXT: Create realistic development scenarios that explain WHY this function exists
+                { role: 'user', content: `Generate ${questionsPerChunk} function-variant quiz questions that can be answered based on the json snippet function that the question uses from the code chunk:\n\n${chunk}\n\nCRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.\n\nIMPORTANT REQUIREMENTS:\n1. ONLY generate questions about functions that actually exist in the provided code chunk\n2. The function name in \"snippet\" A functionfrom the code\n3. The correct variant must be the actual function implementation from the code\n4. Incorrect variants should have realistic bugs\n
+                 The correct answer should NEVER be obviously longer or more detailed than incorrect options.
 
 FOCUS ON UNIVERSAL PROGRAMMING CONCEPTS:
 
@@ -44,7 +44,7 @@ EXPLANATION REQUIREMENTS:
 - Focus on learning value
 
 Format:\n[\n  {\n    \"snippet\": \"show complete function(and code)  that the question uses from the code chunk\",\n    \"quiz\": {\n      \"type\": \"function-variant\",\n     
-                 \"question\": \"Ask the user to select the function that accomplished [insert function purpose] and watchout for [List 3 errors that the wrong answers have]".\",
+                 \"question\": \"Ask the user to select the function that accomplishes very specific instructions that only the correct answer accomplishes [insert function purpose] and watchout for [List 3 errors that the wrong answers have]".\",
       \"variants\": [\n        {\n          \"id\": \"A\",\n          \"code\": \"Display full function from the code chunk\",\n          \"isCorrect\": true,\n          \"explanation\": \"Detailed explanation with a humorous snarky tone that makes user feel smart for getting it right\"\n        },\n        {\n          \"id\": \"B\",\n          \"code\": \"Display full correct function from the code chunk with a functional error added to it\",\n          \"isCorrect\": false,\n          \"explanation\": \"longer explanation on why this specific bug is wrong in a condescending tone\"\n        },\n        {\n          \"id\": \"C\",\n          \"code\": \"Display full correct function from the code chunk with a functional error added to it\\",\n          \"isCorrect\": false,\n          \"explanation\": \"Encouraging and funny explanation on why this specific bug is wrong. \"\n        },\n        {\n          \"id\": \"D\",\n          \"code\": \"correct function with a functional error added to it\",\n          \"isCorrect\": false,\n          \"explanation\": \"Here is why this specific bug is wrong, and here is an example to further explain that\"\n        }\n      ]\n    }\n  }\n]` }
               ],
               temperature: 0.7,

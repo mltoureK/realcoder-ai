@@ -78,7 +78,7 @@ function createUserPrompt(chunk: string): string {
   const optionCount = Math.random() < 0.6 ? 5 : 6;
   const correctCount = generateRandomCorrectCount(optionCount);
   
-  return `Generate 3 pro grade "select all that apply" questions based on this code chunk:
+  return `Generate 3 pro grade "select all that apply" questions based on the CodeContext generated from the code chunk, thats in json format:
 
 ${chunk}
 
@@ -129,7 +129,7 @@ Format:
     "quiz": {
       "type": "select-all",
       "question": "In a [REALISTIC_APP_CONTEXT], which statements about the function functionName are correct? Select all that apply.",
-      "codeContext": "show complete function(and code)  that the code uses from the code chunk",
+      "codeContext": "Display full function from the code chunk",
       "options": [
         { "text": "Functionally accurate statement about the function , that can be detected from the code context, that is true or false",  "isCorrect": true | false },
         { "text": "Functionally accurate statement about the function that can be detected from the code context, that is true or false", "isCorrect": false },
