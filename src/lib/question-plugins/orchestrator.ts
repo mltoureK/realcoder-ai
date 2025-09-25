@@ -22,62 +22,48 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
   const { chunks, plugins, numQuestions, settings, apiKey, options, onQuestion } = args;
   if (plugins.length === 0 || chunks.length === 0) return [];
 
-  const tasks: Array<{ plugin: QuestionPlugin; chunk: string }> = [];
-  const shuffledChunks = shuffleVariants(chunks);
-  for (const plugin of plugins) {
-    for (const chunk of shuffledChunks) {
-      tasks.push({ plugin, chunk });
-    }
-  }
-
-  // Group by plugin and round-robin schedule to avoid starvation
-  const shuffledTasks = shuffleVariants(tasks);
-  const tasksByType: Record<string, Array<{ plugin: QuestionPlugin; chunk: string }>> = {};
-  for (const t of shuffledTasks) {
-    const key = t.plugin.type;
-    if (!tasksByType[key]) tasksByType[key] = [];
-    tasksByType[key].push(t);
-  }
-  const perTypePointers: Record<string, number> = {};
-  Object.keys(tasksByType).forEach(k => (perTypePointers[k] = 0));
-
+  // Create simple round-robin array: [mcq, function-variant, order-sequence, select-all, true-false, mcq, ...]
   const budgetedTasks: Array<{ plugin: QuestionPlugin; chunk: string }> = [];
-  const budget = settings.maxCalls; // Use full API call budget, not limited by task count
+  const budget = settings.maxCalls;
+  const shuffledChunks = shuffleVariants(chunks);
   
   console.log(`🎯 Quality Generation Target: ${numQuestions} questions (rated 1-10)`);
-  console.log(`📊 Generation Budget: ${budget} API calls across ${chunks.length} chunks and ${plugins.length} plugins`);
-  // First pass: reserve up to 2 tasks per plugin
-  const typesInOrder = plugins.map(p => p.type);
-  for (let r = 0; r < 2 && budgetedTasks.length < budget; r++) {
-    for (const type of typesInOrder) {
-      if (budgetedTasks.length >= budget) break;
-      const list = tasksByType[type];
-      const ptr = perTypePointers[type];
-      if (list && ptr < list.length) {
-        budgetedTasks.push(list[ptr]);
-        perTypePointers[type] = ptr + 1;
-      }
+  console.log(`📊 Generation Budget: ${budget} API calls in round-robin order: ${plugins.map(p => p.type).join(' → ')}`);
+  
+  // Find function-variant plugin for testing
+  const functionVariantPlugin = plugins.find(p => p.type === 'function-variant');
+  
+  // Simple round-robin: cycle through plugins, then cycle through chunks
+  let pluginIndex = 0;
+  let chunkIndex = 0;
+  
+  for (let i = 0; i < budget; i++) {
+    let plugin: QuestionPlugin;
+    
+    // TESTING: Make first 5 calls all function-variant
+    if (i < 5 && functionVariantPlugin) {
+      plugin = functionVariantPlugin;
+      console.log(`🧪 TESTING: Call ${i + 1} forced to function-variant`);
+    } else {
+      plugin = plugins[pluginIndex];
     }
-  }
-  // Second pass: fill remaining slots round-robin, cycling through chunks if needed
-  while (budgetedTasks.length < budget) {
-    let progressed = false;
-    for (const type of typesInOrder) {
-      if (budgetedTasks.length >= budget) break;
-      const list = tasksByType[type];
-      const ptr = perTypePointers[type];
-      if (list && ptr < list.length) {
-        budgetedTasks.push(list[ptr]);
-        perTypePointers[type] = ptr + 1;
-        progressed = true;
-      } else if (list && list.length > 0) {
-        // Cycle back to the beginning of this plugin's tasks
-        budgetedTasks.push(list[0]);
-        perTypePointers[type] = 1;
-        progressed = true;
+    
+    const chunk = shuffledChunks[chunkIndex];
+    
+    budgetedTasks.push({ plugin, chunk });
+    
+    // Move to next plugin (only if not in testing mode)
+    if (i >= 5) {
+      pluginIndex = (pluginIndex + 1) % plugins.length;
+      
+      // Move to next chunk when we've cycled through all plugins
+      if (pluginIndex === 0) {
+        chunkIndex = (chunkIndex + 1) % shuffledChunks.length;
       }
+    } else {
+      // In testing mode, just cycle through chunks
+      chunkIndex = (chunkIndex + 1) % shuffledChunks.length;
     }
-    if (!progressed) break;
   }
 
   const results: RawQuestion[] = [];
@@ -95,6 +81,10 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
   // Require at least one true-false if that plugin was requested (cost-effective)
   if (plugins.some(p => p.type === 'true-false')) {
     requiredByType['true-false'] = 1;
+  }
+  // Require at least one function-variant if that plugin was requested
+  if (plugins.some(p => p.type === 'function-variant')) {
+    requiredByType['function-variant'] = 1;
   }
 
   const isComplete = (): boolean => {

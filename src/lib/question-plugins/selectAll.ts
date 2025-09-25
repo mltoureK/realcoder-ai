@@ -129,13 +129,13 @@ Format:
     "quiz": {
       "type": "select-all",
       "question": "In a [REALISTIC_APP_CONTEXT], which statements about the function functionName are correct? Select all that apply.",
-      "codeContext": "Show FULL COMPLETE FUNCTION CODE HERE, it should be properly formatted for readability",
+      "codeContext": "show complete function(and code)  that the code uses from the code chunk",
       "options": [
-        { "text": "unambiguous statement about the function, that is true or false",  "isCorrect": true | false },
-        { "text": "unambiguous statement about the function, that is true or false", "isCorrect": false },
-        { "text": "unambiguous statement about the function, that is true or false",  "isCorrect": false },
-        { "text": "unambiguous statement about the function, that   is true or false", "isCorrect": true },
-        { "text": "unambiguous statement about the function, that is true or false",  "isCorrect": false }${optionCount >= 6 ? ',\n        { "text": "unambiguous statement about the function, that is true or false", "isCorrect": false }' : ''}
+        { "text": "Functionally accurate statement about the function , that can be detected from the code context, that is true or false",  "isCorrect": true | false },
+        { "text": "Functionally accurate statement about the function that can be detected from the code context, that is true or false", "isCorrect": false },
+        { "text": "Functionally accurate statement about the function that can be detected from the code context, that is true or false",  "isCorrect": false },
+        { "text": "Functionally accurate statement about the function, that can be detected from the code context, that is true or false", "isCorrect": true },
+        { "text": "Functionally accurate statement about the function that can be detected from the code context, that is true or false",  "isCorrect": false }${optionCount >= 6 ? ',\n        { "text": "Functionally accurate statement about the function that can be detected from the code context, that is true or false", "isCorrect": false }' : ''}
       ],
       "correctAnswers": [],
       "explanation": "Detailed explanation of why each correct answer is right and each incorrect answer is wrong. This field is REQUIRED and cannot be empty."

@@ -62,9 +62,9 @@ export async function POST(request: NextRequest) {
       'true-false': trueFalsePlugin,
       'select-all': selectAllPlugin
     };
-    // Force function-variant only to maximize function-variant generation
-    const defaultQuestionTypes = ['function-variant'];
-    const requestedTypes = ['function-variant'];
+    // Enable all 5 question types (excluding fill-in-the-blank)
+    const defaultQuestionTypes = ['function-variant', 'multiple-choice', 'order-sequence', 'true-false', 'select-all'];
+    const requestedTypes = defaultQuestionTypes;
     
     const selectedPlugins = requestedTypes
       .map((t: string) => availablePlugins[t])
@@ -253,7 +253,7 @@ export async function POST(request: NextRequest) {
       options: { difficulty: difficulty || 'medium' }
     });
 
-    // Fallback: disabled for non-function-variant types while focusing solely on function-variant
+    // Fallback: attempt direct select-all generation if none were generated
     if (Array.isArray(requestedTypes) && requestedTypes.includes('select-all')) {
       const hasSelectAll = rawGenerated.some((q: any) => q?.quiz?.type === 'select-all');
       if (!hasSelectAll && chunks.length > 0) {

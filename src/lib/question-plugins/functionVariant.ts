@@ -43,7 +43,7 @@ EXPLANATION REQUIREMENTS:
 - Include practical examples
 - Focus on learning value
 
-Format:\n[\n  {\n    \"snippet\": \"show complete function(and code)  that the code uses from the code chunk\",\n    \"quiz\": {\n      \"type\": \"function-variant\",\n     
+Format:\n[\n  {\n    \"snippet\": \"show complete function(and code)  that the question uses from the code chunk\",\n    \"quiz\": {\n      \"type\": \"function-variant\",\n     
                  \"question\": \"Ask the user to select the function that accomplished [insert function purpose] and watchout for [List 3 errors that the wrong answers have]".\",
       \"variants\": [\n        {\n          \"id\": \"A\",\n          \"code\": \"Display full function from the code chunk\",\n          \"isCorrect\": true,\n          \"explanation\": \"Detailed explanation with a humorous snarky tone that makes user feel smart for getting it right\"\n        },\n        {\n          \"id\": \"B\",\n          \"code\": \"Display full correct function from the code chunk with a functional error added to it\",\n          \"isCorrect\": false,\n          \"explanation\": \"longer explanation on why this specific bug is wrong in a condescending tone\"\n        },\n        {\n          \"id\": \"C\",\n          \"code\": \"Display full correct function from the code chunk with a functional error added to it\\",\n          \"isCorrect\": false,\n          \"explanation\": \"Encouraging and funny explanation on why this specific bug is wrong. \"\n        },\n        {\n          \"id\": \"D\",\n          \"code\": \"correct function with a functional error added to it\",\n          \"isCorrect\": false,\n          \"explanation\": \"Here is why this specific bug is wrong, and here is an example to further explain that\"\n        }\n      ]\n    }\n  }\n]` }
               ],
@@ -108,6 +108,19 @@ Format:\n[\n  {\n    \"snippet\": \"show complete function(and code)  that the c
               }
               
               question.quiz.variants = filteredVariants;
+              
+              // Check if correct answer is an empty function body - if so, skip this question
+              const correctVariant = question.quiz.variants.find((v: any) => v.isCorrect === true);
+              if (correctVariant && correctVariant.code) {
+                const cleanCode = removeComments(correctVariant.code).trim();
+                // Check if function body is empty (just braces with whitespace)
+                // Matches both: "function name() { }" and "returnType functionName() { }"
+                if (cleanCode.match(/^\s*(?:\w+\s+)?\w+\s*\([^)]*\)\s*\{\s*\}\s*$/)) {
+                  console.warn('⚠️ Skipping question - correct answer is an empty function body');
+                  return;
+                }
+              }
+              
               question.quiz.variants = shuffleVariants(question.quiz.variants);
               question.quiz.variants.forEach((variant: any) => {
                 if (variant && variant.code) variant.code = removeComments(variant.code);
