@@ -30,41 +30,23 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
   console.log(`🎯 Quality Generation Target: ${numQuestions} questions (rated 1-10)`);
   console.log(`📊 Generation Budget: ${budget} API calls in round-robin order: ${plugins.map(p => p.type).join(' → ')}`);
   
-  // Find function-variant plugin for testing
-  const functionVariantPlugin = plugins.find(p => p.type === 'function-variant');
-  
-  // Simple round-robin: cycle through plugins, then cycle through chunks
-  let pluginIndex = 0;
+  // Balanced distribution: each plugin gets exactly 3 calls (5 plugins x 3 = 15 calls)
+  const callsPerPlugin = 3;
   let chunkIndex = 0;
   
-  for (let i = 0; i < budget; i++) {
-    let plugin: QuestionPlugin;
-    
-    // TESTING: Make first 5 calls all function-variant
-    if (i < 5 && functionVariantPlugin) {
-      plugin = functionVariantPlugin;
-      console.log(`🧪 TESTING: Call ${i + 1} forced to function-variant`);
-    } else {
-      plugin = plugins[pluginIndex];
-    }
-    
-    const chunk = shuffledChunks[chunkIndex];
-    
-    budgetedTasks.push({ plugin, chunk });
-    
-    // Move to next plugin (only if not in testing mode)
-    if (i >= 5) {
-      pluginIndex = (pluginIndex + 1) % plugins.length;
+  for (const plugin of plugins) {
+    for (let call = 1; call <= callsPerPlugin; call++) {
+      const chunk = shuffledChunks[chunkIndex];
+      budgetedTasks.push({ plugin, chunk });
       
-      // Move to next chunk when we've cycled through all plugins
-      if (pluginIndex === 0) {
-        chunkIndex = (chunkIndex + 1) % shuffledChunks.length;
-      }
-    } else {
-      // In testing mode, just cycle through chunks
+      console.log(`🎯 Scheduled: ${plugin.type} call ${call}/${callsPerPlugin}`);
+      
+      // Move to next chunk
       chunkIndex = (chunkIndex + 1) % shuffledChunks.length;
     }
   }
+  
+  console.log(`📊 Balanced Distribution: ${plugins.length} plugins × ${callsPerPlugin} calls = ${budgetedTasks.length} total calls`);
 
   const results: RawQuestion[] = [];
   let stopRequested = false;

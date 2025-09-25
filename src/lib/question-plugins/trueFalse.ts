@@ -15,29 +15,17 @@ const MAX_TOKENS = 1500;
 const SYSTEM_PROMPT = 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.';
 
 /**
- * Randomly selects TRUE or FALSE for balanced distribution
- */
-function getRandomTrueFalse(): { answer: string, isTrue: boolean } {
-  const options = ["TRUE", "FALSE"];
-  const randomIndex = Math.floor(Math.random() * options.length);
-  const answer = options[randomIndex];
-  const isTrue = answer === "TRUE";
-  
-  return { answer, isTrue };
-}
-
-/**
  * Creates the user prompt for true/false question generation
  */
 function createUserPrompt(chunk: string): string {
-  return `Generate 4 challenging true/false question based on this code chunk:
+  return `Generate 4 challenging true/false questions based on this code chunk:
 
 ${chunk}
 
 CRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.
 
 IMPORTANT REQUIREMENTS:
-1. IGNORE any code that is not in the primary programming language of this repository.
+1. Use the SAME programming language as the code chunk provided
 2. ONLY generate questions about code that actually exists in the provided chunk
 3. Focus on code behavior, performance, security, or best practices
 4. Create statements that test understanding of how the code actually works
@@ -46,19 +34,19 @@ IMPORTANT REQUIREMENTS:
 7. The correct answer should be based on the actual code implementation
 8. Create realistic scenarios that explain WHY this question matters
 9. CODE FORMATTING: Format the codeContext with proper indentation and line breaks for readability
-10. CRITICAL: The answer MUST be "${answer}" - create a statement that is actually ${isTrue ? 'true' : 'false'} based on the code
+10. Generate a mix of TRUE and FALSE statements for balanced difficulty
 
 FORMAT (strict JSON):
 [
   {
-    "snippet": "key function or concept from code",
+    "snippet": "[key function or concept name from the code chunk]",
     "quiz": {
       "type": "true-false",
-      "question": "A true or false question about the code, that is not obvious and requires understanding the code concepts.",
-      "codeContext": "relevant full function OR code snippet",
+      "question": "[A specific true/false statement about the code that requires understanding programming concepts in the same language as the code chunk]",
+      "codeContext": "[relevant full function or code snippet from the chunk with proper formatting]",
       "options": ["True", "False"],
-      "answer": "${answer}",
-      "explanation": "Answer. The reason on why this is true or false."
+      "answer": "[True or False based on the actual code behavior]",
+      "explanation": "[Clear explanation of why this statement is true or false based on the actual code implementation]"
     }
   }
 ]
