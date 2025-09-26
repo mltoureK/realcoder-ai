@@ -95,11 +95,7 @@ IMPORTANT REQUIREMENTS:
 8. SCENARIO CONTEXT: Create realistic development scenarios that explain WHY this function exists
 9. JSON ESCAPING: ALL special characters in codeContext MUST be properly escaped for JSON
 
-CORRECT ANSWER LOGIC:
-- You MUST have exactly ${correctCount} correct answers out of ${optionCount} total options
-- If correctCount is 0: All options should be false/incorrect statements
-- If correctCount is ${optionCount}: All options should be true/correct statements  
-- Otherwise: Mix correct and incorrect options to reach exactly ${correctCount} correct answers
+
 
 OPTION QUALITY:
 - All options should be roughly the same length to avoid length-based guessing
@@ -131,11 +127,11 @@ Format:
       "question": "In a [REALISTIC_APP_CONTEXT], which statements about the function functionName are correct? Select all that apply.",
       "codeContext": "Display full function from the code chunk",
       "options": [
-        { "text": "Functionally accurate statement about the function , that can be detected from the code context, that is true or false",  "isCorrect": true | false },
-        { "text": "Functionally accurate statement about the function that can be detected from the code context, that is true or false", "isCorrect": false },
-        { "text": "Functionally accurate statement about the function that can be detected from the code context, that is true or false",  "isCorrect": false },
-        { "text": "Functionally accurate statement about the function, that can be detected from the code context, that is true or false", "isCorrect": true },
-        { "text": "Functionally accurate statement about the function that can be detected from the code context, that is true or false",  "isCorrect": false }${optionCount >= 6 ? ',\n        { "text": "Functionally accurate statement about the function that can be detected from the code context, that is true or false", "isCorrect": false }' : ''}
+        { "text": "Functionally accurate statement that can be detected from the code context json headers, that is true or false",  "isCorrect": true | false },
+        { "text": "Functionally accurate statement that can be detected from the code context json headers, that is true or false", "isCorrect": false },
+        { "text": "Functionally accurate statement that can be detected from the code context json headers, that is true or false",  "isCorrect": false },
+        { "text": "Functionally accurate statement that can be detected from the code context json headers, that is true or false", "isCorrect": true },
+        { "text": "Functionally accurate statement that can be detected from the code context json headers, that is true or false",  "isCorrect": false }${optionCount >= 6 ? ',\n        { "text": "Functionally accurate statement about the function that can be detected from the code context, that is true or false", "isCorrect": false }' : ''}
       ],
       "correctAnswers": [],
       "explanation": "Detailed explanation of why each correct answer is right and each incorrect answer is wrong. This field is REQUIRED and cannot be empty."
