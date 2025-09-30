@@ -1,7 +1,7 @@
 import { GenerateParams, QuestionPlugin, RawQuestion } from './QuestionPlugin';
 import { shuffleVariants } from './utils';
 import { tinyJudge } from '../judge';
-import { shouldKeepQuestion, displayQualityRatingSummary } from '../quality-filter';
+import { qualityFilterOrchestrator } from '../quality-filters/QualityFilterOrchestrator';
 
 interface OrchestrateArgs {
   chunks: string[];
@@ -22,61 +22,33 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
   const { chunks, plugins, numQuestions, settings, apiKey, options, onQuestion } = args;
   if (plugins.length === 0 || chunks.length === 0) return [];
 
-  const tasks: Array<{ plugin: QuestionPlugin; chunk: string }> = [];
-  const shuffledChunks = shuffleVariants(chunks);
-  for (const plugin of plugins) {
-    for (const chunk of shuffledChunks) {
-      tasks.push({ plugin, chunk });
-    }
-  }
-
-  // Group by plugin and round-robin schedule to avoid starvation
-  const shuffledTasks = shuffleVariants(tasks);
-  const tasksByType: Record<string, Array<{ plugin: QuestionPlugin; chunk: string }>> = {};
-  for (const t of shuffledTasks) {
-    const key = t.plugin.type;
-    if (!tasksByType[key]) tasksByType[key] = [];
-    tasksByType[key].push(t);
-  }
-  const perTypePointers: Record<string, number> = {};
-  Object.keys(tasksByType).forEach(k => (perTypePointers[k] = 0));
-
+  // Create scheduled tasks: 3 calls per plugin (5 plugins => 15 calls)
   const budgetedTasks: Array<{ plugin: QuestionPlugin; chunk: string }> = [];
-  const budget = Math.min(settings.maxCalls, shuffledTasks.length);
+  const budget = settings.maxCalls;
+  const shuffledChunks = shuffleVariants(chunks);
   
-  console.log(`🎯 Quality Generation Target: ${numQuestions} excellent questions (8/10+)`);
-  console.log(`📊 Generation Budget: ${budget} API calls across ${chunks.length} chunks and ${plugins.length} plugins`);
-  // First pass: reserve up to 2 tasks per plugin
-  const typesInOrder = plugins.map(p => p.type);
-  for (let r = 0; r < 2 && budgetedTasks.length < budget; r++) {
-    for (const type of typesInOrder) {
-      if (budgetedTasks.length >= budget) break;
-      const list = tasksByType[type];
-      const ptr = perTypePointers[type];
-      if (list && ptr < list.length) {
-        budgetedTasks.push(list[ptr]);
-        perTypePointers[type] = ptr + 1;
-      }
+  console.log(`🎯 Quality Generation Target: ${numQuestions} questions (rated 1-10)`);
+  console.log(`📊 Generation Budget: ${budget} API calls in round-robin order: ${plugins.map(p => p.type).join(' → ')}`);
+  
+  // Determine calls per plugin; target is 3 per plugin for 5 plugins => 15 total
+  const callsPerPlugin = Math.max(1, Math.floor(budget / plugins.length));
+  let chunkIndex = 0;
+
+  for (const plugin of plugins) {
+    for (let call = 1; call <= callsPerPlugin; call++) {
+      const chunk = shuffledChunks[chunkIndex];
+      budgetedTasks.push({ plugin, chunk });
+      console.log(`🎯 Scheduled: ${plugin.type} call ${call}/${callsPerPlugin}`);
+      chunkIndex = (chunkIndex + 1) % shuffledChunks.length;
     }
   }
-  // Second pass: fill remaining slots round-robin
-  while (budgetedTasks.length < budget) {
-    let progressed = false;
-    for (const type of typesInOrder) {
-      if (budgetedTasks.length >= budget) break;
-      const list = tasksByType[type];
-      const ptr = perTypePointers[type];
-      if (list && ptr < list.length) {
-        budgetedTasks.push(list[ptr]);
-        perTypePointers[type] = ptr + 1;
-        progressed = true;
-      }
-    }
-    if (!progressed) break;
-  }
+  console.log(`📊 Scheduled ${budgetedTasks.length} total calls (${callsPerPlugin} per plugin)`);
 
   const results: RawQuestion[] = [];
   let stopRequested = false;
+  let apiCallsMade = 0;
+  let apiCallsSuccessful = 0;
+  let apiCallsRejected = 0;
   // Track counts per question type to enforce minimum quotas (e.g., ensure at least one fill-blank)
   const countsByType: Record<string, number> = {};
   const requiredByType: Record<string, number> = {};
@@ -88,21 +60,28 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
   if (plugins.some(p => p.type === 'true-false')) {
     requiredByType['true-false'] = 1;
   }
+  // Require at least one function-variant if that plugin was requested
+  if (plugins.some(p => p.type === 'function-variant')) {
+    requiredByType['function-variant'] = 1;
+  }
 
   const isComplete = (): boolean => {
-    if (results.length < numQuestions) {
-      console.log(`📊 Quality Generation Status: ${results.length}/${numQuestions} questions (need ${numQuestions - results.length} more)`);
-      return false;
-    }
-    for (const [type, min] of Object.entries(requiredByType)) {
-      if ((countsByType[type] || 0) < min) {
-        console.log(`📊 Type requirement not met: ${type} has ${countsByType[type] || 0}/${min}`);
-        return false;
+    // Only stop early if we have enough questions AND have met type requirements
+    if (results.length >= numQuestions) {
+      for (const [type, min] of Object.entries(requiredByType)) {
+        if ((countsByType[type] || 0) < min) {
+          console.log(`📊 Type requirement not met: ${type} has ${countsByType[type] || 0}/${min}`);
+          return false;
+        }
       }
+      console.log(`✅ Quality Generation Complete: ${results.length} questions generated and rated`);
+      qualityFilterOrchestrator.displayQualityRatingSummary();
+      return true;
     }
-    console.log(`✅ Quality Generation Complete: ${results.length} excellent questions (7/10+) generated`);
-    displayQualityRatingSummary();
-    return true;
+    
+    // Continue making calls until we reach target or exhaust budget
+    console.log(`📊 Generation Status: ${results.length}/${numQuestions} questions (need ${numQuestions - results.length} more)`);
+    return false;
   };
 
   let nextIndex = 0;
@@ -118,6 +97,9 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
     const p = (async () => {
       if (stopRequested) return;
       try {
+        apiCallsMade++;
+        console.log(`📞 API Call ${apiCallsMade}/${budgetedTasks.length} (${task.plugin.type})`);
+        
         const generated = await task.plugin.generate({
           chunk: task.chunk,
           options: { difficulty: options.difficulty, numQuestions },
@@ -130,32 +112,41 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
         for (const q of generated) {
           if (stopRequested) break;
           
-          // Quality filter: Rate ALL questions and only keep 8/10+ ones (if enabled)
-          let accept = true;
-          if (process.env.ENABLE_QUALITY_FILTER !== 'false') {
-            const quiz: any = (q as any).quiz || {};
-            const qualityInput = {
-              type: quiz.type,
-              question: quiz.question,
-              options: quiz.options,
-              variants: quiz.variants,
-              codeContext: (q as any).codeContext,
-              snippet: (q as any).snippet,
-              explanation: quiz.explanation
-            };
-            
-            try {
-              accept = await shouldKeepQuestion(qualityInput);
-              if (!accept) {
-                console.log(`🚫 Question rejected by quality filter: ${quiz.question?.substring(0, 50)}...`);
-                continue;
-              }
-              console.log(`✅ Question passed quality filter: ${quiz.question?.substring(0, 50)}...`);
-            } catch (error) {
-              console.error('❌ Error in quality filter:', error);
-              // If quality filter fails, reject the question for safety
-              continue;
+          // Simple quality rating: Just rate the question 1-10 without filtering
+          const quiz: any = (q as any).quiz || {};
+          
+          // Convert letter-based correctAnswers to numbers for quality filter
+          let correctAnswersForFilter = quiz.correctAnswers;
+          if (Array.isArray(quiz.correctAnswers) && quiz.correctAnswers.length > 0) {
+            if (typeof quiz.correctAnswers[0] === 'string') {
+              // Convert letters to numbers for quality filter
+              correctAnswersForFilter = quiz.correctAnswers.map((letter: string) => {
+                const charCode = letter.charCodeAt(0);
+                return charCode - 65; // A=0, B=1, C=2, etc.
+              });
             }
+          }
+          
+          const qualityInput = {
+            type: quiz.type,
+            question: quiz.question,
+            options: quiz.options,
+            variants: quiz.variants,
+            codeContext: (q as any).codeContext,
+            snippet: (q as any).snippet,
+            explanation: quiz.explanation,
+            correctAnswers: correctAnswersForFilter
+          };
+          
+          try {
+            const rating = await qualityFilterOrchestrator.rateQuestionQuality(qualityInput);
+            console.log(`📊 Question rated ${rating.score}/10: ${quiz.question?.substring(0, 50)}...`);
+            // Store the rating in the question object
+            q.qualityRating = rating.score;
+            apiCallsSuccessful++;
+          } catch (error) {
+            console.error('❌ Error in quality rating:', error);
+            apiCallsSuccessful++; // Still count as successful since we're not filtering
           }
           results.push(q);
           try {
@@ -197,6 +188,18 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
 
   if (stopRequested) abortAll();
   await Promise.allSettled(active);
+
+  // Log API call summary
+  console.log('\n📊 API CALL SUMMARY:');
+  console.log(`📞 Total API calls made: ${apiCallsMade}/${budgetedTasks.length} (${Math.round(apiCallsMade/budgetedTasks.length*100)}% of budget)`);
+  console.log(`✅ Successful questions: ${apiCallsSuccessful}`);
+  console.log(`🚫 Rejected questions: ${apiCallsRejected}`);
+  console.log(`📋 Final questions generated: ${results.length}/${numQuestions} (${Math.round(results.length/numQuestions*100)}% of target)`);
+  console.log(`🎯 Quality rating enabled: YES (1-10 scale)`);
+  
+  if (results.length < numQuestions && apiCallsMade < budgetedTasks.length) {
+    console.log(`⚠️  WARNING: Stopped early with ${budgetedTasks.length - apiCallsMade} unused API calls remaining`);
+  }
 
   return results.slice(0, numQuestions);
 }

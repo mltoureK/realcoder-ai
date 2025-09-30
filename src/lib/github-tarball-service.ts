@@ -55,6 +55,7 @@ export function parseGitHubUrl(url: string): { owner: string; repo: string; bran
 // Download repository as tarball (single API call)
 export async function downloadRepositoryTarball(owner: string, repo: string, branch: string = 'main'): Promise<Buffer> {
   console.log('📦 Downloading tarball for', `${owner}/${repo}`, 'branch:', branch);
+  console.log('⏱️ Using 5-minute timeout for large repositories (like Linux kernel)');
   
   const tarballUrl = `https://api.github.com/repos/${owner}/${repo}/tarball/${branch}`;
   
@@ -71,8 +72,8 @@ export async function downloadRepositoryTarball(owner: string, repo: string, bra
   
   const response = await fetch(tarballUrl, { 
     headers,
-    // Add timeout for large repositories
-    signal: AbortSignal.timeout(60000) // 60 second timeout
+    // Add timeout for very large repositories like Linux kernel
+    signal: AbortSignal.timeout(300000) // 5 minute timeout for massive repos
   });
   
   if (!response.ok) {
@@ -97,13 +98,31 @@ export async function downloadRepositoryTarball(owner: string, repo: string, bra
 }
 
 // Extract and filter code files from tarball
-export async function extractCodeFiles(buffer: Buffer): Promise<GitHubFile[]> {
+export async function extractCodeFiles(buffer: Buffer, onFile?: (path: string) => void): Promise<GitHubFile[]> {
+  console.log('🚀 Starting smart streaming extraction with pre-filtering...');
+  
   return new Promise((resolve, reject) => {
     const files: GitHubFile[] = [];
     const stream = Readable.from(buffer);
+    let processedFiles = 0;
+    let skippedFiles = 0;
     
     const parser = tar.list({
       onentry: (entry) => {
+        const filePath = entry.path;
+        
+        // SMART STREAMING: Pre-filter files before reading content
+        const preScore = calculatePreScore(filePath, entry.size || 0);
+        const shouldProcess = preScore > 10 && isCodeFile(filePath) && (entry.size || 0) <= 100000;
+        
+        if (!shouldProcess) {
+          // Skip this file entirely - don't read content into memory
+          skippedFiles++;
+          entry.resume(); // Fast-forward past this file
+          return;
+        }
+        
+        // File passed pre-filtering - now read its content
         const chunks: Buffer[] = [];
         
         entry.on('data', (chunk: Buffer) => {
@@ -113,15 +132,9 @@ export async function extractCodeFiles(buffer: Buffer): Promise<GitHubFile[]> {
         entry.on('end', () => {
           try {
             const content = Buffer.concat(chunks).toString('utf8');
-            const filePath = entry.path;
             
-            // Skip binary files and very large files
-            if (content.length === 0 || content.length > 100000) {
-              return;
-            }
-            
-            // Skip non-code files
-            if (!isCodeFile(filePath)) {
+            // Skip empty files
+            if (content.length === 0) {
               return;
             }
             
@@ -129,7 +142,7 @@ export async function extractCodeFiles(buffer: Buffer): Promise<GitHubFile[]> {
             const extension = '.' + filePath.split('.').pop()?.toLowerCase();
             const language = getLanguageFromExtension(extension);
             
-            // Calculate relevance score
+            // Calculate final relevance score with content
             const relevanceScore = calculateRelevanceScore(filePath, content);
             
             files.push({
@@ -140,16 +153,20 @@ export async function extractCodeFiles(buffer: Buffer): Promise<GitHubFile[]> {
               relevanceScore
             });
             
+            processedFiles++;
             console.log('✅ Extracted:', filePath, `(${content.length} chars, score: ${relevanceScore})`);
+            try { if (onFile) onFile(filePath); } catch {}
         } catch {
-          console.warn('⚠️ Skipping binary file:', entry.path);
+          console.warn('⚠️ Skipping binary file:', filePath);
+          skippedFiles++;
         }
         });
       }
     });
     
     stream.on('end', () => {
-      console.log('📁 Successfully extracted', files.length, 'code files');
+      console.log(`📁 Successfully extracted ${files.length} code files`);
+      console.log(`📊 Processing efficiency: ${processedFiles} processed, ${skippedFiles} skipped (${Math.round(skippedFiles / (processedFiles + skippedFiles) * 100)}% saved)`);
       resolve(files);
     });
     
@@ -158,6 +175,61 @@ export async function extractCodeFiles(buffer: Buffer): Promise<GitHubFile[]> {
     
     stream.pipe(parser);
   });
+}
+
+// Calculate pre-score based on file path and size only (before reading content)
+function calculatePreScore(path: string, size: number): number {
+  let score = 0;
+  const pathLower = path.toLowerCase();
+  
+  // Skip common non-essential directories immediately
+  const skipDirs = ['node_modules', 'vendor', '.git', 'dist', 'build', '.next', 'coverage', '__pycache__'];
+  if (skipDirs.some(dir => pathLower.includes(`/${dir}/`) || pathLower.startsWith(`${dir}/`))) {
+    return 0;
+  }
+  
+  // Skip common non-essential files
+  const skipFiles = ['package-lock.json', 'yarn.lock', 'composer.lock', '.gitignore', 'readme.md', 'license', 'changelog'];
+  const fileName = path.split('/').pop()?.toLowerCase() || '';
+  if (skipFiles.includes(fileName)) {
+    return 0;
+  }
+  
+  // Prioritize source code directories
+  const goodDirs = ['src', 'lib', 'app', 'components', 'services', 'utils', 'core', 'api', 'modules'];
+  if (goodDirs.some(dir => pathLower.includes(`/${dir}/`) || pathLower.startsWith(`${dir}/`))) {
+    score += 30;
+  }
+  
+  // File extension scoring
+  const ext = fileName.split('.').pop() || '';
+  const highValueExts = ['ts', 'tsx', 'js', 'jsx', 'py', 'java', 'cpp', 'go', 'rs'];
+  const mediumValueExts = ['php', 'rb', 'cs', 'swift', 'kt', 'scala'];
+  
+  if (highValueExts.includes(ext)) {
+    score += 25;
+  } else if (mediumValueExts.includes(ext)) {
+    score += 15;
+  } else if (ext.length > 0) {
+    score += 5; // Some extension is better than none
+  }
+  
+  // Size scoring (prefer reasonable-sized files)
+  if (size > 1000 && size < 10000) {
+    score += 15; // Sweet spot for meaningful code files
+  } else if (size > 500 && size < 50000) {
+    score += 10; // Still good
+  } else if (size > 50000) {
+    score -= 10; // Very large files are often generated/minified
+  }
+  
+  // Depth penalty (prefer files closer to root)
+  const depth = (path.match(/\//g) || []).length;
+  if (depth > 4) {
+    score -= Math.min(10, (depth - 4) * 2);
+  }
+  
+  return Math.max(0, score);
 }
 
 // Check if file is a code file

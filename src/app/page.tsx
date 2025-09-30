@@ -28,6 +28,45 @@ export default function Home() {
   const [availableLanguages, setAvailableLanguages] = useState<Array<{name: string, percentage: number, fileCount: number}>>([]);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [repositoryFiles, setRepositoryFiles] = useState<any[]>([]);
+  const [trendingRepos, setTrendingRepos] = useState<any[]>([]);
+  const [isLoadingTrending, setIsLoadingTrending] = useState(false);
+
+  // Load trending repositories
+  const loadTrendingRepos = async () => {
+    if (trendingRepos.length > 0) return; // Already loaded
+    
+    setIsLoadingTrending(true);
+    try {
+      console.log('📈 Loading trending repositories...');
+      const response = await fetch('/api/trendingRepos');
+      const data = await response.json();
+      
+      if (data.success) {
+        setTrendingRepos(data.repositories);
+        console.log('✅ Loaded', data.repositories.length, 'trending repositories');
+      }
+    } catch (error) {
+      console.error('❌ Error loading trending repositories:', error);
+    } finally {
+      setIsLoadingTrending(false);
+    }
+  };
+
+  // Handle repository selection (from trending or manual input)
+  const handleRepositorySelect = async (url: string) => {
+    console.log('📦 Repository selected:', url);
+    setGithubUrl(url);
+    
+    // Clear previous state
+    setAvailableBranches([]);
+    setSelectedBranch('');
+    setAvailableLanguages([]);
+    setSelectedLanguages([]);
+    setRepositoryFiles([]);
+    
+    // Load branches and process repository
+    await fetchBranches(url);
+  };
 
   // Process repository and detect languages
   const processRepository = async (url: string) => {
@@ -206,11 +245,25 @@ export default function Home() {
         await processRepository(branchUrl);
       } else {
         console.error('❌ Failed to fetch branches:', data.error);
-        setAvailableBranches([]);
+        // Check if we got fallback branches
+        if (data.fallback) {
+          console.log('🔄 Using fallback branches due to API timeout');
+          setAvailableBranches(data.branches || []);
+          setSelectedBranch(data.defaultBranch || 'main');
+        } else {
+          setAvailableBranches([]);
+        }
       }
     } catch (error) {
       console.error('❌ Error fetching branches:', error);
-      setAvailableBranches([]);
+      // Set default fallback branches
+      const fallbackBranches = [
+        { name: 'main', isDefault: true },
+        { name: 'master', isDefault: false }
+      ];
+      setAvailableBranches(fallbackBranches);
+      setSelectedBranch('main');
+      console.log('🔄 Using local fallback branches');
     } finally {
       setIsLoadingBranches(false);
     }
@@ -272,7 +325,7 @@ export default function Home() {
           },
           body: JSON.stringify({
             code: combinedCode,
-            questionTypes: ['function-variant', 'multiple-choice', 'order-sequence', 'true-false'/*, 'fill-blank'*/],
+            questionTypes: ['function-variant', 'multiple-choice', 'order-sequence', 'true-false', 'select-all'],
             difficulty: 'medium',
             numQuestions: 15
           })
@@ -358,7 +411,7 @@ export default function Home() {
           },
           body: JSON.stringify({
             code: combinedCode,
-            questionTypes: ['function-variant', 'multiple-choice', 'order-sequence', 'true-false'/*, 'fill-blank'*/],
+            questionTypes: ['function-variant', 'multiple-choice', 'order-sequence', 'true-false', 'select-all'],
             difficulty: 'medium',
             numQuestions: 10
           })
@@ -503,6 +556,12 @@ export default function Home() {
             >
               🐙 GitHub Repo
             </button>
+          </div>
+
+          {/* Controls Row */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+            </div>
           </div>
 
           {/* Upload Files Tab */}
@@ -739,26 +798,87 @@ export default function Home() {
                 </div>
               )}
               
-              {/* Example Repos */}
-                              <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Try these popular repositories:</p>
+              {/* Trending Repositories */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Try trending repositories:</p>
+                  <button
+                    onClick={loadTrendingRepos}
+                    disabled={isLoadingTrending}
+                    className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-50"
+                  >
+                    {isLoadingTrending ? 'Loading...' : 'Refresh'}
+                  </button>
+                </div>
+                
+                {trendingRepos.length > 0 ? (
+                  <div className="space-y-3">
+                    {/* Popular Quick Access */}
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Popular:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {trendingRepos.slice(0, 6).map((repo) => (
+                          <button
+                            key={repo.url}
+                            onClick={() => handleRepositorySelect(repo.url)}
+                            className="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                            title={repo.description}
+                          >
+                            {repo.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Categorized List */}
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Browse by category:</p>
+                      <div className="max-h-40 overflow-y-auto space-y-2">
+                        {['Frontend Framework', 'Backend Framework', 'Language', 'Build Tool'].map(category => {
+                          const categoryRepos = trendingRepos.filter(repo => repo.category === category);
+                          if (categoryRepos.length === 0) return null;
+                          
+                          return (
+                            <div key={category} className="space-y-1">
+                              <p className="text-xs font-medium text-gray-600 dark:text-gray-300">{category}:</p>
+                              <div className="flex flex-wrap gap-1">
+                                {categoryRepos.slice(0, 4).map(repo => (
+                                  <button
+                                    key={repo.url}
+                                    onClick={() => handleRepositorySelect(repo.url)}
+                                    className="px-2 py-1 text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                                    title={`${repo.description} • ${repo.stars} stars • ${repo.difficulty}`}
+                                  >
+                                    {repo.name}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
                   <div className="flex flex-wrap gap-2">
+                    {/* Fallback to basic popular repos */}
                     {[
-                      'https://github.com/facebook/react',
-                      'https://github.com/microsoft/TypeScript',
-                      'https://github.com/nodejs/node',
-                      'https://github.com/vercel/next.js'
-                    ].map((url) => (
+                      { name: 'React', url: 'https://github.com/facebook/react' },
+                      { name: 'TypeScript', url: 'https://github.com/microsoft/TypeScript' },
+                      { name: 'Node.js', url: 'https://github.com/nodejs/node' },
+                      { name: 'Next.js', url: 'https://github.com/vercel/next.js' }
+                    ].map((repo) => (
                       <button
-                        key={url}
-                        onClick={() => setGithubUrl(url)}
+                        key={repo.url}
+                        onClick={() => handleRepositorySelect(repo.url)}
                         className="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                       >
-                        {url.replace('https://github.com/', '')}
+                        {repo.name}
                       </button>
                     ))}
                   </div>
-                </div>
+                )}
+              </div>
             </div>
           )}
 
