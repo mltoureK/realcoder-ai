@@ -134,7 +134,7 @@ Format:
         { "text": "Functionally accurate statement that can be detected from the code context json headers, that is true or false",  "isCorrect": false }${optionCount >= 6 ? ',\n        { "text": "Functionally accurate statement about the function that can be detected from the code context, that is true or false", "isCorrect": false }' : ''}
       ],
       "correctAnswers": [],
-      "explanation": "Detailed explanation of why each correct answer is right and each incorrect answer is wrong. This field is REQUIRED and cannot be empty."
+      "explanation": "Detailed explanation (at least 5 sentences) of why each correct answer is right and each incorrect answer is wrong. This field is REQUIRED and cannot be empty."
     }
   }
 ]

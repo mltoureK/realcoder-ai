@@ -53,10 +53,47 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
       const correctVariant = currentQuestion.variants?.find((v: any) => v.isCorrect);
       isCorrect = correctVariant ? selectedAnswers.includes(correctVariant.id) : false;
     } else if (currentQuestion.type === 'order-sequence') {
-      // For order-sequence, check if the order matches exactly
+      // Support multiple valid orders and partial-order constraints
       const correctOrder = currentQuestion.correctOrder || [];
-      isCorrect = selectedAnswers.length === correctOrder.length &&
-        selectedAnswers.every((stepId, index) => stepId === correctOrder[index]);
+      const acceptableOrders = Array.isArray(currentQuestion.acceptableOrders) ? currentQuestion.acceptableOrders : [];
+      const constraints = Array.isArray(currentQuestion.constraints) ? currentQuestion.constraints : [];
+
+      const exactMatch = () => (
+        selectedAnswers.length === correctOrder.length &&
+        selectedAnswers.every((stepId: string, index: number) => stepId === correctOrder[index])
+      );
+
+      const matchesAnyAcceptable = () => (
+        acceptableOrders.some((ord: string[]) => (
+          Array.isArray(ord) &&
+          selectedAnswers.length === ord.length &&
+          selectedAnswers.every((id: string, idx: number) => id === ord[idx])
+        ))
+      );
+
+      const satisfiesConstraints = () => {
+        if (!constraints || constraints.length === 0) return false;
+        const pos = new Map<string, number>();
+        selectedAnswers.forEach((id: string, idx: number) => pos.set(id, idx));
+        const allPrecedenceHold = constraints.every((c: any) => {
+          let before: string | undefined;
+          let after: string | undefined;
+          if (Array.isArray(c) && c.length === 2) {
+            [before, after] = c as [string, string];
+          } else if (c && typeof c === 'object' && 'before' in c && 'after' in c) {
+            before = c.before;
+            after = c.after;
+          }
+          if (!before || !after) return false;
+          const i = pos.get(before);
+          const j = pos.get(after);
+          return i !== undefined && j !== undefined && i < j;
+        });
+        // require same length to avoid partial sequences being counted
+        return allPrecedenceHold && selectedAnswers.length === correctOrder.length;
+      };
+
+      isCorrect = exactMatch() || matchesAnyAcceptable() || satisfiesConstraints();
     } else if (currentQuestion.type === 'select-all') {
       // For select-all, check if selected answers match the correct indices
       const correctAnswers = currentQuestion.correctAnswers || [];
@@ -431,9 +468,18 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                   e.preventDefault();
                   e.currentTarget.classList.remove('border-blue-400', 'bg-blue-50', 'dark:bg-blue-900/20');
                   const stepId = e.dataTransfer.getData('text/plain');
-                  if (stepId && !selectedAnswers.includes(stepId)) {
-                    setSelectedAnswers([...selectedAnswers, stepId]);
-                  }
+                  if (!stepId) return;
+                  // Append to end when dropping on container
+                  setSelectedAnswers(prev => {
+                    const next = [...prev];
+                    const existingIdx = next.indexOf(stepId);
+                    if (existingIdx >= 0) {
+                      // Move to end
+                      next.splice(existingIdx, 1);
+                    }
+                    if (!next.includes(stepId)) next.push(stepId);
+                    return next;
+                  });
                 }}
               >
                 {selectedAnswers.length === 0 ? (
@@ -448,11 +494,66 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                       return (
                         <div
                           key={stepId}
-                          className={`flex items-center space-x-3 p-3 border rounded-lg ${
+                          draggable
+                          className={`flex items-center space-x-3 p-3 border rounded-lg transition-shadow duration-150 ${
                             showExplanations && step.isDistractor 
                               ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' 
                               : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600'
                           }`}
+                          onDragStart={(e) => {
+                            e.dataTransfer.setData('text/plain', stepId);
+                            e.dataTransfer.effectAllowed = 'move';
+                          }}
+                          onDragOver={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const target = e.currentTarget as HTMLDivElement;
+                            const rect = target.getBoundingClientRect();
+                            const isAfter = e.clientY > rect.top + rect.height / 2;
+                            // Visual cue: thin line at top or bottom using inset box-shadow
+                            target.classList.add('border-blue-400');
+                            target.style.boxShadow = isAfter
+                              ? 'inset 0 -3px 0 0 rgba(59, 130, 246, 1)'
+                              : 'inset 0 3px 0 0 rgba(59, 130, 246, 1)';
+                          }}
+                          onDragLeave={(e) => {
+                            e.stopPropagation();
+                            const target = e.currentTarget as HTMLDivElement;
+                            target.classList.remove('border-blue-400');
+                            target.style.boxShadow = '';
+                          }}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const target = e.currentTarget as HTMLDivElement;
+                            target.classList.remove('border-blue-400');
+                            target.style.boxShadow = '';
+                            const draggedId = e.dataTransfer.getData('text/plain');
+                            if (!draggedId) return;
+                            setSelectedAnswers(prev => {
+                              const next = [...prev];
+                              const fromIdx = next.indexOf(draggedId);
+                              const rect = target.getBoundingClientRect();
+                              const isAfter = e.clientY > rect.top + rect.height / 2;
+                              let toIdx = index + (isAfter ? 1 : 0);
+                              // Clamp destination bounds
+                              if (toIdx < 0) toIdx = 0;
+                              if (toIdx > next.length) toIdx = next.length;
+                              if (fromIdx === -1) {
+                                // Insert from bank at computed position
+                                if (!next.includes(draggedId)) next.splice(toIdx, 0, draggedId);
+                                return next;
+                              }
+                              if (fromIdx === toIdx || fromIdx === toIdx - 1) {
+                                // No-op move (dropping to same place)
+                                return next;
+                              }
+                              const [moved] = next.splice(fromIdx, 1);
+                              if (fromIdx < toIdx) toIdx -= 1; // account for removal shift
+                              next.splice(toIdx, 0, moved);
+                              return next;
+                            });
+                          }}
                         >
                           <div className={`w-8 h-8 text-white rounded-full flex items-center justify-center text-sm font-bold ${
                             showExplanations && step.isDistractor 
@@ -485,6 +586,49 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                   </div>
                 )}
               </div>
+
+              {/* Solution panel: show authoritative correct order with per-step explanations */}
+              {showExplanations && Array.isArray(currentQuestion.correctOrder) && Array.isArray(currentQuestion.steps) && (
+                <div className="mt-4 bg-gray-50 dark:bg-gray-700 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
+                  <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-3">Solution: Authoritative Order</h4>
+                  <div className="space-y-2">
+                    {currentQuestion.correctOrder.map((id: string, idx: number) => {
+                      const step = currentQuestion.steps.find((s: any) => s.id === id);
+                      if (!step) return null;
+                      const userIndex = selectedAnswers.indexOf(id);
+                      const userMatchedPosition = userIndex === idx;
+                      return (
+                        <div
+                          key={id}
+                          className={`p-3 rounded-lg border-2 ${userMatchedPosition ? 'border-green-200 bg-green-50 dark:bg-green-900/20' : 'border-blue-200 bg-white dark:bg-gray-800 dark:border-blue-900/40'}`}
+                        >
+                          <div className="flex items-start space-x-3">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${userMatchedPosition ? 'bg-green-600 text-white' : 'bg-blue-600 text-white'}`}>{idx + 1}</div>
+                            <div className="flex-1">
+                              <pre className="text-sm font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap">{step.code}</pre>
+                              {step.explanation && (
+                                <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">{step.explanation}</p>
+                              )}
+                              {!userMatchedPosition && userIndex >= 0 && (
+                                <p className="text-xs mt-1 text-yellow-700 dark:text-yellow-300">You placed this at position {userIndex + 1}.</p>
+                              )}
+                              {step.isDistractor && (
+                                <span className="inline-block mt-1 px-2 py-1 text-xs bg-orange-200 dark:bg-orange-800 text-orange-800 dark:text-orange-200 rounded-full">Distractor</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {currentQuestion.explanation && (
+                    <div className="mt-4 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                      <p className="text-sm text-blue-800 dark:text-blue-200"><strong>Overall Explanation:</strong> {currentQuestion.explanation}</p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         );

@@ -68,7 +68,7 @@ Format:
         "Third subtle but incorrect description"
       ],
       "answer": "2",
-      "explanation": "why this is correct based on the actual function code"
+      "explanation": "why this is correct (at least 5 sentences) based on the actual function code"
     }
   }
 ]`;

@@ -137,6 +137,8 @@ export async function POST(request: NextRequest) {
           qualityRating: q.qualityRating || null,
           steps: questionData.steps || [],
           correctOrder: questionData.correctOrder || [],
+          acceptableOrders: questionData.acceptableOrders || [],
+          constraints: questionData.constraints || [],
           variants: []
         };
         } else if (questionData.type === 'true-false') {
@@ -355,6 +357,8 @@ export async function POST(request: NextRequest) {
             difficulty: 'medium',
             steps: questionData.steps || [],
             correctOrder: questionData.correctOrder || [],
+            acceptableOrders: questionData.acceptableOrders || [],
+            constraints: questionData.constraints || [],
             variants: []
           };
         } else if (questionData.type === 'true-false') {

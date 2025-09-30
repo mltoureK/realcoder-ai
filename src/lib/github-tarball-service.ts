@@ -98,7 +98,7 @@ export async function downloadRepositoryTarball(owner: string, repo: string, bra
 }
 
 // Extract and filter code files from tarball
-export async function extractCodeFiles(buffer: Buffer): Promise<GitHubFile[]> {
+export async function extractCodeFiles(buffer: Buffer, onFile?: (path: string) => void): Promise<GitHubFile[]> {
   console.log('🚀 Starting smart streaming extraction with pre-filtering...');
   
   return new Promise((resolve, reject) => {
@@ -155,6 +155,7 @@ export async function extractCodeFiles(buffer: Buffer): Promise<GitHubFile[]> {
             
             processedFiles++;
             console.log('✅ Extracted:', filePath, `(${content.length} chars, score: ${relevanceScore})`);
+            try { if (onFile) onFile(filePath); } catch {}
         } catch {
           console.warn('⚠️ Skipping binary file:', filePath);
           skippedFiles++;

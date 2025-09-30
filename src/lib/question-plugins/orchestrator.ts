@@ -22,7 +22,7 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
   const { chunks, plugins, numQuestions, settings, apiKey, options, onQuestion } = args;
   if (plugins.length === 0 || chunks.length === 0) return [];
 
-  // Create simple round-robin array: [mcq, function-variant, order-sequence, select-all, true-false, mcq, ...]
+  // Create scheduled tasks: 3 calls per plugin (5 plugins => 15 calls)
   const budgetedTasks: Array<{ plugin: QuestionPlugin; chunk: string }> = [];
   const budget = settings.maxCalls;
   const shuffledChunks = shuffleVariants(chunks);
@@ -30,23 +30,19 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
   console.log(`🎯 Quality Generation Target: ${numQuestions} questions (rated 1-10)`);
   console.log(`📊 Generation Budget: ${budget} API calls in round-robin order: ${plugins.map(p => p.type).join(' → ')}`);
   
-  // Balanced distribution: each plugin gets exactly 3 calls (5 plugins x 3 = 15 calls)
-  const callsPerPlugin = 3;
+  // Determine calls per plugin; target is 3 per plugin for 5 plugins => 15 total
+  const callsPerPlugin = Math.max(1, Math.floor(budget / plugins.length));
   let chunkIndex = 0;
-  
+
   for (const plugin of plugins) {
     for (let call = 1; call <= callsPerPlugin; call++) {
       const chunk = shuffledChunks[chunkIndex];
       budgetedTasks.push({ plugin, chunk });
-      
       console.log(`🎯 Scheduled: ${plugin.type} call ${call}/${callsPerPlugin}`);
-      
-      // Move to next chunk
       chunkIndex = (chunkIndex + 1) % shuffledChunks.length;
     }
   }
-  
-  console.log(`📊 Balanced Distribution: ${plugins.length} plugins × ${callsPerPlugin} calls = ${budgetedTasks.length} total calls`);
+  console.log(`📊 Scheduled ${budgetedTasks.length} total calls (${callsPerPlugin} per plugin)`);
 
   const results: RawQuestion[] = [];
   let stopRequested = false;

@@ -79,8 +79,41 @@ export function validateQuestionStructure(question: any): boolean {
     );
     if (!valid) {
       console.log('🚫 Validator: order-sequence has invalid steps:', question.quiz.steps);
+      return false;
     }
-    return valid;
+
+    // Optional: acceptableOrders (array of arrays of step ids)
+    if (question.quiz.acceptableOrders !== undefined) {
+      const stepsSet = new Set((question.quiz.steps || []).map((s: any) => s.id));
+      const ao = question.quiz.acceptableOrders;
+      const aoValid = Array.isArray(ao) && ao.every((arr: any) => Array.isArray(arr) && arr.every((id: any) => typeof id === 'string' && stepsSet.has(id)));
+      if (!aoValid) {
+        console.log('🚫 Validator: order-sequence invalid acceptableOrders:', question.quiz.acceptableOrders);
+        return false;
+      }
+    }
+
+    // Optional: constraints (array of pairs or objects referencing step ids)
+    if (question.quiz.constraints !== undefined) {
+      const stepsSet = new Set((question.quiz.steps || []).map((s: any) => s.id));
+      const cs = question.quiz.constraints;
+      const csValid = Array.isArray(cs) && cs.every((c: any) => {
+        if (Array.isArray(c) && c.length === 2) {
+          const [before, after] = c;
+          return typeof before === 'string' && typeof after === 'string' && stepsSet.has(before) && stepsSet.has(after);
+        }
+        if (c && typeof c === 'object' && 'before' in c && 'after' in c) {
+          return typeof c.before === 'string' && typeof c.after === 'string' && stepsSet.has(c.before) && stepsSet.has(c.after);
+        }
+        return false;
+      });
+      if (!csValid) {
+        console.log('🚫 Validator: order-sequence invalid constraints:', question.quiz.constraints);
+        return false;
+      }
+    }
+
+    return true;
   }
 
   if (question.quiz.type === 'true-false') {

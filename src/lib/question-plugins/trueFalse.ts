@@ -46,7 +46,7 @@ FORMAT (strict JSON):
       "codeContext": "[relevant full function or code snippet from the chunk with proper formatting]",
       "options": ["True", "False"],
       "answer": "[True or False based on the actual code behavior]",
-      "explanation": "[Clear explanation of why this statement is true or false based on the actual code implementation]"
+      "explanation": "[Clear explanation (at least 5 sentences) of why this statement is true or false based on the actual code implementation]"
     }
   }
 ]
