@@ -3,7 +3,19 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { FileProcessor, FileInfo } from '@/lib/fileProcessor';
-import { processGitHubRepositoryWithCache, clearExpiredCache, getCacheStats } from '@/lib/github-tarball-service';
+import { 
+  processGitHubRepositoryWithCache, 
+  clearExpiredCache, 
+  getCacheStats,
+  parseGitHubUrl,
+  downloadRepositoryTarball,
+  extractCodeFiles,
+  prepareRepositoryForQuiz
+} from '@/lib/github-tarball-service';
+
+// Increase timeout for large repositories
+export const maxDuration = 300; // 5 minutes
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,6 +23,7 @@ export async function POST(request: NextRequest) {
     const { url } = body;
 
     console.log('📡 /processRepository API called with URL:', url);
+    const streamParam = request.nextUrl?.searchParams?.get('stream');
     
     // Clean up expired cache entries
     clearExpiredCache();
@@ -19,7 +32,65 @@ export async function POST(request: NextRequest) {
     const cacheStats = getCacheStats();
     console.log('💾 Cache stats:', cacheStats);
 
-    // Use the new tarball service for scalable processing
+    if (streamParam === '1') {
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream<Uint8Array>({
+        start: async (controller) => {
+          try {
+            const send = (obj: any) => controller.enqueue(encoder.encode(JSON.stringify(obj) + '\n'));
+            send({ type: 'meta', message: 'starting' });
+
+            const info = parseGitHubUrl(url);
+            if (!info) {
+              send({ type: 'error', message: 'Invalid GitHub URL' });
+              controller.close();
+              return;
+            }
+
+            send({ type: 'stage', stage: 'downloading', repo: `${info.owner}/${info.repo}`, branch: info.branch });
+            const tarball = await downloadRepositoryTarball(info.owner, info.repo, info.branch);
+            send({ type: 'stage', stage: 'extracting' });
+
+            const files = await extractCodeFiles(tarball, (path) => {
+              try { send({ type: 'file', path }); } catch {}
+            });
+            send({ type: 'stage', stage: 'preparing', files: files.length });
+
+            const repositoryInfo = prepareRepositoryForQuiz(files);
+            repositoryInfo.owner = info.owner;
+            repositoryInfo.repo = info.repo;
+            repositoryInfo.branch = info.branch || 'main';
+
+            send({ type: 'result', repositoryInfo: {
+              owner: repositoryInfo.owner,
+              repo: repositoryInfo.repo,
+              branch: repositoryInfo.branch,
+              files: repositoryInfo.files,
+              languages: repositoryInfo.languages,
+              totalFiles: repositoryInfo.totalFiles,
+              primaryLanguage: repositoryInfo.primaryLanguage,
+              languagePercentages: repositoryInfo.languagePercentages,
+              languageCounts: repositoryInfo.languageCounts
+            }});
+            send({ type: 'done' });
+          } catch (e) {
+            send({ type: 'error', message: 'stream-failed' });
+          } finally {
+            controller.close();
+          }
+        }
+      });
+
+      return new Response(stream, {
+        headers: {
+          'Content-Type': 'application/x-ndjson',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive'
+        }
+      });
+    }
+
+    // Use the new tarball service for scalable processing (non-streaming)
     const repositoryInfo = await processGitHubRepositoryWithCache(url);
     
     // Convert to the format expected by the file processor

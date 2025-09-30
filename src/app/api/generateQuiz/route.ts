@@ -62,9 +62,9 @@ export async function POST(request: NextRequest) {
       'true-false': trueFalsePlugin,
       'select-all': selectAllPlugin
     };
-    // Force function-variant only to maximize function-variant generation
-    const defaultQuestionTypes = ['function-variant'];
-    const requestedTypes = ['function-variant'];
+    // Enable all 5 question types (excluding fill-in-the-blank)
+    const defaultQuestionTypes = ['function-variant', 'multiple-choice', 'order-sequence', 'true-false', 'select-all'];
+    const requestedTypes = defaultQuestionTypes;
     
     const selectedPlugins = requestedTypes
       .map((t: string) => availablePlugins[t])
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
       timeouts: {
         'function-variant': Number(process.env.OPENAI_TIMEOUT_FUNCTION_VARIANT_MS ?? 30000),
         'multiple-choice': Number(process.env.OPENAI_TIMEOUT_MCQ_MS ?? 20000),
-        'true-false': Number(process.env.OPENAI_TIMEOUT_TRUE_FALSE_MS ?? 15000),
+        'true-false': Number(process.env.OPENAI_TIMEOUT_TRUE_FALSE_MS ?? 25000),
         'select-all': Number(process.env.OPENAI_TIMEOUT_SELECT_ALL_MS ?? 60000),
         'order-sequence': Number(process.env.OPENAI_TIMEOUT_ORDER_SEQUENCE_MS ?? 25000)
       },
@@ -99,6 +99,7 @@ export async function POST(request: NextRequest) {
           correctAnswer: null,
           explanation: '',
           difficulty: 'medium',
+          qualityRating: q.qualityRating || null,
           variants: (questionData.variants || []).map((v: any) => ({
             ...v,
             code: typeof v.code === 'string' ? removeComments(v.code) : v.code
@@ -120,6 +121,7 @@ export async function POST(request: NextRequest) {
           correctAnswer: idx >= 0 ? opts[idx] : null,
           explanation: questionData.explanation || '',
           difficulty: 'medium',
+          qualityRating: q.qualityRating || null,
           codeContext: questionData.codeContext || q.codeContext,
           variants: []
         } as any;
@@ -132,8 +134,11 @@ export async function POST(request: NextRequest) {
           correctAnswer: questionData.correctOrder || [],
           explanation: questionData.explanation || '',
           difficulty: 'medium',
+          qualityRating: q.qualityRating || null,
           steps: questionData.steps || [],
           correctOrder: questionData.correctOrder || [],
+          acceptableOrders: questionData.acceptableOrders || [],
+          constraints: questionData.constraints || [],
           variants: []
         };
         } else if (questionData.type === 'true-false') {
@@ -156,6 +161,7 @@ export async function POST(request: NextRequest) {
           correctAnswer: idx >= 0 ? opts[idx] : null,
           explanation: questionData.explanation || '',
           difficulty: 'medium',
+          qualityRating: q.qualityRating || null,
           codeContext: questionData.codeContext || q.codeContext,
           variants: []
         } as any;
@@ -172,6 +178,7 @@ export async function POST(request: NextRequest) {
           correctAnswer: null, // Not used for select-all
           explanation: questionData.explanation || '',
           difficulty: 'medium',
+          qualityRating: q.qualityRating || null,
           codeContext: questionData.codeContext || q.codeContext,
           variants: []
         } as any;
@@ -248,7 +255,7 @@ export async function POST(request: NextRequest) {
       options: { difficulty: difficulty || 'medium' }
     });
 
-    // Fallback: disabled for non-function-variant types while focusing solely on function-variant
+    // Fallback: attempt direct select-all generation if none were generated
     if (Array.isArray(requestedTypes) && requestedTypes.includes('select-all')) {
       const hasSelectAll = rawGenerated.some((q: any) => q?.quiz?.type === 'select-all');
       if (!hasSelectAll && chunks.length > 0) {
@@ -350,6 +357,8 @@ export async function POST(request: NextRequest) {
             difficulty: 'medium',
             steps: questionData.steps || [],
             correctOrder: questionData.correctOrder || [],
+            acceptableOrders: questionData.acceptableOrders || [],
+            constraints: questionData.constraints || [],
             variants: []
           };
         } else if (questionData.type === 'true-false') {

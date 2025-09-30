@@ -60,7 +60,7 @@ Format:
     "quiz": {
       "type": "multiple-choice",
       "question": "In a [REALISTIC_APP_CONTEXT], what does the function [FUNCTION_NAME] do?",
-      "codeContext": "function functionName = (param) => {\n  // properly formatted code with\n  // proper indentation and line breaks\n  return result;\n};",
+      "codeContext": "Display full function from the code chunk",
       "options": [
         "Subtle but incorrect description that sounds plausible",
         "Correct description of what the function actually does", 
@@ -68,7 +68,7 @@ Format:
         "Third subtle but incorrect description"
       ],
       "answer": "2",
-      "explanation": "why this is correct based on the actual function code"
+      "explanation": "why this is correct (at least 5 sentences) based on the actual function code"
     }
   }
 ]`;
