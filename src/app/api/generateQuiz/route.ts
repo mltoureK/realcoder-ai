@@ -62,8 +62,8 @@ export async function POST(request: NextRequest) {
       'true-false': trueFalsePlugin,
       'select-all': selectAllPlugin
     };
-    // Enable all 5 question types (excluding fill-in-the-blank)
-    const defaultQuestionTypes = ['function-variant', 'multiple-choice', 'order-sequence', 'true-false', 'select-all'];
+    // Enable all 5 question types (select-all first to ensure it runs before hitting target)
+    const defaultQuestionTypes = ['select-all', 'function-variant', 'order-sequence', 'true-false', 'multiple-choice'];
     const requestedTypes = defaultQuestionTypes;
     
     const selectedPlugins = requestedTypes
@@ -100,6 +100,9 @@ export async function POST(request: NextRequest) {
           explanation: '',
           difficulty: 'medium',
           qualityRating: q.qualityRating || null,
+          language: questionData.language,
+          languageColor: questionData.languageColor,
+          languageBgColor: questionData.languageBgColor,
           variants: (questionData.variants || []).map((v: any) => ({
             ...v,
             code: typeof v.code === 'string' ? removeComments(v.code) : v.code
@@ -122,6 +125,9 @@ export async function POST(request: NextRequest) {
           explanation: questionData.explanation || '',
           difficulty: 'medium',
           qualityRating: q.qualityRating || null,
+          language: questionData.language,
+          languageColor: questionData.languageColor,
+          languageBgColor: questionData.languageBgColor,
           codeContext: questionData.codeContext || q.codeContext,
           variants: []
         } as any;
@@ -135,6 +141,9 @@ export async function POST(request: NextRequest) {
           explanation: questionData.explanation || '',
           difficulty: 'medium',
           qualityRating: q.qualityRating || null,
+          language: questionData.language,
+          languageColor: questionData.languageColor,
+          languageBgColor: questionData.languageBgColor,
           steps: questionData.steps || [],
           correctOrder: questionData.correctOrder || [],
           acceptableOrders: questionData.acceptableOrders || [],
@@ -162,6 +171,9 @@ export async function POST(request: NextRequest) {
           explanation: questionData.explanation || '',
           difficulty: 'medium',
           qualityRating: q.qualityRating || null,
+          language: questionData.language,
+          languageColor: questionData.languageColor,
+          languageBgColor: questionData.languageBgColor,
           codeContext: questionData.codeContext || q.codeContext,
           variants: []
         } as any;
@@ -179,6 +191,9 @@ export async function POST(request: NextRequest) {
           explanation: questionData.explanation || '',
           difficulty: 'medium',
           qualityRating: q.qualityRating || null,
+          language: questionData.language,
+          languageColor: questionData.languageColor,
+          languageBgColor: questionData.languageBgColor,
           codeContext: questionData.codeContext || q.codeContext,
           variants: []
         } as any;

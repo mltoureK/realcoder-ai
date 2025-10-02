@@ -1,5 +1,5 @@
 import { GenerateParams, QuestionPlugin, RawQuestion } from './QuestionPlugin';
-import { delay, validateQuestionStructure } from './utils';
+import { delay, validateQuestionStructure, detectLanguageFromChunk } from './utils';
 
 /**
  * Constants for better maintainability
@@ -7,7 +7,7 @@ import { delay, validateQuestionStructure } from './utils';
 const OPENAI_MODEL = 'gpt-4o-mini';
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 const TEMPERATURE = 0.7;
-const MAX_TOKENS = 1500;
+const MAX_TOKENS = 3000;
 
 /**
  * System prompt for consistent AI behavior
@@ -18,7 +18,7 @@ const SYSTEM_PROMPT = 'You are a JSON generator. You MUST return ONLY valid JSON
  * Creates the user prompt for true/false question generation
  */
 function createUserPrompt(chunk: string): string {
-  return `Generate 4 challenging true/false questions based on this code chunk:
+  return `Generate 4 hard difficulty true/false questions based on this code chunk:
 
 ${chunk}
 
@@ -42,7 +42,7 @@ FORMAT (strict JSON):
     "snippet": "[key function or concept name from the code chunk]",
     "quiz": {
       "type": "true-false",
-      "question": "[A specific true/false statement about the code that requires understanding programming concepts in the same language as the code chunk]",
+      "question": "[A difficult and specific true/false statement about the code that requires understanding programming concepts in the same language as the code chunk]",
       "codeContext": "[relevant full function or code snippet from the chunk with proper formatting]",
       "options": ["True", "False"],
       "answer": "[True or False based on the actual code behavior]",
@@ -180,7 +180,7 @@ async function makeApiRequest(
 /**
  * Processes AI response and extracts valid questions
  */
-async function processAiResponse(response: Response, generated: RawQuestion[]): Promise<void> {
+async function processAiResponse(response: Response, generated: RawQuestion[], params: GenerateParams): Promise<void> {
   const data = await response.json();
   const content = data.choices[0].message.content as string;
   
@@ -208,8 +208,15 @@ async function processAiResponse(response: Response, generated: RawQuestion[]): 
     if (Array.isArray(parsed)) {
       parsed.forEach((question: unknown) => {
         if (validateQuestionStructure(question)) {
-          // Format the code context for better readability
+          // Detect and inject language from chunk
           const questionData = question as any;
+          const langInfo = detectLanguageFromChunk(params.chunk);
+          questionData.quiz.language = langInfo.name;
+          questionData.quiz.languageColor = langInfo.color;
+          questionData.quiz.languageBgColor = langInfo.bgColor;
+          console.log(`📝 True-false question language: ${langInfo.name}`);
+          
+          // Format the code context for better readability
           if (questionData.quiz && questionData.quiz.codeContext) {
             questionData.quiz.codeContext = formatCodeContext(questionData.quiz.codeContext);
           }
@@ -235,7 +242,7 @@ export const trueFalsePlugin: QuestionPlugin = {
       const response = await makeApiRequest(chunk, apiKey, timeoutMs, retry, abortSignal);
       
       if (response && response.ok) {
-        await processAiResponse(response, generated);
+        await processAiResponse(response, generated, params);
       }
     } catch (error) {
       console.warn('True/False plugin error:', error);

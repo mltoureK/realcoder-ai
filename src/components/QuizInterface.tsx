@@ -2,10 +2,38 @@
 
 import { useState, useEffect } from 'react';
 import { QuizSession } from '@/lib/quiz-service';
+import { detectLanguage } from '@/lib/question-plugins/utils';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface QuizInterfaceProps {
   quizSession: QuizSession;
   onClose: () => void;
+}
+
+// Map our language names to syntax highlighter language codes
+function getHighlighterLanguage(lang: string): string {
+  const langMap: Record<string, string> = {
+    'JavaScript': 'javascript',
+    'TypeScript': 'typescript',
+    'React': 'jsx',
+    'React TS': 'tsx',
+    'Python': 'python',
+    'Java': 'java',
+    'Go': 'go',
+    'Rust': 'rust',
+    'C#': 'csharp',
+    'C': 'c',
+    'C++': 'cpp',
+    'PHP': 'php',
+    'Ruby': 'ruby',
+    'Swift': 'swift',
+    'Kotlin': 'kotlin',
+    'Scala': 'scala',
+    'Shell': 'bash',
+    'SQL': 'sql'
+  };
+  return langMap[lang] || 'javascript';
 }
 
 export default function QuizInterface({ quizSession, onClose }: QuizInterfaceProps) {
@@ -287,6 +315,17 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         const totalVariants = currentQuestion.variants.length;
         const isFirstVariant = currentVariantIndex === 0;
         const isLastVariant = currentVariantIndex === totalVariants - 1;
+        
+        // Use language from quiz JSON if available
+        console.log('🔍 Function-variant question data:', { 
+          language: currentQuestion.language, 
+          languageColor: currentQuestion.languageColor,
+          languageBgColor: currentQuestion.languageBgColor 
+        });
+        const fvLang = currentQuestion.language 
+          ? { name: currentQuestion.language, color: currentQuestion.languageColor || 'text-gray-600', bgColor: currentQuestion.languageBgColor || 'bg-gray-100' }
+          : detectLanguage(''); // fallback
+        console.log('🎨 Using language badge:', fvLang);
 
         return (
           <div className="space-y-8">
@@ -333,18 +372,30 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             </div>
 
             {/* Code Display */}
-            <div className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 rounded-lg p-8">
-              <div className="mb-6">
-                <p className="text-base text-gray-600 dark:text-gray-400 leading-relaxed">
-                  Analyze this code variant and determine if it&apos;s correct:
+            <div className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between px-4 py-3 bg-[#1e1e1e] border-b border-gray-700">
+                <p className="text-sm text-gray-300 font-medium">
+                  Analyze this code variant and determine if it&apos;s correct
                 </p>
+                <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${fvLang.bgColor} ${fvLang.color}`}>
+                  {fvLang.name}
+                </span>
               </div>
               
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
-                <pre className="text-base font-mono text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap overflow-x-auto">
-                  <code>{currentVariant.code}</code>
-                </pre>
-              </div>
+              <SyntaxHighlighter
+                language={getHighlighterLanguage(fvLang.name)}
+                style={vscDarkPlus}
+                customStyle={{
+                  margin: 0,
+                  padding: '1.5rem',
+                  fontSize: '0.9375rem',
+                  lineHeight: '1.6',
+                  borderRadius: 0
+                }}
+                showLineNumbers={true}
+              >
+                {currentVariant.code}
+              </SyntaxHighlighter>
             </div>
 
             {/* Action Buttons */}
@@ -388,49 +439,101 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         );
 
       case 'order-sequence':
+        // Calculate how many correct steps are needed
+        const correctStepCount = currentQuestion.correctOrder?.length || 0;
+        const stepsRemaining = Math.max(0, correctStepCount - selectedAnswers.length);
+        const isAtLimit = selectedAnswers.length >= correctStepCount;
+        
+        // Use language from quiz JSON if available, otherwise detect
+        console.log('🔍 Order-sequence question data:', { 
+          language: currentQuestion.language, 
+          languageColor: currentQuestion.languageColor,
+          languageBgColor: currentQuestion.languageBgColor 
+        });
+        const quizLang = currentQuestion.language 
+          ? { name: currentQuestion.language, color: currentQuestion.languageColor || 'text-gray-600', bgColor: currentQuestion.languageBgColor || 'bg-gray-100' }
+          : detectLanguage(''); // fallback
+        console.log('🎨 Using language badge:', quizLang);
+        
         return (
           <div className="space-y-6">
+            {/* Language Badge at Top */}
+            <div className="flex items-center justify-between">
+              <span className={`inline-block px-3 py-1 text-sm font-semibold rounded ${quizLang.bgColor} ${quizLang.color}`}>
+                {quizLang.name}
+              </span>
+            </div>
+            
             {/* Instructions */}
             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-              <p className="text-blue-800 dark:text-blue-200 text-sm font-medium">
-                💡 Drag and drop the steps below to arrange them in the correct execution order for this function
-              </p>
-              <p className="text-blue-700 dark:text-blue-300 text-xs mt-1">
-                Pay attention to dependencies, async operations, and error handling patterns
-              </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-800 dark:text-blue-200 text-sm font-medium">
+                    💡 Drag and drop the steps below to arrange them in the correct execution order for this function
+                  </p>
+                  <p className="text-blue-700 dark:text-blue-300 text-xs mt-1">
+                    Pay attention to dependencies, async operations, and error handling patterns
+                  </p>
+                </div>
+                <div className="ml-4 text-right">
+                  <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">
+                    {stepsRemaining}
+                  </div>
+                  <div className="text-xs text-blue-700 dark:text-blue-300 font-medium">
+                    {stepsRemaining === 1 ? 'step left' : 'steps left'}
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Draggable Steps Bank */}
             <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Available Steps:</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Available Steps:
+                {isAtLimit && (
+                  <span className="ml-3 text-sm text-orange-600 dark:text-orange-400 font-normal">
+                    ⚠️ Step limit reached - remove a step from your answer to add a different one
+                  </span>
+                )}
+              </h3>
               <div className="grid gap-3">
-                {currentQuestion.steps?.map((step: any, index: number) => (
-                  <div
-                    key={step.id}
-                    draggable
-                    className={`p-4 bg-white dark:bg-gray-800 border-2 rounded-lg cursor-move hover:border-blue-300 dark:hover:border-blue-500 transition-all ${
-                      selectedAnswers.includes(step.id) ? 'opacity-50' : ''
-                    } ${
-                      showExplanations && step.isDistractor 
-                        ? 'border-orange-300 dark:border-orange-600 bg-orange-50 dark:bg-orange-900/20' 
-                        : 'border-gray-200 dark:border-gray-600'
-                    }`}
-                    onDragStart={(e) => {
-                      e.dataTransfer.setData('text/plain', step.id);
-                    }}
-                  >
-                    <div className="flex items-start space-x-3">
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium ${
+                {currentQuestion.steps?.map((step: any, index: number) => {
+                  const isAlreadySelected = selectedAnswers.includes(step.id);
+                  const isDisabled = isAtLimit && !isAlreadySelected;
+                  
+                  return (
+                    <div
+                      key={step.id}
+                      draggable={!isDisabled}
+                      className={`p-4 bg-white dark:bg-gray-800 border-2 rounded-lg transition-all ${
+                        isDisabled ? 'opacity-30 cursor-not-allowed' : 'cursor-move hover:border-blue-300 dark:hover:border-blue-500'
+                      } ${
+                        isAlreadySelected ? 'opacity-50' : ''
+                      } ${
                         showExplanations && step.isDistractor 
-                          ? 'bg-orange-200 dark:bg-orange-800 text-orange-700 dark:text-orange-300' 
-                          : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
-                      }`}>
-                        {showExplanations && step.isDistractor ? '⚠️' : '⋮⋮'}
-                      </div>
-                      <div className="flex-1">
-                        <pre className="text-sm font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
-                          {step.code}
-                        </pre>
+                          ? 'border-orange-300 dark:border-orange-600 bg-orange-50 dark:bg-orange-900/20' 
+                          : 'border-gray-200 dark:border-gray-600'
+                      }`}
+                      onDragStart={(e) => {
+                        if (isDisabled) {
+                          e.preventDefault();
+                          return;
+                        }
+                        e.dataTransfer.setData('text/plain', step.id);
+                      }}
+                    >
+                      <div className="flex items-start space-x-3">
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium ${
+                          showExplanations && step.isDistractor 
+                            ? 'bg-orange-200 dark:bg-orange-800 text-orange-700 dark:text-orange-300' 
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                        }`}>
+                          {showExplanations && step.isDistractor ? '⚠️' : '⋮⋮'}
+                        </div>
+                        <div className="flex-1">
+                          <pre className="text-sm font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
+                            {step.code}
+                          </pre>
                         {showExplanations && (
                           <p className={`text-xs mt-1 ${
                             step.isDistractor 
@@ -448,13 +551,19 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                       </div>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
             {/* Drop Zone for Ordered Steps */}
             <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Correct Order:</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Correct Order:
+                <span className="ml-3 text-sm text-gray-600 dark:text-gray-400 font-normal">
+                  ({selectedAnswers.length} / {correctStepCount} steps)
+                </span>
+              </h3>
               <div
                 className="min-h-[200px] border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700"
                 onDragOver={(e) => {
@@ -469,22 +578,33 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                   e.currentTarget.classList.remove('border-blue-400', 'bg-blue-50', 'dark:bg-blue-900/20');
                   const stepId = e.dataTransfer.getData('text/plain');
                   if (!stepId) return;
-                  // Append to end when dropping on container
+                  
                   setSelectedAnswers(prev => {
                     const next = [...prev];
                     const existingIdx = next.indexOf(stepId);
+                    
                     if (existingIdx >= 0) {
-                      // Move to end
+                      // Already selected - just reorder to end
                       next.splice(existingIdx, 1);
+                      next.push(stepId);
+                      return next;
                     }
-                    if (!next.includes(stepId)) next.push(stepId);
+                    
+                    // Not selected yet - check limit
+                    if (next.length >= correctStepCount) {
+                      console.log('⚠️ Cannot add more steps - limit reached');
+                      return prev; // Don't add, return unchanged
+                    }
+                    
+                    // Add to end
+                    next.push(stepId);
                     return next;
                   });
                 }}
               >
                 {selectedAnswers.length === 0 ? (
                   <div className="text-center text-gray-500 dark:text-gray-400 py-8">
-                    <p>Drag steps here to build the correct order</p>
+                    <p>Drag {correctStepCount} step{correctStepCount === 1 ? '' : 's'} here to build the correct order</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -541,6 +661,11 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                               if (toIdx > next.length) toIdx = next.length;
                               if (fromIdx === -1) {
                                 // Insert from bank at computed position
+                                // Check limit before inserting new step
+                                if (next.length >= correctStepCount) {
+                                  console.log('⚠️ Cannot add more steps - limit reached');
+                                  return prev;
+                                }
                                 if (!next.includes(draggedId)) next.splice(toIdx, 0, draggedId);
                                 return next;
                               }
@@ -869,11 +994,29 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             </h2>
             
             {currentQuestion.codeContext && (currentQuestion.type === 'function-variant' || currentQuestion.type === 'multiple-choice' || currentQuestion.type === 'true-false' || currentQuestion.type === 'select-all') && (
-              <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mb-4">
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Code Context:</p>
-                <pre className="text-sm text-gray-800 dark:text-gray-200 overflow-x-auto">
+              <div className="rounded-lg mb-4 overflow-hidden border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between px-4 py-2 bg-[#1e1e1e] border-b border-gray-700">
+                  <p className="text-sm text-gray-300 font-medium">Code Context</p>
+                  {currentQuestion.language && (
+                    <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${currentQuestion.languageBgColor || 'bg-gray-700'} ${currentQuestion.languageColor || 'text-gray-300'}`}>
+                      {currentQuestion.language}
+                    </span>
+                  )}
+                </div>
+                <SyntaxHighlighter
+                  language={getHighlighterLanguage(currentQuestion.language || 'JavaScript')}
+                  style={vscDarkPlus}
+                  customStyle={{
+                    margin: 0,
+                    padding: '1rem',
+                    fontSize: '0.875rem',
+                    lineHeight: '1.5',
+                    borderRadius: 0
+                  }}
+                  showLineNumbers={true}
+                >
                   {currentQuestion.codeContext}
-                </pre>
+                </SyntaxHighlighter>
               </div>
             )}
           </div>
@@ -929,10 +1072,29 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                               </span>
                             )}
                           </div>
-                          <div className="bg-white dark:bg-gray-800 rounded-lg p-3 mb-3 border border-gray-200 dark:border-gray-600">
-                            <pre className="text-sm font-mono text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap overflow-x-auto">
-                              <code>{variant.code}</code>
-                            </pre>
+                          <div className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 mb-3">
+                            <div className="flex items-center justify-between px-4 py-2 bg-[#1e1e1e] border-b border-gray-700">
+                              <span className="text-xs text-gray-400 font-medium">Code</span>
+                              {currentQuestion.language && (
+                                <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${currentQuestion.languageBgColor || 'bg-gray-700'} ${currentQuestion.languageColor || 'text-gray-300'}`}>
+                                  {currentQuestion.language}
+                                </span>
+                              )}
+                            </div>
+                            <SyntaxHighlighter
+                              language={getHighlighterLanguage(currentQuestion.language || 'JavaScript')}
+                              style={vscDarkPlus}
+                              customStyle={{
+                                margin: 0,
+                                padding: '1rem',
+                                fontSize: '0.875rem',
+                                lineHeight: '1.5',
+                                borderRadius: 0
+                              }}
+                              showLineNumbers={true}
+                            >
+                              {variant.code}
+                            </SyntaxHighlighter>
                           </div>
                           <p className={`text-sm ${
                             isCorrect

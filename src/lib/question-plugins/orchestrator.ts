@@ -22,27 +22,40 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
   const { chunks, plugins, numQuestions, settings, apiKey, options, onQuestion } = args;
   if (plugins.length === 0 || chunks.length === 0) return [];
 
-  // Create scheduled tasks: 3 calls per plugin (5 plugins => 15 calls)
+  // Create scheduled tasks with custom allocation
   const budgetedTasks: Array<{ plugin: QuestionPlugin; chunk: string }> = [];
   const budget = settings.maxCalls;
   const shuffledChunks = shuffleVariants(chunks);
   
   console.log(`🎯 Quality Generation Target: ${numQuestions} questions (rated 1-10)`);
-  console.log(`📊 Generation Budget: ${budget} API calls in round-robin order: ${plugins.map(p => p.type).join(' → ')}`);
+  console.log(`📊 Generation Budget: ${budget} API calls`);
   
-  // Determine calls per plugin; target is 3 per plugin for 5 plugins => 15 total
-  const callsPerPlugin = Math.max(1, Math.floor(budget / plugins.length));
-  let chunkIndex = 0;
-
+  // Custom call allocation: more select-all, less multiple-choice
+  const callAllocation: Record<string, number> = {
+    'select-all': 4,           // 4 calls for select-all
+    'multiple-choice': 2,      // 2 calls for multiple-choice
+    'function-variant': 3,     // 3 calls
+    'order-sequence': 3,       // 3 calls
+    'true-false': 3            // 3 calls
+  };
+  
+  // Randomize chunk selection for each plugin call to ensure diversity
   for (const plugin of plugins) {
-    for (let call = 1; call <= callsPerPlugin; call++) {
-      const chunk = shuffledChunks[chunkIndex];
-      budgetedTasks.push({ plugin, chunk });
-      console.log(`🎯 Scheduled: ${plugin.type} call ${call}/${callsPerPlugin}`);
-      chunkIndex = (chunkIndex + 1) % shuffledChunks.length;
+    const calls = callAllocation[plugin.type] || Math.max(1, Math.floor(budget / plugins.length));
+    for (let call = 1; call <= calls; call++) {
+      // Pick a random chunk instead of round-robin for better diversity
+      const randomChunk = shuffledChunks[Math.floor(Math.random() * shuffledChunks.length)];
+      budgetedTasks.push({ plugin, chunk: randomChunk });
+      console.log(`🎯 Scheduled: ${plugin.type} call ${call}/${calls} (random chunk)`);
     }
   }
-  console.log(`📊 Scheduled ${budgetedTasks.length} total calls (${callsPerPlugin} per plugin)`);
+  
+  // Shuffle the task order itself so plugin types don't always run in same sequence
+  const shuffledTasks = shuffleVariants(budgetedTasks);
+  budgetedTasks.length = 0;
+  budgetedTasks.push(...shuffledTasks);
+  
+  console.log(`📊 Scheduled ${budgetedTasks.length} total calls (custom allocation, randomized order)`);
 
   const results: RawQuestion[] = [];
   let stopRequested = false;

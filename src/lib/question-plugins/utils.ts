@@ -20,6 +20,91 @@ export function removeComments(code: string): string {
     .trim();
 }
 
+/**
+ * Extract language from chunk header (e.g., "// src/utils/helper.js")
+ * Falls back to syntax detection if no file extension found
+ */
+export function detectLanguageFromChunk(chunk: string): { name: string; color: string; bgColor: string } {
+  // Try to extract file extension from chunk header (format: "// filename.ext")
+  const headerMatch = chunk.match(/^\/\/\s*([^\n]+)/);
+  if (headerMatch) {
+    const filename = headerMatch[1].trim();
+    const extMatch = filename.match(/\.([a-zA-Z0-9]+)$/);
+    if (extMatch) {
+      const ext = extMatch[1].toLowerCase();
+      const langInfo = getLanguageFromExtension(ext);
+      if (langInfo) {
+        console.log(`🔍 Language detected from chunk header: ${filename} → ${langInfo.name}`);
+        return langInfo;
+      }
+    }
+  }
+  
+  // Fallback to syntax detection
+  return detectLanguageFromSyntax(chunk);
+}
+
+/**
+ * Map file extension to language info
+ */
+function getLanguageFromExtension(ext: string): { name: string; color: string; bgColor: string } | null {
+  const extMap: Record<string, { name: string; color: string; bgColor: string }> = {
+    'js': { name: 'JavaScript', color: 'text-yellow-700 dark:text-yellow-300', bgColor: 'bg-yellow-100 dark:bg-yellow-900/30' },
+    'jsx': { name: 'React', color: 'text-cyan-600 dark:text-cyan-400', bgColor: 'bg-cyan-100 dark:bg-cyan-900/30' },
+    'ts': { name: 'TypeScript', color: 'text-blue-600 dark:text-blue-400', bgColor: 'bg-blue-100 dark:bg-blue-900/30' },
+    'tsx': { name: 'React TS', color: 'text-blue-500 dark:text-blue-300', bgColor: 'bg-blue-100 dark:bg-blue-900/30' },
+    'py': { name: 'Python', color: 'text-blue-700 dark:text-blue-300', bgColor: 'bg-blue-100 dark:bg-blue-900/30' },
+    'go': { name: 'Go', color: 'text-cyan-700 dark:text-cyan-300', bgColor: 'bg-cyan-100 dark:bg-cyan-900/30' },
+    'rs': { name: 'Rust', color: 'text-orange-700 dark:text-orange-300', bgColor: 'bg-orange-100 dark:bg-orange-900/30' },
+    'java': { name: 'Java', color: 'text-red-700 dark:text-red-300', bgColor: 'bg-red-100 dark:bg-red-900/30' },
+    'cs': { name: 'C#', color: 'text-purple-700 dark:text-purple-300', bgColor: 'bg-purple-100 dark:bg-purple-900/30' },
+    'php': { name: 'PHP', color: 'text-indigo-700 dark:text-indigo-300', bgColor: 'bg-indigo-100 dark:bg-indigo-900/30' },
+    'rb': { name: 'Ruby', color: 'text-red-600 dark:text-red-400', bgColor: 'bg-red-100 dark:bg-red-900/30' },
+    'c': { name: 'C', color: 'text-gray-700 dark:text-gray-300', bgColor: 'bg-gray-100 dark:bg-gray-900/30' },
+    'cpp': { name: 'C++', color: 'text-gray-700 dark:text-gray-300', bgColor: 'bg-gray-100 dark:bg-gray-900/30' },
+    'h': { name: 'C/C++', color: 'text-gray-700 dark:text-gray-300', bgColor: 'bg-gray-100 dark:bg-gray-900/30' },
+    'swift': { name: 'Swift', color: 'text-orange-600 dark:text-orange-400', bgColor: 'bg-orange-100 dark:bg-orange-900/30' },
+    'kt': { name: 'Kotlin', color: 'text-purple-600 dark:text-purple-400', bgColor: 'bg-purple-100 dark:bg-purple-900/30' },
+    'scala': { name: 'Scala', color: 'text-red-600 dark:text-red-400', bgColor: 'bg-red-100 dark:bg-red-900/30' },
+    'sh': { name: 'Shell', color: 'text-green-700 dark:text-green-300', bgColor: 'bg-green-100 dark:bg-green-900/30' },
+    'sql': { name: 'SQL', color: 'text-indigo-600 dark:text-indigo-400', bgColor: 'bg-indigo-100 dark:bg-indigo-900/30' },
+  };
+  
+  return extMap[ext] || null;
+}
+
+/**
+ * Detect programming language from code syntax (fallback)
+ * Returns language name and color scheme
+ */
+function detectLanguageFromSyntax(code: string): { name: string; color: string; bgColor: string } {
+  const c = code.toLowerCase();
+  
+  // Language detection patterns (order matters - more specific first)
+  if (c.includes('func ') && c.includes(':=')) return { name: 'Go', color: 'text-cyan-700 dark:text-cyan-300', bgColor: 'bg-cyan-100 dark:bg-cyan-900/30' };
+  if (c.includes('def ') && (c.includes('self') || c.includes('import '))) return { name: 'Python', color: 'text-blue-700 dark:text-blue-300', bgColor: 'bg-blue-100 dark:bg-blue-900/30' };
+  if (c.includes('fn ') && (c.includes('let mut') || c.includes('&str'))) return { name: 'Rust', color: 'text-orange-700 dark:text-orange-300', bgColor: 'bg-orange-100 dark:bg-orange-900/30' };
+  if ((c.includes('public ') || c.includes('private ')) && (c.includes('class ') || c.includes('interface '))) {
+    if (c.includes('system.out') || c.includes('string[]')) return { name: 'Java', color: 'text-red-700 dark:text-red-300', bgColor: 'bg-red-100 dark:bg-red-900/30' };
+    if (c.includes('console.') || c.includes('namespace ')) return { name: 'C#', color: 'text-purple-700 dark:text-purple-300', bgColor: 'bg-purple-100 dark:bg-purple-900/30' };
+  }
+  if (c.includes('function ') || c.includes('const ') || c.includes('let ') || c.includes('=>')) {
+    if (c.includes('interface ') || c.includes(': string') || c.includes(': number')) return { name: 'TypeScript', color: 'text-blue-600 dark:text-blue-400', bgColor: 'bg-blue-100 dark:bg-blue-900/30' };
+    return { name: 'JavaScript', color: 'text-yellow-700 dark:text-yellow-300', bgColor: 'bg-yellow-100 dark:bg-yellow-900/30' };
+  }
+  if (c.includes('<?php') || c.includes('function ') && c.includes('$')) return { name: 'PHP', color: 'text-indigo-700 dark:text-indigo-300', bgColor: 'bg-indigo-100 dark:bg-indigo-900/30' };
+  if (c.includes('#include') || (c.includes('int ') && c.includes('void '))) return { name: 'C/C++', color: 'text-gray-700 dark:text-gray-300', bgColor: 'bg-gray-100 dark:bg-gray-900/30' };
+  if (c.includes('sub ') || c.includes('my $')) return { name: 'Perl', color: 'text-blue-800 dark:text-blue-200', bgColor: 'bg-blue-100 dark:bg-blue-900/30' };
+  if (c.includes('def ') && c.includes('end')) return { name: 'Ruby', color: 'text-red-600 dark:text-red-400', bgColor: 'bg-red-100 dark:bg-red-900/30' };
+  if (c.includes('package ') && c.includes('func ')) return { name: 'Go', color: 'text-cyan-700 dark:text-cyan-300', bgColor: 'bg-cyan-100 dark:bg-cyan-900/30' };
+  
+  // Default fallback
+  return { name: 'Code', color: 'text-gray-600 dark:text-gray-400', bgColor: 'bg-gray-100 dark:bg-gray-800' };
+}
+
+// Backwards compatibility alias
+export const detectLanguage = detectLanguageFromChunk;
+
 export function balanceVariantVerbosity(variants: any[]): any[] {
   // Disabled: do not alter variant lengths; return as-is
   return variants;

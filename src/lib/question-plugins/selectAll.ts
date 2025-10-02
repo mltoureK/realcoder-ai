@@ -1,5 +1,5 @@
 import { GenerateParams, QuestionPlugin, RawQuestion } from './QuestionPlugin';
-import { delay, validateQuestionStructure } from './utils';
+import { delay, validateQuestionStructure, detectLanguageFromChunk } from './utils';
 
 /**
  * Constants for better maintainability
@@ -7,7 +7,7 @@ import { delay, validateQuestionStructure } from './utils';
 const OPENAI_MODEL = process.env.OPENAI_MODEL_SELECT_ALL || 'gpt-4o-mini';
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 const TEMPERATURE = 0.5;
-const MAX_TOKENS = 2000;
+const MAX_TOKENS = 3500;
 
 /**
  * System prompt for consistent AI behavior
@@ -78,7 +78,7 @@ function createUserPrompt(chunk: string): string {
   const optionCount = Math.random() < 0.6 ? 5 : 6;
   const correctCount = generateRandomCorrectCount(optionCount);
   
-  return `Generate 3 pro grade "select all that apply" questions based on the CodeContext generated from the code chunk, thats in json format:
+  return `Generate 3 hard difficulty "select all that apply" questions based on the CodeContext generated from the code chunk, thats in json format:
 
 ${chunk}
 
@@ -324,7 +324,7 @@ function validateSelectAllStructure(question: any): boolean {
 /**
  * Processes AI response and extracts valid questions
  */
-async function processAiResponse(response: Response, generated: RawQuestion[]): Promise<void> {
+async function processAiResponse(response: Response, generated: RawQuestion[], params: GenerateParams): Promise<void> {
   const data = await response.json();
   const content = data.choices[0].message.content as string;
   
@@ -334,6 +334,15 @@ async function processAiResponse(response: Response, generated: RawQuestion[]): 
     
     if (Array.isArray(parsed)) {
       parsed.forEach((question: any) => {
+        // Detect and inject language from chunk
+        const langInfo = detectLanguageFromChunk(params.chunk);
+        if (question && question.quiz) {
+          question.quiz.language = langInfo.name;
+          question.quiz.languageColor = langInfo.color;
+          question.quiz.languageBgColor = langInfo.bgColor;
+          console.log(`📝 Select-all question language: ${langInfo.name}`);
+        }
+        
         // Normalize options: support { text, isCorrect } format
         try {
           if (question && question.quiz && Array.isArray(question.quiz.options)) {
@@ -420,7 +429,7 @@ export const selectAllPlugin: QuestionPlugin = {
       const response = await makeApiRequest(chunk, apiKey, timeoutMs, retry, abortSignal);
       
       if (response && response.ok) {
-        await processAiResponse(response, generated);
+        await processAiResponse(response, generated, params);
       }
     } catch (error) {
       console.warn('Select-All plugin error:', error);

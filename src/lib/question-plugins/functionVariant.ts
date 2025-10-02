@@ -1,5 +1,5 @@
 import { GenerateParams, QuestionPlugin, RawQuestion } from './QuestionPlugin';
-import { balanceVariantVerbosity, delay, removeComments, shuffleVariants, validateQuestionStructure, removeDuplicateVariants } from './utils';
+import { balanceVariantVerbosity, delay, removeComments, shuffleVariants, validateQuestionStructure, removeDuplicateVariants, detectLanguageFromChunk } from './utils';
 
 export const functionVariantPlugin: QuestionPlugin = {
   type: 'function-variant',
@@ -27,7 +27,7 @@ export const functionVariantPlugin: QuestionPlugin = {
               model: 'gpt-4o-mini',
               messages: [
                 { role: 'system', content: 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.' },
-                { role: 'user', content: `Generate ${questionsPerChunk} function-variant quiz questions that can be answered based on the json snippet function that the question uses from the code chunk:\n\n${chunk}\n\nCRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.\n\nIMPORTANT REQUIREMENTS:\n1. ONLY generate questions about functions that actually exist in the provided code chunk\n2. The function name in \"snippet\" A functionfrom the code\n3. The correct variant must be the actual function implementation from the code\n4. Incorrect variants should have realistic bugs\n
+                { role: 'user', content: `Generate ${questionsPerChunk} hard difficulty function-variant quiz questions that can be answered based on the json snippet function that the question uses from the code chunk:\n\n${chunk}\n\nCRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.\n\nIMPORTANT REQUIREMENTS:\n1. ONLY generate questions about functions that actually exist in the provided code chunk\n2. The function name in \"snippet\" A functionfrom the code\n3. The correct variant must be the actual function implementation from the code\n4. Incorrect variants should have realistic bugs\n
                  The correct answer should NEVER be obviously longer or more detailed than incorrect options.
 
 FOCUS ON UNIVERSAL PROGRAMMING CONCEPTS:
@@ -79,6 +79,13 @@ Format:\n[\n  {\n    \"snippet\": \"show complete function(and code)  that the q
           const parsed = JSON.parse(cleanContent);
 
           parsed.forEach((question: any) => {
+            // Detect and inject language from chunk
+            const langInfo = detectLanguageFromChunk(chunk);
+            question.quiz.language = langInfo.name;
+            question.quiz.languageColor = langInfo.color;
+            question.quiz.languageBgColor = langInfo.bgColor;
+            console.log(`📝 Function-variant question language: ${langInfo.name}`);
+            
             // Normalize AI response - fix common field name issues
             if (question.quiz && question.quiz.variants && Array.isArray(question.quiz.variants)) {
               question.quiz.variants.forEach((variant: any) => {

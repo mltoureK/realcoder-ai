@@ -1,5 +1,5 @@
 import { GenerateParams, QuestionPlugin, RawQuestion } from './QuestionPlugin';
-import { balanceVariantVerbosity, delay, removeComments, shuffleVariants, validateQuestionStructure, removeDuplicateVariants } from './utils';
+import { balanceVariantVerbosity, delay, removeComments, shuffleVariants, validateQuestionStructure, removeDuplicateVariants, detectLanguageFromChunk } from './utils';
 
 export const orderSequencePlugin: QuestionPlugin = {
   type: 'order-sequence',
@@ -77,17 +77,55 @@ export const orderSequencePlugin: QuestionPlugin = {
 
           parsed.forEach((question: any) => {
             if (!validateQuestionStructure(question)) return;
+            
+            // Detect and inject language from chunk
+            const langInfo = detectLanguageFromChunk(chunk);
+            question.quiz.language = langInfo.name;
+            question.quiz.languageColor = langInfo.color;
+            question.quiz.languageBgColor = langInfo.bgColor;
+            console.log(`📝 Order-sequence question language: ${langInfo.name}`);
+            
             if (question.quiz.steps && Array.isArray(question.quiz.steps)) {
-              // Remove duplicate steps based on code content
-              const seenCodes = new Set();
-              const uniqueSteps = [];
+              // Smart deduplication: normalize code and prefer correct steps over distractors
+              const normalizeCode = (code: string) => 
+                code.trim().toLowerCase().replace(/\s+/g, ' ').replace(/[;,]/g, '');
+              
+              const codeMap = new Map<string, any>(); // normalized code -> step
               
               for (const step of question.quiz.steps) {
-                const codeKey = step.code?.trim();
-                if (!seenCodes.has(codeKey)) {
-                  seenCodes.add(codeKey);
-                  uniqueSteps.push(step);
+                const normalizedCode = normalizeCode(step.code || '');
+                
+                if (!normalizedCode) continue; // Skip empty steps
+                
+                if (!codeMap.has(normalizedCode)) {
+                  // First time seeing this code
+                  codeMap.set(normalizedCode, step);
+                } else {
+                  // Duplicate detected - prefer correct step over distractor
+                  const existing = codeMap.get(normalizedCode);
+                  if (!existing.isDistractor && step.isDistractor) {
+                    // Keep existing (correct)
+                    console.log(`🔀 Duplicate detected: keeping correct step, discarding distractor`);
+                  } else if (existing.isDistractor && !step.isDistractor) {
+                    // Replace with correct step
+                    console.log(`🔀 Duplicate detected: replacing distractor with correct step`);
+                    codeMap.set(normalizedCode, step);
+                  } else {
+                    // Both same type - keep first one
+                    console.log(`⚠️ Duplicate detected: keeping first ${step.isDistractor ? 'distractor' : 'correct'} step`);
+                  }
                 }
+              }
+              
+              const uniqueSteps = Array.from(codeMap.values());
+              
+              // Validate we still have enough correct steps
+              const correctSteps = uniqueSteps.filter((s: any) => !s.isDistractor);
+              const correctOrderIds = question.quiz.correctOrder || [];
+              
+              if (correctSteps.length < correctOrderIds.length) {
+                console.warn(`⚠️ Skipping question: after deduplication, only ${correctSteps.length} correct steps remain but ${correctOrderIds.length} needed`);
+                return;
               }
               
               question.quiz.steps = uniqueSteps;

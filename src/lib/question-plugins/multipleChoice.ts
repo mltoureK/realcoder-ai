@@ -1,5 +1,5 @@
 import { GenerateParams, QuestionPlugin, RawQuestion } from './QuestionPlugin';
-import { delay, validateQuestionStructure } from './utils';
+import { delay, validateQuestionStructure, detectLanguageFromChunk } from './utils';
 
 /**
  * Constants for better maintainability
@@ -18,7 +18,7 @@ const SYSTEM_PROMPT = 'You are a JSON generator. You MUST return ONLY valid JSON
  * Creates the user prompt for multiple choice question generation
  */
 function createUserPrompt(chunk: string): string {
-  return `Generate 3 multiple-choice question based on this code chunk:
+  return `Generate 3 hard difficulty multiple-choice question based on this code chunk:
 
 ${chunk}
 
@@ -237,7 +237,7 @@ function randomizeAnswerPosition(questionData: any): void {
 /**
  * Processes AI response and extracts valid questions
  */
-async function processAiResponse(response: Response, generated: RawQuestion[]): Promise<void> {
+async function processAiResponse(response: Response, generated: RawQuestion[], params: GenerateParams): Promise<void> {
   const data = await response.json();
   const content = data.choices[0].message.content as string;
   
@@ -248,8 +248,14 @@ async function processAiResponse(response: Response, generated: RawQuestion[]): 
     if (Array.isArray(parsed)) {
       parsed.forEach((question: unknown) => {
         if (validateQuestionStructure(question)) {
-          // Format the code context for better readability
+          // Detect and inject language from chunk
           const questionData = question as any;
+          const langInfo = detectLanguageFromChunk(params.chunk);
+          questionData.quiz.language = langInfo.name;
+          questionData.quiz.languageColor = langInfo.color;
+          questionData.quiz.languageBgColor = langInfo.bgColor;
+          console.log(`📝 Multiple-choice question language: ${langInfo.name}`);
+          // Format the code context for better readability
           if (questionData.quiz && questionData.quiz.codeContext) {
             questionData.quiz.codeContext = formatCodeContext(questionData.quiz.codeContext);
           }
@@ -278,7 +284,7 @@ export const multipleChoicePlugin: QuestionPlugin = {
       const response = await makeApiRequest(chunk, apiKey, timeoutMs, retry, abortSignal);
       
       if (response && response.ok) {
-        await processAiResponse(response, generated);
+        await processAiResponse(response, generated, params);
       }
     } catch (error) {
       console.warn('Multiple Choice plugin error:', error);
