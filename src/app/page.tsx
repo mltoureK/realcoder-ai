@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { generateQuizFromRepository } from '@/lib/quiz-service';
 import QuizInterface from '@/components/QuizInterface';
+import CuratedRepos from '@/components/CuratedRepos';
 
 interface GitHubRepo {
   owner: string;
@@ -17,7 +18,7 @@ export default function Home() {
   const [availableBranches, setAvailableBranches] = useState<Array<{name: string, isDefault: boolean}>>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingBranches, setIsLoadingBranches] = useState(false);
-  const [activeTab, setActiveTab] = useState<'upload' | 'github'>('upload');
+  const [activeTab, setActiveTab] = useState<'upload' | 'github' | 'curated'>('upload');
   const [quizSession, setQuizSession] = useState<any>(null);
   const [streamingQuiz, setStreamingQuiz] = useState<{
     code: string;
@@ -64,8 +65,8 @@ export default function Home() {
     setSelectedLanguages([]);
     setRepositoryFiles([]);
     
-    // Load branches and process repository
-    await fetchBranches(url);
+    // Force trigger the GitHub URL change handler
+    await handleGitHubUrlChange(url);
   };
 
   // Process repository and detect languages
@@ -487,6 +488,8 @@ export default function Home() {
   const canGenerateQuiz = () => {
     if (activeTab === 'upload') {
       return selectedFiles.length > 0;
+    } else if (activeTab === 'curated') {
+      return githubRepo.owner && githubRepo.repo && selectedBranch;
     } else {
       return githubRepo.owner && githubRepo.repo && selectedBranch;
     }
@@ -555,6 +558,16 @@ export default function Home() {
               }`}
             >
               🐙 GitHub Repo
+            </button>
+            <button
+              onClick={() => setActiveTab('curated')}
+              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                activeTab === 'curated'
+                  ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
+              🎯 Curated Repos
             </button>
           </div>
 
@@ -879,6 +892,13 @@ export default function Home() {
                   </div>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* Curated Repos Tab */}
+          {activeTab === 'curated' && (
+            <div className="space-y-6">
+              <CuratedRepos onRepoSelect={handleRepositorySelect} />
             </div>
           )}
 

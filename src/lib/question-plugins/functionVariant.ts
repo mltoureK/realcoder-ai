@@ -56,7 +56,7 @@ Format:\n[\n  {\n    \"snippet\": \"show complete function(and code)  that the q
           if (abortSignal) abortSignal.removeEventListener('abort', onAbort);
           if (response && (response.ok || response.status !== 429)) break;
         } catch (e: any) {
-          clearTimeout(timeoutMs as unknown as NodeJS.Timeout);
+          clearTimeout(timeoutId);
           if (abortSignal) abortSignal.removeEventListener('abort', onAbort);
           if (e && e.name === 'AbortError') throw e;
         }
