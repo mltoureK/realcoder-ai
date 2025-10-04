@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import LoadingScreen from '@/components/LoadingScreen';
 import { generateQuizFromRepository } from '@/lib/quiz-service';
 import QuizInterface from '@/components/QuizInterface';
 import CuratedRepos from '@/components/CuratedRepos';
@@ -31,6 +32,7 @@ export default function Home() {
   const [repositoryFiles, setRepositoryFiles] = useState<any[]>([]);
   const [trendingRepos, setTrendingRepos] = useState<any[]>([]);
   const [isLoadingTrending, setIsLoadingTrending] = useState(false);
+  const [showLoadingOverlay, setShowLoadingOverlay] = useState(false);
 
   // Load trending repositories
   const loadTrendingRepos = async () => {
@@ -283,6 +285,7 @@ export default function Home() {
 
   const handleGenerateQuiz = async () => {
     setIsLoading(true);
+    setShowLoadingOverlay(true);
     try {
       console.log('🚀 Starting quiz generation process...');
       
@@ -373,6 +376,9 @@ export default function Home() {
               } else if (evt.type === 'question') {
                 total += 1;
                 console.log('📝 Received question', total, ':', evt.question);
+                if (total === 1) {
+                  setShowLoadingOverlay(false);
+                }
                 setQuizSession((prev: any) => {
                   if (!prev) return initialSession;
                   const updated = { ...prev, questions: [...prev.questions, evt.question] };
@@ -459,6 +465,9 @@ export default function Home() {
               } else if (evt.type === 'question') {
                 total += 1;
                 console.log('📝 Received question', total, ':', evt.question);
+                if (total === 1) {
+                  setShowLoadingOverlay(false);
+                }
                 setQuizSession((prev: any) => {
                   if (!prev) return initialSession;
                   const updated = { ...prev, questions: [...prev.questions, evt.question] };
@@ -482,6 +491,8 @@ export default function Home() {
       alert('Error generating quiz. Please try again.');
     } finally {
       setIsLoading(false);
+      // If stream ended without first question for any reason, ensure overlay hides
+      setShowLoadingOverlay(false);
     }
   };
 
@@ -964,6 +975,13 @@ export default function Home() {
           quizSession={quizSession} 
           onClose={() => setQuizSession(null)} 
         />
+      )}
+
+      {/* Loading Overlay */}
+      {showLoadingOverlay && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 50 }}>
+          <LoadingScreen />
+        </div>
       )}
     </div>
   );
