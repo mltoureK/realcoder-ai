@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { QuizSession } from '@/lib/quiz-service';
 import { detectLanguage } from '@/lib/question-plugins/utils';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import ReportCard from '@/components/ReportCard';
+import { QuestionResult } from '@/lib/report-card';
 
 interface QuizInterfaceProps {
   quizSession: QuizSession;
@@ -41,19 +43,91 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [score, setScore] = useState(0);
-  const [lives] = useState(999); // Unlimited lives
+  const [lives, setLives] = useState(5);
   const [currentVariantIndex, setCurrentVariantIndex] = useState(0);
   const [showExplanations, setShowExplanations] = useState(false);
   const [shakingNext, setShakingNext] = useState(false);
+  const [results, setResults] = useState<QuestionResult[]>([]);
+
+  // Timers: per-question and overall (increase as questions stream in)
+  const [questionTimeTotal, setQuestionTimeTotal] = useState(0);
+  const [questionTimeLeft, setQuestionTimeLeft] = useState(0);
+  const [overallTimeTotal, setOverallTimeTotal] = useState(0);
+  const [overallTimeLeft, setOverallTimeLeft] = useState(0);
+  const lastAccumulatedCountRef = useRef(0);
 
   const totalQuestions = Array.isArray(quizSession.questions) ? quizSession.questions.length : 0;
   const hasQuestion = totalQuestions > 0 && currentQuestionIndex < totalQuestions;
   const currentQuestion: any = hasQuestion ? quizSession.questions[currentQuestionIndex] : undefined;
 
+  // Utility: derive seconds based on code line counts (6s per line)
+  function computeTimeForQuestion(q: any): number {
+    try {
+      let source = '';
+      if (q?.codeContext && typeof q.codeContext === 'string') {
+        source = q.codeContext as string;
+      } else if (q?.type === 'function-variant' && Array.isArray(q?.variants) && q.variants[0]?.code) {
+        source = q.variants[0].code as string;
+      } else if (q?.type === 'order-sequence' && Array.isArray(q?.steps)) {
+        source = (q.steps as any[]).map(s => s?.code || '').join('\n');
+      } else if (typeof q?.question === 'string') {
+        // fallback: approximate from question text length (6s per approx line)
+        const approxLines = Math.ceil((q.question as string).length / 60);
+        return Math.max(30, Math.min(15 * 60, approxLines * 6));
+      }
+      const lineCount = Math.max(1, String(source).split('\n').length);
+      // 6 seconds per line, clamp between 30s and 15m
+      return Math.max(30, Math.min(15 * 60, lineCount * 6));
+    } catch {
+      return 60; // safe fallback
+    }
+  }
+
+  function formatTime(totalSeconds: number): string {
+    const s = Math.max(0, Math.floor(totalSeconds));
+    const m = Math.floor(s / 60);
+    const r = s % 60;
+    return `${m}:${r.toString().padStart(2, '0')}`;
+  }
+
   // Reset variant index when question changes
   useEffect(() => {
     setCurrentVariantIndex(0);
   }, [currentQuestion]);
+
+  // Establish per-question time on question change
+  useEffect(() => {
+    if (!hasQuestion) return;
+    const secs = computeTimeForQuestion(currentQuestion);
+    setQuestionTimeTotal(secs);
+    setQuestionTimeLeft(secs);
+  }, [hasQuestion, currentQuestion]);
+
+  // Accumulate overall time as questions stream in
+  useEffect(() => {
+    const count = Array.isArray(quizSession.questions) ? quizSession.questions.length : 0;
+    if (count > lastAccumulatedCountRef.current) {
+      let add = 0;
+      for (let i = lastAccumulatedCountRef.current; i < count; i++) {
+        const q = quizSession.questions[i];
+        add += computeTimeForQuestion(q);
+      }
+      setOverallTimeTotal(prev => prev + add);
+      setOverallTimeLeft(prev => prev + add);
+      lastAccumulatedCountRef.current = count;
+    }
+  }, [quizSession?.questions?.length]);
+
+  // Ticking interval (pause while showing explanations)
+  useEffect(() => {
+    if (showExplanations) return;
+    if (!hasQuestion) return;
+    const id = setInterval(() => {
+      setQuestionTimeLeft(prev => (prev > 0 ? prev - 1 : 0));
+      setOverallTimeLeft(prev => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [showExplanations, hasQuestion, currentQuestionIndex]);
 
   const handleAnswerSelect = (answer: string) => {
     if (!hasQuestion) return;
@@ -75,11 +149,13 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     if (!hasQuestion || selectedAnswers.length === 0) return;
 
     let isCorrect = false;
+    let correctAnswersResolved: string[] = [];
     
     if (currentQuestion.type === 'function-variant') {
       // For function-variant, find the correct variant
       const correctVariant = currentQuestion.variants?.find((v: any) => v.isCorrect);
       isCorrect = correctVariant ? selectedAnswers.includes(correctVariant.id) : false;
+      correctAnswersResolved = correctVariant ? [correctVariant.id] : [];
     } else if (currentQuestion.type === 'order-sequence') {
       // Support multiple valid orders and partial-order constraints
       const correctOrder = currentQuestion.correctOrder || [];
@@ -122,6 +198,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
       };
 
       isCorrect = exactMatch() || matchesAnyAcceptable() || satisfiesConstraints();
+      correctAnswersResolved = Array.isArray(correctOrder) ? [...correctOrder] : [];
     } else if (currentQuestion.type === 'select-all') {
       // For select-all, check if selected answers match the correct indices
       const correctAnswers = currentQuestion.correctAnswers || [];
@@ -156,6 +233,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
       
       // Answer is correct if: has correct selections AND no incorrect selections
       isCorrect = hasCorrectSelections && !hasIncorrectSelections;
+      correctAnswersResolved = correctOptions.filter(Boolean);
       
       console.log('🔍 Select-All Final Debug:', {
         selectedAnswers,
@@ -170,15 +248,43 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         ? (currentQuestion.correctAnswer as string[]).every((answer: string) => selectedAnswers.includes(answer)) &&
           selectedAnswers.every((answer: string) => (currentQuestion.correctAnswer as string[]).includes(answer))
         : selectedAnswers.includes(currentQuestion.correctAnswer);
+      correctAnswersResolved = Array.isArray(currentQuestion.correctAnswer)
+        ? [...(currentQuestion.correctAnswer as string[])]
+        : [currentQuestion.correctAnswer];
     }
+
+    // Record result for this question
+    const qId = (currentQuestion.id && String(currentQuestion.id)) || String(currentQuestionIndex + 1);
+    const lang = currentQuestion.language || null;
+    const resultEntry: QuestionResult = {
+      questionId: qId,
+      type: currentQuestion.type,
+      language: lang,
+      isCorrect,
+      selectedAnswers: [...selectedAnswers],
+      correctAnswers: correctAnswersResolved.filter(Boolean)
+    };
+    setResults(prev => {
+      if (prev.some(r => r.questionId === qId)) return prev;
+      return [...prev, resultEntry];
+    });
 
     if (isCorrect) {
       setScore(prev => prev + 1);
       setShowExplanations(true);
     } else {
-      // No lives lost - unlimited lives!
-      // Just show the correct answer
-      setShowExplanations(true);
+      // Decrement lives, apply time penalty, and pause timers until next
+      const nextLives = Math.max(0, lives - 1);
+      setLives(nextLives);
+      const penalty = Math.min(60, Math.ceil(questionTimeTotal * 0.25));
+      setQuestionTimeLeft(0);
+      setOverallTimeLeft(prev => Math.max(0, prev - penalty));
+      if (nextLives === 0) {
+        // End quiz immediately on zero lives
+        setShowResults(true);
+      } else {
+        setShowExplanations(true);
+      }
     }
   };
 
@@ -191,9 +297,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
       setCurrentVariantIndex(0);
       setShowExplanations(false);
     } else {
-      // Not yet loaded → trigger a brief shake
-      setShakingNext(true);
-      setTimeout(() => setShakingNext(false), 600);
+      setShowResults(true);
     }
   };
 
@@ -202,9 +306,10 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     setSelectedAnswers([]);
     setShowResults(false);
     setScore(0);
-    // Lives stay unlimited
+    setLives(3);
     setCurrentVariantIndex(0);
     setShowExplanations(false);
+    setResults([]);
   };
 
   const handleVariantNavigation = (direction: 'prev' | 'next') => {
@@ -857,44 +962,8 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   };
 
   if (showResults) {
-    const percentage = Math.round((score / quizSession.questions.length) * 100);
-    const passed = percentage >= 70;
-
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 z-50 flex items-center justify-center p-4">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-8 text-center">
-          <div className={`text-6xl mb-4 ${passed ? 'text-green-500' : 'text-red-500'}`}>
-            {passed ? '🎉' : '😔'}
-          </div>
-          
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            {passed ? 'Congratulations!' : 'Keep Practicing!'}
-          </h2>
-          
-          <div className={`text-4xl font-bold mb-4 ${passed ? 'text-green-600' : 'text-red-600'}`}>
-            {percentage}%
-          </div>
-          
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            You got {score} out of {quizSession.questions.length} questions correct.
-          </p>
-          
-          <div className="space-y-3">
-            <button
-              onClick={handleRetry}
-              className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-            >
-              Try Again
-            </button>
-            <button
-              onClick={onClose}
-              className="w-full bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 py-3 px-6 rounded-lg font-medium hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors"
-            >
-              Back to Home
-            </button>
-          </div>
-        </div>
-      </div>
+      <ReportCard results={results} onRetry={handleRetry} onClose={onClose} />
     );
   }
 
@@ -940,13 +1009,47 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 Score: {score}
               </div>
               
-              {/* Lives - Show as Unlimited */}
+            {/* Timers */}
+            <div className="hidden sm:flex items-center space-x-4">
+              {/* Per-question timer */}
+              <div className="w-40">
+                <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
+                  <span>Q Time</span>
+                  <span className={`${questionTimeLeft <= 3 ? 'text-red-600 dark:text-red-400 animate-pulse' : (questionTimeTotal > 0 && questionTimeLeft / questionTimeTotal <= 0.2 ? 'text-red-600 dark:text-red-400' : '')}`}>
+                    {formatTime(questionTimeLeft)}
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+                  <div
+                    className={`${questionTimeLeft <= 3 ? 'bg-red-600 animate-pulse' : (questionTimeTotal > 0 && questionTimeLeft / questionTimeTotal <= 0.2 ? 'bg-red-600 animate-pulse' : 'bg-blue-600')} h-2 rounded-full transition-all duration-500`}
+                    style={{ width: `${questionTimeTotal > 0 ? (questionTimeLeft / questionTimeTotal) * 100 : 0}%` }}
+                  ></div>
+                </div>
+              </div>
+              {/* Overall timer */}
+              <div className="w-40">
+                <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
+                  <span>Total</span>
+                  <span className={`${overallTimeTotal > 0 && overallTimeLeft / overallTimeTotal <= 0.15 ? 'text-red-600 dark:text-red-400' : ''}`}>
+                    {formatTime(overallTimeLeft)}
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+                  <div
+                    className={`${overallTimeTotal > 0 && overallTimeLeft / overallTimeTotal <= 0.15 ? 'bg-red-600 animate-pulse' : 'bg-indigo-600'} h-2 rounded-full transition-all duration-500`}
+                    style={{ width: `${overallTimeTotal > 0 ? (overallTimeLeft / overallTimeTotal) * 100 : 0}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+              {/* Lives */}
               <div className="flex items-center space-x-2">
                 <span className="text-sm text-gray-600 dark:text-gray-400">Lives:</span>
                 <div className="flex space-x-1">
-                  <span className="text-sm font-medium text-green-600 dark:text-green-400">
-                    ∞ Unlimited
-                  </span>
+                  {[0,1,2].map((i) => (
+                    <div key={i} className={`w-4 h-4 rounded-full ${i < lives ? 'bg-red-500' : 'bg-gray-300 dark:bg-gray-600'}`}></div>
+                  ))}
                 </div>
               </div>
             </div>
