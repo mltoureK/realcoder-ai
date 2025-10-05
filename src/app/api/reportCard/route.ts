@@ -1,0 +1,190 @@
+import { NextResponse } from 'next/server';
+import { analyzeResults, computeRepoIQ, type QuestionResult, type FailedQuestion, type Analysis, type RepoIQ } from '@/lib/report-card';
+
+type Ticket = {
+  id: string;
+  title: string;
+  description: string;
+  language: 'javascript'|'typescript'|'python'|'java';
+  buggyCode: string;
+  solutionCode: string;
+  explanation: string;
+  tests: { name: string; code: string }[];
+  exportName?: string;
+  difficulty?: 'easy'|'medium'|'hard';
+  sourceQuestion?: {
+    type: string;
+    question: string;
+    codeContext?: string;
+    userAnswer: string;
+    correctAnswer: string;
+  };
+};
+
+export async function POST(req: Request) {
+  const { results, failedQuestions } = (await req.json()) as { results: QuestionResult[]; failedQuestions: FailedQuestion[] };
+  const analysis: Analysis = analyzeResults(results || []);
+  const repoIQ: RepoIQ = computeRepoIQ(analysis);
+  const tickets = await generateTicketsFromFailedQuestions(failedQuestions || []);
+  return NextResponse.json({ analysis, repoIQ, tickets });
+}
+
+async function generateTicketsFromFailedQuestions(failedQuestions: FailedQuestion[]): Promise<Ticket[]> {
+  console.log('🔍 generateTicketsFromFailedQuestions called with:', failedQuestions.length, 'failed questions');
+
+  // Take up to 3 failed questions to generate tickets from
+  const questionsToProcess = failedQuestions.slice(0, 3);
+  console.log('🎫 Generating tickets for:', questionsToProcess.length, 'failed questions');
+
+  if (questionsToProcess.length === 0) {
+    console.log('⚠️ No failed questions, returning empty tickets array');
+    return [];
+  }
+
+  const tickets: Ticket[] = [];
+
+  for (let i = 0; i < questionsToProcess.length; i++) {
+    const failedQuestion = questionsToProcess[i];
+
+    // Determine language from the failed question
+    const language = detectLanguageFromFailedQuestion(failedQuestion);
+
+    // Generate actual buggy code based on the failed question using one-shot AI prompt
+    const { buggyCode, solutionCode, explanation } = await generateBugFromFailedQuestion(failedQuestion, language);
+
+    // Create ticket based on the specific failed question
+    const ticket: Ticket = {
+      id: `ticket-${failedQuestion.type}-${i + 1}`,
+      title: `Fix ${failedQuestion.type} logic error`,
+      description: `Code contains a logic error related to ${failedQuestion.type} concepts.`,
+      language: language,
+      buggyCode: buggyCode,
+      solutionCode: solutionCode,
+      explanation: explanation,
+      tests: [{ name: 'correct behavior', code: '// test based on failed question concept' }],
+      difficulty: 'medium' as const,
+      sourceQuestion: {
+        type: failedQuestion.type,
+        question: failedQuestion.question,
+        codeContext: failedQuestion.codeContext,
+        userAnswer: failedQuestion.selectedAnswers.join(', ') || 'No answer provided',
+        correctAnswer: failedQuestion.correctAnswers.join(', ') || 'Correct answer not available'
+      }
+    };
+
+    tickets.push(ticket);
+  }
+
+  console.log('✅ Generated', tickets.length, 'tickets:', tickets.map(t => t.id));
+  return tickets;
+}
+
+async function generateBugFromFailedQuestion(failedQuestion: FailedQuestion, language: 'javascript'|'typescript'|'python'|'java'): Promise<{ buggyCode: string; solutionCode: string; explanation: string }> {
+  // Use OpenAI to generate a bug based on the failed question
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a code bug generator. Generate realistic bugs based on failed quiz questions. Return ONLY valid JSON with no additional text.'
+          },
+          {
+            role: 'user', // find out why its saying failedquestion.type and what that represents
+            content: `Analyze this failed question and create a new code bug that tests the same concept:
+
+Question Type: ${failedQuestion.type}
+Question: ${failedQuestion.question}
+Code Context: ${failedQuestion.codeContext || 'No code context'}
+User's Answer: ${failedQuestion.selectedAnswers.join(', ')}
+Correct Answer: ${failedQuestion.correctAnswers.join(', ')}
+Explanation: ${failedQuestion.explanation || 'No explanation provided'}
+Language: ${language}
+
+Create a NEW code scenario (not the same code) with a bug that tests the same programming concept the user missed. The bug should:
+1. Be a realistic, common programming mistake
+2. Test the same concept/skill as the failed question
+3. Be written in ${language}
+4. Have a clear fix and explanation
+5. Be conceptually related but use different code
+
+Return JSON format:
+{
+  "buggyCode": "new code with bug that tests same concept",
+  "solutionCode": "fixed version of the new code",
+  "explanation": "explanation of the bug and fix, focusing on the concept the user missed"
+}`
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 1200
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`OpenAI API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices[0]?.message?.content;
+    
+    if (!content) {
+      throw new Error('No content from OpenAI');
+    }
+
+    const result = JSON.parse(content);
+    return {
+      buggyCode: result.buggyCode || '// Bug code not generated',
+      solutionCode: result.solutionCode || '// Solution not generated',
+      explanation: result.explanation || 'Bug explanation not generated'
+    };
+  } catch (error) {
+    console.error('Error generating bug from failed question:', error);
+    
+    // Fallback to generic bug
+    return {
+      buggyCode: `// ${failedQuestion.type} bug in ${language}\n// TODO: Fix this logic error`,
+      solutionCode: `// ${failedQuestion.type} fix in ${language}\n// TODO: Implement correct solution`,
+      explanation: `This is a ${failedQuestion.type} question type in ${language}. The bug relates to the programming concept you missed.`
+    };
+  }
+}
+
+function detectLanguageFromFailedQuestion(question: FailedQuestion): 'javascript'|'typescript'|'python'|'java' {
+  // Try to detect language from the question's language field
+  if (question.language) {
+    const lang = question.language.toLowerCase();
+    if (lang.includes('javascript') || lang.includes('js')) return 'javascript';
+    if (lang.includes('typescript') || lang.includes('ts')) return 'typescript';
+    if (lang.includes('python') || lang.includes('py')) return 'python';
+    if (lang.includes('java')) return 'java';
+  }
+  
+  // Fallback: try to detect from code context or selected answers
+  if (question.codeContext) {
+    const code = question.codeContext.toLowerCase();
+    if (code.includes('function') && code.includes('=>')) return 'javascript';
+    if (code.includes('interface') || code.includes('type ')) return 'typescript';
+    if (code.includes('def ') || code.includes('import ')) return 'python';
+    if (code.includes('public class') || code.includes('private ')) return 'java';
+  }
+  
+  if (question.selectedAnswers.length > 0) {
+    const answers = question.selectedAnswers.join(' ').toLowerCase();
+    if (answers.includes('function') && answers.includes('=>')) return 'javascript';
+    if (answers.includes('interface') || answers.includes('type ')) return 'typescript';
+    if (answers.includes('def ') || answers.includes('import ')) return 'python';
+    if (answers.includes('public class') || answers.includes('private ')) return 'java';
+  }
+  
+  // Default to JavaScript
+  return 'javascript';
+}
+
+

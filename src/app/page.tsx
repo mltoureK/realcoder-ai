@@ -67,6 +67,9 @@ export default function Home() {
     setSelectedLanguages([]);
     setRepositoryFiles([]);
     
+    // Switch to GitHub tab when selecting from curated repos
+    setActiveTab('github');
+    
     // Force trigger the GitHub URL change handler
     await handleGitHubUrlChange(url);
   };

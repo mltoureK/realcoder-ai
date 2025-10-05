@@ -32,11 +32,12 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
   
   // Custom call allocation: more select-all, less multiple-choice
   const callAllocation: Record<string, number> = {
-    'select-all': 4,           // 4 calls for select-all
-    'multiple-choice': 2,      // 2 calls for multiple-choice
-    'function-variant': 3,     // 3 calls
-    'order-sequence': 3,       // 3 calls
-    'true-false': 3            // 3 calls
+    // Reduce total budget to ~10 calls overall for local testing speed
+    'select-all': 3,
+    'multiple-choice': 2,
+    'function-variant': 2,
+    'order-sequence': 2,
+    'true-false': 1
   };
   
   // Randomize chunk selection for each plugin call to ensure diversity

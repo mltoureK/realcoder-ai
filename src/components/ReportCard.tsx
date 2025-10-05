@@ -6,31 +6,40 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+type Ticket = {
+  id: string;
+  title: string;
+  description: string;
+  createdAt: number;
+  done: boolean;
+  language?: string;
+  bugSnippet?: string;
+  fixedSnippet?: string;
+  solutionText?: string;
+  sourceQuestion?: {
+    type: string;
+    question: string;
+    codeContext?: string;
+    userAnswer: string;
+    correctAnswer: string;
+  };
+};
+
 type Props = {
   results: QuestionResult[];
   onClose: () => void;
   onRetry: () => void;
+  initialTickets?: Ticket[];
 };
 
-export default function ReportCard({ results, onClose, onRetry }: Props) {
+export default function ReportCard({ results, onClose, onRetry, initialTickets }: Props) {
   const analysis = analyzeResults(results);
   const recs = generateRecommendations(analysis);
   const repoIQ = computeRepoIQ(analysis);
   const sw = generateStrengthsWeaknesses(analysis);
 
-  type Ticket = {
-    id: string;
-    title: string;
-    description: string;
-    createdAt: number;
-    done: boolean;
-    language?: string;
-    bugSnippet?: string;
-    fixedSnippet?: string;
-    solutionText?: string;
-  };
-
   const [tickets, setTickets] = useState<Ticket[]>([]);
+  const robotSrc = '/report-bot.png';
 
   useEffect(() => {
     try {
@@ -38,6 +47,30 @@ export default function ReportCard({ results, onClose, onRetry }: Props) {
       if (raw) setTickets(JSON.parse(raw));
     } catch (_) {}
   }, []);
+
+  // Merge in server-provided initial tickets on mount or when provided
+  useEffect(() => {
+    if (!initialTickets || initialTickets.length === 0) return;
+    // Map server Ticket shape (buggyCode/solutionCode) into local Ticket fields
+    const mapped = initialTickets.map((t) => ({
+      id: t.id || `${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+      title: t.title,
+      description: t.description,
+      createdAt: Date.now(),
+      done: false,
+      language: (t as any).language,
+      bugSnippet: (t as any).bugSnippet || (t as any).buggyCode,
+      fixedSnippet: (t as any).fixedSnippet || (t as any).solutionCode,
+      solutionText: (t as any).solutionText || (t as any).explanation,
+    } as Ticket));
+    setTickets(prev => {
+      const byTitle: Record<string, Ticket> = {};
+      for (const t of [...prev, ...mapped]) {
+        byTitle[t.title] = byTitle[t.title] || t;
+      }
+      return Object.values(byTitle);
+    });
+  }, [initialTickets && initialTickets.length]);
 
   useEffect(() => {
     try {
@@ -155,14 +188,29 @@ export default function ReportCard({ results, onClose, onRetry }: Props) {
               <div className="mt-2 text-5xl font-extrabold">{percentage}%</div>
               <div className="mt-2 text-sm opacity-90">{analysis.overall.correct} correct / {analysis.overall.total} total</div>
             </div>
-            <div className="mt-4 p-5 rounded-xl bg-gradient-to-br from-rose-600 to-red-600 text-white shadow-lg">
-              <div className="text-sm opacity-80">Repo IQ</div>
-              <div className="mt-2 text-4xl font-extrabold">{repoIQ.score}</div>
-              <ul className="mt-2 text-xs opacity-90 space-y-1 list-disc list-inside">
-                {repoIQ.reasoning.map((r, i) => (
-                  <li key={i}>{r}</li>
-                ))}
-              </ul>
+            <div className="mt-4 p-3 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="relative group flex items-center justify-center">
+                <div
+                  className="w-44 h-44 rounded-xl bg-center bg-cover select-none"
+                  style={{ backgroundImage: `url(${robotSrc})` }}
+                  aria-label="Repo IQ Robot"
+                />
+                <div className="absolute bottom-3 right-3">
+                  <div className="group/box relative" aria-label={repoIQ.reasoning.join(' \u2022 ')}>
+                    <div className="w-24 h-24 rounded-lg bg-gradient-to-br from-rose-600 to-red-600 text-white shadow-lg flex flex-col items-center justify-center">
+                      <div className="text-[10px] opacity-80">Repo IQ</div>
+                      <div className="text-3xl font-extrabold mt-1">{repoIQ.score}</div>
+                    </div>
+                    <div className="hidden group-hover/box:block absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-10 w-56 p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 shadow-xl">
+                      <ul className="text-xs space-y-1">
+                        {repoIQ.reasoning.map((r, i) => (
+                          <li key={i}>{r}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             {/* Weakness chips */}
             <div className="mt-4">
@@ -272,39 +320,7 @@ export default function ReportCard({ results, onClose, onRetry }: Props) {
               </div>
             </div>
 
-            {/* Exercises → Click to create tickets */}
-            <div className="p-5 rounded-xl border border-gray-200 dark:border-gray-700">
-              <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-4">Targeted Exercises</div>
-              <div className="grid gap-3 md:grid-cols-2">
-                {recs.exercises.map((e) => (
-                  <motion.button
-                    key={e.title}
-                    onClick={() => addTicket(e.title, e.description)}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`text-left p-4 rounded-lg border bg-white dark:bg-gray-900 transition-colors ${
-                      isInTickets(e.title)
-                        ? 'border-green-300 dark:border-green-700 hover:border-green-400'
-                        : 'border-gray-200 dark:border-gray-700 hover:border-indigo-400 dark:hover:border-indigo-500'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <div className="font-semibold text-gray-900 dark:text-white">{e.title}</div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">{e.description}</div>
-                      </div>
-                      <span className={`text-xs px-2 py-1 rounded-md whitespace-nowrap ${
-                        isInTickets(e.title)
-                          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
-                          : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
-                      }`}>
-                        {isInTickets(e.title) ? 'In Tickets' : 'Add as Ticket'}
-                      </span>
-                    </div>
-                  </motion.button>
-                ))}
-              </div>
-            </div>
+            {/* Targeted Exercises removed per user request */}
 
             {/* Tickets Panel */}
             <div className="p-5 rounded-xl border border-gray-200 dark:border-gray-700">
@@ -361,6 +377,33 @@ export default function ReportCard({ results, onClose, onRetry }: Props) {
                             {t.done && t.solutionText && (
                               <div className="mt-2 text-xs text-gray-700 dark:text-gray-300">
                                 <strong>Solution:</strong> {t.solutionText}
+                              </div>
+                            )}
+                            {t.sourceQuestion && (
+                              <div className="mt-2 p-2 rounded-md bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                                <div className="text-xs font-semibold text-blue-800 dark:text-blue-300 mb-1">Based on failed question:</div>
+                                <div className="text-xs text-blue-700 dark:text-blue-400 mb-1">
+                                  <strong>Type:</strong> {t.sourceQuestion.type}
+                                </div>
+                                <div className="text-xs text-blue-700 dark:text-blue-400 mb-1">
+                                  <strong>Question:</strong> {t.sourceQuestion.question}
+                                </div>
+                                {t.sourceQuestion.codeContext && (
+                                  <div className="text-xs text-blue-700 dark:text-blue-400 mb-1">
+                                    <strong>Code Context:</strong>
+                                    <div className="mt-1 rounded border border-blue-200 dark:border-blue-700 overflow-hidden">
+                                      <SyntaxHighlighter language={t.language || 'javascript'} style={vscDarkPlus} customStyle={{ margin: 0, padding: '0.5rem', fontSize: '0.7rem' }}>
+                                        {t.sourceQuestion.codeContext}
+                                      </SyntaxHighlighter>
+                                    </div>
+                                  </div>
+                                )}
+                                <div className="text-xs text-blue-700 dark:text-blue-400 mb-1">
+                                  <strong>Your Answer:</strong> {t.sourceQuestion.userAnswer}
+                                </div>
+                                <div className="text-xs text-blue-700 dark:text-blue-400">
+                                  <strong>Correct Answer:</strong> {t.sourceQuestion.correctAnswer}
+                                </div>
                               </div>
                             )}
                           </div>

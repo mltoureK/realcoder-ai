@@ -6,7 +6,8 @@ import { detectLanguage } from '@/lib/question-plugins/utils';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import ReportCard from '@/components/ReportCard';
-import { QuestionResult } from '@/lib/report-card';
+import { QuestionResult, FailedQuestion } from '@/lib/report-card';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface QuizInterfaceProps {
   quizSession: QuizSession;
@@ -42,12 +43,32 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
   const [showResults, setShowResults] = useState(false);
+  const [showReportPrompt, setShowReportPrompt] = useState(false);
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [generatedTickets, setGeneratedTickets] = useState<any[]>([]);
+  const [loadingPct, setLoadingPct] = useState(0);
+  const [waitForCompleteStream, setWaitForCompleteStream] = useState(true);
+  const [showStreamingWarning, setShowStreamingWarning] = useState(false);
+
+  const funTips = [
+    'Tip: Off-by-one bugs are 0-based 90% of the time.',
+    'Fact: await Promise.all is faster than serial awaits.',
+    'Tip: Prefer === over == unless you love surprises.',
+    'Fact: map + filter beats pushing in for-loops for clarity.',
+    'Tip: In Python, default args are evaluated once—beware lists.',
+    'Fact: In Java, put constants on the left: "foo".equals(x).',
+    'Tip: Throttle for rate limits; debounce for noisy inputs.',
+    'Fact: NaN !== NaN. But Number.isNaN(NaN) is true.',
+  ];
+
+  // ALL HOOKS MUST BE DECLARED BEFORE ANY CONDITIONAL RETURNS
   const [score, setScore] = useState(0);
-  const [lives, setLives] = useState(5);
+  const [lives, setLives] = useState(3);
   const [currentVariantIndex, setCurrentVariantIndex] = useState(0);
   const [showExplanations, setShowExplanations] = useState(false);
   const [shakingNext, setShakingNext] = useState(false);
   const [results, setResults] = useState<QuestionResult[]>([]);
+  const [failedQuestions, setFailedQuestions] = useState<FailedQuestion[]>([]);
 
   // Timers: per-question and overall (increase as questions stream in)
   const [questionTimeTotal, setQuestionTimeTotal] = useState(0);
@@ -55,6 +76,33 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   const [overallTimeTotal, setOverallTimeTotal] = useState(0);
   const [overallTimeLeft, setOverallTimeLeft] = useState(0);
   const lastAccumulatedCountRef = useRef(0);
+
+  // Drive the loading bar and fetch when generating (must be before any early returns)
+  useEffect(() => {
+    if (!isGeneratingReport) return;
+    let pct = 0;
+    const id = setInterval(() => {
+      pct = Math.min(95, pct + Math.random() * 12);
+      setLoadingPct(Math.round(pct));
+    }, 250);
+    (async () => {
+      try {
+        console.log('🚀 Calling /api/reportCard with', results.length, 'results');
+        const res = await fetch('/api/reportCard', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ results, failedQuestions }) });
+        const data = await res.json();
+        console.log('📊 Report card API response:', data);
+        console.log('🎫 Generated tickets:', data.tickets?.length || 0);
+        setGeneratedTickets(data.tickets || []);
+      } catch (e) {
+        console.error('reportCard error', e);
+      } finally {
+        setLoadingPct(100);
+        setIsGeneratingReport(false);
+        setShowResults(true);
+      }
+    })();
+    return () => clearInterval(id);
+  }, [isGeneratingReport, results]);
 
   const totalQuestions = Array.isArray(quizSession.questions) ? quizSession.questions.length : 0;
   const hasQuestion = totalQuestions > 0 && currentQuestionIndex < totalQuestions;
@@ -269,6 +317,27 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
       return [...prev, resultEntry];
     });
 
+    // Store full question data for failed questions
+    if (!isCorrect) {
+      const failedQuestion: FailedQuestion = {
+        questionId: qId,
+        type: currentQuestion.type,
+        language: lang,
+        question: currentQuestion.question || '',
+        codeContext: currentQuestion.codeContext,
+        selectedAnswers: [...selectedAnswers],
+        correctAnswers: correctAnswersResolved.filter(Boolean),
+        explanation: currentQuestion.explanation,
+        variants: currentQuestion.variants,
+        steps: currentQuestion.steps,
+        options: currentQuestion.options
+      };
+      setFailedQuestions(prev => {
+        if (prev.some(fq => fq.questionId === qId)) return prev;
+        return [...prev, failedQuestion];
+      });
+    }
+
     if (isCorrect) {
       setScore(prev => prev + 1);
       setShowExplanations(true);
@@ -280,8 +349,8 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
       setQuestionTimeLeft(0);
       setOverallTimeLeft(prev => Math.max(0, prev - penalty));
       if (nextLives === 0) {
-        // End quiz immediately on zero lives
-        setShowResults(true);
+        // End quiz immediately on zero lives → show report prompt
+        setShowReportPrompt(true);
       } else {
         setShowExplanations(true);
       }
@@ -291,13 +360,26 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   const handleNextQuestion = () => {
     const nextIndex = currentQuestionIndex + 1;
     const nextAvailable = nextIndex < totalQuestions;
+    
+    // Check if we're trying to finish the quiz before streaming is complete
+    const isFinishingQuiz = !nextAvailable;
+    const isStreamingComplete = quizSession.completed || false;
+    
+    if (isFinishingQuiz && waitForCompleteStream && !isStreamingComplete) {
+      // Show warning animation and prevent finishing
+      setShowStreamingWarning(true);
+      setTimeout(() => setShowStreamingWarning(false), 2000);
+      return;
+    }
+    
     if (nextAvailable) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswers([]);
       setCurrentVariantIndex(0);
       setShowExplanations(false);
     } else {
-      setShowResults(true);
+      // Finished quiz → prompt to view report card
+      setShowReportPrompt(true);
     }
   };
 
@@ -310,6 +392,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     setCurrentVariantIndex(0);
     setShowExplanations(false);
     setResults([]);
+    setFailedQuestions([]);
   };
 
   const handleVariantNavigation = (direction: 'prev' | 'next') => {
@@ -963,9 +1046,76 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
   if (showResults) {
     return (
-      <ReportCard results={results} onRetry={handleRetry} onClose={onClose} />
+      <ReportCard results={results} onRetry={handleRetry} onClose={onClose} initialTickets={generatedTickets} />
     );
   }
+
+  // Report prompt modal
+  if (showReportPrompt) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gradient-to-br from-slate-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+        <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6">
+          <div className="flex flex-col items-center text-center">
+            <div
+              className="w-40 h-40 rounded-xl bg-center bg-cover"
+              style={{ backgroundImage: `url(/report-bot.png)` }}
+              aria-label="Report Bot"
+            />
+            <h2 className="mt-4 text-xl font-bold text-gray-900 dark:text-white">Read your report card?</h2>
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">We can analyze your answers and generate personalized bug-fix tickets.</p>
+            <div className="mt-6 grid grid-cols-2 gap-3 w-full">
+              <button
+                className="py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
+                onClick={async () => {
+                  setIsGeneratingReport(true);
+                  setShowReportPrompt(false);
+                }}
+              >
+                Yes
+              </button>
+              <button
+                className="py-3 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700"
+                onClick={() => {
+                  // Skip server generation; still show local report UI
+                  setGeneratedTickets([]);
+                  setShowReportPrompt(false);
+                  setShowResults(true);
+                }}
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Loading screen while generating report
+  if (isGeneratingReport) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gradient-to-br from-slate-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+        <div className="w-full max-w-lg bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6 flex flex-col items-center">
+          <div
+            className="w-48 h-48 rounded-xl bg-center bg-cover"
+            style={{ backgroundImage: `url(/report-bot.png)` }}
+            aria-label="Loading"
+          />
+          <div className="mt-4 text-sm text-gray-700 dark:text-gray-300">Generating your report card…</div>
+          <div className="mt-3 w-full">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+              <div className="bg-indigo-600 h-2 rounded-full transition-all" style={{ width: `${loadingPct}%` }} />
+            </div>
+          </div>
+          <div className="mt-4 text-xs text-gray-500 dark:text-gray-400 text-center min-h-[32px]">
+            {(funTips)[Math.floor(loadingPct / 10) % funTips.length]}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  
 
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 z-50 overflow-y-auto">
@@ -1048,9 +1198,39 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 <span className="text-sm text-gray-600 dark:text-gray-400">Lives:</span>
                 <div className="flex space-x-1">
                   {[0,1,2].map((i) => (
-                    <div key={i} className={`w-4 h-4 rounded-full ${i < lives ? 'bg-red-500' : 'bg-gray-300 dark:bg-gray-600'}`}></div>
+                    <button
+                      key={i}
+                      onClick={() => {
+                        if (i >= lives && lives < 3) {
+                          setLives(prev => Math.min(3, prev + 1));
+                        }
+                      }}
+                      className={`w-4 h-4 rounded-full transition-colors ${
+                        i < lives 
+                          ? 'bg-red-500 hover:bg-red-600' 
+                          : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 cursor-pointer'
+                      }`}
+                      title={i >= lives ? 'Click to restore life' : 'Life active'}
+                    ></button>
                   ))}
                 </div>
+              </div>
+
+              {/* Settings Toggle */}
+              <div className="flex items-center space-x-2">
+                <span className="text-xs text-gray-600 dark:text-gray-400">Wait for complete stream:</span>
+                <button
+                  onClick={() => setWaitForCompleteStream(!waitForCompleteStream)}
+                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                    waitForCompleteStream ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                      waitForCompleteStream ? 'translate-x-5' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
               </div>
             </div>
           </div>
@@ -1066,6 +1246,36 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
           </div>
         </div>
       </div>
+
+      {/* Streaming Warning Animation */}
+      <AnimatePresence>
+        {showStreamingWarning && (
+          <motion.div
+            initial={{ opacity: 0, y: -50, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -50, scale: 0.8 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50"
+          >
+            <div className="bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg border border-red-400">
+              <div className="flex items-center space-x-3">
+                <motion.div
+                  animate={{ rotate: [0, -10, 10, -10, 0] }}
+                  transition={{ duration: 0.5, repeat: 2 }}
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                </motion.div>
+                <div>
+                  <div className="font-semibold">Quiz Still Streaming!</div>
+                  <div className="text-sm opacity-90">Please wait for all questions to load before finishing.</div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Question Card */}
       <div className="max-w-4xl mx-auto px-4 py-8">

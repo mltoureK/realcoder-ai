@@ -9,6 +9,35 @@ export type QuestionResult = {
   correctAnswers: string[];
 };
 
+export type FailedQuestion = {
+  questionId: string;
+  type: QuestionType;
+  language?: string | null;
+  question: string;
+  codeContext?: string;
+  selectedAnswers: string[];
+  correctAnswers: string[];
+  explanation?: string;
+  // For function-variant questions
+  variants?: Array<{
+    id: string;
+    code: string;
+    isCorrect: boolean;
+    explanation: string;
+  }>;
+  // For order-sequence questions
+  steps?: Array<{
+    id: string;
+    code: string;
+    explanation: string;
+  }>;
+  // For select-all questions
+  options?: Array<{
+    text: string;
+    isCorrect: boolean;
+  }>;
+};
+
 export type Breakdown = {
   total: number;
   correct: number;
