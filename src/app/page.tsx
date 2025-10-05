@@ -1,10 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import LoadingScreen from '@/components/LoadingScreen';
 import { generateQuizFromRepository } from '@/lib/quiz-service';
 import QuizInterface from '@/components/QuizInterface';
 import CuratedRepos from '@/components/CuratedRepos';
+import Auth from '@/components/Auth';
+import UserProfile from '@/components/UserProfile';
+import { useAuth } from '@/context/AuthContext';
 
 interface GitHubRepo {
   owner: string;
@@ -12,6 +15,7 @@ interface GitHubRepo {
 }
 
 export default function Home() {
+  const { user, loading } = useAuth();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [githubRepo, setGithubRepo] = useState<GitHubRepo>({ owner: '', repo: '' });
   const [githubUrl, setGithubUrl] = useState('');
@@ -33,6 +37,8 @@ export default function Home() {
   const [trendingRepos, setTrendingRepos] = useState<any[]>([]);
   const [isLoadingTrending, setIsLoadingTrending] = useState(false);
   const [showLoadingOverlay, setShowLoadingOverlay] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
+
 
   // Load trending repositories
   const loadTrendingRepos = async () => {
@@ -287,6 +293,12 @@ export default function Home() {
   };
 
   const handleGenerateQuiz = async () => {
+    // Check if user is signed in
+    if (!user) {
+      setShowAuth(true);
+      return;
+    }
+
     setIsLoading(true);
     setShowLoadingOverlay(true);
     try {
@@ -524,15 +536,18 @@ export default function Home() {
               </span>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Lives:</span>
-                <div className="flex space-x-1">
-                  {[1, 2, 3].map((life) => (
-                    <div key={life} className="w-4 h-4 bg-red-500 rounded-full"></div>
-                  ))}
-                </div>
-                <span className="text-xs text-gray-500 dark:text-gray-400">Refills in 6h 23m</span>
-              </div>
+              {loading ? (
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-600"></div>
+              ) : user ? (
+                <UserProfile />
+              ) : (
+                <button
+                  onClick={() => setShowAuth(true)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Sign In
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -985,6 +1000,11 @@ export default function Home() {
         <div style={{ position: 'fixed', inset: 0, zIndex: 50 }}>
           <LoadingScreen />
         </div>
+      )}
+
+      {/* Auth Modal */}
+      {showAuth && (
+        <Auth onClose={() => setShowAuth(false)} />
       )}
     </div>
   );

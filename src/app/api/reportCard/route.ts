@@ -52,11 +52,14 @@ async function generateTicketsFromFailedQuestions(failedQuestions: FailedQuestio
     // Generate actual buggy code based on the failed question using one-shot AI prompt
     const { buggyCode, solutionCode, explanation } = await generateBugFromFailedQuestion(failedQuestion, language);
 
+    // Generate engaging ticket title and description using AI
+    const { title, description } = await generateEngagingTicketTitleAndDescription(failedQuestion, language);
+
     // Create ticket based on the specific failed question
     const ticket: Ticket = {
       id: `ticket-${failedQuestion.type}-${i + 1}`,
-      title: `Fix ${failedQuestion.type} logic error`,
-      description: `Code contains a logic error related to ${failedQuestion.type} concepts.`,
+      title: title,
+      description: description,
       language: language,
       buggyCode: buggyCode,
       solutionCode: solutionCode,
@@ -77,6 +80,75 @@ async function generateTicketsFromFailedQuestions(failedQuestions: FailedQuestio
 
   console.log('✅ Generated', tickets.length, 'tickets:', tickets.map(t => t.id));
   return tickets;
+}
+
+async function generateEngagingTicketTitleAndDescription(failedQuestion: FailedQuestion, language: 'javascript'|'typescript'|'python'|'java'): Promise<{ title: string; description: string }> {
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a Jira ticket generator. Create engaging, realistic bug ticket titles and descriptions that sound like real software issues. Return ONLY valid JSON with no additional text.'
+          },
+          {
+            role: 'user',
+            content: `Create a Jira-style bug ticket based on this failed programming question:
+
+Question Type: ${failedQuestion.type}
+Question: ${failedQuestion.question}
+Code Context: ${failedQuestion.codeContext || 'No code context'}
+User's Answer: ${failedQuestion.selectedAnswers.join(', ')}
+Correct Answer: ${failedQuestion.correctAnswers.join(', ')}
+Language: ${language}
+
+Generate:
+1. A compelling title that describes a specific bug or issue (like "Button click handler not triggering on mobile devices" or "Array filter returning undefined values")
+2. A description that starts with "symptom of the logic error in the code" and explains what the user would observe
+
+Return JSON format:
+{
+  "title": "engaging bug title describing specific issue",
+  "description": "symptom of the logic error in the code: [specific observable behavior/issue]"
+}`
+          }
+        ],
+        temperature: 0.8,
+        max_tokens: 300
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`OpenAI API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices[0]?.message?.content;
+    
+    if (!content) {
+      throw new Error('No content from OpenAI');
+    }
+
+    const result = JSON.parse(content);
+    return {
+      title: result.title || `Fix ${failedQuestion.type} logic error`,
+      description: result.description || 'symptom of the logic error in the code: unexpected behavior detected'
+    };
+  } catch (error) {
+    console.error('Error generating engaging ticket title and description:', error);
+    
+    // Fallback to generic but improved format
+    return {
+      title: `${failedQuestion.type.charAt(0).toUpperCase() + failedQuestion.type.slice(1)} logic error causing unexpected behavior`,
+      description: 'symptom of the logic error in the code: the application behaves differently than expected due to a programming concept misunderstanding'
+    };
+  }
 }
 
 async function generateBugFromFailedQuestion(failedQuestion: FailedQuestion, language: 'javascript'|'typescript'|'python'|'java'): Promise<{ buggyCode: string; solutionCode: string; explanation: string }> {

@@ -160,7 +160,7 @@ export default function ReportCard({ results, onClose, onRetry, initialTickets }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gradient-to-br from-slate-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 overflow-y-auto">
-      <div className="w-full max-w-4xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 max-h-[90vh] overflow-y-auto">
+      <div className="w-full max-w-4xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 h-[95vh] overflow-y-auto">
         {/* Header */}
         <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
           <div className="flex items-center space-x-4">
