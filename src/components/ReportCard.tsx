@@ -130,8 +130,8 @@ export default function ReportCard({ results, onClose, onRetry, initialTickets }
       createdAt: Date.now(),
       done: false,
       language: 'java',
-      bugSnippet: `String role = user.getRole();\nif (role.equals(\"admin\")) {\n    grantAccess();\n}\n`,
-      fixedSnippet: `String role = user.getRole();\nif (\"admin\".equals(role)) {\n    grantAccess();\n}\n// or Optional.ofNullable(role).filter(\"admin\"::equals).ifPresent(r -> grantAccess());\n`,
+      bugSnippet: `String role = user.getRole();\nif (role.equals("admin")) {\n    grantAccess();\n}\n`,
+      fixedSnippet: `String role = user.getRole();\nif ("admin".equals(role)) {\n    grantAccess();\n}\n// or Optional.ofNullable(role).filter("admin"::equals).ifPresent(r -> grantAccess());\n`,
       solutionText: 'Guard against null by reversing equals (constant on the left) or using Optional.'
     }
   ];
@@ -201,83 +201,60 @@ export default function ReportCard({ results, onClose, onRetry, initialTickets }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gradient-to-br from-slate-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 overflow-y-auto">
-      <div className="w-full max-w-4xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 h-[95vh] overflow-y-auto">
+      <div className="w-full max-w-6xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 h-[95vh] overflow-y-auto">
         {/* Header */}
-        <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${passed ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'}`}>
-              {passed ? '🎯' : '🔁'}
+        <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-800">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-4">
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${passed ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'}`}>
+                {passed ? '🎯' : '🔁'}
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Your Report Card</h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Personalized insights, resources, and exercises</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Your Report Card</h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Personalized insights, resources, and exercises</p>
-            </div>
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Body */}
-        <div className="p-6 grid gap-6 md:grid-cols-3">
-          {/* Overall card */}
-          <div className="col-span-1 md:col-span-1">
-            <div className="p-5 rounded-xl bg-gradient-to-br from-indigo-600 to-blue-600 text-white shadow-lg">
-              <div className="text-sm opacity-80">Overall Score</div>
-              <div className="mt-2 text-5xl font-extrabold">{percentage}%</div>
-              <div className="mt-2 text-sm opacity-90">{analysis.overall.correct} correct / {analysis.overall.total} total</div>
+          
+          {/* Overall Score and Repo IQ in header */}
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
+              <div className="px-4 py-2 rounded-lg bg-gradient-to-br from-indigo-600 to-blue-600 text-white">
+                <div className="text-xs opacity-80">Overall Score</div>
+                <div className="text-2xl font-bold">{percentage}%</div>
+                <div className="text-xs opacity-90">{analysis.overall.correct} / {analysis.overall.total}</div>
+              </div>
             </div>
-            <div className="mt-4 p-3 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-sm">
-              <div className="relative group flex items-center justify-center">
+            
+            <div className="flex items-center gap-3">
+              <div className="relative">
                 <div
-                  className="w-44 h-44 rounded-xl bg-center bg-cover select-none"
+                  className="w-16 h-16 rounded-lg bg-center bg-cover select-none"
                   style={{ backgroundImage: `url(${robotSrc})` }}
                   aria-label="Repo IQ Robot"
                 />
-                <div className="absolute bottom-3 right-3">
-                  <div className="group/box relative" aria-label={repoIQ.reasoning.join(' \u2022 ')}>
-                    <div className="w-24 h-24 rounded-lg bg-gradient-to-br from-rose-600 to-red-600 text-white shadow-lg flex flex-col items-center justify-center">
-                      <div className="text-[10px] opacity-80">Repo IQ</div>
-                      <div className="text-3xl font-extrabold mt-1">{repoIQ.score}</div>
-                    </div>
-                    <div className="hidden group-hover/box:block absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-10 w-56 p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 shadow-xl">
-                      <ul className="text-xs space-y-1">
-                        {repoIQ.reasoning.map((r, i) => (
-                          <li key={i}>{r}</li>
-                        ))}
-                      </ul>
-                    </div>
+                <div className="absolute -bottom-1 -right-1">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-600 to-red-600 text-white shadow-lg flex flex-col items-center justify-center">
+                    <div className="text-[8px] opacity-80">IQ</div>
+                    <div className="text-lg font-bold">{repoIQ.score}</div>
                   </div>
                 </div>
               </div>
             </div>
-            {/* Weakness chips */}
-            <div className="mt-4">
-              <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Focus Areas</div>
-              <div className="flex flex-wrap gap-2">
-                {analysis.weaknesses.languages.length === 0 && analysis.weaknesses.types.length === 0 ? (
-                  <span className="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">No major gaps — nice!</span>
-                ) : (
-                  <>
-                    {analysis.weaknesses.languages.map(lang => (
-                      <span key={lang} className="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">{lang}</span>
-                    ))}
-                    {analysis.weaknesses.types.map(t => (
-                      <span key={t} className="px-3 py-1 text-xs rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300">{t}</span>
-                    ))}
-                  </>
-                )}
-              </div>
-            </div>
           </div>
+        </div>
 
-          {/* Breakdown cards */}
-          <div className="col-span-1 md:col-span-2 grid gap-6">
+        {/* Body */}
+        <div className="p-4 grid gap-4">
+          <div className="grid gap-4">
             {/* Strengths & Weaknesses */}
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="p-5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+            <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+              <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
                 <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Strengths</div>
                 <ul className="space-y-2">
                   {sw.strengths.map((s, i) => (
@@ -287,7 +264,7 @@ export default function ReportCard({ results, onClose, onRetry, initialTickets }
                   ))}
                 </ul>
               </div>
-              <div className="p-5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+              <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
                 <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Weaknesses</div>
                 <ul className="space-y-2">
                   {sw.weaknesses.map((w, i) => (
@@ -299,8 +276,8 @@ export default function ReportCard({ results, onClose, onRetry, initialTickets }
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="p-5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+            <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+              <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                 <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">By Language</div>
                 <div className="space-y-3 max-h-40 overflow-y-auto pr-1">
                   {Object.entries(analysis.byLanguage).map(([lang, b]) => {
@@ -319,7 +296,7 @@ export default function ReportCard({ results, onClose, onRetry, initialTickets }
                   })}
                 </div>
               </div>
-              <div className="p-5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+              <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                 <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">By Question Type</div>
                 <div className="space-y-3 max-h-40 overflow-y-auto pr-1">
                   {Object.entries(analysis.byType).map(([t, b]) => {
@@ -340,31 +317,9 @@ export default function ReportCard({ results, onClose, onRetry, initialTickets }
               </div>
             </div>
 
-            {/* Recommendations */
-            }
-            <div className="p-5 rounded-xl border border-gray-200 dark:border-gray-700">
-              <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-4">Recommended Learning</div>
-              <div className="grid gap-3 md:grid-cols-2">
-                {recs.resources.map((r) => (
-                  <a key={r.title} href={r.url} target="_blank" rel="noreferrer" className="group p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-indigo-400 dark:hover:border-indigo-500 hover:shadow-sm transition-colors">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400">{r.title}</div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">{r.reason}</div>
-                      </div>
-                      <svg className="w-5 h-5 text-gray-400 group-hover:text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            {/* Targeted Exercises removed per user request */}
 
             {/* Tickets Panel */}
-            <div className="p-5 rounded-xl border border-gray-200 dark:border-gray-700">
+            <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between mb-4">
                 <div className="text-sm font-semibold text-gray-800 dark:text-gray-200">Tickets</div>
                 <div className="flex items-center gap-2">
@@ -515,75 +470,76 @@ export default function ReportCard({ results, onClose, onRetry, initialTickets }
                 </button>
               </div>
             </div>
-            {/* Results Modal */}
-            {openResultTicketId && gradeResultsById[openResultTicketId] && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                <div className="w-full max-w-2xl rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl">
-                  <div className="px-5 py-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-800">
-                    <div className="text-sm font-semibold text-gray-900 dark:text-white">Ticket Results</div>
-                    <button onClick={() => setOpenResultTicketId(null)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">✕</button>
-                  </div>
-                  <div className="p-5 space-y-5">
-                    {(() => {
-                      const r = gradeResultsById[openResultTicketId];
-                      const codeBars = [
-                        { label: 'Logic Correctness', value: r.codeBreakdown?.logicCorrectness ?? 0, max: 3, color: 'bg-emerald-600' },
-                        { label: 'Problem Solving', value: r.codeBreakdown?.problemSolving ?? 0, max: 3, color: 'bg-sky-600' },
-                        { label: 'Code Quality', value: r.codeBreakdown?.codeQuality ?? 0, max: 2, color: 'bg-indigo-600' },
-                      ];
-                      const writtenBars = [
-                        { label: 'Clarity', value: r.writtenBreakdown?.clarity ?? 0, max: 1, color: 'bg-amber-600' },
-                        { label: 'Accuracy', value: r.writtenBreakdown?.accuracy ?? 0, max: 0.5, color: 'bg-lime-600' },
-                        { label: 'Professionalism', value: r.writtenBreakdown?.professionalism ?? 0, max: 0.5, color: 'bg-purple-600' },
-                      ];
-                      return (
-                        <>
-                          <div>
-                            <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 mb-2">Overview</div>
-                            <div className="text-xs text-gray-700 dark:text-gray-300">Weighted: <strong>{r.weightedScore}/10</strong> • Code: <strong>{r.codeScore}/10</strong> • Written: <strong>{r.writtenScore}/10</strong> • {r.pass ? 'Pass ✅' : 'Fail ❌'}</div>
-                          </div>
-                          <div>
-                            <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 mb-2">Code Criteria</div>
-                            <div className="space-y-2">
-                              {codeBars.map((b, i) => (
-                                <div key={i}>
-                                  <div className="flex items-center justify-between text-[11px] text-gray-600 dark:text-gray-400"><span>{b.label}</span><span>{b.value}/{b.max}</span></div>
-                                  <div className="w-full h-2 rounded bg-gray-200 dark:bg-gray-800 overflow-hidden">
-                                    <div className={`h-2 ${b.color}`} style={{ width: `${Math.max(0, Math.min(100, (b.value/b.max)*100))}%` }} />
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                          <div>
-                            <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 mb-2">Written Criteria</div>
-                            <div className="space-y-2">
-                              {writtenBars.map((b, i) => (
-                                <div key={i}>
-                                  <div className="flex items-center justify-between text-[11px] text-gray-600 dark:text-gray-400"><span>{b.label}</span><span>{b.value}/{b.max}</span></div>
-                                  <div className="w-full h-2 rounded bg-gray-200 dark:bg-gray-800 overflow-hidden">
-                                    <div className={`h-2 ${b.color}`} style={{ width: `${Math.max(0, Math.min(100, (b.value/b.max)*100))}%` }} />
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                          <div>
-                            <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 mb-2">Feedback</div>
-                            <div className="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{r.feedback}</div>
-                          </div>
-                        </>
-                      );
-                    })()}
-                  </div>
-                  <div className="px-5 py-4 border-t border-gray-200 dark:border-gray-800 flex justify-end">
-                    <button onClick={() => setOpenResultTicketId(null)} className="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 text-sm">Close</button>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
+
+        {/* Results Modal */}
+        {openResultTicketId && gradeResultsById[openResultTicketId] && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="w-full max-w-2xl rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl">
+              <div className="px-5 py-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-800">
+                <div className="text-sm font-semibold text-gray-900 dark:text-white">Ticket Results</div>
+                <button onClick={() => setOpenResultTicketId(null)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">✕</button>
+              </div>
+              <div className="p-5 space-y-5">
+                {(() => {
+                  const r = gradeResultsById[openResultTicketId];
+                  const codeBars = [
+                    { label: 'Logic Correctness', value: r.codeBreakdown?.logicCorrectness ?? 0, max: 3, color: 'bg-emerald-600' },
+                    { label: 'Problem Solving', value: r.codeBreakdown?.problemSolving ?? 0, max: 3, color: 'bg-sky-600' },
+                    { label: 'Code Quality', value: r.codeBreakdown?.codeQuality ?? 0, max: 2, color: 'bg-indigo-600' },
+                  ];
+                  const writtenBars = [
+                    { label: 'Clarity', value: r.writtenBreakdown?.clarity ?? 0, max: 1, color: 'bg-amber-600' },
+                    { label: 'Accuracy', value: r.writtenBreakdown?.accuracy ?? 0, max: 0.5, color: 'bg-lime-600' },
+                    { label: 'Professionalism', value: r.writtenBreakdown?.professionalism ?? 0, max: 0.5, color: 'bg-purple-600' },
+                  ];
+                  return (
+                    <>
+                      <div>
+                        <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 mb-2">Overview</div>
+                        <div className="text-xs text-gray-700 dark:text-gray-300">Weighted: <strong>{r.weightedScore}/10</strong> • Code: <strong>{r.codeScore}/10</strong> • Written: <strong>{r.writtenScore}/10</strong> • {r.pass ? 'Pass ✅' : 'Fail ❌'}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 mb-2">Code Criteria</div>
+                        <div className="space-y-2">
+                          {codeBars.map((b, i) => (
+                            <div key={i}>
+                              <div className="flex items-center justify-between text-[11px] text-gray-600 dark:text-gray-400"><span>{b.label}</span><span>{b.value}/{b.max}</span></div>
+                              <div className="w-full h-2 rounded bg-gray-200 dark:bg-gray-800 overflow-hidden">
+                                <div className={`h-2 ${b.color}`} style={{ width: `${Math.max(0, Math.min(100, (b.value/b.max)*100))}%` }} />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 mb-2">Written Criteria</div>
+                        <div className="space-y-2">
+                          {writtenBars.map((b, i) => (
+                            <div key={i}>
+                              <div className="flex items-center justify-between text-[11px] text-gray-600 dark:text-gray-400"><span>{b.label}</span><span>{b.value}/{b.max}</span></div>
+                              <div className="w-full h-2 rounded bg-gray-200 dark:bg-gray-800 overflow-hidden">
+                                <div className={`h-2 ${b.color}`} style={{ width: `${Math.max(0, Math.min(100, (b.value/b.max)*100))}%` }} />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 mb-2">Feedback</div>
+                        <div className="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{r.feedback}</div>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+              <div className="px-5 py-4 border-t border-gray-200 dark:border-gray-800 flex justify-end">
+                <button onClick={() => setOpenResultTicketId(null)} className="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 text-sm">Close</button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Footer */}
         <div className="px-6 py-5 border-t border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row gap-3 sm:justify-between">
@@ -599,5 +555,3 @@ export default function ReportCard({ results, onClose, onRetry, initialTickets }
     </div>
   );
 }
-
-

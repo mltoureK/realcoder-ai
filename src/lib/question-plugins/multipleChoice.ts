@@ -64,8 +64,8 @@ Format:
       "options": [
         "Subtle but incorrect description that sounds plausible",
         "Correct description of what the function actually does", 
-        "Another subtle but incorrect description",
-        "Third subtle but incorrect description"
+        "Subtle but incorrect description that sounds plausible",
+        "Subtle but incorrect description that sounds plausible"
       ],
       "answer": "2",
       "explanation": "why this is correct (at least 5 sentences) based on the actual function code"
