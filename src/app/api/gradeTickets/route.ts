@@ -47,21 +47,27 @@ export async function POST(req: Request) {
 
 async function gradeOne(s: TicketSubmission): Promise<TicketGrade> {
   // Build a strict rubric prompt for AI grading; require JSON only
-  const sys = 'You are a strict code reviewer. Grade with the provided rubric only. Return ONLY valid JSON.';
+  const sys = 'You are a STRICT code reviewer. Be conservative with scores. A basic solution that just works should get 6-7/10, not 10/10. Reserve 9-10/10 for truly exceptional solutions. Grade with the provided rubric only. Return ONLY valid JSON.';
   const rubric = `Rubric:
 Code (10 points total, but cap between 1 and 10):
-- logicCorrectness (0-3): does the user code fix the bug and handle main cases?
-- problemSolving (0-3): does the approach reasonably address the problem; appropriate APIs/structures?
-- codeQuality (0-2): readability, naming, clarity, small edge-case care. Avoid style nitpicks.
+- logicCorrectness (0-3): does the user code fix the bug AND handle edge cases properly? Consider if it's just a basic fix vs robust solution.
+- problemSolving (0-3): does the approach show deeper understanding? Is it the most efficient/elegant solution? Basic solutions get partial credit.
+- codeQuality (0-2): readability, naming, clarity, proper error handling, comments where helpful.
 Map these 0-8 raw points to codeScore in 1-10 by: codeScore = Math.max(1, Math.round((raw/8)*10)).
 
 Written Explanation (10 points scale derived from 0-2 raw):
-- clarity (0-1): straightforward, easy to follow.
-- accuracy (0-0.5): technically correct.
-- professionalism (0-0.5): concise, respectful tone.
+- clarity (0-1): straightforward, easy to follow, well-structured explanation.
+- accuracy (0-0.5): technically correct AND demonstrates understanding of why the fix works.
+- professionalism (0-0.5): concise, respectful tone, proper technical terminology.
 Map 0-2 raw to writtenScore 1-10 by: writtenScore = Math.max(1, Math.round((raw/2)*10)).
 
-Weighted score: weightedScore = 0.8*codeScore + 0.2*writtenScore (cap to one decimal). Pass if weightedScore >= 6.5.`;
+Weighted score: weightedScore = 0.8*codeScore + 0.2*writtenScore (cap to one decimal). Pass if weightedScore >= 6.5.
+
+GRADING STANDARDS:
+- Basic working solution that just fixes the bug: 6-7/10 total
+- Good solution with some edge case handling: 7-8/10 total  
+- Excellent solution with robust error handling and elegant approach: 8-10/10 total
+- Only award 9-10/10 for exceptional solutions that go beyond requirements`;
 
   const user = `Ticket Title: ${s.title || 'N/A'}
 Language: ${s.language}
@@ -78,8 +84,9 @@ User Written Explanation:\n${s.userExplanation}
 
 Instructions:
 1) Compare user code to the authoritative solution. Different approaches may be acceptable if they truly fix the original bug.
-2) Apply the rubric numerically.
-3) Return ONLY JSON with this shape:
+2) Apply the rubric numerically with CONSERVATIVE scoring. A basic temp variable swap should get ~6-7/10, not 10/10.
+3) Consider: Does the solution show understanding beyond just "make it work"? Does it handle edge cases? Is it elegant?
+4) Return ONLY JSON with this shape:
 {
   "codeBreakdown": { "logicCorrectness": number, "problemSolving": number, "codeQuality": number },
   "codeScore": number,
