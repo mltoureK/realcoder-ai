@@ -194,8 +194,8 @@ Return JSON format:
 }`
           }
         ],
-        temperature: 0.7,
-        max_tokens: 1200
+        temperature: 0.5,
+        max_tokens: 3000
       })
     });
 

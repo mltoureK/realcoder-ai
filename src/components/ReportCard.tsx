@@ -39,6 +39,11 @@ export default function ReportCard({ results, onClose, onRetry, initialTickets }
   const sw = generateStrengthsWeaknesses(analysis);
 
   const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [userCodeById, setUserCodeById] = useState<Record<string, string>>({});
+  const [userExplanationById, setUserExplanationById] = useState<Record<string, string>>({});
+  const [gradeResultsById, setGradeResultsById] = useState<Record<string, any>>({});
+  const [isReviewing, setIsReviewing] = useState(false);
+  const [openResultTicketId, setOpenResultTicketId] = useState<string | null>(null);
   const robotSrc = '/report-bot.png';
 
   useEffect(() => {
@@ -143,6 +148,9 @@ export default function ReportCard({ results, onClose, onRetry, initialTickets }
 
   function removeTicket(id: string) {
     setTickets(prev => prev.filter(t => t.id !== id));
+    setUserCodeById(prev => { const n = { ...prev }; delete n[id]; return n; });
+    setUserExplanationById(prev => { const n = { ...prev }; delete n[id]; return n; });
+    setGradeResultsById(prev => { const n = { ...prev }; delete n[id]; return n; });
   }
 
   async function copyTicket(id: string) {
@@ -157,6 +165,39 @@ export default function ReportCard({ results, onClose, onRetry, initialTickets }
 
   const percentage = Math.round(analysis.overall.accuracy * 100);
   const passed = percentage >= 70;
+  const numDone = tickets.filter(t => t.done).length;
+  const allHandled = tickets.length === 0 || tickets.every(t => t.done);
+
+  async function reviewTickets() {
+    if (!allHandled) return;
+    setIsReviewing(true);
+    try {
+      const submissions = tickets.map(t => ({
+        id: t.id,
+        language: (t.language || 'javascript') as any,
+        buggyCode: t.bugSnippet || '',
+        authoritativeSolutionCode: t.fixedSnippet || '',
+        authoritativeSolutionText: t.solutionText || '',
+        userCode: userCodeById[t.id] || '',
+        userExplanation: userExplanationById[t.id] || '',
+        title: t.title,
+        description: t.description,
+      }));
+      const resp = await fetch('/api/gradeTickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ submissions })
+      });
+      const data = await resp.json();
+      const map: Record<string, any> = {};
+      for (const r of data.results || []) map[r.id] = r;
+      setGradeResultsById(map);
+    } catch (_) {
+      // silent for now
+    } finally {
+      setIsReviewing(false);
+    }
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gradient-to-br from-slate-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 overflow-y-auto">
@@ -328,13 +369,13 @@ export default function ReportCard({ results, onClose, onRetry, initialTickets }
                 <div className="text-sm font-semibold text-gray-800 dark:text-gray-200">Tickets</div>
                 <div className="flex items-center gap-2">
                   <button onClick={addBugTicketRandom} className="text-xs px-2 py-1 rounded-md bg-indigo-600 text-white hover:bg-indigo-700">Add Code Bug Ticket</button>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">{tickets.length} total</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">{numDone}/{tickets.length} completed</div>
                 </div>
               </div>
               {tickets.length === 0 ? (
                 <div className="text-sm text-gray-600 dark:text-gray-400">No tickets yet — add from Targeted Exercises.</div>
               ) : (
-                <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+                <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
                   <AnimatePresence initial={false}>
                     {tickets.map(t => (
                       <motion.div
@@ -366,6 +407,29 @@ export default function ReportCard({ results, onClose, onRetry, initialTickets }
                                 </SyntaxHighlighter>
                               </div>
                             )}
+
+                            {/* User Code Editor */}
+                            <div className="mt-2">
+                              <div className="px-2 py-1 text-[10px] text-gray-500 dark:text-gray-400">Your Fix</div>
+                              <textarea
+                                className="w-full text-xs rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-2 font-mono"
+                                rows={8}
+                                value={userCodeById[t.id] ?? (`// Fix this code and/or add applicable comments. You will be graded on: logic correctness, problem solving approach, code quality.\n${t.bugSnippet || ''}`)}
+                                onChange={(e) => setUserCodeById(prev => ({ ...prev, [t.id]: e.target.value }))}
+                              />
+                            </div>
+
+                            {/* User Written Explanation */}
+                            <div className="mt-2">
+                              <div className="px-2 py-1 text-[10px] text-gray-500 dark:text-gray-400">Written Explanation</div>
+                              <textarea
+                                className="w-full text-xs rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-2"
+                                rows={4}
+                                placeholder="Explain what was wrong and why your change fixes it."
+                                value={userExplanationById[t.id] ?? ''}
+                                onChange={(e) => setUserExplanationById(prev => ({ ...prev, [t.id]: e.target.value }))}
+                              />
+                            </div>
                             {t.done && t.fixedSnippet && (
                               <div className="mt-2 rounded-md border border-green-200 dark:border-green-800 overflow-hidden">
                                 <div className="px-2 py-1 text-[10px] text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-900/20 border-b border-green-200 dark:border-green-800">Fixed Code</div>
@@ -408,19 +472,116 @@ export default function ReportCard({ results, onClose, onRetry, initialTickets }
                             )}
                           </div>
                           <div className="flex items-center gap-2">
-                            <motion.button whileTap={{ scale: 0.96 }} onClick={() => toggleDone(t.id)} className={`text-xs px-2 py-1 rounded-md ${t.done ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'}`}>
-                              {t.done ? 'Mark Open' : (t.bugSnippet ? 'Solve Ticket' : 'Mark Done')}
+                            <motion.button
+                              whileTap={{ scale: 0.96 }}
+                              onClick={() => {
+                                const hasCode = (userCodeById[t.id] ?? '').trim().length > 0;
+                                const hasText = (userExplanationById[t.id] ?? '').trim().length > 0;
+                                if (!t.done && (!hasCode || !hasText)) return; // require both before completing
+                                toggleDone(t.id);
+                              }}
+                              className={`text-xs px-2 py-1 rounded-md ${t.done ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'}`}
+                            >
+                              {t.done ? 'Mark Open' : 'Complete Ticket'}
                             </motion.button>
                             <motion.button whileTap={{ scale: 0.96 }} onClick={() => copyTicket(t.id)} className="text-xs px-2 py-1 rounded-md bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200">Copy</motion.button>
                             <motion.button whileTap={{ scale: 0.96 }} onClick={() => removeTicket(t.id)} className="text-xs px-2 py-1 rounded-md bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300">Delete</motion.button>
                           </div>
+                          {/* Grading Result */}
+                          {gradeResultsById[t.id] && (
+                            <div className="mt-3 text-xs">
+                              <div className="font-semibold">Grading Result {gradeResultsById[t.id].pass ? '✅' : '❌'}</div>
+                              <div className="mt-1">Weighted Score: {gradeResultsById[t.id].weightedScore}/10 (Code {gradeResultsById[t.id].codeScore}/10, Written {gradeResultsById[t.id].writtenScore}/10)</div>
+                              <div className="mt-1">Feedback: {gradeResultsById[t.id].feedback}</div>
+                              <button onClick={() => setOpenResultTicketId(t.id)} className="mt-2 px-2 py-1 rounded-md bg-blue-600 text-white hover:bg-blue-700">View Details</button>
+                            </div>
+                          )}
                         </div>
                       </motion.div>
                     ))}
                   </AnimatePresence>
                 </div>
               )}
+
+              {/* Review Tickets CTA */}
+              <div className="mt-4 flex items-center justify-between">
+                <div className="text-xs text-gray-500 dark:text-gray-400">Complete all tickets or delete them to enable review.</div>
+                <button
+                  onClick={reviewTickets}
+                  disabled={!allHandled || isReviewing || tickets.length === 0}
+                  className={`px-3 py-2 rounded-md text-sm ${(!allHandled || tickets.length===0) ? 'bg-gray-200 text-gray-500 dark:bg-gray-800 dark:text-gray-500' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
+                >
+                  {isReviewing ? 'Reviewing…' : 'Review Tickets'}
+                </button>
+              </div>
             </div>
+            {/* Results Modal */}
+            {openResultTicketId && gradeResultsById[openResultTicketId] && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                <div className="w-full max-w-2xl rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl">
+                  <div className="px-5 py-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-800">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">Ticket Results</div>
+                    <button onClick={() => setOpenResultTicketId(null)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">✕</button>
+                  </div>
+                  <div className="p-5 space-y-5">
+                    {(() => {
+                      const r = gradeResultsById[openResultTicketId];
+                      const codeBars = [
+                        { label: 'Logic Correctness', value: r.codeBreakdown?.logicCorrectness ?? 0, max: 3, color: 'bg-emerald-600' },
+                        { label: 'Problem Solving', value: r.codeBreakdown?.problemSolving ?? 0, max: 3, color: 'bg-sky-600' },
+                        { label: 'Code Quality', value: r.codeBreakdown?.codeQuality ?? 0, max: 2, color: 'bg-indigo-600' },
+                      ];
+                      const writtenBars = [
+                        { label: 'Clarity', value: r.writtenBreakdown?.clarity ?? 0, max: 1, color: 'bg-amber-600' },
+                        { label: 'Accuracy', value: r.writtenBreakdown?.accuracy ?? 0, max: 0.5, color: 'bg-lime-600' },
+                        { label: 'Professionalism', value: r.writtenBreakdown?.professionalism ?? 0, max: 0.5, color: 'bg-purple-600' },
+                      ];
+                      return (
+                        <>
+                          <div>
+                            <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 mb-2">Overview</div>
+                            <div className="text-xs text-gray-700 dark:text-gray-300">Weighted: <strong>{r.weightedScore}/10</strong> • Code: <strong>{r.codeScore}/10</strong> • Written: <strong>{r.writtenScore}/10</strong> • {r.pass ? 'Pass ✅' : 'Fail ❌'}</div>
+                          </div>
+                          <div>
+                            <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 mb-2">Code Criteria</div>
+                            <div className="space-y-2">
+                              {codeBars.map((b, i) => (
+                                <div key={i}>
+                                  <div className="flex items-center justify-between text-[11px] text-gray-600 dark:text-gray-400"><span>{b.label}</span><span>{b.value}/{b.max}</span></div>
+                                  <div className="w-full h-2 rounded bg-gray-200 dark:bg-gray-800 overflow-hidden">
+                                    <div className={`h-2 ${b.color}`} style={{ width: `${Math.max(0, Math.min(100, (b.value/b.max)*100))}%` }} />
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 mb-2">Written Criteria</div>
+                            <div className="space-y-2">
+                              {writtenBars.map((b, i) => (
+                                <div key={i}>
+                                  <div className="flex items-center justify-between text-[11px] text-gray-600 dark:text-gray-400"><span>{b.label}</span><span>{b.value}/{b.max}</span></div>
+                                  <div className="w-full h-2 rounded bg-gray-200 dark:bg-gray-800 overflow-hidden">
+                                    <div className={`h-2 ${b.color}`} style={{ width: `${Math.max(0, Math.min(100, (b.value/b.max)*100))}%` }} />
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 mb-2">Feedback</div>
+                            <div className="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{r.feedback}</div>
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
+                  <div className="px-5 py-4 border-t border-gray-200 dark:border-gray-800 flex justify-end">
+                    <button onClick={() => setOpenResultTicketId(null)} className="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 text-sm">Close</button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
