@@ -151,59 +151,113 @@ export function computeRepoIQ(analysis: Analysis): RepoIQ {
   return { score, reasoning };
 }
 
-export function generateStrengthsWeaknesses(analysis: Analysis): StrengthsWeaknesses {
+export async function generateStrengthsWeaknesses(analysis: Analysis, results: QuestionResult[], failedQuestions: FailedQuestion[]): Promise<StrengthsWeaknesses> {
   const strengths: string[] = [];
   const weaknesses: string[] = [];
 
-  // Top languages by accuracy (min 2 questions)
-  const langEntries = Object.entries(analysis.byLanguage)
-    .filter(([, b]) => b.total >= 2)
-    .sort((a, b) => b[1].accuracy - a[1].accuracy)
-    .slice(0, 3);
-  for (const [lang, b] of langEntries) {
-    if (b.accuracy >= 0.85) {
-      strengths.push(`Commanding presence in ${lang}: ${Math.round(b.accuracy * 100)}% accuracy across ${b.total} questions—precise, composed, effective.`);
-    } else if (b.accuracy >= 0.75) {
-      strengths.push(`Solid footing in ${lang}: dependable at ${Math.round(b.accuracy * 100)}%—momentum worth celebrating.`);
-    }
+  // Extract concepts from passed questions (strengths)
+  const passedQuestions = results.filter(r => r.isCorrect);
+  if (passedQuestions.length > 0) {
+    const strengthConcepts = await extractConceptsFromQuestions(passedQuestions, failedQuestions, 'strengths');
+    strengths.push(...strengthConcepts);
   }
 
-  // Top types by accuracy (min 2 questions)
-  const typeEntries = (Object.entries(analysis.byType) as [QuestionType, Breakdown][])
-    .filter(([, b]) => b.total >= 2)
-    .sort((a, b) => b[1].accuracy - a[1].accuracy)
-    .slice(0, 3);
-  for (const [t, b] of typeEntries) {
-    if (b.accuracy >= 0.85) {
-      strengths.push(`Poised under pressure: ${t} mastery at ${Math.round(b.accuracy * 100)}%—keen pattern recognition.`);
-    } else if (b.accuracy >= 0.75) {
-      strengths.push(`Reliable with ${t}: consistent execution at ${Math.round(b.accuracy * 100)}%.`);
-    }
+  // Extract concepts from failed questions (weaknesses)
+  if (failedQuestions.length > 0) {
+    const weaknessConcepts = await extractConceptsFromQuestions([], failedQuestions, 'weaknesses');
+    weaknesses.push(...weaknessConcepts);
   }
 
-  // Weak languages (min 2 questions, < 75%)
-  const weakLangs = Object.entries(analysis.byLanguage)
-    .filter(([, b]) => b.total >= 2 && b.accuracy < 0.75)
-    .sort((a, b) => a[1].accuracy - b[1].accuracy)
-    .slice(0, 3);
-  for (const [lang, b] of weakLangs) {
-    weaknesses.push(`Level‑up opportunity in ${lang}: ${Math.round(b.accuracy * 100)}%. Dial in idioms and edge cases to sharpen instinct.`);
-  }
-
-  // Weak types (min 2 questions, < 75%)
-  const weakTypes = (Object.entries(analysis.byType) as [QuestionType, Breakdown][])
-    .filter(([, b]) => b.total >= 2 && b.accuracy < 0.75)
-    .sort((a, b) => a[1].accuracy - b[1].accuracy)
-    .slice(0, 3);
-  for (const [t, b] of weakTypes) {
-    const n = Math.max(3, Math.min(8, b.total));
-    weaknesses.push(`Tighten skills on ${t}: ${Math.round(b.accuracy * 100)}%. ${n} focused reps will convert this into a strength.`);
-  }
-
+  // Fallbacks if no concepts extracted
   if (strengths.length === 0) strengths.push('Steady fundamentals across categories—keep building breadth and cadence.');
   if (weaknesses.length === 0) weaknesses.push('No glaring gaps—raise the ceiling with harder variants and time‑boxed runs.');
 
   return { strengths, weaknesses };
+}
+
+async function extractConceptsFromQuestions(passedQuestions: QuestionResult[], failedQuestions: FailedQuestion[], type: 'strengths' | 'weaknesses'): Promise<string[]> {
+  try {
+    const questionsToAnalyze = type === 'strengths' ? passedQuestions : failedQuestions;
+    
+    if (questionsToAnalyze.length === 0) return [];
+
+    // Prepare question data for AI analysis
+    const questionData = questionsToAnalyze.slice(0, 10).map((q, index) => {
+      if (type === 'strengths') {
+        const result = q as QuestionResult;
+        return {
+          question: `Question ${index + 1}`,
+          content: `Type: ${result.type}, Language: ${result.language || 'Unknown'}, Correct: ${result.isCorrect}`
+        };
+      } else {
+        const failed = q as FailedQuestion;
+        return {
+          question: `Question ${index + 1}`,
+          content: `Question: ${failed.question}, Type: ${failed.type}, Language: ${failed.language || 'Unknown'}, Code Context: ${failed.codeContext || 'None'}`
+        };
+      }
+    });
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a programming concept analyzer. Extract the core programming concepts being tested in quiz questions. Return ONLY a JSON array of concept names, no explanations or additional text.'
+          },
+          {
+            role: 'user',
+            content: `Analyze these ${type === 'strengths' ? 'passed' : 'failed'} programming quiz questions and extract the top 5 core programming concepts being tested. Focus on fundamental programming skills, patterns, and concepts rather than specific syntax details.
+
+Questions to analyze:
+${questionData.map(q => `${q.question}: ${q.content}`).join('\n')}
+
+Return format: ["concept1", "concept2", "concept3", "concept4", "concept5"]
+
+Examples of good concepts: "async/await", "array methods", "error handling", "scope", "closures", "recursion", "data structures", "algorithms", "design patterns", "memory management", "concurrency", "testing", "debugging", "optimization"`
+          }
+        ],
+        temperature: 0.3,
+        max_tokens: 200
+      })
+    });
+
+    if (!response.ok) {
+      console.error('OpenAI API error:', response.status);
+      return getFallbackConcepts(type);
+    }
+
+    const data = await response.json();
+    const content = data.choices[0]?.message?.content;
+    
+    if (!content) {
+      return getFallbackConcepts(type);
+    }
+
+    const concepts = JSON.parse(content);
+    if (Array.isArray(concepts) && concepts.length > 0) {
+      return concepts.slice(0, 5);
+    }
+
+    return getFallbackConcepts(type);
+  } catch (error) {
+    console.error('Error extracting concepts:', error);
+    return getFallbackConcepts(type);
+  }
+}
+
+function getFallbackConcepts(type: 'strengths' | 'weaknesses'): string[] {
+  if (type === 'strengths') {
+    return ['fundamentals', 'problem solving', 'code comprehension', 'logic reasoning', 'syntax mastery'];
+  } else {
+    return ['error handling', 'advanced patterns', 'edge cases', 'performance', 'debugging'];
+  }
 }
 
 function initBreakdown(): Breakdown {

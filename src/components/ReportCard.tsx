@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { analyzeResults, generateRecommendations, QuestionResult, computeRepoIQ, generateStrengthsWeaknesses } from '@/lib/report-card';
+import { analyzeResults, generateRecommendations, QuestionResult, computeRepoIQ, generateStrengthsWeaknesses, FailedQuestion, StrengthsWeaknesses } from '@/lib/report-card';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -27,16 +27,17 @@ type Ticket = {
 
 type Props = {
   results: QuestionResult[];
+  failedQuestions?: FailedQuestion[];
   onClose: () => void;
   onRetry: () => void;
   initialTickets?: Ticket[];
 };
 
-export default function ReportCard({ results, onClose, onRetry, initialTickets }: Props) {
+export default function ReportCard({ results, failedQuestions = [], onClose, onRetry, initialTickets }: Props) {
   const analysis = analyzeResults(results);
   const recs = generateRecommendations(analysis);
   const repoIQ = computeRepoIQ(analysis);
-  const sw = generateStrengthsWeaknesses(analysis);
+  const [sw, setSw] = useState<StrengthsWeaknesses>({ strengths: [], weaknesses: [] });
 
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [userCodeById, setUserCodeById] = useState<Record<string, string>>({});
@@ -45,6 +46,21 @@ export default function ReportCard({ results, onClose, onRetry, initialTickets }
   const [isReviewing, setIsReviewing] = useState(false);
   const [openResultTicketId, setOpenResultTicketId] = useState<string | null>(null);
   const robotSrc = '/report-bot.png';
+
+  // Generate strengths and weaknesses using AI analysis
+  useEffect(() => {
+    const generateSW = async () => {
+      try {
+        const strengthsWeaknesses = await generateStrengthsWeaknesses(analysis, results, failedQuestions);
+        setSw(strengthsWeaknesses);
+      } catch (error) {
+        console.error('Error generating strengths and weaknesses:', error);
+        // Fallback to empty arrays
+        setSw({ strengths: [], weaknesses: [] });
+      }
+    };
+    generateSW();
+  }, [analysis, results, failedQuestions]);
 
   useEffect(() => {
     try {

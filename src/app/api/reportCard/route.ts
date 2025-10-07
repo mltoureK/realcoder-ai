@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { analyzeResults, computeRepoIQ, type QuestionResult, type FailedQuestion, type Analysis, type RepoIQ } from '@/lib/report-card';
+import { analyzeResults, computeRepoIQ, generateStrengthsWeaknesses, type QuestionResult, type FailedQuestion, type Analysis, type RepoIQ, type StrengthsWeaknesses } from '@/lib/report-card';
 
 type Ticket = {
   id: string;
@@ -25,8 +25,9 @@ export async function POST(req: Request) {
   const { results, failedQuestions } = (await req.json()) as { results: QuestionResult[]; failedQuestions: FailedQuestion[] };
   const analysis: Analysis = analyzeResults(results || []);
   const repoIQ: RepoIQ = computeRepoIQ(analysis);
+  const strengthsWeaknesses: StrengthsWeaknesses = await generateStrengthsWeaknesses(analysis, results || [], failedQuestions || []);
   const tickets = await generateTicketsFromFailedQuestions(failedQuestions || []);
-  return NextResponse.json({ analysis, repoIQ, tickets });
+  return NextResponse.json({ analysis, repoIQ, strengthsWeaknesses, tickets });
 }
 
 async function generateTicketsFromFailedQuestions(failedQuestions: FailedQuestion[]): Promise<Ticket[]> {
@@ -49,11 +50,11 @@ async function generateTicketsFromFailedQuestions(failedQuestions: FailedQuestio
     // Determine language from the failed question
     const language = detectLanguageFromFailedQuestion(failedQuestion);
 
-    // Generate actual buggy code based on the failed question using one-shot AI prompt
-    const { buggyCode, solutionCode, explanation } = await generateBugFromFailedQuestion(failedQuestion, language);
-
-    // Generate engaging ticket title and description using AI
+    // Generate engaging ticket title and description using AI FIRST
     const { title, description } = await generateEngagingTicketTitleAndDescription(failedQuestion, language);
+
+    // Generate buggy code that matches the description
+    const { buggyCode, solutionCode, explanation } = await generateBugFromFailedQuestion(failedQuestion, language, description);
 
     // Create ticket based on the specific failed question
     const ticket: Ticket = {
@@ -151,7 +152,7 @@ Return JSON format:
   }
 }
 
-async function generateBugFromFailedQuestion(failedQuestion: FailedQuestion, language: 'javascript'|'typescript'|'python'|'java'): Promise<{ buggyCode: string; solutionCode: string; explanation: string }> {
+async function generateBugFromFailedQuestion(failedQuestion: FailedQuestion, language: 'javascript'|'typescript'|'python'|'java', description?: string): Promise<{ buggyCode: string; solutionCode: string; explanation: string }> {
   // Use OpenAI to generate a bug based on the failed question
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -169,7 +170,7 @@ async function generateBugFromFailedQuestion(failedQuestion: FailedQuestion, lan
           },
           {
             role: 'user', // find out why its saying failedquestion.type and what that represents
-            content: `Analyze this failed question and create a new code bug that tests the same concept:
+            content: `Analyze this failed question and create buggy code that matches the provided description:
 
 Question Type: ${failedQuestion.type}
 Question: ${failedQuestion.question}
@@ -178,13 +179,14 @@ User's Answer: ${failedQuestion.selectedAnswers.join(', ')}
 Correct Answer: ${failedQuestion.correctAnswers.join(', ')}
 Explanation: ${failedQuestion.explanation || 'No explanation provided'}
 Language: ${language}
+${description ? `Bug Description: ${description}` : ''}
 
-Create a NEW code scenario (not the same code) with a bug that tests the same programming concept the user missed. The bug should:
-1. Be a realistic, common programming mistake
-2. Test the same concept/skill as the failed question
-3. Be written in ${language}
-4. Have a clear fix and explanation
-5. Be conceptually related but use different code
+Create buggy code that:
+1. Matches the bug description exactly (if provided)
+2. Tests the same programming concept the user missed
+3. Is written in ${language}
+4. Has a clear fix and explanation
+5. ${description ? 'Demonstrates the specific issue described in the bug description' : 'Is a realistic, common programming mistake'}
 
 Return JSON format:
 {

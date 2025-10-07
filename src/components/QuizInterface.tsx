@@ -1046,7 +1046,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
   if (showResults) {
     return (
-      <ReportCard results={results} onRetry={handleRetry} onClose={onClose} initialTickets={generatedTickets} />
+      <ReportCard results={results} failedQuestions={failedQuestions} onRetry={handleRetry} onClose={onClose} initialTickets={generatedTickets} />
     );
   }
 
