@@ -357,7 +357,21 @@ export const updateQuestionPoll = async (
       await updateDoc(questionRef, updates);
     } else {
       // Create new question document with poll data
+      // Note: This creates a minimal document - full question data should come from addQuestionToBank
       const initialData = {
+        questionId: questionId,
+        repoUrl: '', // Will be updated when question is properly saved
+        repoKey: '', // Will be updated when question is properly saved
+        type: '', // Will be updated when question is properly saved
+        question: '', // Will be updated when question is properly saved
+        language: 'JavaScript', // Default
+        difficulty: 'medium', // Default
+        data: {}, // Will be updated when question is properly saved
+        upvotes: 0,
+        downvotes: 0,
+        totalVotes: 0,
+        approvalRate: 0,
+        status: 'active',
         passedCount: isCorrect ? 1 : 0,
         failedCount: isCorrect ? 0 : 1,
         totalAttempts: 1,
@@ -366,7 +380,8 @@ export const updateQuestionPoll = async (
         lastUpdated: serverTimestamp()
       };
       
-      await setDoc(questionRef, initialData);
+      await setDoc(questionRef, initialData, { merge: true });
+      console.log(`📊 Created minimal question document for ${questionId} - will be updated with full data when upvoted`);
     }
   } catch (error) {
     console.error('Error updating question poll:', error);
@@ -408,16 +423,24 @@ export const addQuestionToBank = async (
   initialQualityScore: number = 85
 ): Promise<void> => {
   try {
+    console.log(`🔍 [addQuestionToBank] Starting with question:`, question);
+    console.log(`🔍 [addQuestionToBank] Repository URL:`, repoUrl);
+    
     if (!validateQuestionData(question)) {
+      console.error(`❌ [addQuestionToBank] Validation failed for question:`, question);
       throw new Error('Invalid question data');
     }
 
     const { repoKey } = extractRepoInfo(repoUrl);
+    console.log(`🔍 [addQuestionToBank] Extracted repo key:`, repoKey);
+    
     const bankRef = doc(db, COLLECTIONS.QUESTION_BANKS, repoKey);
     const bankSnap = await getDoc(bankRef);
     
     // Normalize question for storage
     const normalizedQuestion = normalizeQuestionForStorage(question);
+    console.log(`🔍 [addQuestionToBank] Normalized question:`, normalizedQuestion);
+    
     const storedQuestion: StoredQuestion = {
       ...normalizedQuestion,
       upvotes: 1, // Initial upvote that triggered addition
@@ -431,6 +454,14 @@ export const addQuestionToBank = async (
       createdAt: serverTimestamp(),
       lastUpdated: serverTimestamp()
     } as StoredQuestion;
+
+    console.log(`🔍 [addQuestionToBank] Final stored question:`, storedQuestion);
+
+    // ALSO save to the main questions collection with complete data
+    const questionRef = doc(db, COLLECTIONS.QUESTIONS, question.id);
+    console.log(`🔍 [addQuestionToBank] Saving to questions collection with ID:`, question.id);
+    await setDoc(questionRef, storedQuestion, { merge: true });
+    console.log(`✅ Question ${question.id} saved to questions collection with complete data`);
     
     if (bankSnap.exists()) {
       const currentData = bankSnap.data();

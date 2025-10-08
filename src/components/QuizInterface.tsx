@@ -414,6 +414,8 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   };
 
   const handleQuestionRating = async (questionId: string, rating: 'up' | 'down') => {
+    console.log(`🚨 [QuizInterface] handleQuestionRating called with:`, { questionId, rating });
+    
     setQuestionRatings(prev => ({
       ...prev,
       [questionId]: rating
@@ -422,18 +424,34 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     console.log(`📊 Question ${questionId} rated as: ${rating}`);
     
     // Auto-save to question bank on upvote
+    console.log(`🚨 [QuizInterface] Checking conditions:`, { 
+      isUpvote: rating === 'up', 
+      hasRepositoryInfo: !!quizSession.repositoryInfo,
+      repositoryInfo: quizSession.repositoryInfo 
+    });
+    
     if (rating === 'up' && quizSession.repositoryInfo) {
       try {
         const repoUrl = `https://github.com/${quizSession.repositoryInfo.owner}/${quizSession.repositoryInfo.repo}`;
         const currentQuestion = quizSession.questions.find(q => q.id === questionId);
         
+        console.log(`🔍 [QuizInterface] Upvoting question:`, currentQuestion);
+        console.log(`🔍 [QuizInterface] Repository URL:`, repoUrl);
+        
         if (currentQuestion) {
+          console.log(`🚨 [QuizInterface] About to call addQuestionToBank...`);
           await addQuestionToBank(repoUrl, currentQuestion as any, 85); // Start with high quality score
           console.log(`✅ Question added to ${repoUrl} question bank!`);
+        } else {
+          console.warn(`❌ [QuizInterface] Could not find question with ID: ${questionId}`);
         }
       } catch (error) {
         console.error('❌ Error adding question to bank:', error);
       }
+    } else {
+      console.log(`❌ [QuizInterface] Not saving to question bank:`, { 
+        reason: rating !== 'up' ? 'not upvote' : 'no repository info' 
+      });
     }
     
     // TODO: Save rating to Firebase when ready
@@ -1672,9 +1690,18 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             questionId={currentQuestion.id}
             questionIndex={currentQuestionIndex}
             showExplanations={showExplanations}
-            currentRating={questionRatings[currentQuestion.id || `q-${currentQuestionIndex}`]}
+            currentRating={questionRatings[currentQuestion.id]}
             onRating={handleQuestionRating}
           />
+          
+          {/* Debug: Log current question data */}
+          {showExplanations && console.log(`🔍 [QuizInterface] Current question data:`, {
+            id: currentQuestion.id,
+            type: currentQuestion.type,
+            question: currentQuestion.question?.substring(0, 100) + '...',
+            hasCodeContext: !!currentQuestion.codeContext,
+            repositoryInfo: quizSession.repositoryInfo
+          })}
 
           {/* Question Poll Stats */}
           <QuestionPoll

@@ -16,11 +16,18 @@ export default function QuestionVotingButtons({
   onRating 
 }: QuestionVotingButtonsProps) {
   const handleRating = (rating: 'up' | 'down') => {
-    const finalQuestionId = questionId || `q-${questionIndex}`;
+    console.log(`🔍 [QuestionVotingButtons] Rating clicked:`, { questionId, rating, hasCallback: !!onRating });
+    
+    if (!questionId) {
+      console.warn('❌ [QuestionVotingButtons] No questionId provided, cannot vote');
+      return;
+    }
     
     // Call parent callback if provided
     if (onRating) {
-      onRating(finalQuestionId, rating);
+      onRating(questionId, rating);
+    } else {
+      console.warn(`❌ [QuestionVotingButtons] No callback provided`);
     }
   };
 

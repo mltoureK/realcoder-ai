@@ -9,6 +9,13 @@ export interface BaseQuestion {
   language?: string;
   difficulty?: string;
   repoUrl?: string;
+  codeContext?: string; // The actual code snippet
+  variants?: Array<{
+    id: string;
+    code: string;
+    isCorrect: boolean;
+    explanation: string;
+  }>;
 }
 
 // Additional question types for compatibility with existing quiz system
@@ -113,7 +120,14 @@ export interface StoredQuestion {
   question: string;
   language: string;
   difficulty: string;
-  data: any; // Flexible data object
+  codeContext: string; // The actual code snippet for re-display
+  variants: Array<{
+    id: string;
+    code: string;
+    isCorrect: boolean;
+    explanation: string;
+  }>; // For function-variant questions
+  data: any; // Flexible data object for type-specific content
   upvotes: number;
   downvotes: number;
   totalVotes: number;
@@ -142,7 +156,9 @@ export const normalizeQuestionForStorage = (question: Question): Partial<StoredQ
     type: question.type,
     question: question.question,
     language: question.language || 'JavaScript',
-    difficulty: question.difficulty || 'medium'
+    difficulty: question.difficulty || 'medium',
+    codeContext: question.codeContext || '', // Store the actual code snippet
+    variants: question.variants || [] // Store variants for function-variant questions
   };
 
   // Type-specific data normalization
@@ -153,18 +169,20 @@ export const normalizeQuestionForStorage = (question: Question): Partial<StoredQ
       data = {
         options: question.options,
         correctAnswer: question.correctAnswer,
-        explanation: question.explanation
+        explanation: question.explanation,
+        codeContext: question.codeContext || ''
       };
       break;
       
     case 'function-variant':
       data = {
-        variants: question.variants.map(v => ({
+        variants: question.variants?.map(v => ({
           id: v.id,
           code: v.code,
           isCorrect: v.isCorrect,
           explanation: v.explanation
-        }))
+        })) || [],
+        codeContext: question.codeContext || ''
       };
       break;
       
@@ -172,7 +190,8 @@ export const normalizeQuestionForStorage = (question: Question): Partial<StoredQ
       data = {
         options: question.options,
         correctAnswers: question.correctAnswers,
-        explanation: question.explanation
+        explanation: question.explanation,
+        codeContext: question.codeContext || ''
       };
       break;
       
@@ -180,7 +199,8 @@ export const normalizeQuestionForStorage = (question: Question): Partial<StoredQ
       data = {
         options: question.options,
         correctAnswer: question.correctAnswer,
-        explanation: question.explanation
+        explanation: question.explanation,
+        codeContext: question.codeContext || ''
       };
       break;
       
@@ -193,7 +213,8 @@ export const normalizeQuestionForStorage = (question: Question): Partial<StoredQ
           explanation: s.explanation || ''
         })),
         correctOrder: question.correctOrder,
-        explanation: question.explanation
+        explanation: question.explanation,
+        codeContext: question.codeContext || ''
       };
       break;
       
@@ -201,7 +222,8 @@ export const normalizeQuestionForStorage = (question: Question): Partial<StoredQ
       data = {
         options: question.options,
         correctAnswer: question.correctAnswer,
-        explanation: question.explanation
+        explanation: question.explanation,
+        codeContext: question.codeContext || ''
       };
       break;
       
@@ -209,7 +231,8 @@ export const normalizeQuestionForStorage = (question: Question): Partial<StoredQ
       data = {
         code: question.code,
         correctAnswer: question.correctAnswer,
-        explanation: question.explanation
+        explanation: question.explanation,
+        codeContext: question.codeContext || ''
       };
       break;
       
@@ -217,7 +240,8 @@ export const normalizeQuestionForStorage = (question: Question): Partial<StoredQ
       data = {
         options: question.options,
         correctAnswer: question.correctAnswer,
-        explanation: question.explanation
+        explanation: question.explanation,
+        codeContext: question.codeContext || ''
       };
       break;
       
@@ -225,7 +249,8 @@ export const normalizeQuestionForStorage = (question: Question): Partial<StoredQ
       data = {
         code: question.code,
         correctAnswer: question.correctAnswer,
-        explanation: question.explanation
+        explanation: question.explanation,
+        codeContext: question.codeContext || ''
       };
       break;
       
@@ -236,7 +261,8 @@ export const normalizeQuestionForStorage = (question: Question): Partial<StoredQ
           code: s.code
         })),
         correctOrder: question.correctOrder,
-        explanation: question.explanation
+        explanation: question.explanation,
+        codeContext: question.codeContext || ''
       };
       break;
       

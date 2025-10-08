@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
       const questionData = q.quiz;
       if (questionData.type === 'function-variant') {
         return {
-          id: (index + 1).toString(),
+          id: `q-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
           type: questionData.type,
           question: questionData.question || 'Missing question text',
           options: [],
@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
           else if (ansNum >= 0 && ansNum < opts.length) idx = ansNum;
         }
         return {
-          id: (index + 1).toString(),
+          id: `q-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
           type: questionData.type,
           question: questionData.question || 'Missing question text',
           options: opts,
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
         } as any;
       } else if (questionData.type === 'order-sequence') {
         return {
-          id: (index + 1).toString(),
+          id: `q-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
           type: questionData.type,
           question: questionData.question || 'Arrange the steps in correct order',
           options: questionData.steps || [],
@@ -166,7 +166,7 @@ export async function POST(request: NextRequest) {
         }
         
         return {
-          id: (index + 1).toString(),
+          id: `q-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
           type: questionData.type,
           question: questionData.question || 'Is this statement true or false?',
           options: opts,
@@ -185,7 +185,7 @@ export async function POST(request: NextRequest) {
         const correctAnswers = questionData.correctAnswers || [];
         
         return {
-          id: (index + 1).toString(),
+          id: `q-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
           type: questionData.type,
           question: questionData.question || 'Select all that apply',
           options: opts,

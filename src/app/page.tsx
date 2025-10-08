@@ -346,7 +346,12 @@ export default function Home() {
             code: combinedCode,
             questionTypes: ['function-variant', 'multiple-choice', 'order-sequence', 'true-false', 'select-all'],
             difficulty: 'medium',
-            numQuestions: 15
+            numQuestions: 15,
+            repositoryInfo: {
+              owner: githubRepo.owner,
+              repo: githubRepo.repo,
+              branch: selectedBranch || 'main'
+            }
           })
         });
         
@@ -435,7 +440,12 @@ export default function Home() {
             code: combinedCode,
             questionTypes: ['function-variant', 'multiple-choice', 'order-sequence', 'true-false', 'select-all'],
             difficulty: 'medium',
-            numQuestions: 10
+            numQuestions: 10,
+            repositoryInfo: {
+              owner: githubRepo.owner,
+              repo: githubRepo.repo,
+              branch: selectedBranch || 'main'
+            }
           })
         });
         

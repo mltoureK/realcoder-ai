@@ -28,14 +28,21 @@ export default function QuestionPoll({
 
   useEffect(() => {
     const loadPollData = async () => {
-      const finalQuestionId = questionId || `q-${questionIndex}`;
+      // Use the actual questionId, don't fall back to generic IDs
+      if (!questionId) {
+        console.warn('❌ QuestionPoll: No questionId provided, skipping poll update');
+        setLoading(false);
+        return;
+      }
+      
+      console.log(`🔍 [QuestionPoll] Updating poll for questionId: ${questionId}, isCorrect: ${isCorrect}`);
       
       try {
         // Update poll with current result
-        await updateQuestionPoll(finalQuestionId, isCorrect);
+        await updateQuestionPoll(questionId, isCorrect);
         
         // Get updated poll data
-        const data = await getQuestionPollData(finalQuestionId);
+        const data = await getQuestionPollData(questionId);
         
         if (data) {
           setPollData({
@@ -45,7 +52,7 @@ export default function QuestionPoll({
             passRate: Math.round(data.passRate * 10) / 10 // Round to 1 decimal
           });
         } else {
-          // Fallback mock data for first time
+          // Fallback to actual data (no mock data)
           setPollData({
             totalAttempts: 1,
             passed: isCorrect ? 1 : 0,
@@ -56,23 +63,23 @@ export default function QuestionPoll({
         
         // Call parent callback
         if (onPollUpdate) {
-          onPollUpdate(finalQuestionId, isCorrect);
+          onPollUpdate(questionId, isCorrect);
         }
       } catch (error) {
         console.error('Error loading poll data:', error);
-        // Use mock data as fallback
+        // Use actual data as fallback (no mock data)
         setPollData({
-          totalAttempts: 127,
-          passed: 89,
-          failed: 38,
-          passRate: 70.1
+          totalAttempts: 1,
+          passed: isCorrect ? 1 : 0,
+          failed: isCorrect ? 0 : 1,
+          passRate: isCorrect ? 100 : 0
         });
       } finally {
         setLoading(false);
       }
     };
 
-    if (showExplanations) {
+    if (showExplanations && questionId) {
       loadPollData();
     }
   }, [showExplanations, isCorrect, questionId, questionIndex, onPollUpdate]);
