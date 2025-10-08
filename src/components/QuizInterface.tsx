@@ -10,6 +10,7 @@ import { QuestionResult, FailedQuestion } from '@/lib/report-card';
 import { motion, AnimatePresence } from 'framer-motion';
 import QuestionVotingButtons from './QuestionVotingButtons';
 import QuestionPoll from './QuestionPoll';
+import { addQuestionToBank } from '@/lib/quiz-history';
 
 interface QuizInterfaceProps {
   quizSession: QuizSession;
@@ -412,13 +413,30 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     setSelectedAnswers([variantId]);
   };
 
-  const handleQuestionRating = (questionId: string, rating: 'up' | 'down') => {
+  const handleQuestionRating = async (questionId: string, rating: 'up' | 'down') => {
     setQuestionRatings(prev => ({
       ...prev,
       [questionId]: rating
     }));
+    
     console.log(`📊 Question ${questionId} rated as: ${rating}`);
-    // TODO: Save to Firebase when ready
+    
+    // Auto-save to question bank on upvote
+    if (rating === 'up' && quizSession.repositoryInfo) {
+      try {
+        const repoUrl = `https://github.com/${quizSession.repositoryInfo.owner}/${quizSession.repositoryInfo.repo}`;
+        const currentQuestion = quizSession.questions.find(q => q.id === questionId);
+        
+        if (currentQuestion) {
+          await addQuestionToBank(repoUrl, currentQuestion as any, 85); // Start with high quality score
+          console.log(`✅ Question added to ${repoUrl} question bank!`);
+        }
+      } catch (error) {
+        console.error('❌ Error adding question to bank:', error);
+      }
+    }
+    
+    // TODO: Save rating to Firebase when ready
   };
 
   const handlePollUpdate = (questionId: string, isCorrect: boolean) => {
