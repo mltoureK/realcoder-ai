@@ -20,17 +20,19 @@ import {
 
 // Route now uses plugin-based orchestrator; helpers moved to shared utils.
 
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { code, questionTypes, difficulty, numQuestions } = body;
+    const { code, questionTypes, difficulty, numQuestions, repositoryInfo } = body;
     const streamParam = request.nextUrl?.searchParams?.get('stream');
 
     console.log('📡 /generateQuiz API called with:', { 
       codeLength: code?.length, 
       questionTypes, 
       difficulty, 
-      numQuestions 
+      numQuestions,
+      repositoryInfo 
     });
 
         // Check if OpenAI API key is available
@@ -449,7 +451,8 @@ export async function POST(request: NextRequest) {
       score: 0,
       lives: 3,
       lastLifeRefill: new Date(),
-      completed: false
+      completed: false,
+      repositoryInfo: repositoryInfo || null
     };
 
     return NextResponse.json({

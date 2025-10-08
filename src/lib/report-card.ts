@@ -185,10 +185,19 @@ async function extractConceptsFromQuestions(passedQuestions: QuestionResult[], f
     const questionData = questionsToAnalyze.slice(0, 10).map((q, index) => {
       if (type === 'strengths') {
         const result = q as QuestionResult;
-        return {
-          question: `Question ${index + 1}`,
-          content: `Type: ${result.type}, Language: ${result.language || 'Unknown'}, Correct: ${result.isCorrect}`
-        };
+        // For strengths, we need to find the corresponding failed question to get the full question content
+        const correspondingFailed = failedQuestions.find(fq => fq.questionId === result.questionId);
+        if (correspondingFailed) {
+          return {
+            question: `Question ${index + 1}`,
+            content: `Question: ${correspondingFailed.question}, Type: ${result.type}, Language: ${result.language || 'Unknown'}, Code Context: ${correspondingFailed.codeContext || 'None'}`
+          };
+        } else {
+          return {
+            question: `Question ${index + 1}`,
+            content: `Type: ${result.type}, Language: ${result.language || 'Unknown'}, Correct: ${result.isCorrect}`
+          };
+        }
       } else {
         const failed = q as FailedQuestion;
         return {
@@ -209,22 +218,29 @@ async function extractConceptsFromQuestions(passedQuestions: QuestionResult[], f
         messages: [
           {
             role: 'system',
-            content: 'You are a programming concept analyzer. Extract the core programming concepts being tested in quiz questions. Return ONLY a JSON array of concept names, no explanations or additional text.'
+            content: 'You are a programming concept analyzer. Analyze quiz questions and provide detailed, specific insights about programming skills demonstrated or missed. Return ONLY a JSON array of detailed concept descriptions, no additional text.'
           },
           {
             role: 'user',
-            content: `Analyze these ${type === 'strengths' ? 'passed' : 'failed'} programming quiz questions and extract the top 5 core programming concepts being tested. Focus on fundamental programming skills, patterns, and concepts rather than specific syntax details.
+            content: `Analyze these ${type === 'strengths' ? 'passed' : 'failed'} programming quiz questions and provide 5 detailed, specific insights about the programming concepts demonstrated. Be specific and actionable.
 
 Questions to analyze:
 ${questionData.map(q => `${q.question}: ${q.content}`).join('\n')}
 
-Return format: ["concept1", "concept2", "concept3", "concept4", "concept5"]
+Return format: ["detailed insight 1", "detailed insight 2", "detailed insight 3", "detailed insight 4", "detailed insight 5"]
 
-Examples of good concepts: "async/await", "array methods", "error handling", "scope", "closures", "recursion", "data structures", "algorithms", "design patterns", "memory management", "concurrency", "testing", "debugging", "optimization"`
+For ${type === 'strengths' ? 'strengths' : 'weaknesses'}, provide specific insights like:
+- "Strong understanding of React hooks and state management patterns"
+- "Excellent grasp of async/await and Promise handling"
+- "Solid knowledge of array methods and functional programming"
+- "Good understanding of error handling and defensive programming"
+- "Strong TypeScript generics and type safety concepts"
+
+Focus on specific programming skills, patterns, and concepts that can be improved or built upon.`
           }
         ],
         temperature: 0.3,
-        max_tokens: 200
+        max_tokens: 500
       })
     });
 
@@ -254,9 +270,21 @@ Examples of good concepts: "async/await", "array methods", "error handling", "sc
 
 function getFallbackConcepts(type: 'strengths' | 'weaknesses'): string[] {
   if (type === 'strengths') {
-    return ['fundamentals', 'problem solving', 'code comprehension', 'logic reasoning', 'syntax mastery'];
+    return [
+      'Solid understanding of programming fundamentals and core concepts',
+      'Good problem-solving approach and logical reasoning skills',
+      'Strong code comprehension and reading abilities',
+      'Effective syntax mastery and language familiarity',
+      'Consistent performance across different question types'
+    ];
   } else {
-    return ['error handling', 'advanced patterns', 'edge cases', 'performance', 'debugging'];
+    return [
+      'Need to improve error handling and edge case management',
+      'Focus on advanced programming patterns and best practices',
+      'Strengthen understanding of performance optimization techniques',
+      'Enhance debugging skills and problem isolation abilities',
+      'Develop deeper knowledge of complex programming concepts'
+    ];
   }
 }
 

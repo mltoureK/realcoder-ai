@@ -8,6 +8,8 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import ReportCard from '@/components/ReportCard';
 import { QuestionResult, FailedQuestion } from '@/lib/report-card';
 import { motion, AnimatePresence } from 'framer-motion';
+import QuestionVotingButtons from './QuestionVotingButtons';
+import QuestionPoll from './QuestionPoll';
 
 interface QuizInterfaceProps {
   quizSession: QuizSession;
@@ -69,6 +71,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   const [shakingNext, setShakingNext] = useState(false);
   const [results, setResults] = useState<QuestionResult[]>([]);
   const [failedQuestions, setFailedQuestions] = useState<FailedQuestion[]>([]);
+  const [questionRatings, setQuestionRatings] = useState<Record<string, 'up' | 'down'>>({});
 
   // Timers: per-question and overall (increase as questions stream in)
   const [questionTimeTotal, setQuestionTimeTotal] = useState(0);
@@ -407,6 +410,20 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
   const handleVariantSelect = (variantId: string) => {
     setSelectedAnswers([variantId]);
+  };
+
+  const handleQuestionRating = (questionId: string, rating: 'up' | 'down') => {
+    setQuestionRatings(prev => ({
+      ...prev,
+      [questionId]: rating
+    }));
+    console.log(`📊 Question ${questionId} rated as: ${rating}`);
+    // TODO: Save to Firebase when ready
+  };
+
+  const handlePollUpdate = (questionId: string, isCorrect: boolean) => {
+    console.log(`📈 Poll update: Question ${questionId} - ${isCorrect ? 'PASSED' : 'FAILED'}`);
+    // TODO: Save to Firebase when ready
   };
 
   const renderQuestion = () => {
@@ -1629,8 +1646,26 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                   </p>
                 </div>
               </div>
-            </div>
-          )}
+          </div>
+        )}
+
+          {/* Question Voting Buttons */}
+          <QuestionVotingButtons
+            questionId={currentQuestion.id}
+            questionIndex={currentQuestionIndex}
+            showExplanations={showExplanations}
+            currentRating={questionRatings[currentQuestion.id || `q-${currentQuestionIndex}`]}
+            onRating={handleQuestionRating}
+          />
+
+          {/* Question Poll Stats */}
+          <QuestionPoll
+            questionId={currentQuestion.id}
+            questionIndex={currentQuestionIndex}
+            showExplanations={showExplanations}
+            isCorrect={results.length > 0 ? results[results.length - 1]?.isCorrect || false : false}
+            onPollUpdate={handlePollUpdate}
+          />
 
           {/* Submit Button */}
           <div className="flex justify-end">
