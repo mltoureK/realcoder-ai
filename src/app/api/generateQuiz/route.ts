@@ -17,6 +17,7 @@ import {
   balanceVariantVerbosity,
   validateQuestionStructure
 } from '@/lib/question-plugins/utils';
+import { extractFunctionsFromFiles, functionsToChunks } from '@/lib/function-extractor';
 
 // Route now uses plugin-based orchestrator; helpers moved to shared utils.
 
@@ -52,9 +53,38 @@ export async function POST(request: NextRequest) {
 
     console.log('🤖 Using OpenAI to generate questions based on actual code');
     
-    // Clean + chunk code
-    const cleanCode = cleanCodeForChunking(code || '');
-    const chunks = createSmartCodeChunks(cleanCode || '', 8000); // Increased from 4000 to 8000 for complete functions
+    // NEW APPROACH: Extract complete functions from high-score files
+    console.log('🔍 Step 1: Parsing files from code...');
+    const fileRegex = /\/\/ ([^\n]+)\n([\s\S]*?)(?=\/\/ [^\n]+\n|$)/g;
+    const parsedFiles: Array<{ name: string; content: string; score: number }> = [];
+    
+    let match: RegExpExecArray | null;
+    while ((match = fileRegex.exec(code || '')) !== null) {
+      const filename = match[1];
+      const content = match[2].trim();
+      
+      // Basic scoring: prefer TypeScript/JavaScript files with more functions
+      let score = 10;
+      if (filename.endsWith('.ts') || filename.endsWith('.tsx')) score += 30;
+      if (filename.endsWith('.js') || filename.endsWith('.jsx')) score += 20;
+      const functionCount = (content.match(/function\s+\w+|const\s+\w+\s*=\s*\(|class\s+\w+/g) || []).length;
+      score += functionCount * 10;
+      
+      parsedFiles.push({ name: filename, content, score });
+    }
+    
+    console.log(`📊 Parsed ${parsedFiles.length} files from repository`);
+    
+    // Extract functions from top 5 high-score files
+    console.log('🔍 Step 2: Extracting complete functions from top files...');
+    const extractedFunctions = await extractFunctionsFromFiles(parsedFiles, openaiApiKey, 5);
+    
+    console.log(`✅ Extracted ${extractedFunctions.length} complete functions`);
+    
+    // Convert extracted functions to chunks (one function per chunk)
+    const chunks = functionsToChunks(extractedFunctions);
+    
+    console.log(`📦 Created ${chunks.length} function-based chunks (all complete)`);
 
     // Select plugins per requested types
     const availablePlugins: Record<string, any> = {

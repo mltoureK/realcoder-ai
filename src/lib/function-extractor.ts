@@ -1,0 +1,220 @@
+/**
+ * Function Extractor
+ * Uses GPT to extract complete functions from a file
+ * This ensures we always have complete, working code for question generation
+ */
+
+import { getChunkLogger } from './chunk-logger';
+
+export interface ExtractedFunction {
+  name: string;
+  fullCode: string;
+  language: string;
+  lineCount: number;
+  description?: string;
+}
+
+/**
+ * Extract all complete functions from a file using GPT
+ */
+export async function extractFunctionsFromFile(
+  fileContent: string,
+  fileName: string,
+  apiKey: string
+): Promise<ExtractedFunction[]> {
+  console.log(`🔍 Extracting functions from ${fileName}...`);
+
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a code parser. Extract complete functions from code files. Return ONLY valid JSON array with no markdown or explanations.'
+          },
+          {
+            role: 'user',
+            content: `Extract ALL SUBSTANTIAL, complete functions from this file: ${fileName}
+
+${fileContent}
+
+CRITICAL REQUIREMENTS:
+1. Extract ONLY complete, working functions with REAL LOGIC (not stubs!)
+2. Include the ENTIRE function from signature to closing brace
+3. SKIP functions that are just stubs with comments like "// logic goes here"
+4. SKIP functions with empty bodies or trivial logic (just { })
+5. SKIP functions that just return the input parameter unchanged
+6. SKIP functions that are only 3-5 lines with mostly comments
+7. Extract functions with at least 5+ lines of ACTUAL code logic
+8. Minimum 100 characters of actual code per function
+9. Include function name, COMPLETE full code, and language
+
+EXAMPLES OF WHAT TO SKIP:
+❌ function stub() { // TODO: implement }
+❌ function simple(x) { return x; }
+❌ function formatCodeContext(code: string) { if (!code) return code; return code.trim(); }
+❌ function wrapper(x) { return someFunction(x); }
+
+EXAMPLES OF WHAT TO EXTRACT:
+✅ Functions with loops, conditionals, calculations, transformations
+✅ Functions with multiple operations and logic branches
+✅ Functions that do real work (not just pass-through)
+
+Return ONLY this JSON format:
+[
+  {
+    "name": "functionName",
+    "fullCode": "COMPLETE function code with ALL logic - no truncation",
+    "language": "JavaScript|TypeScript|Python|Java|C++|etc",
+    "lineCount": 15,
+    "description": "brief 1-line description of what it does"
+  }
+]
+
+CRITICAL: 
+- Return ONLY the JSON array
+- No text before or after
+- No markdown
+- Include COMPLETE functions only
+- Skip all stub functions`
+          }
+        ],
+        temperature: 0.3,
+        max_tokens: 4000
+      })
+    });
+
+    if (!response.ok) {
+      console.error(`❌ Function extraction failed for ${fileName}: ${response.status}`);
+      return [];
+    }
+
+    const data = await response.json();
+    const content = data.choices[0].message.content as string;
+
+    // Clean the response
+    let cleanContent = content.trim();
+    if (cleanContent.startsWith('```json')) {
+      cleanContent = cleanContent.replace(/^```json\s*/, '');
+    }
+    if (cleanContent.startsWith('```')) {
+      cleanContent = cleanContent.replace(/^```\s*/, '');
+    }
+    if (cleanContent.endsWith('```')) {
+      cleanContent = cleanContent.replace(/\s*```$/, '');
+    }
+
+    const jsonStart = cleanContent.indexOf('[');
+    if (jsonStart > 0) {
+      cleanContent = cleanContent.substring(jsonStart);
+    }
+
+    const parsed = JSON.parse(cleanContent);
+
+    if (!Array.isArray(parsed)) {
+      console.error(`❌ Invalid response format for ${fileName}`);
+      return [];
+    }
+
+    // Filter out invalid extractions and stub functions
+    const validFunctions = parsed.filter(func => {
+      if (!func.name || !func.fullCode) return false;
+      if (func.fullCode.length < 100) return false; // At least 100 chars (not just stubs)
+      if (func.lineCount < 5) return false; // At least 5 lines
+      if (func.fullCode.match(/^\s*\{\s*\}\s*$/)) return false; // Not empty body
+      
+      // Reject stub functions with mostly comments
+      const codeWithoutComments = func.fullCode
+        .replace(/\/\/.*$/gm, '') // Remove single-line comments
+        .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
+        .trim();
+      
+      // Count actual code lines (non-empty, non-comment)
+      const actualCodeLines = codeWithoutComments.split('\n').filter(line => line.trim().length > 0).length;
+      if (actualCodeLines < 4) return false; // At least 4 lines of actual code
+      
+      // Reject functions that just return the input unchanged
+      if (func.fullCode.match(/return\s+\w+\s*;?\s*\}\s*$/)) {
+        const simpleReturn = true; // Just returns a variable
+        if (actualCodeLines <= 3) return false; // Too simple
+      }
+      
+      return true;
+    });
+
+    console.log(`✅ Extracted ${validFunctions.length}/${parsed.length} complete functions from ${fileName}`);
+
+    // Log function extraction with FULL function code
+    if (validFunctions.length > 0) {
+      const logger = getChunkLogger();
+      const functionSummary = validFunctions.map(f => ({
+        name: f.name,
+        lineCount: f.lineCount,
+        language: f.language,
+        fullCode: f.fullCode
+      }));
+      logger.logFunctionExtraction(fileName, functionSummary);
+    }
+
+    return validFunctions;
+
+  } catch (error) {
+    console.error(`❌ Error extracting functions from ${fileName}:`, error);
+    return [];
+  }
+}
+
+/**
+ * Extract functions from multiple high-score files
+ */
+export async function extractFunctionsFromFiles(
+  files: Array<{ name: string; content: string; score: number }>,
+  apiKey: string,
+  maxFiles: number = 5
+): Promise<ExtractedFunction[]> {
+  console.log(`🎯 Extracting functions from top ${maxFiles} files...`);
+
+  // Sort by score and take top N files
+  const topFiles = files
+    .sort((a, b) => b.score - a.score)
+    .slice(0, maxFiles);
+
+  console.log(`📊 Selected ${topFiles.length} files for function extraction`);
+
+  const allFunctions: ExtractedFunction[] = [];
+
+  // Extract functions from each file sequentially (to avoid rate limits)
+  for (const file of topFiles) {
+    const functions = await extractFunctionsFromFile(file.content, file.name, apiKey);
+    allFunctions.push(...functions);
+    
+    // Small delay to avoid rate limits
+    await new Promise(resolve => setTimeout(resolve, 500));
+  }
+
+  console.log(`✅ Total functions extracted: ${allFunctions.length} from ${topFiles.length} files`);
+
+  return allFunctions;
+}
+
+/**
+ * Convert extracted functions into chunks for question generation
+ */
+export function functionsToChunks(functions: ExtractedFunction[]): string[] {
+  console.log(`📦 Converting ${functions.length} functions to chunks...`);
+
+  const chunks = functions.map(func => {
+    return `// Function: ${func.name} (${func.language})\n// ${func.description || 'No description'}\n\n${func.fullCode}`;
+  });
+
+  console.log(`✅ Created ${chunks.length} function-based chunks (all complete)`);
+
+  return chunks;
+}
+

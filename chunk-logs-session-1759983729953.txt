@@ -1,0 +1,303 @@
+=== CHUNK LOGGING SESSION: session-1759983729953 ===
+Started: 2025-10-09T04:22:09.954Z
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:22:25.540Z
+Question Type: multiple-choice
+Chunk Index: 147
+Chunk Size: 253 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // Remove the root directory prefix from path\nconst cleanPath = entry.path.split('/').slice(1).join('/');\n        if (cleanPath) {\n          extractedFiles.push({ path: cleanPath, content });\n        
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:22:25.898Z
+Question Type: true-false
+Chunk Index: 71
+Chunk Size: 32 characters
+Questions Generated: 4
+Repository: Unknown
+Chunk Preview: // Ruby methods\n/module\s+\w+/g,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:22:40.036Z
+Question Type: function-variant
+Chunk Index: 151
+Chunk Size: 171 characters
+Questions Generated: 0
+Repository: Unknown
+Chunk Preview: // Boost main files\nconst mainFiles = ['index', 'main', 'app', 'server', 'client'];\n  if (mainFiles.some(name => path.toLowerCase().includes(name))) {\n    score += 15;\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:22:40.052Z
+Question Type: function-variant
+Chunk Index: 78
+Chunk Size: 542 characters
+Questions Generated: 0
+Repository: Unknown
+Chunk Preview: // STEP 2: Select top files for quiz generation (but keep language info from full analysis)\nconst sortedFiles = files.sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0));\n  const maxFile
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:22:45.090Z
+Question Type: order-sequence
+Chunk Index: 76
+Chunk Size: 354 characters
+Questions Generated: 1
+Repository: Unknown
+Chunk Preview: // Calculate percentages by bytes (like GitHub)\nconst totalBytes = Object.values(allLanguageBytes).reduce((sum, bytes) => sum + bytes, 0);\n  const languagePercentages = allLanguages.reduce((acc, lang)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:22:51.963Z
+Question Type: order-sequence
+Chunk Index: 46
+Chunk Size: 1086 characters
+Questions Generated: 1
+Repository: Unknown
+Chunk Preview: // Calculate final relevance score with content\nconst relevanceScore = calculateRelevanceScore(filePath, content);\n            \n            files.push({\n              path: filePath,\n              con
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:22:58.573Z
+Question Type: select-all
+Chunk Index: 75
+Chunk Size: 559 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // STEP 1: Analyze ALL files for language detection (like GitHub does)\nconst allLanguages = [...new Set(files.map(f => f.language).filter(l => l !== 'unknown'))];\n  const allLanguageCounts = allLangua
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:22:59.720Z
+Question Type: select-all
+Chunk Index: 63
+Chunk Size: 24 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // Classes\n/def\s+\w+/g,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:23:02.843Z
+Question Type: multiple-choice
+Chunk Index: 91
+Chunk Size: 569 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // github-tarball-service-new.ts\nimport * as tar from 'tar';\nimport { Readable } from 'stream';\n\nexport interface GitHubFile {\n  path: string;\n  content: string;\n  language: string;\n  size: number;\n  
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:23:14.685Z
+Question Type: select-all
+Chunk Index: 43
+Chunk Size: 302 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // File passed pre-filtering - now read its content\nconst chunks: Buffer[] = [];\n        \n        entry.on('data', (chunk: Buffer) => {\n          chunks.push(chunk);\n        });\n        \n        entry
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1759983729953
+Repository: Unknown
+Total Questions Generated: 21
+Total Chunks Processed: 165
+Ended: 2025-10-09T04:23:22.910Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:26:21.584Z
+Question Type: true-false
+Chunk Index: 56
+Chunk Size: 30 characters
+Questions Generated: 4
+Repository: Unknown
+Chunk Preview: // step 3\ncomponentDidMount(){
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:26:22.157Z
+Question Type: multiple-choice
+Chunk Index: 33
+Chunk Size: 44 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // resources are updated in the background.\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:26:34.303Z
+Question Type: select-all
+Chunk Index: 49
+Chunk Size: 38 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // It's the perfect time to display a\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:26:36.104Z
+Question Type: function-variant
+Chunk Index: 24
+Chunk Size: 1018 characters
+Questions Generated: 1
+Repository: Unknown
+Chunk Preview: // wrapperUrl parameter.\nFile mavenWrapperPropertyFile = new File(baseDirectory, MAVEN_WRAPPER_PROPERTIES_PATH);\n        String url = DEFAULT_DOWNLOAD_URL;\n        if(mavenWrapperPropertyFile.exists()
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:26:48.742Z
+Question Type: order-sequence
+Chunk Index: 3
+Chunk Size: 2115 characters
+Questions Generated: 1
+Repository: Unknown
+Chunk Preview: // RameshMF-ReactJS-Spring-Boot-CRUD-Full-Stack-App-394c537/springboot-backend/.mvn/wrapper/MavenWrapperDownloader.java\n/*\n * Copyright 2007-present the original author or authors.\n *\n * Licensed unde
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:26:48.749Z
+Question Type: function-variant
+Chunk Index: 17
+Chunk Size: 385 characters
+Questions Generated: 2
+Repository: Unknown
+Chunk Preview: // RameshMF-ReactJS-Spring-Boot-CRUD-Full-Stack-App-394c537/springboot-backend/src/test/java/net/javaguides/springboot/SpringbootBackendApplicationTests.java\npackage net.javaguides.springboot;\n\nimport
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:26:51.611Z
+Question Type: select-all
+Chunk Index: 53
+Chunk Size: 251 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // No service worker found. Probably a different app. Reload the page.\nnavigator.serviceWorker.ready.then(registration => {\n          registration.unregister().then(() => {\n            window.location
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1759983729953
+Repository: Unknown
+Total Questions Generated: 16
+Total Chunks Processed: 68
+Ended: 2025-10-09T04:26:56.274Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:28:03.414Z
+Question Type: order-sequence
+Chunk Index: 249
+Chunk Size: 354 characters
+Questions Generated: 1
+Repository: Unknown
+Chunk Preview: // Calculate percentages by bytes (like GitHub)\nconst totalBytes = Object.values(allLanguageBytes).reduce((sum, bytes) => sum + bytes, 0);\n  const languagePercentages = allLanguages.reduce((acc, lang)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:28:07.245Z
+Question Type: true-false
+Chunk Index: 79
+Chunk Size: 516 characters
+Questions Generated: 4
+Repository: Unknown
+Chunk Preview: // Extract and filter code files from tarball\nexport async function extractCodeFiles(buffer: Buffer, onFile?: (path: string) => void): Promise<GitHubFile[]> {\n  console.log('🚀 Starting smart streamin
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:28:12.178Z
+Question Type: multiple-choice
+Chunk Index: 505
+Chunk Size: 34 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // Will be set by caller\nrepo: '',
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:28:12.695Z
+Question Type: select-all
+Chunk Index: 507
+Chunk Size: 124 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // Step 1: Parse URL\nconst repoInfo = parseGitHubUrl(url);\n  if (!repoInfo) {\n    throw new Error('Invalid GitHub URL');\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:28:17.723Z
+Question Type: order-sequence
+Chunk Index: 779
+Chunk Size: 731 characters
+Questions Generated: 1
+Repository: Unknown
+Chunk Preview: // Jackson Production Apps\n{\n      name: 'Jackson Core',\n      url: 'https://github.com/FasterXML/jackson-core',\n      description: 'Jackson Core - high-performance JSON processor used in production s
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:28:34.893Z
+Question Type: multiple-choice
+Chunk Index: 308
+Chunk Size: 256 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // Prioritize source code directories\nconst goodDirs = ['src', 'lib', 'app', 'components', 'services', 'utils', 'core', 'api', 'modules'];\n  if (goodDirs.some(dir => pathLower.includes(`/${dir}/`) || 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:28:36.456Z
+Question Type: select-all
+Chunk Index: 483
+Chunk Size: 255 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // Also process the repository to detect languages using the correct branch\nconst branchUrl = `${url}/tree/${data.defaultBranch}`;\n        await processRepository(branchUrl);\n      } else {\n        co
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:28:48.718Z
+Question Type: select-all
+Chunk Index: 224
+Chunk Size: 279 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // Check if repository is too large (over 50MB)\nif (buffer.length > 50 * 1024 * 1024) {\n    console.warn('⚠️ Repository is very large:', Math.round(buffer.length / 1024 / 1024), 'MB');\n    console.war
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:28:50.932Z
+Question Type: function-variant
+Chunk Index: 765
+Chunk Size: 1097 characters
+Questions Generated: 0
+Repository: Unknown
+Chunk Preview: // Node.js Production\n{\n      name: 'Node.js',\n      url: 'https://github.com/nodejs/node',\n      description: 'Node.js JavaScript runtime built on Chrome\'s V8 JavaScript engine - used by Netflix, Ub
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:29:13.606Z
+Question Type: function-variant
+Chunk Index: 584
+Chunk Size: 324 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // If we still have slots, fill with remaining files\nif (selected.length < count) {\n      for (const file of files) {\n        if (selected.length >= count) break;\n        if (!usedPaths.has(file.path)
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1759983729953
+Repository: Unknown
+Total Questions Generated: 22
+Total Chunks Processed: 800
+Ended: 2025-10-09T04:29:15.766Z
+================================================================================
+

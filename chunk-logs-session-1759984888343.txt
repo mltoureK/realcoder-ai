@@ -1,0 +1,141 @@
+=== CHUNK LOGGING SESSION: session-1759984888343 ===
+Started: 2025-10-09T04:41:28.343Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-09T04:41:28.345Z
+File: mltoureK-realcoder-ai-9e3b1f5/src/lib/question-plugins/multipleChoice.ts
+File Size: 3556 characters
+Functions Extracted: 2
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-09T04:42:08.121Z
+File: mltoureK-realcoder-ai-9e3b1f5/src/components/QuizHistory.tsx
+File Size: 2604 characters
+Functions Extracted: 4
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-09T04:42:11.459Z
+File: Generate random option count (5-6 options)
+File Size: 4084 characters
+Functions Extracted: 1
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-09T04:42:44.203Z
+File: mltoureK-realcoder-ai-9e3b1f5/src/lib/question-plugins/orderSequence.ts
+File Size: 7310 characters
+Functions Extracted: 1
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:42:52.408Z
+Question Type: order-sequence
+Chunk Index: 6
+Chunk Size: 278 characters
+Questions Generated: 1
+Repository: Unknown
+Chunk Preview: // Function: formatCodeContext (TypeScript)\n// Formats the provided code context for better readability.\n\nfunction formatCodeContext(codeContext: string): string {\n  if (!codeContext) return codeCont
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:43:04.757Z
+Question Type: multiple-choice
+Chunk Index: 0
+Chunk Size: 2892 characters
+Questions Generated: 0
+Repository: Unknown
+Chunk Preview: // Function: createUserPrompt (TypeScript)\n// Creates a user prompt for generating multiple-choice questions based on a code chunk.\n\nfunction createUserPrompt(chunk: string): string {\n  return `Genera
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:43:06.649Z
+Question Type: true-false
+Chunk Index: 1
+Chunk Size: 304 characters
+Questions Generated: 4
+Repository: Unknown
+Chunk Preview: // Function: formatCodeContext (TypeScript)\n// Formats the code context for better readability.\n\nfunction formatCodeContext(codeContext: string): string {\n  if (!codeContext) return codeContext;\n\n  //
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:43:18.433Z
+Question Type: select-all
+Chunk Index: 3
+Chunk Size: 424 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // Function: formatDate (TypeScript)\n// Formats a timestamp into a readable date string.\n\nconst formatDate = (timestamp: any) => {\n    if (!timestamp) return 'Unknown date';\n    const date = timestamp
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:43:24.775Z
+Question Type: multiple-choice
+Chunk Index: 0
+Chunk Size: 2892 characters
+Questions Generated: 0
+Repository: Unknown
+Chunk Preview: // Function: createUserPrompt (TypeScript)\n// Creates a user prompt for generating multiple-choice questions based on a code chunk.\n\nfunction createUserPrompt(chunk: string): string {\n  return `Genera
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:43:25.866Z
+Question Type: function-variant
+Chunk Index: 0
+Chunk Size: 2892 characters
+Questions Generated: 0
+Repository: Unknown
+Chunk Preview: // Function: createUserPrompt (TypeScript)\n// Creates a user prompt for generating multiple-choice questions based on a code chunk.\n\nfunction createUserPrompt(chunk: string): string {\n  return `Genera
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:43:37.473Z
+Question Type: order-sequence
+Chunk Index: 2
+Chunk Size: 1224 characters
+Questions Generated: 1
+Repository: Unknown
+Chunk Preview: // Function: QuizHistory (TypeScript)\n// Main component that displays quiz history for a user.\n\nexport default function QuizHistory({ userId, onRetakeQuiz, onClose }: QuizHistoryProps) {\n  const [quiz
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:43:44.783Z
+Question Type: select-all
+Chunk Index: 1
+Chunk Size: 304 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // Function: formatCodeContext (TypeScript)\n// Formats the code context for better readability.\n\nfunction formatCodeContext(codeContext: string): string {\n  if (!codeContext) return codeContext;\n\n  //
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:43:47.376Z
+Question Type: function-variant
+Chunk Index: 7
+Chunk Size: 7236 characters
+Questions Generated: 0
+Repository: Unknown
+Chunk Preview: // Function: generate (TypeScript)\n// Generates quiz questions based on provided code chunk using OpenAI API.\n\nasync generate(params: GenerateParams): Promise<RawQuestion[]> {\n    const { chunk, apiKe
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:43:54.162Z
+Question Type: select-all
+Chunk Index: 4
+Chunk Size: 397 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // Function: getScoreColor (TypeScript)\n// Determines the CSS class based on the score percentage.\n\nconst getScoreColor = (score: number, total: number) => {\n    const percentage = (score / total) * 1
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1759984888343
+Repository: Unknown
+Total Questions Generated: 15
+Total Chunks Processed: 8
+Ended: 2025-10-09T04:44:01.733Z
+================================================================================
+

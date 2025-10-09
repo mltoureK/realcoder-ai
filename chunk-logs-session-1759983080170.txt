@@ -1,0 +1,223 @@
+=== CHUNK LOGGING SESSION: session-1759983080170 ===
+Started: 2025-10-09T04:11:20.170Z
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:11:40.240Z
+Question Type: multiple-choice
+Chunk Index: 41
+Chunk Size: 1187 characters
+Questions Generated: 0
+Repository: Unknown
+Chunk Preview: // Continue making calls until we reach target or exhaust budget\nconsole.log(`📊 Generation Status: ${results.length}/${numQuestions} questions (need ${numQuestions - results.length} more)`);\n    retu
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:11:43.069Z
+Question Type: function-variant
+Chunk Index: 127
+Chunk Size: 148 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // mltoureK-realcoder-ai-0b5624d/src/app/loading.tsx\nimport LoadingScreen from "@/components/LoadingScreen";\n\nexport default function AppLoading() {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:11:45.188Z
+Question Type: true-false
+Chunk Index: 56
+Chunk Size: 473 characters
+Questions Generated: 0
+Repository: Unknown
+Chunk Preview: // 30 minutes\nexport function parseGitHubUrl(url: string): { owner: string; repo: string; branch?: string } | null {\n  console.log('🔍 Step 1: Parsing GitHub URL:', url);\n  \n  const patterns = [\n    /
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:11:48.805Z
+Question Type: select-all
+Chunk Index: 164
+Chunk Size: 965 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // mltoureK-realcoder-ai-0b5624d/src/lib/question-plugins/orchestrator.ts\nimport { GenerateParams, QuestionPlugin, RawQuestion } from './QuestionPlugin';\nimport { shuffleVariants } from './utils';\nimp
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:11:53.129Z
+Question Type: order-sequence
+Chunk Index: 115
+Chunk Size: 509 characters
+Questions Generated: 1
+Repository: Unknown
+Chunk Preview: // Step 2: Fetch repository tree (file structure)\nexport async function fetchRepositoryTree(owner: string, repo: string, branch: string = 'main'): Promise<any[]> {\n  console.log('🌳 Step 2: Fetching r
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:12:11.183Z
+Question Type: order-sequence
+Chunk Index: 58
+Chunk Size: 643 characters
+Questions Generated: 1
+Repository: Unknown
+Chunk Preview: // Extract and filter code files from tarball\nexport async function extractCodeFiles(buffer: Buffer, onFile?: (path: string) => void): Promise<GitHubFile[]> {\n  return new Promise((resolve, reject) =>
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:12:13.764Z
+Question Type: select-all
+Chunk Index: 55
+Chunk Size: 333 characters
+Questions Generated: 0
+Repository: Unknown
+Chunk Preview: // File Upload Processing\nexport function processUploadedFiles(files: File[]): Promise<UploadedFile[]> {\n  return Promise.all(\n    files.map(async (file) => {\n      const content = await file.text();\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:12:17.532Z
+Question Type: select-all
+Chunk Index: 108
+Chunk Size: 312 characters
+Questions Generated: 0
+Repository: Unknown
+Chunk Preview: // Generates code based on repo + user config\nimport { NextRequest, NextResponse } from 'next/server';\n\nexport async function POST(request: NextRequest) {\n  try {\n    const body = await request.json()
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:12:26.351Z
+Question Type: function-variant
+Chunk Index: 174
+Chunk Size: 34979 characters
+Questions Generated: 0
+Repository: Unknown
+Chunk Preview: // Check if file is irrelevant (improved from your vanilla JS version)\nisIrrelevantFile(filename: string): boolean {\n    const irrelevantPatterns = [\n      'node_modules',\n      '.d.ts',\n      'packag
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:12:33.282Z
+Question Type: multiple-choice
+Chunk Index: 36
+Chunk Size: 493 characters
+Questions Generated: 0
+Repository: Unknown
+Chunk Preview: // Reset stats for clean testing\nqualityFilterOrchestrator.resetStats();\n}\n\n/**\n * Demo function showing how to use specific quality filters directly\n */\nexport async function demonstrateDirectFilterU
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1759983080170
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 180
+Ended: 2025-10-09T04:12:33.283Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:13:50.669Z
+Question Type: true-false
+Chunk Index: 131
+Chunk Size: 252 characters
+Questions Generated: 4
+Repository: Unknown
+Chunk Preview: // Select diverse files from lower-scored ones to ensure variety\nprivate selectDiverseFiles(files: any[], count: number): any[] {\n    if (files.length <= count) return files;\n    \n    const selected: 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:13:52.111Z
+Question Type: order-sequence
+Chunk Index: 136
+Chunk Size: 957 characters
+Questions Generated: 1
+Repository: Unknown
+Chunk Preview: // Default filter for unknown types (falls back to base quality criteria)\nthis.defaultFilter = new SelectAllQualityFilter();\n  }\n\n  /**\n   * Get the appropriate quality filter for a question type\n   *
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:13:53.648Z
+Question Type: order-sequence
+Chunk Index: 132
+Chunk Size: 392 characters
+Questions Generated: 1
+Repository: Unknown
+Chunk Preview: // Group files by their directory for diversity selection\nprivate groupFilesByDirectory(files: any[]): { [key: string]: any[] } {\n    const groups: { [key: string]: any[] } = {};\n    \n    files.forEac
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:13:55.385Z
+Question Type: multiple-choice
+Chunk Index: 90
+Chunk Size: 363 characters
+Questions Generated: 0
+Repository: Unknown
+Chunk Preview: // Basic indentation logic\nif (line.includes('{') && !line.includes('}')) {\n      return line + '\n';\n    }\n    \n    return line;\n  });\n  \n  return formattedLines.join('\n').trim();\n}\n\n/**\n * Cleans A
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:14:03.792Z
+Question Type: select-all
+Chunk Index: 69
+Chunk Size: 144 characters
+Questions Generated: 1
+Repository: Unknown
+Chunk Preview: // Calculate relevance score for file prioritization\nfunction calculateRelevanceScore(path: string, content: string): number {\n  let score = 10;
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:14:09.791Z
+Question Type: multiple-choice
+Chunk Index: 124
+Chunk Size: 2347 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // Log cache stats for monitoring\nconst cacheStats = getCacheStats();\n    console.log('💾 Cache stats:', cacheStats);\n\n    if (streamParam === '1') {\n      const encoder = new TextEncoder();\n      con
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:14:21.904Z
+Question Type: select-all
+Chunk Index: 90
+Chunk Size: 363 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // Basic indentation logic\nif (line.includes('{') && !line.includes('}')) {\n      return line + '\n';\n    }\n    \n    return line;\n  });\n  \n  return formattedLines.join('\n').trim();\n}\n\n/**\n * Cleans A
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:14:29.449Z
+Question Type: function-variant
+Chunk Index: 61
+Chunk Size: 161 characters
+Questions Generated: 0
+Repository: Unknown
+Chunk Preview: // Enhanced relevance scoring that's more fair to different languages\nfunction calculateRelevanceScore(path: string, content: string): number {\n  let score = 10;
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:14:35.340Z
+Question Type: select-all
+Chunk Index: 115
+Chunk Size: 509 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // Step 2: Fetch repository tree (file structure)\nexport async function fetchRepositoryTree(owner: string, repo: string, branch: string = 'main'): Promise<any[]> {\n  console.log('🌳 Step 2: Fetching r
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:14:36.488Z
+Question Type: function-variant
+Chunk Index: 147
+Chunk Size: 486 characters
+Questions Generated: 0
+Repository: Unknown
+Chunk Preview: // Exponential backoff for retries\nconst backoff = retry.backoffBaseMs * Math.pow(2, attempt);\n    await delay(backoff);\n  }\n  \n  return null;\n}\n\n/**\n * Processes AI response and extracts valid questi
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1759983080170
+Repository: Unknown
+Total Questions Generated: 16
+Total Chunks Processed: 180
+Ended: 2025-10-09T04:14:43.095Z
+================================================================================
+

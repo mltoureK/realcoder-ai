@@ -17,14 +17,15 @@ export class ChunkLogger {
 
   constructor(sessionId?: string) {
     this.sessionId = sessionId || `session-${Date.now()}`;
-    this.logFilePath = join(process.cwd(), `chunk-logs-${this.sessionId}.txt`);
+    this.logFilePath = join(process.cwd(), `function-logs-${this.sessionId}.txt`);
     this.initializeLog();
   }
 
   private initializeLog() {
-    const header = `=== CHUNK LOGGING SESSION: ${this.sessionId} ===\n`;
+    const header = `=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===\n`;
+    const subheader = `Session ID: ${this.sessionId}\n`;
     const timestamp = `Started: ${new Date().toISOString()}\n\n`;
-    writeFileSync(this.logFilePath, header + timestamp);
+    writeFileSync(this.logFilePath, header + subheader + timestamp);
   }
 
   logQuestionGeneration(
@@ -34,34 +35,57 @@ export class ChunkLogger {
     questionCount: number,
     repositoryInfo?: string
   ) {
+    // Extract function name from chunk if it's a function-based chunk
+    const functionNameMatch = chunk.match(/\/\/ Function: ([^\n(]+)/);
+    const functionName = functionNameMatch ? functionNameMatch[1].trim() : 'Unknown';
+    
     const entry: ChunkLogEntry = {
       timestamp: new Date().toISOString(),
       questionType,
       chunkIndex,
       chunkSize: chunk.length,
       questionCount,
-      chunkPreview: chunk.substring(0, 200).replace(/\n/g, '\\n'),
+      chunkPreview: chunk.substring(0, 300).replace(/\n/g, '\\n'), // Increased preview
       repositoryInfo
     };
 
-    const logLine = this.formatLogEntry(entry);
-    appendFileSync(this.logFilePath, logLine);
-    
-    console.log(`📝 Chunk logged: ${questionType} from chunk ${chunkIndex} (${chunk.length} chars, ${questionCount} questions)`);
-  }
-
-  private formatLogEntry(entry: ChunkLogEntry): string {
-    return `
+    const logLine = `
 --- QUESTION GENERATION ---
 Timestamp: ${entry.timestamp}
 Question Type: ${entry.questionType}
-Chunk Index: ${entry.chunkIndex}
-Chunk Size: ${entry.chunkSize} characters
+Function: ${functionName}
+Function Size: ${entry.chunkSize} characters
 Questions Generated: ${entry.questionCount}
 Repository: ${entry.repositoryInfo || 'Unknown'}
-Chunk Preview: ${entry.chunkPreview}
+Function Preview: ${entry.chunkPreview}
 ${'='.repeat(80)}
 `;
+    appendFileSync(this.logFilePath, logLine);
+    
+    console.log(`📝 Question logged: ${questionType} from function "${functionName}" (${chunk.length} chars, ${questionCount} questions)`);
+  }
+
+
+  logFunctionExtraction(fileName: string, functions: Array<{ name: string; lineCount: number; language: string; fullCode: string }>) {
+    const logLine = `
+--- FUNCTION EXTRACTION ---
+Timestamp: ${new Date().toISOString()}
+File: ${fileName}
+Functions Extracted: ${functions.length}
+
+${functions.map((f, index) => `
+Function ${index + 1}: ${f.name}
+Language: ${f.language}
+Lines: ${f.lineCount}
+Full Code:
+${'-'.repeat(80)}
+${f.fullCode}
+${'-'.repeat(80)}
+`).join('\n')}
+${'='.repeat(80)}
+`;
+    appendFileSync(this.logFilePath, logLine);
+    console.log(`🔍 Logged function extraction: ${fileName} (${functions.length} functions with full code)`);
   }
 
   logSessionSummary(totalQuestions: number, totalChunks: number, repositoryInfo?: string) {

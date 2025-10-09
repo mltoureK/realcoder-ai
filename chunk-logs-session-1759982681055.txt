@@ -1,0 +1,103 @@
+=== CHUNK LOGGING SESSION: session-1759982681055 ===
+Started: 2025-10-09T04:04:41.055Z
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:04:52.292Z
+Question Type: order-sequence
+Chunk Index: 160
+Chunk Size: 1577 characters
+Questions Generated: 1
+Repository: Unknown
+Chunk Preview: // mltoureK-realcoder-ai-0b5624d/src/lib/quality-filters/SelectAllQualityFilter.ts\nimport { BaseQualityFilter } from './BaseQualityFilter';\n\nexport class SelectAllQualityFilter extends BaseQualityFilt
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:05:00.010Z
+Question Type: multiple-choice
+Chunk Index: 178
+Chunk Size: 17590 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // Increase timeout for large repositories\nexport const maxDuration = 300;\n\n// Clean up expired cache entries\nclearExpiredCache();\n\n// Use the new tarball service for scalable processing (non-streamin
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:05:01.087Z
+Question Type: multiple-choice
+Chunk Index: 56
+Chunk Size: 473 characters
+Questions Generated: 0
+Repository: Unknown
+Chunk Preview: // 30 minutes\nexport function parseGitHubUrl(url: string): { owner: string; repo: string; branch?: string } | null {\n  console.log('🔍 Step 1: Parsing GitHub URL:', url);\n  \n  const patterns = [\n    /
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:05:02.510Z
+Question Type: select-all
+Chunk Index: 103
+Chunk Size: 361 characters
+Questions Generated: 0
+Repository: Unknown
+Chunk Preview: // Step 2: Generate quiz questions based on code analysis\nexport async function generateQuizQuestions(repositoryInfo: RepositoryInfo, options: {\n  difficulty: 'easy' | 'medium' | 'hard';\n  questionTyp
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:05:22.892Z
+Question Type: order-sequence
+Chunk Index: 121
+Chunk Size: 810 characters
+Questions Generated: 1
+Repository: Unknown
+Chunk Preview: // max tokens for AI response (default: 400)\n}\n\nexport abstract class BaseQualityFilter {\n  protected openai: OpenAI;\n  protected config: QualityFilterConfig;\n\n  constructor(config: Partial<QualityFil
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:05:24.837Z
+Question Type: function-variant
+Chunk Index: 102
+Chunk Size: 478 characters
+Questions Generated: 1
+Repository: Unknown
+Chunk Preview: // Step 1: Analyze code patterns and extract concepts\nexport function analyzeCodePatterns(files: GitHubFile[]): any {\n  console.log('🧠 Step 1: Analyzing code patterns and extracting concepts');\n  \n  
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:05:27.022Z
+Question Type: select-all
+Chunk Index: 69
+Chunk Size: 144 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // Calculate relevance score for file prioritization\nfunction calculateRelevanceScore(path: string, content: string): number {\n  let score = 10;
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:05:34.309Z
+Question Type: select-all
+Chunk Index: 69
+Chunk Size: 144 characters
+Questions Generated: 3
+Repository: Unknown
+Chunk Preview: // Calculate relevance score for file prioritization\nfunction calculateRelevanceScore(path: string, content: string): number {\n  let score = 10;
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T04:05:40.921Z
+Question Type: true-false
+Chunk Index: 61
+Chunk Size: 161 characters
+Questions Generated: 4
+Repository: Unknown
+Chunk Preview: // Enhanced relevance scoring that's more fair to different languages\nfunction calculateRelevanceScore(path: string, content: string): number {\n  let score = 10;
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1759982681055
+Repository: Unknown
+Total Questions Generated: 15
+Total Chunks Processed: 189
+Ended: 2025-10-09T04:05:55.670Z
+================================================================================
+
