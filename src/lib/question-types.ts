@@ -145,20 +145,22 @@ export interface StoredQuestion {
  * Normalize a question for storage in Firebase
  */
 export const normalizeQuestionForStorage = (question: Question): Partial<StoredQuestion> => {
-  const repoKey = question.repoUrl 
-    ? question.repoUrl.replace('https://github.com/', '').replace('/', '-')
+  // Ensure we have a valid repoUrl
+  const repoUrl = question.repoUrl || '';
+  const repoKey = repoUrl 
+    ? repoUrl.replace('https://github.com/', '').replace('/', '-')
     : 'unknown-repo';
 
   const baseQuestion = {
     questionId: question.id,
-    repoUrl: question.repoUrl || '',
+    repoUrl: repoUrl,
     repoKey,
-    type: question.type,
-    question: question.question,
+    type: question.type || 'multiple-choice',
+    question: question.question || '',
     language: question.language || 'JavaScript',
     difficulty: question.difficulty || 'medium',
     codeContext: question.codeContext || '', // Store the actual code snippet
-    variants: question.variants || [] // Store variants for function-variant questions
+    variants: (question as any).variants || [] // Store variants for function-variant questions
   };
 
   // Type-specific data normalization
@@ -167,9 +169,9 @@ export const normalizeQuestionForStorage = (question: Question): Partial<StoredQ
   switch (question.type) {
     case 'multiple-choice':
       data = {
-        options: question.options,
-        correctAnswer: question.correctAnswer,
-        explanation: question.explanation,
+        options: (question as any).options || [],
+        correctAnswer: (question as any).correctAnswer || '',
+        explanation: question.explanation || '',
         codeContext: question.codeContext || ''
       };
       break;
@@ -188,32 +190,32 @@ export const normalizeQuestionForStorage = (question: Question): Partial<StoredQ
       
     case 'select-all':
       data = {
-        options: question.options,
-        correctAnswers: question.correctAnswers,
-        explanation: question.explanation,
+        options: (question as any).options || [],
+        correctAnswers: (question as any).correctAnswers || [],
+        explanation: question.explanation || '',
         codeContext: question.codeContext || ''
       };
       break;
       
     case 'true-false':
       data = {
-        options: question.options,
-        correctAnswer: question.correctAnswer,
-        explanation: question.explanation,
+        options: (question as any).options || ['True', 'False'],
+        correctAnswer: (question as any).correctAnswer || '',
+        explanation: question.explanation || '',
         codeContext: question.codeContext || ''
       };
       break;
       
     case 'order-sequence':
       data = {
-        steps: question.steps.map(s => ({
+        steps: ((question as any).steps || []).map((s: any) => ({
           id: s.id,
           code: s.code,
           isDistractor: s.isDistractor || false,
           explanation: s.explanation || ''
         })),
-        correctOrder: question.correctOrder,
-        explanation: question.explanation,
+        correctOrder: (question as any).correctOrder || [],
+        explanation: question.explanation || '',
         codeContext: question.codeContext || ''
       };
       break;

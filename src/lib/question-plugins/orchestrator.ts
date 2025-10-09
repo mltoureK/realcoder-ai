@@ -2,6 +2,7 @@ import { GenerateParams, QuestionPlugin, RawQuestion } from './QuestionPlugin';
 import { shuffleVariants } from './utils';
 import { tinyJudge } from '../judge';
 import { qualityFilterOrchestrator } from '../quality-filters/QualityFilterOrchestrator';
+import { getChunkLogger } from '../chunk-logger';
 
 interface OrchestrateArgs {
   chunks: string[];
@@ -21,6 +22,9 @@ interface OrchestrateArgs {
 export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQuestion[]> {
   const { chunks, plugins, numQuestions, settings, apiKey, options, onQuestion } = args;
   if (plugins.length === 0 || chunks.length === 0) return [];
+
+  // Initialize chunk logger
+  const chunkLogger = getChunkLogger();
 
   // Create scheduled tasks with custom allocation
   const budgetedTasks: Array<{ plugin: QuestionPlugin; chunk: string }> = [];
@@ -123,6 +127,16 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
           abortSignal: controller.signal
         } as GenerateParams);
         if (stopRequested) return;
+        
+        // Log chunk usage for this question generation
+        const chunkIndex = chunks.findIndex(chunk => chunk === task.chunk);
+        chunkLogger.logQuestionGeneration(
+          task.plugin.type,
+          chunkIndex,
+          task.chunk,
+          generated.length
+        );
+        
         for (const q of generated) {
           if (stopRequested) break;
           
@@ -214,6 +228,9 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
   if (results.length < numQuestions && apiCallsMade < budgetedTasks.length) {
     console.log(`⚠️  WARNING: Stopped early with ${budgetedTasks.length - apiCallsMade} unused API calls remaining`);
   }
+
+  // Log session summary
+  chunkLogger.logSessionSummary(results.length, chunks.length);
 
   return results.slice(0, numQuestions);
 }

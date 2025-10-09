@@ -43,7 +43,7 @@ FORMAT (strict JSON):
     "quiz": {
       "type": "true-false",
       "question": "[A difficult and specific true/false statement about the code that requires understanding programming concepts in the same language as the code chunk]",
-      "codeContext": "[relevant full function or code snippet from the chunk with proper formatting]",
+      "codeContext": "[relevant full function from the chunk with proper formatting]",
       "options": ["True", "False"],
       "answer": "[True or False based on the actual code behavior]",
       "explanation": "[Clear explanation (at least 5 sentences) of why this statement is true or false based on the actual code implementation]"

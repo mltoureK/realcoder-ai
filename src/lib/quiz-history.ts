@@ -425,6 +425,11 @@ export const addQuestionToBank = async (
   try {
     console.log(`🔍 [addQuestionToBank] Starting with question:`, question);
     console.log(`🔍 [addQuestionToBank] Repository URL:`, repoUrl);
+    console.log(`🔍 [addQuestionToBank] Question keys:`, Object.keys(question));
+    console.log(`🔍 [addQuestionToBank] Question type:`, question.type);
+    console.log(`🔍 [addQuestionToBank] Question text:`, question.question);
+    console.log(`🔍 [addQuestionToBank] Question options:`, (question as any).options);
+    console.log(`🔍 [addQuestionToBank] Question correctAnswers:`, (question as any).correctAnswers);
     
     if (!validateQuestionData(question)) {
       console.error(`❌ [addQuestionToBank] Validation failed for question:`, question);

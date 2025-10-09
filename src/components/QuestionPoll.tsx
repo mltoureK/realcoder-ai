@@ -8,6 +8,7 @@ interface QuestionPollProps {
   questionIndex: number;
   showExplanations: boolean;
   isCorrect: boolean;
+  shouldUpdate?: boolean;
   onPollUpdate?: (questionId: string, isCorrect: boolean) => void;
 }
 
@@ -16,6 +17,7 @@ export default function QuestionPoll({
   questionIndex, 
   showExplanations,
   isCorrect,
+  shouldUpdate = true,
   onPollUpdate 
 }: QuestionPollProps) {
   const [pollData, setPollData] = useState({
@@ -35,7 +37,7 @@ export default function QuestionPoll({
         return;
       }
       
-      console.log(`🔍 [QuestionPoll] Updating poll for questionId: ${questionId}, isCorrect: ${isCorrect}`);
+      console.log(`🔍 [QuestionPoll] Updating poll for questionId: ${questionId}, isCorrect: ${isCorrect}, shouldUpdate: ${shouldUpdate}`);
       
       try {
         // Update poll with current result
@@ -79,10 +81,24 @@ export default function QuestionPoll({
       }
     };
 
-    if (showExplanations && questionId) {
+    console.log(`🔍 [QuestionPoll] useEffect triggered:`, { 
+      showExplanations, 
+      questionId, 
+      shouldUpdate, 
+      willUpdate: showExplanations && questionId && shouldUpdate 
+    });
+    
+    if (showExplanations && questionId && shouldUpdate) {
+      console.log(`🚀 [QuestionPoll] About to call loadPollData for ${questionId}`);
       loadPollData();
+    } else {
+      console.log(`❌ [QuestionPoll] Skipping loadPollData:`, { 
+        showExplanations, 
+        questionId: !!questionId, 
+        shouldUpdate 
+      });
     }
-  }, [showExplanations, isCorrect, questionId, questionIndex, onPollUpdate]);
+  }, [showExplanations, isCorrect, questionId, questionIndex, shouldUpdate, onPollUpdate]);
 
   // Only show when explanations are visible
   if (!showExplanations) return null;

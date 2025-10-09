@@ -257,7 +257,7 @@ export function validateQuestionStructure(question: any): boolean {
   return false;
 }
 
-export function createSmartCodeChunks(code: string, maxTokensPerChunk: number = 25000): string[] {
+export function createSmartCodeChunks(code: string, maxTokensPerChunk: number = 8000): string[] {
   const fileRegex = /\/\/ ([^\n]+)\n([\s\S]*?)(?=\/\/ [^\n]+\n|$)/g;
   const files: { name: string; content: string; size: number; functionCount: number }[] = [];
 
@@ -280,25 +280,20 @@ export function createSmartCodeChunks(code: string, maxTokensPerChunk: number = 
   // Sort files by function count (descending) to prioritize function-rich files
   files.sort((a, b) => b.functionCount - a.functionCount);
 
+  // OPTION 2: Don't chunk at all - use full files
+  // This ensures complete files are never cut off
+  // Each chunk = one complete file with all its functions
   const chunks: string[] = [];
-  let currentChunk = '';
-  let currentChunkTokens = 0;
-  let currentChunkFunctions = 0;
+  
+  console.log(`📦 Creating file-based chunks (no splitting): ${files.length} files`);
   
   for (const file of files) {
-    // If adding this file would exceed limits, start a new chunk
-    if ((currentChunkTokens + file.size > maxTokensPerChunk || currentChunkFunctions > 0) && currentChunk) {
-      chunks.push(currentChunk.trim());
-      currentChunk = '';
-      currentChunkTokens = 0;
-      currentChunkFunctions = 0;
-    }
-    
-    currentChunk += `// ${file.name}\n${file.content}\n\n`;
-    currentChunkTokens += file.size;
-    currentChunkFunctions += file.functionCount;
+    const fileChunk = `// ${file.name}\n${file.content}`;
+    chunks.push(fileChunk);
+    console.log(`📄 Chunk created: ${file.name} (${file.content.length} chars, ${file.functionCount} functions)`);
   }
-  if (currentChunk) chunks.push(currentChunk.trim());
+  
+  console.log(`✅ Created ${chunks.length} complete file chunks (no cutoffs)`);
   return chunks;
 }
 

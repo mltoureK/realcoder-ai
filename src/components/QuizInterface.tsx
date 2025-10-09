@@ -73,6 +73,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   const [results, setResults] = useState<QuestionResult[]>([]);
   const [failedQuestions, setFailedQuestions] = useState<FailedQuestion[]>([]);
   const [questionRatings, setQuestionRatings] = useState<Record<string, 'up' | 'down'>>({});
+  const [pollUpdatedQuestions, setPollUpdatedQuestions] = useState<Set<string>>(new Set());
 
   // Timers: per-question and overall (increase as questions stream in)
   const [questionTimeTotal, setQuestionTimeTotal] = useState(0);
@@ -397,6 +398,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     setShowExplanations(false);
     setResults([]);
     setFailedQuestions([]);
+    setPollUpdatedQuestions(new Set());
   };
 
   const handleVariantNavigation = (direction: 'prev' | 'next') => {
@@ -415,6 +417,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
   const handleQuestionRating = async (questionId: string, rating: 'up' | 'down') => {
     console.log(`🚨 [QuizInterface] handleQuestionRating called with:`, { questionId, rating });
+    console.log(`🚨 [QuizInterface] Full quizSession:`, quizSession);
     
     setQuestionRatings(prev => ({
       ...prev,
@@ -439,8 +442,14 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         console.log(`🔍 [QuizInterface] Repository URL:`, repoUrl);
         
         if (currentQuestion) {
-          console.log(`🚨 [QuizInterface] About to call addQuestionToBank...`);
-          await addQuestionToBank(repoUrl, currentQuestion as any, 85); // Start with high quality score
+          // Attach repoUrl to the question before saving
+          const questionWithRepo = {
+            ...currentQuestion,
+            repoUrl: repoUrl
+          };
+          
+          console.log(`🚨 [QuizInterface] About to call addQuestionToBank with complete data...`);
+          await addQuestionToBank(repoUrl, questionWithRepo as any, 85); // Start with high quality score
           console.log(`✅ Question added to ${repoUrl} question bank!`);
         } else {
           console.warn(`❌ [QuizInterface] Could not find question with ID: ${questionId}`);
@@ -458,7 +467,14 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   };
 
   const handlePollUpdate = (questionId: string, isCorrect: boolean) => {
-    console.log(`📈 Poll update: Question ${questionId} - ${isCorrect ? 'PASSED' : 'FAILED'}`);
+    console.log(`📈 [QuizInterface] Poll update: Question ${questionId} - ${isCorrect ? 'PASSED' : 'FAILED'}`);
+    console.log(`📈 [QuizInterface] Current pollUpdatedQuestions:`, Array.from(pollUpdatedQuestions));
+    // Track that this question has been polled
+    setPollUpdatedQuestions(prev => {
+      const newSet = new Set([...prev, questionId]);
+      console.log(`📈 [QuizInterface] Updated pollUpdatedQuestions:`, Array.from(newSet));
+      return newSet;
+    });
     // TODO: Save to Firebase when ready
   };
 
@@ -1708,7 +1724,16 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             questionId={currentQuestion.id}
             questionIndex={currentQuestionIndex}
             showExplanations={showExplanations}
-            isCorrect={results.length > 0 ? results[results.length - 1]?.isCorrect || false : false}
+            isCorrect={(() => {
+              // Find the result for THIS specific question, not the last result
+              const questionResult = results.find(r => r.questionId === currentQuestion.id);
+              return questionResult?.isCorrect || false;
+            })()}
+            shouldUpdate={(() => {
+              const shouldUpdate = !pollUpdatedQuestions.has(currentQuestion.id);
+              console.log(`🔍 [QuizInterface] shouldUpdate for ${currentQuestion.id}:`, shouldUpdate, 'pollUpdatedQuestions:', Array.from(pollUpdatedQuestions));
+              return shouldUpdate;
+            })()}
             onPollUpdate={handlePollUpdate}
           />
 
