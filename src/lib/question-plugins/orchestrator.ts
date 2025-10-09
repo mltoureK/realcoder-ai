@@ -34,24 +34,26 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
   console.log(`🎯 Quality Generation Target: ${numQuestions} questions (rated 1-10)`);
   console.log(`📊 Generation Budget: ${budget} API calls`);
   
-  // Custom call allocation: more select-all, less multiple-choice
+  // Custom call allocation: prioritize function-variant for best quality
   const callAllocation: Record<string, number> = {
-    // Reduce total budget to ~10 calls overall for local testing speed
+    // Total: ~10 calls for efficient generation with diverse question types
     'select-all': 3,
     'multiple-choice': 2,
-    'function-variant': 2,
-    'order-sequence': 2,
+    'function-variant': 3, // High quality question type
+    'order-sequence': 1,   // Reduced to make room for function-variant
     'true-false': 1
   };
   
-  // Randomize chunk selection for each plugin call to ensure diversity
+  // Assign different functions to each plugin call to ensure diversity
+  let chunkIndex = 0;
   for (const plugin of plugins) {
     const calls = callAllocation[plugin.type] || Math.max(1, Math.floor(budget / plugins.length));
     for (let call = 1; call <= calls; call++) {
-      // Pick a random chunk instead of round-robin for better diversity
-      const randomChunk = shuffledChunks[Math.floor(Math.random() * shuffledChunks.length)];
-      budgetedTasks.push({ plugin, chunk: randomChunk });
-      console.log(`🎯 Scheduled: ${plugin.type} call ${call}/${calls} (random chunk)`);
+      // Pick next unique chunk (function) to ensure no duplicates
+      const chunk = shuffledChunks[chunkIndex % shuffledChunks.length];
+      budgetedTasks.push({ plugin, chunk });
+      console.log(`🎯 Scheduled: ${plugin.type} call ${call}/${calls} (function ${chunkIndex + 1})`);
+      chunkIndex++;
     }
   }
   

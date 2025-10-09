@@ -5,7 +5,7 @@ export const functionVariantPlugin: QuestionPlugin = {
   type: 'function-variant',
   async generate(params: GenerateParams): Promise<RawQuestion[]> {
     const { chunk, apiKey, timeoutMs, retry, abortSignal } = params;
-    const questionsPerChunk = 3;
+    const questionsPerChunk = 1; // Generate 1 question per function for diversity
     const randomTextForPrompt = [" longer", "sameish length", "slightly longer"]
 
     const generated: RawQuestion[] = [];

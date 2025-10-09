@@ -18,7 +18,7 @@ const SYSTEM_PROMPT = 'You are a JSON generator. You MUST return ONLY valid JSON
  * Creates the user prompt for multiple choice question generation
  */
 function createUserPrompt(chunk: string): string {
-  return `Generate 3 hard difficulty multiple-choice question based on this code chunk:
+  return `Generate 1 hard difficulty multiple-choice question based on this code chunk (function):
 
 ${chunk}
 

@@ -78,7 +78,7 @@ function createUserPrompt(chunk: string): string {
   const optionCount = Math.random() < 0.6 ? 5 : 6;
   const correctCount = generateRandomCorrectCount(optionCount);
   
-  return `Generate 3 hard difficulty "select all that apply" questions based on the CodeContext generated from the code chunk, thats in json format:
+  return `Generate 1 hard difficulty "select all that apply" question based on the CodeContext generated from the code chunk (function), thats in json format:
 
 ${chunk}
 
