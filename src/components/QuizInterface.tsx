@@ -1734,6 +1734,8 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               console.log(`🔍 [QuizInterface] shouldUpdate for ${currentQuestion.id}:`, shouldUpdate, 'pollUpdatedQuestions:', Array.from(pollUpdatedQuestions));
               return shouldUpdate;
             })()}
+            questionData={currentQuestion}
+            repoUrl={quizSession?.repositoryInfo ? `https://github.com/${quizSession.repositoryInfo.owner}/${quizSession.repositoryInfo.repo}` : undefined}
             onPollUpdate={handlePollUpdate}
           />
 

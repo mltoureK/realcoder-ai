@@ -330,7 +330,8 @@ export async function getUserQuestionRating(questionId: string, userId: string):
 // Poll system functions
 export const updateQuestionPoll = async (
   questionId: string,
-  isCorrect: boolean
+  isCorrect: boolean,
+  questionData?: any // Optional: full question data to save on first poll
 ): Promise<void> => {
   try {
     const questionRef = doc(db, 'questions', questionId);
@@ -356,17 +357,9 @@ export const updateQuestionPoll = async (
       
       await updateDoc(questionRef, updates);
     } else {
-      // Create new question document with poll data
-      // Note: This creates a minimal document - full question data should come from addQuestionToBank
-      const initialData = {
+      // Create new question document with FULL data if provided
+      let initialData: any = {
         questionId: questionId,
-        repoUrl: '', // Will be updated when question is properly saved
-        repoKey: '', // Will be updated when question is properly saved
-        type: '', // Will be updated when question is properly saved
-        question: '', // Will be updated when question is properly saved
-        language: 'JavaScript', // Default
-        difficulty: 'medium', // Default
-        data: {}, // Will be updated when question is properly saved
         upvotes: 0,
         downvotes: 0,
         totalVotes: 0,
@@ -380,8 +373,20 @@ export const updateQuestionPoll = async (
         lastUpdated: serverTimestamp()
       };
       
+      // If full question data is provided, include it immediately
+      if (questionData) {
+        console.log(`📊 [updateQuestionPoll] Saving FULL question data on first poll`);
+        const normalized = normalizeQuestionForStorage(questionData);
+        initialData = {
+          ...normalized,
+          ...initialData // Keep poll metrics
+        };
+      } else {
+        console.log(`📊 [updateQuestionPoll] No question data provided - creating minimal poll document`);
+      }
+      
       await setDoc(questionRef, initialData, { merge: true });
-      console.log(`📊 Created minimal question document for ${questionId} - will be updated with full data when upvoted`);
+      console.log(`📊 Created question document for ${questionId} with ${questionData ? 'FULL' : 'minimal'} data`);
     }
   } catch (error) {
     console.error('Error updating question poll:', error);
@@ -428,8 +433,13 @@ export const addQuestionToBank = async (
     console.log(`🔍 [addQuestionToBank] Question keys:`, Object.keys(question));
     console.log(`🔍 [addQuestionToBank] Question type:`, question.type);
     console.log(`🔍 [addQuestionToBank] Question text:`, question.question);
+    console.log(`🔍 [addQuestionToBank] Question snippet:`, (question as any).snippet);
+    console.log(`🔍 [addQuestionToBank] Question codeContext:`, (question as any).codeContext?.substring(0, 100));
     console.log(`🔍 [addQuestionToBank] Question options:`, (question as any).options);
     console.log(`🔍 [addQuestionToBank] Question correctAnswers:`, (question as any).correctAnswers);
+    console.log(`🔍 [addQuestionToBank] Question variants:`, (question as any).variants);
+    console.log(`🔍 [addQuestionToBank] Question steps:`, (question as any).steps);
+    console.log(`🔍 [addQuestionToBank] Question explanation:`, (question as any).explanation?.substring(0, 100));
     
     if (!validateQuestionData(question)) {
       console.error(`❌ [addQuestionToBank] Validation failed for question:`, question);
@@ -465,6 +475,7 @@ export const addQuestionToBank = async (
     // ALSO save to the main questions collection with complete data
     const questionRef = doc(db, COLLECTIONS.QUESTIONS, question.id);
     console.log(`🔍 [addQuestionToBank] Saving to questions collection with ID:`, question.id);
+    console.log(`🔍 [addQuestionToBank] Document to save:`, JSON.stringify(storedQuestion, null, 2));
     await setDoc(questionRef, storedQuestion, { merge: true });
     console.log(`✅ Question ${question.id} saved to questions collection with complete data`);
     

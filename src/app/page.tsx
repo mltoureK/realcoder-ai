@@ -371,7 +371,12 @@ export default function Home() {
           score: 0,
           lives: 3,
           lastLifeRefill: new Date(),
-          completed: false
+          completed: false,
+          repositoryInfo: {
+            owner: githubRepo.owner,
+            repo: githubRepo.repo,
+            branch: selectedBranch || 'main'
+          }
         } as any;
         setQuizSession(initialSession);
         
@@ -465,7 +470,12 @@ export default function Home() {
           score: 0,
           lives: 3,
           lastLifeRefill: new Date(),
-          completed: false
+          completed: false,
+          repositoryInfo: {
+            owner: githubRepo.owner,
+            repo: githubRepo.repo,
+            branch: selectedBranch || 'main'
+          }
         } as any;
         setQuizSession(initialSession);
         

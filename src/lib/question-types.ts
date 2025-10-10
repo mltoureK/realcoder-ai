@@ -1,5 +1,6 @@
 /**
  * Question type utilities for handling flexible schemas across different question types
+ * FLATTENED STRUCTURE: All fields stored at root level (no nested 'data' object)
  */
 
 export interface BaseQuestion {
@@ -9,59 +10,17 @@ export interface BaseQuestion {
   language?: string;
   difficulty?: string;
   repoUrl?: string;
+  snippet?: string; // Function name or identifier from code
   codeContext?: string; // The actual code snippet
-  variants?: Array<{
-    id: string;
-    code: string;
-    isCorrect: boolean;
-    explanation: string;
-  }>;
 }
 
-// Additional question types for compatibility with existing quiz system
-export interface FillBlankQuestion extends BaseQuestion {
-  type: 'fill-blank';
-  options: string[];
-  correctAnswer: string;
-  explanation: string;
-}
-
-export interface PredictOutputQuestion extends BaseQuestion {
-  type: 'predict-output';
-  code: string;
-  correctAnswer: string;
-  explanation: string;
-}
-
-export interface DragDropQuestion extends BaseQuestion {
-  type: 'drag-drop';
-  options: string[];
-  correctAnswer: string;
-  explanation: string;
-}
-
-export interface CodeExecutionQuestion extends BaseQuestion {
-  type: 'code-execution';
-  code: string;
-  correctAnswer: string;
-  explanation: string;
-}
-
-export interface FunctionRearrangeQuestion extends BaseQuestion {
-  type: 'function-rearrange';
-  steps: Array<{
-    id: string;
-    code: string;
-  }>;
-  correctOrder: string[];
-  explanation: string;
-}
-
+// Question type interfaces for the 5 active question types
 export interface MultipleChoiceQuestion extends BaseQuestion {
   type: 'multiple-choice';
   options: string[];
   correctAnswer: string;
   explanation: string;
+  answer?: string; // Raw answer from AI (e.g., "2")
 }
 
 export interface FunctionVariantQuestion extends BaseQuestion {
@@ -76,8 +35,8 @@ export interface FunctionVariantQuestion extends BaseQuestion {
 
 export interface SelectAllQuestion extends BaseQuestion {
   type: 'select-all';
-  options: string[];
-  correctAnswers: string[]; // Array of correct option letters (A, B, C, etc.)
+  options: string[] | Array<{text: string, isCorrect: boolean}>; // Can be array of strings or objects
+  correctAnswers: string[]; // Array of correct option indices/letters
   explanation: string;
 }
 
@@ -86,6 +45,7 @@ export interface TrueFalseQuestion extends BaseQuestion {
   options: string[];
   correctAnswer: string;
   explanation: string;
+  answer?: string; // Raw answer from AI (e.g., "TRUE")
 }
 
 export interface OrderSequenceQuestion extends BaseQuestion {
@@ -97,6 +57,8 @@ export interface OrderSequenceQuestion extends BaseQuestion {
     explanation?: string;
   }>;
   correctOrder: string[]; // Array of step IDs in correct order
+  acceptableOrders?: string[][]; // Multiple valid orders
+  constraints?: any[]; // Precedence constraints
   explanation: string;
 }
 
@@ -105,29 +67,55 @@ export type Question =
   | FunctionVariantQuestion 
   | SelectAllQuestion 
   | TrueFalseQuestion 
-  | OrderSequenceQuestion
-  | FillBlankQuestion
-  | PredictOutputQuestion
-  | DragDropQuestion
-  | CodeExecutionQuestion
-  | FunctionRearrangeQuestion;
+  | OrderSequenceQuestion;
 
+/**
+ * Flattened Firebase document structure
+ * ALL fields at root level for easy editing and querying
+ */
 export interface StoredQuestion {
+  // Core identification
   questionId: string;
   repoUrl: string;
   repoKey: string;
   type: string;
+  
+  // Question content (ALWAYS at root)
+  snippet: string;
   question: string;
   language: string;
   difficulty: string;
-  codeContext: string; // The actual code snippet for re-display
-  variants: Array<{
+  codeContext: string;
+  explanation: string;
+  
+  // Multiple-choice & True-false fields
+  options?: string[] | Array<{text: string, isCorrect: boolean}>;
+  correctAnswer?: string;
+  answer?: string; // Raw AI answer
+  
+  // Select-all fields
+  correctAnswers?: string[];
+  
+  // Function-variant fields
+  variants?: Array<{
     id: string;
     code: string;
     isCorrect: boolean;
     explanation: string;
-  }>; // For function-variant questions
-  data: any; // Flexible data object for type-specific content
+  }>;
+  
+  // Order-sequence fields
+  steps?: Array<{
+    id: string;
+    code: string;
+    isDistractor?: boolean;
+    explanation?: string;
+  }>;
+  correctOrder?: string[];
+  acceptableOrders?: string[][];
+  constraints?: any[];
+  
+  // Metrics
   upvotes: number;
   downvotes: number;
   totalVotes: number;
@@ -136,6 +124,8 @@ export interface StoredQuestion {
   failedCount: number;
   totalAttempts: number;
   passRate: number;
+  
+  // Status
   status: 'active' | 'removed' | 'flagged';
   createdAt: any; // Firestore timestamp
   lastUpdated: any; // Firestore timestamp
@@ -143,139 +133,27 @@ export interface StoredQuestion {
 
 /**
  * Normalize a question for storage in Firebase
+ * FLATTENED: All fields at root level, no nested 'data' object
  */
-export const normalizeQuestionForStorage = (question: Question): Partial<StoredQuestion> => {
+export const normalizeQuestionForStorage = (question: any): Partial<StoredQuestion> => {
   // Ensure we have a valid repoUrl
   const repoUrl = question.repoUrl || '';
   const repoKey = repoUrl 
     ? repoUrl.replace('https://github.com/', '').replace('/', '-')
     : 'unknown-repo';
 
-  const baseQuestion = {
-    questionId: question.id,
+  // Base fields (ALWAYS included)
+  const stored: Partial<StoredQuestion> = {
+    questionId: question.id || '',
     repoUrl: repoUrl,
     repoKey,
-    type: question.type || 'multiple-choice',
+    type: question.type || '',
+    snippet: question.snippet || '',
     question: question.question || '',
     language: question.language || 'JavaScript',
     difficulty: question.difficulty || 'medium',
-    codeContext: question.codeContext || '', // Store the actual code snippet
-    variants: (question as any).variants || [] // Store variants for function-variant questions
-  };
-
-  // Type-specific data normalization
-  let data: any = {};
-  
-  switch (question.type) {
-    case 'multiple-choice':
-      data = {
-        options: (question as any).options || [],
-        correctAnswer: (question as any).correctAnswer || '',
-        explanation: question.explanation || '',
-        codeContext: question.codeContext || ''
-      };
-      break;
-      
-    case 'function-variant':
-      data = {
-        variants: question.variants?.map(v => ({
-          id: v.id,
-          code: v.code,
-          isCorrect: v.isCorrect,
-          explanation: v.explanation
-        })) || [],
-        codeContext: question.codeContext || ''
-      };
-      break;
-      
-    case 'select-all':
-      data = {
-        options: (question as any).options || [],
-        correctAnswers: (question as any).correctAnswers || [],
-        explanation: question.explanation || '',
-        codeContext: question.codeContext || ''
-      };
-      break;
-      
-    case 'true-false':
-      data = {
-        options: (question as any).options || ['True', 'False'],
-        correctAnswer: (question as any).correctAnswer || '',
-        explanation: question.explanation || '',
-        codeContext: question.codeContext || ''
-      };
-      break;
-      
-    case 'order-sequence':
-      data = {
-        steps: ((question as any).steps || []).map((s: any) => ({
-          id: s.id,
-          code: s.code,
-          isDistractor: s.isDistractor || false,
-          explanation: s.explanation || ''
-        })),
-        correctOrder: (question as any).correctOrder || [],
-        explanation: question.explanation || '',
-        codeContext: question.codeContext || ''
-      };
-      break;
-      
-    case 'fill-blank':
-      data = {
-        options: question.options,
-        correctAnswer: question.correctAnswer,
-        explanation: question.explanation,
-        codeContext: question.codeContext || ''
-      };
-      break;
-      
-    case 'predict-output':
-      data = {
-        code: question.code,
-        correctAnswer: question.correctAnswer,
-        explanation: question.explanation,
-        codeContext: question.codeContext || ''
-      };
-      break;
-      
-    case 'drag-drop':
-      data = {
-        options: question.options,
-        correctAnswer: question.correctAnswer,
-        explanation: question.explanation,
-        codeContext: question.codeContext || ''
-      };
-      break;
-      
-    case 'code-execution':
-      data = {
-        code: question.code,
-        correctAnswer: question.correctAnswer,
-        explanation: question.explanation,
-        codeContext: question.codeContext || ''
-      };
-      break;
-      
-    case 'function-rearrange':
-      data = {
-        steps: question.steps.map(s => ({
-          id: s.id,
-          code: s.code
-        })),
-        correctOrder: question.correctOrder,
-        explanation: question.explanation,
-        codeContext: question.codeContext || ''
-      };
-      break;
-      
-    default:
-      console.warn(`Unknown question type: ${question.type}`);
-      data = {};
-  }
-
-  return {
-    ...baseQuestion,
-    data,
+    codeContext: question.codeContext || '',
+    explanation: question.explanation || '',
     upvotes: 0,
     downvotes: 0,
     totalVotes: 0,
@@ -286,6 +164,52 @@ export const normalizeQuestionForStorage = (question: Question): Partial<StoredQ
     passRate: 0,
     status: 'active'
   };
+
+  // Add type-specific fields (ALL at root level)
+  switch (question.type) {
+    case 'multiple-choice':
+      stored.options = question.options || [];
+      stored.correctAnswer = question.correctAnswer || '';
+      stored.answer = question.answer || '';
+      break;
+      
+    case 'function-variant':
+      stored.variants = (question.variants || []).map((v: any) => ({
+        id: v.id || '',
+        code: v.code || '',
+        isCorrect: v.isCorrect || false,
+        explanation: v.explanation || ''
+      }));
+      break;
+      
+    case 'select-all':
+      stored.options = question.options || [];
+      stored.correctAnswers = question.correctAnswers || [];
+      break;
+      
+    case 'true-false':
+      stored.options = question.options || ['True', 'False'];
+      stored.correctAnswer = question.correctAnswer || '';
+      stored.answer = question.answer || '';
+      break;
+      
+    case 'order-sequence':
+      stored.steps = (question.steps || []).map((s: any) => ({
+        id: s.id || '',
+        code: s.code || '',
+        isDistractor: s.isDistractor || false,
+        explanation: s.explanation || ''
+      }));
+      stored.correctOrder = question.correctOrder || [];
+      stored.acceptableOrders = question.acceptableOrders || [];
+      stored.constraints = question.constraints || [];
+      break;
+      
+    default:
+      console.warn(`Unknown question type: ${question.type}`);
+  }
+
+  return stored;
 };
 
 /**
@@ -295,101 +219,60 @@ export const denormalizeQuestionFromStorage = (storedQuestion: StoredQuestion): 
   const baseQuestion = {
     id: storedQuestion.questionId,
     type: storedQuestion.type,
+    snippet: storedQuestion.snippet,
     question: storedQuestion.question,
     language: storedQuestion.language,
     difficulty: storedQuestion.difficulty,
-    repoUrl: storedQuestion.repoUrl
+    repoUrl: storedQuestion.repoUrl,
+    codeContext: storedQuestion.codeContext
   };
 
-  // Reconstruct type-specific fields
+  // Reconstruct type-specific fields from root level
   switch (storedQuestion.type) {
     case 'multiple-choice':
       return {
         ...baseQuestion,
         type: 'multiple-choice',
-        options: storedQuestion.data.options,
-        correctAnswer: storedQuestion.data.correctAnswer,
-        explanation: storedQuestion.data.explanation
+        options: storedQuestion.options as string[] || [],
+        correctAnswer: storedQuestion.correctAnswer || '',
+        explanation: storedQuestion.explanation || ''
       } as MultipleChoiceQuestion;
       
     case 'function-variant':
       return {
         ...baseQuestion,
         type: 'function-variant',
-        variants: storedQuestion.data.variants
+        variants: storedQuestion.variants || []
       } as FunctionVariantQuestion;
       
     case 'select-all':
       return {
         ...baseQuestion,
         type: 'select-all',
-        options: storedQuestion.data.options,
-        correctAnswers: storedQuestion.data.correctAnswers,
-        explanation: storedQuestion.data.explanation
+        options: storedQuestion.options || [],
+        correctAnswers: storedQuestion.correctAnswers || [],
+        explanation: storedQuestion.explanation || ''
       } as SelectAllQuestion;
       
     case 'true-false':
       return {
         ...baseQuestion,
         type: 'true-false',
-        options: storedQuestion.data.options,
-        correctAnswer: storedQuestion.data.correctAnswer,
-        explanation: storedQuestion.data.explanation
+        options: storedQuestion.options as string[] || ['True', 'False'],
+        correctAnswer: storedQuestion.correctAnswer || '',
+        explanation: storedQuestion.explanation || ''
       } as TrueFalseQuestion;
       
     case 'order-sequence':
       return {
         ...baseQuestion,
         type: 'order-sequence',
-        steps: storedQuestion.data.steps,
-        correctOrder: storedQuestion.data.correctOrder,
-        explanation: storedQuestion.data.explanation
+        steps: storedQuestion.steps || [],
+        correctOrder: storedQuestion.correctOrder || [],
+        acceptableOrders: storedQuestion.acceptableOrders,
+        constraints: storedQuestion.constraints,
+        explanation: storedQuestion.explanation || ''
       } as OrderSequenceQuestion;
-      
-    case 'fill-blank':
-      return {
-        ...baseQuestion,
-        type: 'fill-blank',
-        options: storedQuestion.data.options,
-        correctAnswer: storedQuestion.data.correctAnswer,
-        explanation: storedQuestion.data.explanation
-      } as FillBlankQuestion;
-      
-    case 'predict-output':
-      return {
-        ...baseQuestion,
-        type: 'predict-output',
-        code: storedQuestion.data.code,
-        correctAnswer: storedQuestion.data.correctAnswer,
-        explanation: storedQuestion.data.explanation
-      } as PredictOutputQuestion;
-      
-    case 'drag-drop':
-      return {
-        ...baseQuestion,
-        type: 'drag-drop',
-        options: storedQuestion.data.options,
-        correctAnswer: storedQuestion.data.correctAnswer,
-        explanation: storedQuestion.data.explanation
-      } as DragDropQuestion;
-      
-    case 'code-execution':
-      return {
-        ...baseQuestion,
-        type: 'code-execution',
-        code: storedQuestion.data.code,
-        correctAnswer: storedQuestion.data.correctAnswer,
-        explanation: storedQuestion.data.explanation
-      } as CodeExecutionQuestion;
-      
-    case 'function-rearrange':
-      return {
-        ...baseQuestion,
-        type: 'function-rearrange',
-        steps: storedQuestion.data.steps,
-        correctOrder: storedQuestion.data.correctOrder,
-        explanation: storedQuestion.data.explanation
-      } as FunctionRearrangeQuestion;
       
     default:
       throw new Error(`Unknown question type: ${storedQuestion.type}`);
@@ -417,27 +300,29 @@ export const extractRepoInfo = (repoUrl: string) => {
  * Validate question data based on type
  */
 export const validateQuestionData = (question: any): boolean => {
-  if (!question.id || !question.type || !question.question) {
+  if (!question.id || !question.type) {
+    console.warn('[validateQuestionData] Missing id or type:', {id: question.id, type: question.type});
     return false;
   }
 
   switch (question.type) {
     case 'multiple-choice':
-      return !!(question.options && question.correctAnswer && question.explanation);
+      return !!(question.options && question.correctAnswer);
       
     case 'function-variant':
-      return !!(question.variants && Array.isArray(question.variants));
+      return !!(question.variants && Array.isArray(question.variants) && question.variants.length > 0);
       
     case 'select-all':
-      return !!(question.options && question.correctAnswers && question.explanation);
+      return !!(question.options && question.correctAnswers);
       
     case 'true-false':
-      return !!(question.options && question.correctAnswer && question.explanation);
+      return !!(question.options && question.correctAnswer);
       
     case 'order-sequence':
-      return !!(question.steps && question.correctOrder && question.explanation);
+      return !!(question.steps && question.correctOrder);
       
     default:
+      console.warn('[validateQuestionData] Unknown question type:', question.type);
       return false;
   }
 };

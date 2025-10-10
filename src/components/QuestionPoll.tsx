@@ -9,6 +9,8 @@ interface QuestionPollProps {
   showExplanations: boolean;
   isCorrect: boolean;
   shouldUpdate?: boolean;
+  questionData?: any; // Full question object for saving complete data
+  repoUrl?: string; // Repository URL for saving
   onPollUpdate?: (questionId: string, isCorrect: boolean) => void;
 }
 
@@ -18,6 +20,8 @@ export default function QuestionPoll({
   showExplanations,
   isCorrect,
   shouldUpdate = true,
+  questionData,
+  repoUrl,
   onPollUpdate 
 }: QuestionPollProps) {
   const [pollData, setPollData] = useState({
@@ -40,8 +44,13 @@ export default function QuestionPoll({
       console.log(`🔍 [QuestionPoll] Updating poll for questionId: ${questionId}, isCorrect: ${isCorrect}, shouldUpdate: ${shouldUpdate}`);
       
       try {
-        // Update poll with current result
-        await updateQuestionPoll(questionId, isCorrect);
+        // Update poll with current result AND full question data
+        const questionWithRepo = questionData ? {
+          ...questionData,
+          repoUrl: repoUrl
+        } : undefined;
+        
+        await updateQuestionPoll(questionId, isCorrect, questionWithRepo);
         
         // Get updated poll data
         const data = await getQuestionPollData(questionId);
