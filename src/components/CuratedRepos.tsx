@@ -12,7 +12,247 @@ interface CuratedRepo {
   category: string;
   icon: string;
   isProduction: boolean;
+  childRepos?: CuratedRepo[]; // For frameworks with related projects (like Next.js)
 }
+
+// Next.js production repos for learning path
+const NEXTJS_CHILD_REPOS: CuratedRepo[] = [
+  // Start with the core framework itself
+  {
+    name: 'Next.js Framework (Core)',
+    url: 'https://github.com/vercel/next.js',
+    description: 'The React Framework for Production - learn Next.js internals, App Router, Server Components',
+    language: 'TypeScript',
+    difficulty: 'Intermediate',
+    stars: '128k+',
+    category: 'Framework Core',
+    icon: '▲',
+    isProduction: true
+  },
+  
+  // Production SaaS Applications
+  {
+    name: 'Cal.com',
+    url: 'https://github.com/calcom/cal.com',
+    description: 'Open-source Calendly alternative - scheduling infrastructure for everyone',
+    language: 'TypeScript',
+    difficulty: 'Advanced',
+    stars: '32k+',
+    category: 'SaaS Platform',
+    icon: '📅',
+    isProduction: true
+  },
+  {
+    name: 'Dub',
+    url: 'https://github.com/dubinc/dub',
+    description: 'Open-source link management infrastructure - modern Bitly alternative',
+    language: 'TypeScript',
+    difficulty: 'Advanced',
+    stars: '18k+',
+    category: 'SaaS Platform',
+    icon: '🔗',
+    isProduction: true
+  },
+  {
+    name: 'Plane',
+    url: 'https://github.com/makeplane/plane',
+    description: 'Open-source Jira alternative - project management for modern teams',
+    language: 'TypeScript',
+    difficulty: 'Advanced',
+    stars: '30k+',
+    category: 'Project Management',
+    icon: '✈️',
+    isProduction: true
+  },
+  {
+    name: 'Formbricks',
+    url: 'https://github.com/formbricks/formbricks',
+    description: 'Open-source survey platform - Typeform alternative',
+    language: 'TypeScript',
+    difficulty: 'Intermediate',
+    stars: '7k+',
+    category: 'Survey Platform',
+    icon: '📝',
+    isProduction: true
+  },
+  {
+    name: 'Documenso',
+    url: 'https://github.com/documenso/documenso',
+    description: 'Open-source DocuSign alternative - document signing platform',
+    language: 'TypeScript',
+    difficulty: 'Intermediate',
+    stars: '8k+',
+    category: 'Document Platform',
+    icon: '📄',
+    isProduction: true
+  },
+  
+  // E-commerce & Business
+  {
+    name: 'Vercel Commerce',
+    url: 'https://github.com/vercel/commerce',
+    description: 'Next.js commerce template with Shopify integration',
+    language: 'TypeScript',
+    difficulty: 'Intermediate',
+    stars: '11k+',
+    category: 'E-commerce',
+    icon: '🛍️',
+    isProduction: true
+  },
+  {
+    name: 'Taxonomy (shadcn)',
+    url: 'https://github.com/shadcn-ui/taxonomy',
+    description: 'Modern Next.js 13+ starter with authentication, subscriptions, blog',
+    language: 'TypeScript',
+    difficulty: 'Intermediate',
+    stars: '18k+',
+    category: 'SaaS Starter',
+    icon: '🚀',
+    isProduction: true
+  },
+  {
+    name: 'Next.js Subscription Payments',
+    url: 'https://github.com/vercel/nextjs-subscription-payments',
+    description: 'Next.js subscription payments with Stripe and Supabase',
+    language: 'TypeScript',
+    difficulty: 'Intermediate',
+    stars: '6k+',
+    category: 'Payments',
+    icon: '💳',
+    isProduction: true
+  },
+  
+  // Content & CMS
+  {
+    name: 'Hashnode',
+    url: 'https://github.com/Hashnode/starter-kit',
+    description: 'Next.js blog starter kit - headless CMS for developers',
+    language: 'TypeScript',
+    difficulty: 'Beginner',
+    stars: '5k+',
+    category: 'Blog Platform',
+    icon: '📝',
+    isProduction: true
+  },
+  {
+    name: 'Mintlify',
+    url: 'https://github.com/mintlify/starter',
+    description: 'Beautiful documentation in Next.js - modern docs platform',
+    language: 'TypeScript',
+    difficulty: 'Beginner',
+    stars: '3k+',
+    category: 'Documentation',
+    icon: '📚',
+    isProduction: true
+  },
+  {
+    name: 'Novel (Notion Editor)',
+    url: 'https://github.com/steven-tey/novel',
+    description: 'Notion-style WYSIWYG editor with AI-powered autocompletion',
+    language: 'TypeScript',
+    difficulty: 'Advanced',
+    stars: '13k+',
+    category: 'Editor',
+    icon: '✍️',
+    isProduction: true
+  },
+  
+  // AI & Developer Tools
+  {
+    name: 'ChatGPT UI (mckaywrigley)',
+    url: 'https://github.com/mckaywrigley/chatbot-ui',
+    description: 'Open-source ChatGPT UI - AI chat interface',
+    language: 'TypeScript',
+    difficulty: 'Intermediate',
+    stars: '28k+',
+    category: 'AI Platform',
+    icon: '🤖',
+    isProduction: true
+  },
+  {
+    name: 'Vercel AI SDK',
+    url: 'https://github.com/vercel/ai',
+    description: 'Build AI-powered applications with React, Next.js, and OpenAI',
+    language: 'TypeScript',
+    difficulty: 'Intermediate',
+    stars: '10k+',
+    category: 'AI SDK',
+    icon: '🧠',
+    isProduction: true
+  },
+  {
+    name: 'OpenStatus',
+    url: 'https://github.com/openstatusHQ/openstatus',
+    description: 'Open-source status page and monitoring platform',
+    language: 'TypeScript',
+    difficulty: 'Intermediate',
+    stars: '6k+',
+    category: 'Monitoring',
+    icon: '📊',
+    isProduction: true
+  },
+  
+  // Platform & Infrastructure
+  {
+    name: 'Vercel Platforms',
+    url: 'https://github.com/vercel/platforms',
+    description: 'Multi-tenant platform starter - build your own Substack/Medium',
+    language: 'TypeScript',
+    difficulty: 'Advanced',
+    stars: '6k+',
+    category: 'Multi-tenant',
+    icon: '🏢',
+    isProduction: true
+  },
+  {
+    name: 'Next.js App Router Examples',
+    url: 'https://github.com/vercel/next.js/tree/canary/examples',
+    description: 'Official Next.js examples covering every feature - authentication, databases, APIs',
+    language: 'TypeScript',
+    difficulty: 'Beginner',
+    stars: '128k+',
+    category: 'Examples',
+    icon: '📘',
+    isProduction: true
+  },
+  
+  // UI Component Libraries
+  {
+    name: 'shadcn/ui',
+    url: 'https://github.com/shadcn-ui/ui',
+    description: 'Beautifully designed components built with Radix UI and Tailwind CSS',
+    language: 'TypeScript',
+    difficulty: 'Intermediate',
+    stars: '75k+',
+    category: 'UI Library',
+    icon: '🎨',
+    isProduction: true
+  },
+  {
+    name: 'Next UI',
+    url: 'https://github.com/nextui-org/nextui',
+    description: 'Beautiful, fast, and modern React UI library for Next.js',
+    language: 'TypeScript',
+    difficulty: 'Beginner',
+    stars: '22k+',
+    category: 'UI Library',
+    icon: '🎨',
+    isProduction: true
+  },
+  
+  // Analytics & Marketing
+  {
+    name: 'Plausible Analytics',
+    url: 'https://github.com/plausible/analytics',
+    description: 'Simple, open-source, lightweight analytics - Google Analytics alternative',
+    language: 'TypeScript',
+    difficulty: 'Advanced',
+    stars: '20k+',
+    category: 'Analytics',
+    icon: '📊',
+    isProduction: true
+  }
+];
 
 const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
   'JavaScript': [
@@ -600,7 +840,7 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       description: 'A declarative, efficient, and flexible JavaScript library for building user interfaces - used by Facebook, Netflix, Airbnb',
       language: 'JavaScript',
       difficulty: 'Intermediate',
-      stars: '220k+',
+      stars: '240k+',
       category: 'React Core',
       icon: '⚛️',
       isProduction: true
@@ -608,13 +848,14 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
     {
       name: 'Next.js',
       url: 'https://github.com/vercel/next.js',
-      description: 'The React Framework for Production - used by Vercel, Netflix, TikTok',
+      description: 'The React Framework for Production - used by Netflix, TikTok, Twitch, Hulu',
       language: 'JavaScript',
       difficulty: 'Intermediate',
-      stars: '110k+',
+      stars: '128k+',
       category: 'React Framework',
       icon: '▲',
-      isProduction: true
+      isProduction: true,
+      childRepos: NEXTJS_CHILD_REPOS
     },
     {
       name: 'React Router',
@@ -1779,6 +2020,19 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
 export default function CuratedRepos({ onRepoSelect }: { onRepoSelect: (url: string) => void }) {
   const [selectedLanguage, setSelectedLanguage] = useState<string>('JavaScript');
   const [searchTerm, setSearchTerm] = useState('');
+  const [expandedRepos, setExpandedRepos] = useState<Set<string>>(new Set());
+
+  const toggleRepoExpansion = (repoName: string) => {
+    setExpandedRepos(prev => {
+      const next = new Set(prev);
+      if (next.has(repoName)) {
+        next.delete(repoName);
+      } else {
+        next.add(repoName);
+      }
+      return next;
+    });
+  };
 
   const languages = Object.keys(CURATED_REPOS);
   const filteredRepos = CURATED_REPOS[selectedLanguage].filter(repo =>
@@ -1832,47 +2086,135 @@ export default function CuratedRepos({ onRepoSelect }: { onRepoSelect: (url: str
       {/* Repository Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
         {filteredRepos.map((repo) => (
-          <div
-            key={repo.url}
-            onClick={() => onRepoSelect(repo.url)}
-            className="p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
-          >
-            <div className="flex items-start justify-between mb-2">
-              <div className="flex items-center space-x-2">
-                <span className="text-lg">{repo.icon}</span>
-                <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
-                  {repo.name}
-                </h4>
-              </div>
-              <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
-                ⭐ {repo.stars}
-              </span>
-            </div>
-            
-            <p className="text-xs text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
-              {repo.description}
-            </p>
-            
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <span className={`px-2 py-1 text-xs rounded-full ${
-                  repo.difficulty === 'Beginner' 
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                    : repo.difficulty === 'Intermediate'
-                    ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                }`}>
-                  {repo.difficulty}
-                </span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  {repo.category}
+          <div key={repo.url} className="flex flex-col">
+            {/* Main Repository Card */}
+            <div
+              onClick={() => repo.childRepos ? null : onRepoSelect(repo.url)}
+              className={`p-4 border border-gray-200 dark:border-gray-600 rounded-lg transition-colors ${
+                repo.childRepos 
+                  ? 'cursor-default' 
+                  : 'hover:border-blue-300 dark:hover:border-blue-500 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700'
+              }`}
+            >
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-center space-x-2">
+                  <span className="text-lg">{repo.icon}</span>
+                  <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
+                    {repo.name}
+                  </h4>
+                  {repo.childRepos && (
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      ({repo.childRepos.length} repos)
+                    </span>
+                  )}
+                </div>
+                <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                  ⭐ {repo.stars}
                 </span>
               </div>
               
-              <button className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-xs font-medium">
-                Select →
-              </button>
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
+                {repo.description}
+              </p>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <span className={`px-2 py-1 text-xs rounded-full ${
+                    repo.difficulty === 'Beginner' 
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                      : repo.difficulty === 'Intermediate'
+                      ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                      : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                  }`}>
+                    {repo.difficulty}
+                  </span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {repo.category}
+                  </span>
+                </div>
+                
+                {repo.childRepos ? (
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleRepoExpansion(repo.name);
+                    }}
+                    className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-xs font-medium flex items-center gap-1"
+                  >
+                    {expandedRepos.has(repo.name) ? '▼' : '▶'} Explore Learning Path
+                  </button>
+                ) : (
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRepoSelect(repo.url);
+                    }}
+                    className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-xs font-medium"
+                  >
+                    Select →
+                  </button>
+                )}
+              </div>
             </div>
+
+            {/* Child Repositories (Expandable) */}
+            {repo.childRepos && expandedRepos.has(repo.name) && (
+              <div className="ml-4 mt-2 space-y-2 pl-4 border-l-2 border-blue-200 dark:border-blue-800">
+                <div className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  📚 {repo.name} Learning Path - {repo.childRepos.length} Production Projects
+                </div>
+                {repo.childRepos.map((childRepo) => (
+                  <div
+                    key={childRepo.url}
+                    onClick={() => onRepoSelect(childRepo.url)}
+                    className="p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
+                    <div className="flex items-start justify-between mb-1">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm">{childRepo.icon}</span>
+                        <h5 className="font-medium text-gray-900 dark:text-white text-xs">
+                          {childRepo.name}
+                        </h5>
+                      </div>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                        ⭐ {childRepo.stars}
+                      </span>
+                    </div>
+                    
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
+                      {childRepo.description}
+                    </p>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <span className={`px-2 py-0.5 text-xs rounded-full ${
+                          childRepo.difficulty === 'Beginner' 
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                            : childRepo.difficulty === 'Intermediate'
+                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                        }`}>
+                          {childRepo.difficulty}
+                        </span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {childRepo.category}
+                        </span>
+                      </div>
+                      
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onRepoSelect(childRepo.url);
+                        }}
+                        className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-xs font-medium"
+                      >
+                        Select →
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </div>

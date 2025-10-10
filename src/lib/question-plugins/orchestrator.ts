@@ -34,14 +34,13 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
   console.log(`🎯 Quality Generation Target: ${numQuestions} questions (rated 1-10)`);
   console.log(`📊 Generation Budget: ${budget} API calls`);
   
-  // Custom call allocation: prioritize function-variant for best quality
+  // TEMPORARY: All MCQ for testing
   const callAllocation: Record<string, number> = {
-    // Total: ~10 calls for efficient generation with diverse question types
-    'select-all': 3,
-    'multiple-choice': 2,
-    'function-variant': 3, // High quality question type
-    'order-sequence': 1,   // Reduced to make room for function-variant
-    'true-false': 1
+    'select-all': 0,
+    'multiple-choice': 10, // ALL MCQ for testing
+    'function-variant': 0,
+    'order-sequence': 0,
+    'true-false': 0
   };
   
   // Assign different functions to each plugin call to ensure diversity

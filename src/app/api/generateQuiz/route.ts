@@ -127,6 +127,7 @@ export async function POST(request: NextRequest) {
         return {
           id: `q-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
           type: questionData.type,
+          snippet: q.snippet || '',
           question: questionData.question || 'Missing question text',
           options: [],
           correctAnswer: null,
@@ -136,6 +137,7 @@ export async function POST(request: NextRequest) {
           language: questionData.language,
           languageColor: questionData.languageColor,
           languageBgColor: questionData.languageBgColor,
+          codeContext: questionData.codeContext || q.codeContext || '',
           variants: (questionData.variants || []).map((v: any) => ({
             ...v,
             code: typeof v.code === 'string' ? removeComments(v.code) : v.code
@@ -143,31 +145,45 @@ export async function POST(request: NextRequest) {
         };
       } else if (questionData.type === 'multiple-choice') {
         const opts = questionData.options || [];
-        const ansNum = parseInt(questionData.answer);
-        let idx = -1;
-        if (!isNaN(ansNum)) {
-          if (ansNum >= 1 && ansNum <= opts.length) idx = ansNum - 1;
-          else if (ansNum >= 0 && ansNum < opts.length) idx = ansNum;
+        
+        // CRITICAL FIX: Use correctAnswerText if available (set by randomization)
+        // Otherwise fall back to calculating from answer index
+        let correctAnswerValue = questionData.correctAnswerText;
+        
+        if (!correctAnswerValue) {
+          const ansNum = parseInt(questionData.answer);
+          let idx = -1;
+          if (!isNaN(ansNum)) {
+            if (ansNum >= 1 && ansNum <= opts.length) idx = ansNum - 1;
+            else if (ansNum >= 0 && ansNum < opts.length) idx = ansNum;
+          }
+          correctAnswerValue = idx >= 0 ? opts[idx] : null;
         }
+        
+        console.log(`✅ MCQ Correct Answer: "${correctAnswerValue}" (from ${questionData.correctAnswerText ? 'correctAnswerText' : 'answer index'})`);
+        
         return {
           id: `q-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
           type: questionData.type,
+          snippet: q.snippet || '',
           question: questionData.question || 'Missing question text',
           options: opts,
-          correctAnswer: idx >= 0 ? opts[idx] : null,
+          correctAnswer: correctAnswerValue,
+          answer: questionData.answer || '',
           explanation: questionData.explanation || '',
           difficulty: 'medium',
           qualityRating: q.qualityRating || null,
           language: questionData.language,
           languageColor: questionData.languageColor,
           languageBgColor: questionData.languageBgColor,
-          codeContext: questionData.codeContext || q.codeContext,
+          codeContext: questionData.codeContext || q.codeContext || '',
           variants: []
         } as any;
       } else if (questionData.type === 'order-sequence') {
         return {
           id: `q-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
           type: questionData.type,
+          snippet: q.snippet || '',
           question: questionData.question || 'Arrange the steps in correct order',
           options: questionData.steps || [],
           correctAnswer: questionData.correctOrder || [],
@@ -177,6 +193,7 @@ export async function POST(request: NextRequest) {
           language: questionData.language,
           languageColor: questionData.languageColor,
           languageBgColor: questionData.languageBgColor,
+          codeContext: questionData.codeContext || q.codeContext || '',
           steps: questionData.steps || [],
           correctOrder: questionData.correctOrder || [],
           acceptableOrders: questionData.acceptableOrders || [],
@@ -198,16 +215,18 @@ export async function POST(request: NextRequest) {
         return {
           id: `q-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
           type: questionData.type,
+          snippet: q.snippet || '',
           question: questionData.question || 'Is this statement true or false?',
           options: opts,
           correctAnswer: idx >= 0 ? opts[idx] : null,
+          answer: questionData.answer || '',
           explanation: questionData.explanation || '',
           difficulty: 'medium',
           qualityRating: q.qualityRating || null,
           language: questionData.language,
           languageColor: questionData.languageColor,
           languageBgColor: questionData.languageBgColor,
-          codeContext: questionData.codeContext || q.codeContext,
+          codeContext: questionData.codeContext || q.codeContext || '',
           variants: []
         } as any;
       } else if (questionData.type === 'select-all') {
@@ -217,6 +236,7 @@ export async function POST(request: NextRequest) {
         return {
           id: `q-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
           type: questionData.type,
+          snippet: q.snippet || '',
           question: questionData.question || 'Select all that apply',
           options: opts,
           correctAnswers: correctAnswers, // Array of indices
@@ -227,7 +247,7 @@ export async function POST(request: NextRequest) {
           language: questionData.language,
           languageColor: questionData.languageColor,
           languageBgColor: questionData.languageBgColor,
-          codeContext: questionData.codeContext || q.codeContext,
+          codeContext: questionData.codeContext || q.codeContext || '',
           variants: []
         } as any;
       } else {
