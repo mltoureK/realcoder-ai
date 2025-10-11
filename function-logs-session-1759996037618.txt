@@ -1,0 +1,3130 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1759996037618
+Started: 2025-10-09T07:47:17.619Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-09T07:47:17.621Z
+File: airbnb-lottie-web-bede03d/player/js/utils/common.js
+Functions Extracted: 9
+
+
+Function 1: BMMath.abs
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+BMMath.abs = function (val) {
+  var tOfVal = typeof val;
+  if (tOfVal === 'object' && val.length) {
+    var absArr = createSizedArray(val.length);
+    var i;
+    var len = val.length;
+    for (i = 0; i < len; i += 1) {
+      absArr[i] = Math.abs(val[i]);
+    }
+    return absArr;
+  }
+  return Math.abs(val);
+};
+--------------------------------------------------------------------------------
+
+
+Function 2: bmRnd
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function bmRnd(value) {
+  if (_shouldRoundValues) {
+    return Math.round(value);
+  }
+  return value;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: styleDiv
+Language: JavaScript
+Lines: 11
+Full Code:
+--------------------------------------------------------------------------------
+function styleDiv(element) {
+  element.style.position = 'absolute';
+  element.style.top = 0;
+  element.style.left = 0;
+  element.style.display = 'block';
+  element.style.transformOrigin = '0 0';
+  element.style.webkitTransformOrigin = '0 0';
+  element.style.backfaceVisibility = 'visible';
+  element.style.webkitBackfaceVisibility = 'visible';
+  element.style.transformStyle = 'preserve-3d';
+  element.style.webkitTransformStyle = 'preserve-3d';
+  element.style.mozTransformStyle = 'preserve-3d';
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: HSVtoRGB
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function HSVtoRGB(h, s, v) {
+  var r;
+  var g;
+  var b;
+  var i;
+  var f;
+  var p;
+  var q;
+  var t;
+  i = Math.floor(h * 6);
+  f = h * 6 - i;
+  p = v * (1 - s);
+  q = v * (1 - f * s);
+  t = v * (1 - (1 - f) * s);
+  switch (i % 6) {
+    case 0: r = v; g = t; b = p; break;
+    case 1: r = q; g = v; b = p; break;
+    case 2: r = p; g = v; b = t; break;
+    case 3: r = p; g = q; b = v; break;
+    case 4: r = t; g = p; b = v; break;
+    case 5: r = v; g = p; b = q; break;
+    default: break;
+  }
+  return [r, g, b];
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: RGBtoHSV
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function RGBtoHSV(r, g, b) {
+  var max = Math.max(r, g, b);
+  var min = Math.min(r, g, b);
+  var d = max - min;
+  var h;
+  var s = (max === 0 ? 0 : d / max);
+  var v = max / 255;
+
+  switch (max) {
+    case min: h = 0; break;
+    case r: h = (g - b) + d * (g < b ? 6 : 0); h /= 6 * d; break;
+    case g: h = (b - r) + d * 2; h /= 6 * d; break;
+    case b: h = (r - g) + d * 4; h /= 6 * d; break;
+    default: break;
+  }
+
+  return [h, s, v];
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: addSaturationToRGB
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function addSaturationToRGB(color, offset) {
+  var hsv = RGBtoHSV(color[0] * 255, color[1] * 255, color[2] * 255);
+  hsv[1] += offset;
+  if (hsv[1] > 1) {
+    hsv[1] = 1;
+  } else if (hsv[1] <= 0) {
+    hsv[1] = 0;
+  }
+  return HSVtoRGB(hsv[0], hsv[1], hsv[2]);
+}
+--------------------------------------------------------------------------------
+
+
+Function 7: addBrightnessToRGB
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function addBrightnessToRGB(color, offset) {
+  var hsv = RGBtoHSV(color[0] * 255, color[1] * 255, color[2] * 255);
+  hsv[2] += offset;
+  if (hsv[2] > 1) {
+    hsv[2] = 1;
+  } else if (hsv[2] < 0) {
+    hsv[2] = 0;
+  }
+  return HSVtoRGB(hsv[0], hsv[1], hsv[2]);
+}
+--------------------------------------------------------------------------------
+
+
+Function 8: addHueToRGB
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function addHueToRGB(color, offset) {
+  var hsv = RGBtoHSV(color[0] * 255, color[1] * 255, color[2] * 255);
+  hsv[0] += offset / 360;
+  if (hsv[0] > 1) {
+    hsv[0] -= 1;
+  } else if (hsv[0] < 0) {
+    hsv[0] += 1;
+  }
+  return HSVtoRGB(hsv[0], hsv[1], hsv[2]);
+}
+--------------------------------------------------------------------------------
+
+
+Function 9: rgbToHex
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const rgbToHex = (function () {
+  var colorMap = [];
+  var i;
+  var hex;
+  for (i = 0; i < 256; i += 1) {
+    hex = i.toString(16);
+    colorMap[i] = hex.length === 1 ? '0' + hex : hex;
+  }
+
+  return function (r, g, b) {
+    if (r < 0) {
+      r = 0;
+    }
+    if (g < 0) {
+      g = 0;
+    }
+    if (b < 0) {
+      b = 0;
+    }
+    return '#' + colorMap[r] + colorMap[g] + colorMap[b];
+  };
+}());
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-09T07:47:52.237Z
+File: airbnb-lottie-web-bede03d/player/js/animation/AnimationManager.js
+Functions Extracted: 11
+
+
+Function 1: removeElement
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function removeElement(ev) {
+    var i = 0;
+    var animItem = ev.target;
+    while (i < len) {
+      if (registeredAnimations[i].animation === animItem) {
+        registeredAnimations.splice(i, 1);
+        i -= 1;
+        len -= 1;
+        if (!animItem.isPaused) {
+          subtractPlayingCount();
+        }
+      }
+      i += 1;
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: registerAnimation
+Language: JavaScript
+Lines: 13
+Full Code:
+--------------------------------------------------------------------------------
+function registerAnimation(element, animationData) {
+    if (!element) {
+      return null;
+    }
+    var i = 0;
+    while (i < len) {
+      if (registeredAnimations[i].elem === element && registeredAnimations[i].elem !== null) {
+        return registeredAnimations[i].animation;
+      }
+      i += 1;
+    }
+    var animItem = new AnimationItem();
+    setupAnimation(animItem, element);
+    animItem.setData(element, animationData);
+    return animItem;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: getRegisteredAnimations
+Language: JavaScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+function getRegisteredAnimations() {
+    var i;
+    var lenAnims = registeredAnimations.length;
+    var animations = [];
+    for (i = 0; i < lenAnims; i += 1) {
+      animations.push(registeredAnimations[i].animation);
+    }
+    return animations;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 4: loadAnimation
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function loadAnimation(params) {
+    var animItem = new AnimationItem();
+    setupAnimation(animItem, null);
+    animItem.setParams(params);
+    return animItem;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 5: setSpeed
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function setSpeed(val, animation) {
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.setSpeed(val, animation);
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 6: play
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function play(animation) {
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.play(animation);
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 7: resume
+Language: JavaScript
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+function resume(nowTime) {
+    var elapsedTime = nowTime - initTime;
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.advanceTime(elapsedTime);
+    }
+    initTime = nowTime;
+    if (playingAnimationsNum && !_isFrozen) {
+      window.requestAnimationFrame(resume);
+    } else {
+      _stopped = true;
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 8: searchAnimations
+Language: JavaScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+function searchAnimations(animationData, standalone, renderer) {
+    var animElements = [].concat([].slice.call(document.getElementsByClassName('lottie'),
+      [].slice.call(document.getElementsByClassName('bodymovin')));
+    var i;
+    var lenAnims = animElements.length;
+    for (i = 0; i < lenAnims; i += 1) {
+      if (renderer) {
+        animElements[i].setAttribute('data-bm-type', renderer);
+      }
+      registerAnimation(animElements[i], animationData);
+    }
+    if (standalone && lenAnims === 0) {
+      if (!renderer) {
+        renderer = 'svg';
+      }
+      var body = document.getElementsByTagName('body')[0];
+      body.innerText = '';
+      var div = createTag('div');
+      div.style.width = '100%';
+      div.style.height = '100%';
+      div.setAttribute('data-bm-type', renderer);
+      body.appendChild(div);
+      registerAnimation(div, animationData);
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 9: resize
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function resize() {
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.resize();
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 10: activate
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function activate() {
+    if (!_isFrozen && playingAnimationsNum) {
+      if (_stopped) {
+        window.requestAnimationFrame(first);
+        _stopped = false;
+      }
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 11: setVolume
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function setVolume(val, animation) {
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.setVolume(val, animation);
+    }
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-09T07:48:45.798Z
+File: airbnb-lottie-web-bede03d/player/js/animation/AnimationManagerWorkerOverride.js
+Functions Extracted: 16
+
+
+Function 1: removeElement
+Language: JavaScript
+Lines: 11
+Full Code:
+--------------------------------------------------------------------------------
+function removeElement(ev) {
+    var i = 0;
+    var animItem = ev.target;
+    while (i < len) {
+      if (registeredAnimations[i].animation === animItem) {
+        registeredAnimations.splice(i, 1);
+        i -= 1;
+        len -= 1;
+        if (!animItem.isPaused) {
+          subtractPlayingCount();
+        }
+      }
+      i += 1;
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: registerAnimation
+Language: JavaScript
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+function registerAnimation(element, animationData) {
+    if (!element) {
+      return null;
+    }
+    var i = 0;
+    while (i < len) {
+      if (registeredAnimations[i].elem === element && registeredAnimations[i].elem !== null) {
+        return registeredAnimations[i].animation;
+      }
+      i += 1;
+    }
+    var animItem = new AnimationItem();
+    setupAnimation(animItem, element);
+    animItem.setData(element, animationData);
+    return animItem;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: getRegisteredAnimations
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function getRegisteredAnimations() {
+    var i;
+    var lenAnims = registeredAnimations.length;
+    var animations = [];
+    for (i = 0; i < lenAnims; i += 1) {
+      animations.push(registeredAnimations[i].animation);
+    }
+    return animations;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 4: setupAnimation
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function setupAnimation(animItem, element) {
+    animItem.addEventListener('destroy', removeElement);
+    animItem.addEventListener('_active', addPlayingCount);
+    animItem.addEventListener('_idle', subtractPlayingCount);
+    registeredAnimations.push({ elem: element, animation: animItem });
+    len += 1;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 5: loadAnimation
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function loadAnimation(params) {
+    var animItem = new AnimationItem();
+    setupAnimation(animItem, null);
+    animItem.setParams(params);
+    return animItem;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 6: setSpeed
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function setSpeed(val, animation) {
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.setSpeed(val, animation);
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 7: setDirection
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function setDirection(val, animation) {
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.setDirection(val, animation);
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 8: play
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function play(animation) {
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.play(animation);
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 9: resume
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function resume(nowTime) {
+    var elapsedTime = nowTime - initTime;
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.advanceTime(elapsedTime);
+    }
+    initTime = nowTime;
+    if (playingAnimationsNum && !_isFrozen) {
+      requestAnimationFrame(resume);
+    } else {
+      _stopped = true;
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 10: pause
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function pause(animation) {
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.pause(animation);
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 11: goToAndStop
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function goToAndStop(value, isFrame, animation) {
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.goToAndStop(value, isFrame, animation);
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 12: stop
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function stop(animation) {
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.stop(animation);
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 13: togglePause
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function togglePause(animation) {
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.togglePause(animation);
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 14: destroy
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function destroy(animation) {
+    var i;
+    for (i = (len - 1); i >= 0; i -= 1) {
+      registeredAnimations[i].animation.destroy(animation);
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 15: resize
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function resize() {
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.resize();
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 16: activate
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+function activate() {
+    if (!_isFrozen && playingAnimationsNum) {
+      if (_stopped) {
+        requestAnimationFrame(first);
+        _stopped = false;
+      }
+    }
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-09T07:50:34.390Z
+File: airbnb-lottie-web-bede03d/player/js/utils/imagePreloader.js
+Functions Extracted: 11
+
+
+Function 1: imageLoaded
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function imageLoaded() {
+    this.loadedAssets += 1;
+    if (this.loadedAssets === this.totalImages && this.loadedFootagesCount === this.totalFootages) {
+        if (this.imagesLoadedCb) {
+            this.imagesLoadedCb(null);
+        }
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: footageLoaded
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function footageLoaded() {
+    this.loadedFootagesCount += 1;
+    if (this.loadedAssets === this.totalImages && this.loadedFootagesCount === this.totalFootages) {
+        if (this.imagesLoadedCb) {
+            this.imagesLoadedCb(null);
+        }
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: getAssetsPath
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function getAssetsPath(assetData, assetsPath, originalPath) {
+    var path = '';
+    if (assetData.e) {
+        path = assetData.p;
+    } else if (assetsPath) {
+        var imagePath = assetData.p;
+        if (imagePath.indexOf('images/') !== -1) {
+            imagePath = imagePath.split('/')[1];
+        }
+        path = assetsPath + imagePath;
+    } else {
+        path = originalPath;
+        path += assetData.u ? assetData.u : '';
+        path += assetData.p;
+    }
+    return path;
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: testImageLoaded
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function testImageLoaded(img) {
+    var _count = 0;
+    var intervalId = setInterval(function () {
+        var box = img.getBBox();
+        if (box.width || _count > 500) {
+            this._imageLoaded();
+            clearInterval(intervalId);
+        }
+        _count += 1;
+    }.bind(this), 50);
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: createImageData
+Language: JavaScript
+Lines: 21
+Full Code:
+--------------------------------------------------------------------------------
+function createImageData(assetData) {
+    var path = getAssetsPath(assetData, this.assetsPath, this.path);
+    var img = createNS('image');
+    if (isSafari) {
+        this.testImageLoaded(img);
+    } else {
+        img.addEventListener('load', this._imageLoaded, false);
+    }
+    img.addEventListener('error', function () {
+        ob.img = proxyImage;
+        this._imageLoaded();
+    }.bind(this), false);
+    img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', path);
+    if (this._elementHelper.append) {
+        this._elementHelper.append(img);
+    } else {
+        this._elementHelper.appendChild(img);
+    }
+    var ob = {
+        img: img,
+        assetData: assetData,
+    };
+    return ob;
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: createImgData
+Language: JavaScript
+Lines: 19
+Full Code:
+--------------------------------------------------------------------------------
+function createImgData(assetData) {
+    var path = getAssetsPath(assetData, this.assetsPath, this.path);
+    var img = createTag('img');
+    img.crossOrigin = 'anonymous';
+    img.addEventListener('load', this._imageLoaded, false);
+    img.addEventListener('error', function () {
+        ob.img = proxyImage;
+        this._imageLoaded();
+    }.bind(this), false);
+    img.src = path;
+    var ob = {
+        img: img,
+        assetData: assetData,
+    };
+    return ob;
+}
+--------------------------------------------------------------------------------
+
+
+Function 7: createFootageData
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function createFootageData(data) {
+    var ob = {
+        assetData: data,
+    };
+    var path = getAssetsPath(data, this.assetsPath, this.path);
+    dataManager.loadData(path, function (footageData) {
+        ob.img = footageData;
+        this._footageLoaded();
+    }.bind(this), function () {
+        ob.img = {};
+        this._footageLoaded();
+    }.bind(this));
+    return ob;
+}
+--------------------------------------------------------------------------------
+
+
+Function 8: loadAssets
+Language: JavaScript
+Lines: 16
+Full Code:
+--------------------------------------------------------------------------------
+function loadAssets(assets, cb) {
+    this.imagesLoadedCb = cb;
+    var i;
+    var len = assets.length;
+    for (i = 0; i < len; i += 1) {
+        if (!assets[i].layers) {
+            if (!assets[i].t || assets[i].t === 'seq') {
+                this.totalImages += 1;
+                this.images.push(this._createImageData(assets[i]));
+            } else if (assets[i].t === 3) {
+                this.totalFootages += 1;
+                this.images.push(this.createFootageData(assets[i]));
+            }
+        }
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 9: getAsset
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function getAsset(assetData) {
+    var i = 0;
+    var len = this.images.length;
+    while (i < len) {
+        if (this.images[i].assetData === assetData) {
+            return this.images[i].img;
+        }
+        i += 1;
+    }
+    return null;
+}
+--------------------------------------------------------------------------------
+
+
+Function 10: setCacheType
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+function setCacheType(type, elementHelper) {
+    if (type === 'svg') {
+        this._elementHelper = elementHelper;
+        this._createImageData = this.createImageData.bind(this);
+    } else {
+        this._createImageData = this.createImgData.bind(this);
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 11: ImagePreloaderFactory
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function ImagePreloaderFactory() {
+    this._imageLoaded = imageLoaded.bind(this);
+    this._footageLoaded = footageLoaded.bind(this);
+    this.testImageLoaded = testImageLoaded.bind(this);
+    this.createFootageData = createFootageData.bind(this);
+    this.assetsPath = '';
+    this.path = '';
+    this.totalImages = 0;
+    this.totalFootages = 0;
+    this.loadedAssets = 0;
+    this.loadedFootagesCount = 0;
+    this.imagesLoadedCb = null;
+    this.images = [];
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T07:50:41.353Z
+Question Type: select-all
+Function: stop
+Function Size: 207 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: stop (JavaScript)\n// Stops all registered animations.\n\nfunction stop(animation) {\n    var i;\n    for (i = 0; i < len; i += 1) {\n      registeredAnimations[i].animation.stop(animation);\n    }\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T07:50:49.155Z
+Question Type: select-all
+Function: resume
+Function Size: 433 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: resume (JavaScript)\n// Resumes the animations based on the elapsed time.\n\nfunction resume(nowTime) {\n    var elapsedTime = nowTime - initTime;\n    var i;\n    for (i = 0; i < len; i += 1) {\n      registeredAnimations[i].animation.advanceTime(elapsedTime);\n    }\n    initTime = nowTime;\n  
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T07:50:50.658Z
+Question Type: multiple-choice
+Function: addHueToRGB
+Function Size: 338 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: addHueToRGB (JavaScript)\n// Adjusts the hue of an RGB color.\n\nfunction addHueToRGB(color, offset) {\n  var hsv = RGBtoHSV(color[0] * 255, color[1] * 255, color[2] * 255);\n  hsv[0] += offset / 360;\n  if (hsv[0] > 1) {\n    hsv[0] -= 1;\n  } else if (hsv[0] < 0) {\n    hsv[0] += 1;\n  }\n  retu
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T07:50:50.666Z
+Question Type: multiple-choice
+Function: setSpeed
+Function Size: 241 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setSpeed (JavaScript)\n// Sets the speed of all registered animations.\n\nfunction setSpeed(val, animation) {\n    var i;\n    for (i = 0; i < len; i += 1) {\n      registeredAnimations[i].animation.setSpeed(val, animation);\n    }\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T07:50:57.916Z
+Question Type: true-false
+Function: BMMath.abs
+Function Size: 417 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: BMMath.abs (JavaScript)\n// Calculates the absolute value of a number or an array of numbers.\n\nBMMath.abs = function (val) {\n  var tOfVal = typeof val;\n  if (tOfVal === 'object' && val.length) {\n    var absArr = createSizedArray(val.length);\n    var i;\n    var len = val.length;\n    for (
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T07:51:03.154Z
+Question Type: function-variant
+Function: registerAnimation
+Function Size: 577 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: registerAnimation (JavaScript)\n// Registers a new animation with the provided element and animation data.\n\nfunction registerAnimation(element, animationData) {\n    if (!element) {\n      return null;\n    }\n    var i = 0;\n    while (i < len) {\n      if (registeredAnimations[i].elem === el
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T07:51:15.761Z
+Question Type: order-sequence
+Function: createImageData
+Function Size: 836 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createImageData (JavaScript)\n// Creates image data for an asset and sets up event listeners for load and error.\n\nfunction createImageData(assetData) {\n    var path = getAssetsPath(assetData, this.assetsPath, this.path);\n    var img = createNS('image');\n    if (isSafari) {\n        this.t
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T07:51:18.533Z
+Question Type: select-all
+Function: setVolume
+Function Size: 246 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setVolume (JavaScript)\n// Sets the volume for all registered animations.\n\nfunction setVolume(val, animation) {\n    var i;\n    for (i = 0; i < len; i += 1) {\n      registeredAnimations[i].animation.setVolume(val, animation);\n    }\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T07:51:22.290Z
+Question Type: function-variant
+Function: createImgData
+Function Size: 592 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createImgData (JavaScript)\n// Creates image data for an asset using an img tag and sets up event listeners.\n\nfunction createImgData(assetData) {\n    var path = getAssetsPath(assetData, this.assetsPath, this.path);\n    var img = createTag('img');\n    img.crossOrigin = 'anonymous';\n    im
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T07:51:27.240Z
+Question Type: function-variant
+Function: createFootageData
+Function Size: 496 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createFootageData (JavaScript)\n// Creates footage data for an asset and loads it using dataManager.\n\nfunction createFootageData(data) {\n    var ob = {\n        assetData: data,\n    };\n    var path = getAssetsPath(data, this.assetsPath, this.path);\n    dataManager.loadData(path, function 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1759996037618
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 47
+Ended: 2025-10-09T07:51:29.551Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-09T18:50:00.669Z
+File: RidwaanT-motorfest-platform-c62b4f35077c2aba6115e66781ebf1146fd1ce31/functions/lib/index.js
+Functions Extracted: 2
+
+
+Function 1: loadWordInfos
+Language: JavaScript
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+const loadWordInfos = (annotation, imageWidth, imageHeight) => {
+    const words = [];
+    const pages = annotation.fullTextAnnotation?.pages ?? [];
+    for (const page of pages) {
+        const pageWidth = page.width || imageWidth;
+        const pageHeight = page.height || imageHeight;
+        for (const block of page.blocks ?? []) {
+            for (const paragraph of block.paragraphs ?? []) {
+                for (const word of paragraph.words ?? []) {
+                    const text = word.symbols?.map((symbol) => symbol.text ?? '').join('') ?? '';
+                    if (!text)
+                        continue;
+                    const vertices = (0, vision_2.normalizedVerticesOrFallback)(word.boundingBox, pageWidth, pageHeight);
+                    const info = (0, vision_2.verticesToWordInfo)(text, word.confidence ?? 0, vertices);
+                    if (info)
+                        words.push(info);
+                }
+            }
+        }
+    }
+    if (!words.length && Array.isArray(annotation.textAnnotations) && annotation.textAnnotations.length > 1) {
+        const [, ...wordAnnotations] = annotation.textAnnotations;
+        for (const entry of wordAnnotations) {
+            const text = entry.description ?? '';
+            const vertices = (0, vision_2.normalizedVerticesOrFallback)(entry.boundingPoly, imageWidth, imageHeight);
+            const info = (0, vision_2.verticesToWordInfo)(text, entry.score ?? entry.confidence ?? 0.5, vertices);
+            if (info)
+                words.push(info);
+        }
+    }
+    return words;
+};
+--------------------------------------------------------------------------------
+
+
+Function 2: analyzeLeaderboard
+Language: JavaScript
+Lines: 147
+Full Code:
+--------------------------------------------------------------------------------
+exports.analyzeLeaderboard = (0, https_1.onRequest)(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    if (req.method === 'OPTIONS') {
+        res.status(204).send('');
+        return;
+    }
+    if (req.method !== 'POST') {
+        respond(res, { matched: false, reason: 'invalid_method', all: [] });
+        return;
+    }
+    try {
+        const debug = {};
+        const { image, targetUsername } = (req.body ?? {});
+        if (typeof image !== 'string' || !image.trim()) {
+            respond(res, { matched: false, reason: 'image_required', all: [] }, 400);
+            return;
+        }
+        const base64Image = (0, vision_2.normalizeDataUrl)(image.trim());
+        let imageBuffer;
+        try {
+            imageBuffer = Buffer.from(base64Image, 'base64');
+        }
+        catch {
+            respond(res, { matched: false, reason: 'invalid_image_encoding', all: [] }, 400);
+            return;
+        }
+        if (!imageBuffer.length) {
+            respond(res, { matched: false, reason: 'empty_image', all: [] }, 400);
+            return;
+        }
+        if (imageBuffer.length > constants_1.MAX_IMAGE_BYTES) {
+            respond(res, { matched: false, reason: 'image_too_large', all: [] }, 413);
+            return;
+        }
+        const oriented = (0, sharp_1.default)(imageBuffer).rotate();
+        const metadata = await oriented.metadata();
+        const imageWidth = metadata.width ?? 0;
+        const imageHeight = metadata.height ?? 0;
+        if (!imageWidth || !imageHeight) {
+            respond(res, { matched: false, reason: 'unsupported_image', all: [] }, 400);
+            return;
+        }
+        const orientedBuffer = await oriented.toBuffer();
+        const [annotation] = await visionClient.annotateImage({
+            image: { content: orientedBuffer },
+            features: [
+                { type: 'DOCUMENT_TEXT_DETECTION' },
+                { type: 'TEXT_DETECTION' },
+            ],
+        });
+        const words = loadWordInfos(annotation, imageWidth, imageHeight);
+        if (!words.length) {
+            respond(res, { matched: false, reason: 'ocr_empty', all: [] }, 422);
+            return;
+        }
+        let candidateRows = await (0, rows_1.buildCandidateRowsFromWords)(words, imageWidth, imageHeight, debug);
+        debug.primaryLogicRows = candidateRows.length;
+        if (candidateRows.length < 3) {
+            debug.fallbackTriggered = true;
+            const yThreshold = Math.max(0.025, 12 / Math.max(imageHeight, 1000));
+            const groupedLines = (0, rows_1.groupWordsIntoLines)(words, yThreshold);
+            debug.fallbackLineCount = groupedLines.length;
+            const fallback = await (0, rows_1.buildCandidateRows)(groupedLines, imageWidth, imageHeight, debug);
+            debug.positionWordsFound = fallback.positionWordsFound;
+            debug.timeWordsFound = fallback.timeWordsFound;
+            debug.rejects = fallback.rejects;
+            candidateRows = fallback.rows;
+            debug.fallbackLogicRows = candidateRows.length;
+        }
+        if (!candidateRows.length) {
+            respond(res, { matched: false, reason: 'no_row_passed_filters', all: [], debug });
+            return;
+        }
+        const bandInfo = (0, rows_1.computeBands)(words);
+        const posAssignments = (0, rows_1.assignPositionsFromTokens)(candidateRows, words, bandInfo);
+        debug.posAssignments = posAssignments;
+        debug.band = bandInfo;
+        const usernamePost = (0, username_1.usernamePostProcess)(words, candidateRows);
+        debug.usernameDiagnostics = usernamePost.diagnostics;
+        debug.usernameRows = usernamePost.rowsDebug;
+        if (usernamePost.wordList)
+            debug.usernameWordList = usernamePost.wordList;
+        try {
+            const rowsByY = candidateRows
+                .map((row, idx) => ({ idx, y: (row.minY + row.maxY) / 2 }))
+                .sort((a, b) => a.y - b.y);
+            const usernamesByY = usernamePost.rowsDebug
+                .map((row, idx) => ({ idx, y: row.time.yMid }))
+                .sort((a, b) => a.y - b.y);
+            const pairCount = Math.min(rowsByY.length, usernamesByY.length);
+            for (let i = 0; i < pairCount; i++) {
+                const rowIdx = rowsByY[i].idx;
+                const usernameIdx = usernamesByY[i].idx;
+                const chosen = usernamePost.rowsDebug[usernameIdx]?.usernameChosen?.text;
+                if (chosen)
+                    candidateRows[rowIdx].name = chosen;
+            }
+        }
+        catch (err) {
+            logger.debug('username_post_map_failed', { message: err instanceof Error ? err.message : String(err) });
+        }
+        const scored = await Promise.all(candidateRows.map(async (row, idx) => {
+            const highlight = await (0, highlight_1.computeHighlightScore)(orientedBuffer, { minX: row.minX, maxX: row.maxX, minY: row.minY, maxY: row.maxY }, imageWidth, imageHeight);
+            candidateRows[idx] = { ...row, highlightScore: highlight.scoreAb, isHighlight: highlight.isHighlight };
+            logger.debug('row_highlight_score', {
+                rowIdx: idx,
+                position: row.position,
+                name: row.name,
+                time: row.time,
+                scoreAb: Number(highlight.scoreAb.toFixed(3)),
+                score76: Number(highlight.score76.toFixed(3)),
+                samples: highlight.samples,
+                isHighlight: highlight.isHighlight,
+            });
+            return { idx, ...highlight };
+        }));
+        const deltaEList = scored.map(s => ({
+            rowIdx: s.idx,
+            dEab: Number(s.scoreAb.toFixed(3)),
+            dE76: Number(s.score76.toFixed(3)),
+            samples: s.samples,
+            pass: s.isHighlight,
+        }));
+        debug.deltaEList = deltaEList;
+        debug.highlightThresholds = { dEab: 31, dE76: 40 };
+        const highlightSummary = scored.map(s => {
+            const row = candidateRows[s.idx];
+            return {
+                position: row.position,
+                name: row.name,
+                time: row.time,
+                highlightScoreAb: Number(s.scoreAb.toFixed(3)),
+                highlightScore76: Number(s.score76.toFixed(3)),
+                samples: s.samples,
+                isHighlight: s.isHighlight,
+            };
+        });
+        debug.rowHighlights = highlightSummary;
+        const sortedByAb = [...scored].sort((a, b) => a.scoreAb - b.scoreAb);
+        if (sortedByAb.length >= 2) {
+            const gap = sortedByAb[1].scoreAb - sortedByAb[0].scoreAb;
+            debug.highlightGap = Number(gap.toFixed(3));
+        }
+        const allRows = candidateRows.map(r => ({ position: r.position, name: r.name, time: r.time }));
+        const highlightRows = scored.filter(s => s.isHighlight);
+        const normalizedTarget = typeof targetUsername === 'string' ? targetUsername.trim().toLowerCase() : null;
+        let chosen = null;
+        if (normalizedTarget) {
+            const matches = highlightRows
+                .filter(s => candidateRows[s.idx].name.trim().toLowerCase() === normalizedTarget)
+                .sort((a, b) => a.scoreAb - b.scoreAb);
+            chosen = matches[0] ?? null;
+        }
+        else if (highlightRows.length) {
+            chosen = [...highlightRows].sort((a, b) => a.scoreAb - b.scoreAb)[0];
+        }
+        debug.finalCandidateRows = candidateRows.length;
+        debug.ocrConfidenceAvg = candidateRows.length
+            ? Number((candidateRows.reduce((acc, row) => acc + (row.confidence || 0), 0) /
+                Math.max(1, candidateRows.length)).toFixed(4))
+            : 0;
+        if (chosen) {
+            const matchedRow = candidateRows[chosen.idx];
+            debug.matchedRowHighlight = {
+                position: matchedRow.position,
+                name: matchedRow.name,
+                time: matchedRow.time,
+                highlightScoreAb: Number(chosen.scoreAb.toFixed(3)),
+                highlightScore76: Number(chosen.score76.toFixed(3)),
+                samples: chosen.samples,
+                isHighlight: true,
+            };
+        }
+        if (!chosen) {
+            respond(res, { matched: false, reason: 'no_highlighted_row_matched', all: allRows, debug });
+            return;
+        }
+        const chosenRow = candidateRows[chosen.idx];
+        respond(res, {
+            matched: true,
+            row: { position: chosenRow.position, name: chosenRow.name, time: chosenRow.time },
+            all: allRows,
+            debug,
+        });
+    }
+    catch (error) {
+        logger.error('analyzeLeaderboard failed', error);
+        respond(res, { matched: false, reason: 'internal', all: [] }, 500);
+    }
+});
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-09T18:50:18.900Z
+File: RidwaanT-motorfest-platform-c62b4f35077c2aba6115e66781ebf1146fd1ce31/functions/src/lib/vision.ts
+Functions Extracted: 4
+
+
+Function 1: normalizeDataUrl
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export const normalizeDataUrl = (data: string): string => {
+  const [, maybeBase64] = data.split(',');
+  if (maybeBase64 && data.startsWith('data:')) return maybeBase64;
+  return data;
+};
+--------------------------------------------------------------------------------
+
+
+Function 2: toNormalizedVertices
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export const toNormalizedVertices = (
+  vertices: Vertex[] | undefined | null,
+  width: number,
+  height: number,
+): NormalizedVertex[] => {
+  if (!vertices || vertices.length === 0) return [];
+  const safeWidth = width || 1;
+  const safeHeight = height || 1;
+  return vertices.map(v => ({
+    x: Math.min(Math.max((v.x ?? 0) / safeWidth, 0), 1),
+    y: Math.min(Math.max((v.y ?? 0) / safeHeight, 0), 1),
+  }));
+};
+--------------------------------------------------------------------------------
+
+
+Function 3: normalizedVerticesOrFallback
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+export const normalizedVerticesOrFallback = (
+  bounding: { normalizedVertices?: Vertex[] | null; vertices?: Vertex[] | null } | undefined,
+  width: number,
+  height: number,
+): NormalizedVertex[] => {
+  const normalized = (bounding?.normalizedVertices ?? [])
+    .map(v => ({ x: v?.x ?? 0, y: v?.y ?? 0 }))
+    .filter(v => typeof v.x === 'number' && typeof v.y === 'number');
+  if (normalized.length > 0) return normalized;
+  return toNormalizedVertices(bounding?.vertices ?? [], width, height);
+};
+--------------------------------------------------------------------------------
+
+
+Function 4: verticesToWordInfo
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export const verticesToWordInfo = (
+  text: string,
+  confidence: number,
+  vertices: NormalizedVertex[],
+): WordInfo | null => {
+  if (vertices.length === 0) return null;
+  const xs = vertices.map(v => v.x);
+  const ys = vertices.map(v => v.y);
+  const minX = Math.min(...xs);
+  const maxX = Math.max(...xs);
+  const minY = Math.min(...ys);
+  const maxY = Math.max(...ys);
+  const centerX = (minX + maxX) / 2;
+  const centerY = (minY + maxY) / 2;
+  return { text, confidence, minX, maxX, minY, maxY, centerX, centerY };
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T18:51:24.536Z
+Question Type: order-sequence
+Function: analyzeLeaderboard
+Function Size: 8981 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: analyzeLeaderboard (JavaScript)\n// Handles the analysis of leaderboard images and responds with matching results.\n\nexports.analyzeLeaderboard = (0, https_1.onRequest)(async (req, res) => {\n    res.set('Access-Control-Allow-Origin', '*');\n    res.set('Access-Control-Allow-Methods', 'POST
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T18:51:35.060Z
+Question Type: function-variant
+Function: verticesToWordInfo
+Function Size: 658 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: verticesToWordInfo (TypeScript)\n// Builds the bounding-box metadata for a recognized word using its normalized vertices.\n\nexport const verticesToWordInfo = (\n  text: string,\n  confidence: number,\n  vertices: NormalizedVertex[],\n): WordInfo | null => {\n  if (vertices.length === 0) return
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T18:51:35.652Z
+Question Type: function-variant
+Function: toNormalizedVertices
+Function Size: 549 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: toNormalizedVertices (TypeScript)\n// Converts vertex coordinates to values in [0, 1] relative to the input width/height.\n\nexport const toNormalizedVertices = (\n  vertices: Vertex[] | undefined | null,\n  width: number,\n  height: number,\n): NormalizedVertex[] => {\n  if (!vertices || verti
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T18:51:35.953Z
+Question Type: function-variant
+Function: loadWordInfos
+Function Size: 1667 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: loadWordInfos (JavaScript)\n// Extracts word information from image annotation data.\n\nconst loadWordInfos = (annotation, imageWidth, imageHeight) => {\n    const words = [];\n    const pages = annotation.fullTextAnnotation?.pages ?? [];\n    for (const page of pages) {\n        const pageWid
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T18:51:41.634Z
+Question Type: multiple-choice
+Function: verticesToWordInfo
+Function Size: 658 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: verticesToWordInfo (TypeScript)\n// Builds the bounding-box metadata for a recognized word using its normalized vertices.\n\nexport const verticesToWordInfo = (\n  text: string,\n  confidence: number,\n  vertices: NormalizedVertex[],\n): WordInfo | null => {\n  if (vertices.length === 0) return
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T18:51:42.697Z
+Question Type: true-false
+Function: normalizeDataUrl
+Function Size: 313 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: normalizeDataUrl (TypeScript)\n// Strips the metadata header from a data URL so only the base64 payload remains.\n\nexport const normalizeDataUrl = (data: string): string => {\n  const [, maybeBase64] = data.split(',');\n  if (maybeBase64 && data.startsWith('data:')) return maybeBase64;\n  re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T18:51:50.119Z
+Question Type: select-all
+Function: normalizeDataUrl
+Function Size: 313 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: normalizeDataUrl (TypeScript)\n// Strips the metadata header from a data URL so only the base64 payload remains.\n\nexport const normalizeDataUrl = (data: string): string => {\n  const [, maybeBase64] = data.split(',');\n  if (maybeBase64 && data.startsWith('data:')) return maybeBase64;\n  re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T18:51:52.711Z
+Question Type: select-all
+Function: normalizedVerticesOrFallback
+Function Size: 649 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: normalizedVerticesOrFallback (TypeScript)\n// Returns normalized vertices when provided; otherwise converts raw vertices as a fallback.\n\nexport const normalizedVerticesOrFallback = (\n  bounding: { normalizedVertices?: Vertex[] | null; vertices?: Vertex[] | null } | undefined,\n  width: nu
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T18:52:02.306Z
+Question Type: multiple-choice
+Function: normalizedVerticesOrFallback
+Function Size: 649 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: normalizedVerticesOrFallback (TypeScript)\n// Returns normalized vertices when provided; otherwise converts raw vertices as a fallback.\n\nexport const normalizedVerticesOrFallback = (\n  bounding: { normalizedVertices?: Vertex[] | null; vertices?: Vertex[] | null } | undefined,\n  width: nu
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T18:52:46.254Z
+Question Type: select-all
+Function: analyzeLeaderboard
+Function Size: 8981 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: analyzeLeaderboard (JavaScript)\n// Handles the analysis of leaderboard images and responds with matching results.\n\nexports.analyzeLeaderboard = (0, https_1.onRequest)(async (req, res) => {\n    res.set('Access-Control-Allow-Origin', '*');\n    res.set('Access-Control-Allow-Methods', 'POST
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1759996037618
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 6
+Ended: 2025-10-09T18:52:46.256Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-09T18:53:07.926Z
+File: nothing yielded for bad markup
+Functions Extracted: 8
+
+
+Function 1: Counter
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function Counter(props) {
+        const renderCount = useCallback(increment => {
+          return 'Count: ' + (props.count + increment);
+        });
+        return <Text text={renderCount(3)} />;
+      }
+--------------------------------------------------------------------------------
+
+
+Function 2: CapitalizedText
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function CapitalizedText(props) {
+          const [text, setText] = useState(props.text);
+          const [count, setCount] = useState(0);
+          const capitalizeText = useCallback(() => text.toUpperCase(), [text]);
+          yieldValue(capitalizeText);
+          if (count < 3) {
+            setCount(count + 1);
+          }
+          if (text === 'hello' && count === 2) {
+            setText('hello, world.');
+          }
+          return <Text text={capitalizeText()} />;
+        }
+--------------------------------------------------------------------------------
+
+
+Function 3: Counter
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function Counter(props, ref) {
+        useImperativeHandle(ref, () => {
+          throw new Error('should not be invoked');
+        });
+        return <Text text={props.label + ': ' + ref.current} />;
+      }
+--------------------------------------------------------------------------------
+
+
+Function 4: Counter
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function Counter() {
+        useInsertionEffect(() => {
+          throw new Error('should not be invoked');
+        });
+
+        return <Text text="Count: 0" />;
+      }
+--------------------------------------------------------------------------------
+
+
+Function 5: Counter
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function Counter() {
+        useLayoutEffect(() => {
+          throw new Error('should not be invoked');
+        });
+
+        return <Text text="Count: 0" />;
+      }
+--------------------------------------------------------------------------------
+
+
+Function 6: App
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function App(props) {
+        return (
+          <div>
+            <Provider foo={props.foo} bar={props.bar} baz={props.baz}>
+              <Indirection>
+                <Indirection>
+                  <FooAndBar />
+                </Indirection>
+                <Indirection>
+                  <Baz />
+                </Indirection>
+              </Indirection>
+            </Provider>
+          </div>
+        );
+      }
+--------------------------------------------------------------------------------
+
+
+Function 7: ReadInMemo
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function ReadInMemo(props) {
+        const count = React.useMemo(() => readContext(Context), []);
+        return <Text text={count} />;
+      }
+--------------------------------------------------------------------------------
+
+
+Function 8: ReadInReducer
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function ReadInReducer(props) {
+        const [count, dispatch] = React.useReducer(() => readContext(Context));
+        if (count !== 42) {
+          dispatch();
+        }
+        return <Text text={count} />;
+      }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-09T18:53:51.133Z
+File: }
+Functions Extracted: 5
+
+
+Function 1: POST
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+async function POST(formData) {
+    const boundAction = await ReactServerDOMServer.decodeAction(
+      formData,
+      webpackServerMap,
+    );
+    const returnValue = boundAction();
+    const formState = await ReactServerDOMServer.decodeFormState(
+      await returnValue,
+      formData,
+      webpackServerMap,
+    );
+    return {returnValue, formState};
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: submit
+Language: JavaScript
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+function submit(submitter) {
+    const form = submitter.form || submitter;
+    if (!submitter.form) {
+      submitter = undefined;
+    }
+    const submitEvent = new Event('submit', {bubbles: true, cancelable: true});
+    submitEvent.submitter = submitter;
+    const returnValue = form.dispatchEvent(submitEvent);
+    if (!returnValue) {
+      return;
+    }
+    const action =
+      (submitter && submitter.getAttribute('formaction')) || form.action;
+    if (!/\s*javascript:/i.test(action)) {
+      const method = (submitter && submitter.formMethod) || form.method;
+      const encType = (submitter && submitter.formEnctype) || form.enctype;
+      if (method === 'post' && encType === 'multipart/form-data') {
+        let formData;
+        if (submitter) {
+          const temp = document.createElement('input');
+          temp.name = submitter.name;
+          temp.value = submitter.value;
+          submitter.parentNode.insertBefore(temp, submitter);
+          formData = new FormData(form);
+          temp.parentNode.removeChild(temp);
+        } else {
+          formData = new FormData(form);
+        }
+        return POST(formData);
+      }
+      throw new Error('Navigate to: ' + action);
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: readIntoContainer
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+async function readIntoContainer(stream) {
+    const reader = stream.getReader();
+    let result = '';
+    while (true) {
+      const {done, value} = await reader.read();
+      if (done) {
+        break;
+      }
+      result += Buffer.from(value).toString('utf8');
+    }
+    const temp = document.createElement('div');
+    temp.innerHTML = result;
+    insertNodesAndExecuteScripts(temp, container, null);
+  }
+--------------------------------------------------------------------------------
+
+
+Function 4: useActionState
+Language: JavaScript
+Lines: 41
+Full Code:
+--------------------------------------------------------------------------------
+it("useActionState's dispatch binds the initial state to the provided action", async () => {
+    const serverAction = serverExports(
+      async function action(prevState, formData) {
+        return {
+          count:
+            prevState.count + parseInt(formData.get('incrementAmount'), 10),
+        };
+      },
+    );
+
+    const initialState = {count: 1};
+    function Client({action}) {
+      const [state, dispatch, isPending] = useActionState(action, initialState);
+      return (
+        <form action={dispatch}>
+          <span>{isPending ? 'Pending...' : ''}</span>
+          <span>Count: {state.count}</span>
+          <input type="text" name="incrementAmount" defaultValue="5" />
+        </form>
+      );
+    }
+
+    const ClientRef = await clientExports(Client);
+
+    const rscStream = ReactServerDOMServer.renderToReadableStream(
+      <ClientRef action={serverAction} />, 
+      webpackMap,
+    );
+    const response = ReactServerDOMClient.createFromReadableStream(rscStream, {
+      serverConsumerManifest: {
+        moduleMap: null,
+        moduleLoading: null,
+      },
+    });
+    const ssrStream = await ReactDOMServer.renderToReadableStream(response);
+    await readIntoContainer(ssrStream);
+
+    const form = container.getElementsByTagName('form')[0];
+    const pendingSpan = container.getElementsByTagName('span')[0];
+    const stateSpan = container.getElementsByTagName('span')[1];
+    expect(pendingSpan.textContent).toBe('');
+    expect(stateSpan.textContent).toBe('Count: 1');
+
+    const {returnValue} = await submit(form);
+    expect(await returnValue).toEqual({count: 6});
+  });
+--------------------------------------------------------------------------------
+
+
+Function 5: useActionStateReuse
+Language: JavaScript
+Lines: 37
+Full Code:
+--------------------------------------------------------------------------------
+it('useActionState can reuse state during MPA form submission', async () => {
+    const serverAction = serverExports(
+      async function action(prevState, formData) {
+        return prevState + 1;
+      },
+    );
+
+    function Form({action}) {
+      const [count, dispatch, isPending] = useActionState(action, 1);
+      return (
+        <form action={dispatch}>
+          {isPending ? 'Pending...' : ''}
+          {count}
+        </form>
+      );
+    }
+
+    function Client({action}) {
+      return (
+        <div>
+          <Form action={action} />
+          <Form action={action} />
+          <Form action={action} />
+        </div>
+      );
+    }
+
+    const ClientRef = await clientExports(Client);
+
+    const rscStream = ReactServerDOMServer.renderToReadableStream(
+      <ClientRef action={serverAction} />, 
+      webpackMap,
+    );
+    const response = ReactServerDOMClient.createFromReadableStream(rscStream, {
+      serverConsumerManifest: {
+        moduleMap: null,
+        moduleLoading: null,
+      },
+    });
+    const ssrStream = await ReactDOMServer.renderToReadableStream(response);
+    await readIntoContainer(ssrStream);
+
+    expect(container.textContent).toBe('111');
+  });
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-09T18:54:02.529Z
+File: Make them available to the helpers.
+Functions Extracted: 3
+
+
+Function 1: Counter
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function Counter() {
+        const [count, setCount] = useState(0);
+        if (count < 12) {
+          setCount(c => c + 1);
+          setCount(c => c + 1);
+          setCount(c => c + 1);
+        }
+        return <Text text={'Count: ' + count} />;
+      }
+--------------------------------------------------------------------------------
+
+
+Function 2: Counter
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function Counter() {
+        const [count, setCount] = useState(0);
+        if (count < 3) {
+          setCount(count + 1);
+        }
+        return <span>Count: {count}</span>;
+      }
+--------------------------------------------------------------------------------
+
+
+Function 3: Counter
+Language: JavaScript
+Lines: 13
+Full Code:
+--------------------------------------------------------------------------------
+function Counter() {
+        const [count, dispatch] = useReducer(reducer, 0);
+        if (count < 3) {
+          dispatch('increment');
+        }
+        yieldValue('Render: ' + count);
+        return <Text text={count} />;
+      }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-09T18:54:20.142Z
+File: invariant for a missing parent, which is super confusing.
+Functions Extracted: 4
+
+
+Function 1: getEventListenerSet
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+export function getEventListenerSet(node: EventTarget): Set<string> {
+  let elementListenerSet = (node: any)[internalEventHandlersKey];
+  if (elementListenerSet === undefined) {
+    elementListenerSet = (node: any)[internalEventHandlersKey] = new Set();
+  }
+  return elementListenerSet;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: getResourcesFromRoot
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+export function getResourcesFromRoot(root: HoistableRoot): RootResources {
+  let resources = (root: any)[internalRootNodeResourcesKey];
+  if (!resources) {
+    resources = (root: any)[internalRootNodeResourcesKey] = {
+      hoistableStyles: new Map(),
+      hoistableScripts: new Map(),
+    };
+  }
+  return resources;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: addEventHandleToTarget
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+export function addEventHandleToTarget(
+  target: EventTarget | ReactScopeInstance,
+  eventHandle: ReactDOMEventHandle,
+): void {
+  let eventHandles = (target: any)[internalEventHandlesSetKey];
+  if (eventHandles === undefined) {
+    eventHandles = (target: any)[internalEventHandlesSetKey] = new Set();
+  }
+  eventHandles.add(eventHandle);
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: doesTargetHaveEventHandle
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+export function doesTargetHaveEventHandle(
+  target: EventTarget | ReactScopeInstance,
+  eventHandle: ReactDOMEventHandle,
+): boolean {
+  const eventHandles = (target: any)[internalEventHandlesSetKey];
+  if (eventHandles === undefined) {
+    return false;
+  }
+  return eventHandles.has(eventHandle);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-09T18:54:30.794Z
+File: Make them available to the helpers.
+Functions Extracted: 2
+
+
+Function 1: readContext
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function readContext(Ctx) {
+        const dispatcher =
+          React.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE
+            .H;
+        return dispatcher.readContext(Ctx);
+      }
+--------------------------------------------------------------------------------
+
+
+Function 2: App
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const App = () => (
+        <div>
+          <Theme.Provider value="light">
+            <Language.Provider value="english">
+              <Theme.Provider value="dark">
+                <Theme.Consumer>
+                  {theme => <div id="theme1">{theme}</div>}
+                </Theme.Consumer>
+              </Theme.Provider>
+              <Language.Consumer>
+                {language => <div id="language1">{language}</div>}
+              </Language.Consumer>
+            </Language.Provider>
+          </Theme.Provider>
+          <Language.Consumer>
+            {language => <div id="language3">{language}</div>}
+          </Language.Consumer>
+        </div>
+      );
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T18:54:38.875Z
+Question Type: order-sequence
+Function: readContext
+Function Size: 299 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: readContext (JavaScript)\n// Reads the context value using the internal dispatcher.\n\nfunction readContext(Ctx) {\n        const dispatcher =\n          React.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE\n            .H;\n        return dispatcher.readContext(Ctx);\n      }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T18:54:47.162Z
+Question Type: true-false
+Function: useActionState
+Function Size: 1728 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useActionState (JavaScript)\n// Tests the dispatch of useActionState with initial state and form submission.\n\nit("useActionState's dispatch binds the initial state to the provided action", async () => {\n    const serverAction = serverExports(\n      async function action(prevState, formDa
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T18:54:51.176Z
+Question Type: multiple-choice
+Function: useActionStateReuse
+Function Size: 1316 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useActionStateReuse (JavaScript)\n// Tests reuse of state in multiple form submissions using useActionState.\n\nit('useActionState can reuse state during MPA form submission', async () => {\n    const serverAction = serverExports(\n      async function action(prevState, formData) {\n        r
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T18:54:56.729Z
+Question Type: function-variant
+Function: POST
+Function Size: 455 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: POST (JavaScript)\n// Handles POST requests by decoding actions and form states.\n\nasync function POST(formData) {\n    const boundAction = await ReactServerDOMServer.decodeAction(\n      formData,\n      webpackServerMap,\n    );\n    const returnValue = boundAction();\n    const formState = a
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T18:55:01.088Z
+Question Type: select-all
+Function: App
+Function Size: 517 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Renders a provider with nested components FooAndBar and Baz.\n\nfunction App(props) {\n        return (\n          <div>\n            <Provider foo={props.foo} bar={props.bar} baz={props.baz}>\n              <Indirection>\n                <Indirection>\n                  <Fo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T18:55:01.323Z
+Question Type: function-variant
+Function: App
+Function Size: 760 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Renders a component tree with nested context providers.\n\nconst App = () => (\n        <div>\n          <Theme.Provider value="light">\n            <Language.Provider value="english">\n              <Theme.Provider value="dark">\n                <Theme.Consumer>\n          
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T18:55:10.512Z
+Question Type: multiple-choice
+Function: Counter
+Function Size: 293 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: Counter (JavaScript)\n// Increments the count state until it reaches 3 and displays the count.\n\nfunction Counter() {\n        const [count, setCount] = useState(0);\n        if (count < 3) {\n          setCount(count + 1);\n        }\n        return <span>Count: {count}</span>;\n      }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T18:55:13.093Z
+Question Type: select-all
+Function: ReadInReducer
+Function Size: 321 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: ReadInReducer (JavaScript)\n// Uses useReducer to read context value and dispatch updates.\n\nfunction ReadInReducer(props) {\n        const [count, dispatch] = React.useReducer(() => readContext(Context));\n        if (count !== 42) {\n          dispatch();\n        }\n        return <Text tex
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T18:55:15.519Z
+Question Type: select-all
+Function: readIntoContainer
+Function Size: 514 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: readIntoContainer (JavaScript)\n// Reads data from a stream and inserts it into a container.\n\nasync function readIntoContainer(stream) {\n    const reader = stream.getReader();\n    let result = '';\n    while (true) {\n      const {done, value} = await reader.read();\n      if (done) {\n     
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T18:55:21.894Z
+Question Type: function-variant
+Function: addEventHandleToTarget
+Function Size: 441 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: addEventHandleToTarget (TypeScript)\n// Adds an event handle to the specified target.\n\nexport function addEventHandleToTarget(\n  target: EventTarget | ReactScopeInstance,\n  eventHandle: ReactDOMEventHandle,\n): void {\n  let eventHandles = (target: any)[internalEventHandlesSetKey];\n  if (e
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1759996037618
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 22
+Ended: 2025-10-09T18:55:28.097Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-09T23:34:45.961Z
+File: vercel-nextjs-subscription-payments-bdd0813/utils/auth-helpers/server.ts
+Functions Extracted: 2
+
+
+Function 1: SignOut
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+export async function SignOut(formData: FormData) {
+  const pathName = String(formData.get('pathName')).trim();
+
+  const supabase = createClient();
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    return getErrorRedirect(
+      pathName,
+      'Hmm... Something went wrong.',
+      'You could not be signed out.'
+    );
+  }
+
+  return '/signin';
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: signInWithEmail
+Language: TypeScript
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+export async function signInWithEmail(formData: FormData) {
+  const cookieStore = cookies();
+  const callbackURL = getURL('/auth/callback');
+
+  const email = String(formData.get('email')).trim();
+  let redirectPath: string;
+
+  if (!isValidEmail(email)) {
+    redirectPath = getErrorRedirect(
+      '/signin/email_signin',
+      'Invalid email address.',
+      'Please try again.'
+    );
+  }
+
+  const supabase = createClient();
+  let options = {
+    emailRedirectTo: callbackURL,
+    shouldCreateUser: true
+  };
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-09T23:35:02.870Z
+File: vercel-nextjs-subscription-payments-bdd0813/app/api/webhooks/route.ts
+Functions Extracted: 1
+
+
+Function 1: POST
+Language: TypeScript
+Lines: 51
+Full Code:
+--------------------------------------------------------------------------------
+export async function POST(req: Request) {
+  const body = await req.text();
+  const sig = req.headers.get('stripe-signature') as string;
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  let event: Stripe.Event;
+
+  try {
+    if (!sig || !webhookSecret)
+      return new Response('Webhook secret not found.', { status: 400 });
+    event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
+    console.log(`🔔  Webhook received: ${event.type}`);
+  } catch (err: any) {
+    console.log(`❌ Error message: ${err.message}`);
+    return new Response(`Webhook Error: ${err.message}`, { status: 400 });
+  }
+
+  if (relevantEvents.has(event.type)) {
+    try {
+      switch (event.type) {
+        case 'product.created':
+        case 'product.updated':
+          await upsertProductRecord(event.data.object as Stripe.Product);
+          break;
+        case 'price.created':
+        case 'price.updated':
+          await upsertPriceRecord(event.data.object as Stripe.Price);
+          break;
+        case 'price.deleted':
+          await deletePriceRecord(event.data.object as Stripe.Price);
+          break;
+        case 'product.deleted':
+          await deleteProductRecord(event.data.object as Stripe.Product);
+          break;
+        case 'customer.subscription.created':
+        case 'customer.subscription.updated':
+        case 'customer.subscription.deleted':
+          const subscription = event.data.object as Stripe.Subscription;
+          await manageSubscriptionStatusChange(
+            subscription.id,
+            subscription.customer as string,
+            event.type === 'customer.subscription.created'
+          );
+          break;
+        case 'checkout.session.completed':
+          const checkoutSession = event.data.object as Stripe.Checkout.Session;
+          if (checkoutSession.mode === 'subscription') {
+            const subscriptionId = checkoutSession.subscription;
+            await manageSubscriptionStatusChange(
+              subscriptionId as string,
+              checkoutSession.customer as string,
+              true
+            );
+          }
+          break;
+        default:
+          throw new Error('Unhandled relevant event!');
+      }
+    } catch (error) {
+      console.log(error);
+      return new Response(
+        'Webhook handler failed. View your Next.js function logs.',
+        {
+          status: 400
+        }
+      );
+    }
+  } else {
+    return new Response(`Unsupported event type: ${event.type}`, {
+      status: 400
+    });
+  }
+  return new Response(JSON.stringify({ received: true }));
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-09T23:35:14.282Z
+File: but I'll keep it here for simplicity
+Functions Extracted: 3
+
+
+Function 1: dispatch
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function dispatch(action: Action) {
+  memoryState = reducer(memoryState, action);
+  listeners.forEach((listener) => {
+    listener(memoryState);
+  });
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: toast
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function toast({ ...props }: Toast) {
+  const id = genId();
+
+  const update = (props: ToasterToast) =>
+    dispatch({
+      type: 'UPDATE_TOAST',
+      toast: { ...props, id }
+    });
+  const dismiss = () => dispatch({ type: 'DISMISS_TOAST', toastId: id });
+
+  dispatch({
+    type: 'ADD_TOAST',
+    toast: {
+      ...props,
+      id,
+      open: true,
+      onOpenChange: (open) => {
+        if (!open) dismiss();
+      }
+    }
+  });
+
+  return {
+    id: id,
+    dismiss,
+    update
+  };
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: useToast
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function useToast() {
+  const [state, setState] = React.useState<State>(memoryState);
+
+  React.useEffect(() => {
+    listeners.push(setState);
+    return () => {
+      const index = listeners.indexOf(setState);
+      if (index > -1) {
+        listeners.splice(index, 1);
+      }
+    };
+  }, [state]);
+
+  return {
+    ...state,
+    toast,
+    dismiss: (toastId?: string) => dispatch({ type: 'DISMISS_TOAST', toastId })
+  };
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-09T23:35:19.810Z
+File: vercel-nextjs-subscription-payments-bdd0813/components/ui/Input/Input.tsx
+Functions Extracted: 1
+
+
+Function 1: Input
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const Input = (props: Props) => {
+  const { className, children, onChange, ...rest } = props;
+
+  const rootClassName = cn(s.root, {}, className);
+
+  const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (onChange) {
+      onChange(e.target.value);
+    }
+    return null;
+  };
+
+  return (
+    <label>
+      <input
+        className={rootClassName}
+        onChange={handleOnChange}
+        autoComplete="off"
+        autoCorrect="off"
+        autoCapitalize="off"
+        spellCheck="false"
+        {...rest}
+      />
+    </label>
+  );
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-09T23:35:27.834Z
+File: vercel-nextjs-subscription-payments-bdd0813/app/account/page.tsx
+Functions Extracted: 1
+
+
+Function 1: Account
+Language: TypeScript
+Lines: 31
+Full Code:
+--------------------------------------------------------------------------------
+export default async function Account() {
+  const supabase = createClient();
+  const [user, userDetails, subscription] = await Promise.all([
+    getUser(supabase),
+    getUserDetails(supabase),
+    getSubscription(supabase)
+  ]);
+
+  if (!user) {
+    return redirect('/signin');
+  }
+
+  return (
+    <section className="mb-32 bg-black">
+      <div className="max-w-6xl px-4 py-8 mx-auto sm:px-6 sm:pt-24 lg:px-8">
+        <div className="sm:align-center sm:flex sm:flex-col">
+          <h1 className="text-4xl font-extrabold text-white sm:text-center sm:text-6xl">
+            Account
+          </h1>
+          <p className="max-w-2xl m-auto mt-5 text-xl text-zinc-200 sm:text-center sm:text-2xl">
+            We partnered with Stripe for a simplified billing.
+          </p>
+        </div>
+      </div>
+      <div className="p-4">
+        <CustomerPortalForm subscription={subscription} />
+        <NameForm userName={userDetails?.full_name ?? ''} />
+        <EmailForm userEmail={user.email} />
+      </div>
+    </section>
+  );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T23:35:36.486Z
+Question Type: multiple-choice
+Function: toast
+Function Size: 608 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: toast (TypeScript)\n// Creates a new toast notification and returns its ID, dismiss, and update functions.\n\nfunction toast({ ...props }: Toast) {\n  const id = genId();\n\n  const update = (props: ToasterToast) =>\n    dispatch({\n      type: 'UPDATE_TOAST',\n      toast: { ...props, id }\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T23:35:39.855Z
+Question Type: function-variant
+Function: dispatch
+Function Size: 257 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: dispatch (TypeScript)\n// Updates the state based on the action and notifies all listeners.\n\nfunction dispatch(action: Action) {\n  memoryState = reducer(memoryState, action);\n  listeners.forEach((listener) => {\n    listener(memoryState);\n  });\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T23:35:40.488Z
+Question Type: select-all
+Function: toast
+Function Size: 608 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: toast (TypeScript)\n// Creates a new toast notification and returns its ID, dismiss, and update functions.\n\nfunction toast({ ...props }: Toast) {\n  const id = genId();\n\n  const update = (props: ToasterToast) =>\n    dispatch({\n      type: 'UPDATE_TOAST',\n      toast: { ...props, id }\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T23:35:50.289Z
+Question Type: function-variant
+Function: useToast
+Function Size: 556 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useToast (TypeScript)\n// Custom hook that manages toast notifications state and provides methods to interact with it.\n\nfunction useToast() {\n  const [state, setState] = React.useState<State>(memoryState);\n\n  React.useEffect(() => {\n    listeners.push(setState);\n    return () => {\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T23:35:50.577Z
+Question Type: multiple-choice
+Function: Input
+Function Size: 671 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: Input (TypeScript)\n// A functional component that renders an input field with custom onChange handling.\n\nconst Input = (props: Props) => {\n  const { className, children, onChange, ...rest } = props;\n\n  const rootClassName = cn(s.root, {}, className);\n\n  const handleOnChange = (e: Change
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T23:35:52.545Z
+Question Type: function-variant
+Function: SignOut
+Function Size: 455 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: SignOut (TypeScript)\n// Signs out the user and handles potential errors.\n\nexport async function SignOut(formData: FormData) {\n  const pathName = String(formData.get('pathName')).trim();\n\n  const supabase = createClient();\n  const { error } = await supabase.auth.signOut();\n\n  if (error) 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T23:36:00.715Z
+Question Type: select-all
+Function: POST
+Function Size: 2663 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: POST (TypeScript)\n// Handles incoming Stripe webhook events and processes them accordingly.\n\nexport async function POST(req: Request) {\n  const body = await req.text();\n  const sig = req.headers.get('stripe-signature') as string;\n  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T23:36:04.506Z
+Question Type: select-all
+Function: Input
+Function Size: 671 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: Input (TypeScript)\n// A functional component that renders an input field with custom onChange handling.\n\nconst Input = (props: Props) => {\n  const { className, children, onChange, ...rest } = props;\n\n  const rootClassName = cn(s.root, {}, className);\n\n  const handleOnChange = (e: Change
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T23:36:06.203Z
+Question Type: order-sequence
+Function: Account
+Function Size: 1135 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: Account (TypeScript)\n// Fetches user account details and renders the account management UI.\n\nexport default async function Account() {\n  const supabase = createClient();\n  const [user, userDetails, subscription] = await Promise.all([\n    getUser(supabase),\n    getUserDetails(supabase),\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-09T23:36:08.172Z
+Question Type: true-false
+Function: signInWithEmail
+Function Size: 620 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: signInWithEmail (TypeScript)\n// Handles user sign-in with email and validates the email format.\n\nexport async function signInWithEmail(formData: FormData) {\n  const cookieStore = cookies();\n  const callbackURL = getURL('/auth/callback');\n\n  const email = String(formData.get('email')).tr
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1759996037618
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 8
+Ended: 2025-10-09T23:36:10.833Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T01:43:59.632Z
+File: RidwaanT-motorfest-platform-29a1fe8b3979f3ddc51015b2617b71423ab3bb4c/src/features/raceTimes/components/raceTypeLabels.ts
+Functions Extracted: 5
+
+
+Function 1: splitRaceType
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+const splitRaceType = (raceType: string): { base: string; modifier?: string } => {
+  const [basePart, modifierPart] = raceType.split(' (');
+  if (!modifierPart) {
+    return { base: basePart };
+  }
+
+  const sanitizedModifier = modifierPart.endsWith(')')
+    ? modifierPart.slice(0, -1)
+    : modifierPart;
+
+  return {
+    base: basePart,
+    modifier: sanitizedModifier,
+  };
+};
+--------------------------------------------------------------------------------
+
+
+Function 2: collectSegments
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+const collectSegments = (raceType: string): string[] => {
+  const { base } = splitRaceType(raceType);
+  return base
+    .split('>')
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+};
+--------------------------------------------------------------------------------
+
+
+Function 3: abbreviateRaceSegment
+Language: TypeScript
+Lines: 21
+Full Code:
+--------------------------------------------------------------------------------
+export const abbreviateRaceSegment = (segment: string): string => {
+  const normalized = segment.trim().toLowerCase();
+  const mapped = RACE_TYPE_ABBREVIATIONS[normalized];
+  if (mapped) {
+    return mapped;
+  }
+
+  const tokens = segment
+    .trim()
+    .split(/[^A-Za-z0-9]+/)
+    .filter(Boolean);
+
+  if (tokens.length === 0) {
+    return segment.trim();
+  }
+
+  const fallback = tokens
+    .map((token) => {
+      if (/^\d+$/.test(token)) {
+        return token;
+      }
+      const cleaned = token.replace(/[^A-Za-z0-9]/g, '');
+      if (!cleaned) {
+        return '';
+      }
+      if (/^\d+$/.test(cleaned)) {
+        return cleaned;
+      }
+      return cleaned.charAt(0).toUpperCase();
+    })
+    .join('');
+
+  return fallback || segment.trim();
+};
+--------------------------------------------------------------------------------
+
+
+Function 4: formatRaceTypeForMobile
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export const formatRaceTypeForMobile = (raceType: string): string => {
+  if (!raceType) {
+    return '';
+  }
+
+  const { base, modifier } = splitRaceType(raceType);
+  const segments = base
+    .split('>')
+    .map((part) => part.trim())
+    .filter(Boolean);
+  const abbreviated = segments.map(abbreviateRaceSegment).join(' \u203a ');
+
+  if (modifier) {
+    return `${abbreviated} (${modifier})`;
+  }
+
+  return abbreviated;
+};
+--------------------------------------------------------------------------------
+
+
+Function 5: getRaceTypeSearchTokens
+Language: TypeScript
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+export const getRaceTypeSearchTokens = (raceType: string): string[] => {
+  const normalized = raceType.trim();
+  if (!normalized) {
+    return [];
+  }
+
+  const lower = normalized.toLowerCase();
+  const segments = collectSegments(normalized);
+  const abbreviations = segments.map(abbreviateRaceSegment);
+  const abbreviatedChain = abbreviations.join(' \u203a ');
+
+  const tokens = new Set<string>();
+  tokens.add(lower);
+  segments.forEach((segment) => tokens.add(segment.toLowerCase()));
+  abbreviations.forEach((abbr) => tokens.add(abbr.toLowerCase()));
+  if (abbreviatedChain) {
+    tokens.add(abbreviatedChain.toLowerCase());
+  }
+
+  return Array.from(tokens);
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T01:44:31.909Z
+File: For displaying the list of race times in a table
+Functions Extracted: 5
+
+
+Function 1: filteredTimes
+Language: TypeScript
+Lines: 21
+Full Code:
+--------------------------------------------------------------------------------
+const filteredTimes = React.useMemo(() => {
+    const normalizedSearch = searchQuery.trim().toLowerCase();
+
+    const matchesSearch = (entry: RaceTimeEntry) => {
+        if (!normalizedSearch) {
+            return true;
+        }
+
+        const raceTypeTokens = getRaceTypeSearchTokens(entry.raceType);
+        const searchableParts = [
+            entry.raceType,
+            formatRaceTypeForMobile(entry.raceType),
+            ...raceTypeTokens,
+            entry.location,
+            entry.time,
+            entry.source,
+            entry.position !== undefined ? String(entry.position) : '',
+            ...entry.vehicles,
+            ...entry.vehicleClasses,
+        ].filter((value) => value && value.trim().length > 0);
+
+        const searchableText = searchableParts.join(' ').toLowerCase();
+
+        return searchableText.includes(normalizedSearch);
+    };
+
+    return raceTimes.filter(
+        (rt) =>
+            (filterRaceType ? rt.raceType === filterRaceType : true) &&
+            (filterLocation ? rt.location === filterLocation : true) &&
+            matchesSearch(rt)
+    );
+}, [raceTimes, filterRaceType, filterLocation, searchQuery]);
+--------------------------------------------------------------------------------
+
+
+Function 2: sortedTimes
+Language: TypeScript
+Lines: 21
+Full Code:
+--------------------------------------------------------------------------------
+const sortedTimes = React.useMemo(() => {
+    const sorted = [...filteredTimes];
+    if (!sortConfig.key) {
+        return sorted;
+    }
+
+    const compare = (a: RaceTimeEntry, b: RaceTimeEntry) => {
+        switch (sortConfig.key) {
+            case 'time':
+                return raceTimeToMilliseconds(a.time) - raceTimeToMilliseconds(b.time);
+            case 'position':
+                return (a.position ?? Number.MAX_SAFE_INTEGER) - (b.position ?? Number.MAX_SAFE_INTEGER);
+            case 'location':
+                return a.location.localeCompare(b.location);
+            case 'raceType':
+                return a.raceType.localeCompare(b.raceType);
+            default:
+                return 0;
+        }
+    };
+
+    sorted.sort((a, b) => {
+        const result = compare(a, b);
+        return sortConfig.direction === 'asc' ? result : -result;
+    });
+
+    return sorted;
+}, [filteredTimes, sortConfig]);
+--------------------------------------------------------------------------------
+
+
+Function 3: requestSort
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+const requestSort = (key: SortableColumn) => {
+    setSortConfig((prev) => {
+        const direction = prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc';
+        return { key, direction };
+    });
+};
+--------------------------------------------------------------------------------
+
+
+Function 4: getAriaSort
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+const getAriaSort = (column: SortableColumn): 'none' | 'ascending' | 'descending' => {
+    if (sortConfig.key !== column) {
+        return 'none';
+    }
+    return sortConfig.direction === 'asc' ? 'ascending' : 'descending';
+};
+--------------------------------------------------------------------------------
+
+
+Function 5: renderSortIcon
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+const renderSortIcon = (column: SortableColumn) => {
+    if (sortConfig.key !== column) {
+        return <ChevronsUpDown className="h-3 w-3 opacity-60" aria-hidden="true" />;
+    }
+
+    return sortConfig.direction === 'asc' ? (
+        <ChevronUp className="h-3 w-3" aria-hidden="true" />
+    ) : (
+        <ChevronDown className="h-3 w-3" aria-hidden="true" />
+    );
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T01:44:41.351Z
+File: RidwaanT-motorfest-platform-29a1fe8b3979f3ddc51015b2617b71423ab3bb4c/src/utils/time.ts
+Functions Extracted: 1
+
+
+Function 1: formatRaceTimeInput
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+export function formatRaceTimeInput(input: string, previousValue = ''): string {
+  const digits = input.replace(/\D/g, '').slice(0, 7);
+  const previousDigits = previousValue.replace(/\D/g, '');
+  const isDeleting =
+    digits.length < previousDigits.length || input.length < previousValue.length;
+  const isAddingDigit = digits.length > previousDigits.length;
+
+  if (digits.length === 0) {
+    return '';
+  }
+
+  if (digits.length <= 2) {
+
+    if (digits.length === 2 && !isDeleting) {
+      return `${digits}:`;
+    }
+    return digits;
+  }
+
+  const minutes = digits.slice(0, 2);
+  const seconds = digits.slice(2, 4);
+  const milliseconds = digits.slice(4, 7);
+
+  if (digits.length === 3) {
+    return `${minutes}:${seconds}`;
+  }
+
+  if (digits.length === 4) {
+    const base = `${minutes}:${seconds}`;
+    if (!isDeleting && (isAddingDigit || previousValue.includes('.'))) {
+      return `${base}.`;
+    }
+
+    return base;
+  }
+  return `${minutes}:${seconds}.${milliseconds}`;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T01:44:49.709Z
+File: RidwaanT-motorfest-platform-29a1fe8b3979f3ddc51015b2617b71423ab3bb4c/src/features/raceTimes/api/raceTimes.ts
+Functions Extracted: 2
+
+
+Function 1: addRaceTime
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export async function addRaceTime(
+  entry: Omit<RaceTimeEntry, 'id' | 'timestamp'>
+): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Authentication required to add a race time.');
+
+  try {
+    const raceTimesCollection = collection(db, 'users', user.uid, 'raceTimes');
+    await addDoc(raceTimesCollection, {
+      ...entry,
+      timestamp: serverTimestamp(),
+    });
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : 'Unable to save race time';
+    console.error('Error adding document: ', message);
+    throw new Error(message);
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: updateRaceTime
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export async function updateRaceTime(id: string, time: string): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Authentication required to update a race time.');
+
+  try {
+    const raceTimeDoc = doc(db, 'users', user.uid, 'raceTimes', id);
+    await updateDoc(raceTimeDoc, {
+      time,
+      source: 'manual',
+    });
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : 'Unable to update race time';
+    console.error('Error updating document: ', message);
+    throw new Error(message);
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T01:45:07.499Z
+File: RidwaanT-motorfest-platform-29a1fe8b3979f3ddc51015b2617b71423ab3bb4c/src/features/auth/components/AuthModal.tsx
+Functions Extracted: 2
+
+
+Function 1: handleEmailAuth
+Language: TypeScript
+Lines: 27
+Full Code:
+--------------------------------------------------------------------------------
+const handleEmailAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      const currentUser = authInstance.currentUser;
+
+      if (isRegister) {
+        try {
+          if (currentUser?.isAnonymous) {
+            const credential = EmailAuthProvider.credential(email, password);
+            await linkWithCredential(currentUser, credential);
+            if (auth.currentUser) {
+              await sendEmailVerification(auth.currentUser);
+              showMessage('Verification email sent! Please check your inbox (and spam folder).');
+            }
+          } else {
+            const userCredential = await createUserWithEmailAndPassword(
+              authInstance,
+              email,
+              password
+            );
+            await sendEmailVerification(userCredential.user);
+            showMessage('Verification email sent! Please check your inbox (and spam folder).');
+          }
+        } catch (err) {
+          const code = hasAuthCode(err) ? err.code : null;
+          if (code === 'auth/email-already-in-use' || code === 'auth/credential-already-in-use') {
+            setError('This email is already in use. Please sign in or use a different email.');
+          } else {
+            setError(getErrorMessage(err, 'Registration failed.'));
+          }
+          return;
+        }
+      } else {
+        await signInWithEmailAndPassword(authInstance, email, password);
+      }
+      onClose();
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Authentication failed'));
+    } finally {
+      setLoading(false);
+    }
+  };
+--------------------------------------------------------------------------------
+
+
+Function 2: handleGoogle
+Language: TypeScript
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+const handleGoogle = async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      const currentUser = authInstance.currentUser;
+
+      if (currentUser?.isAnonymous) {
+        await linkWithPopup(currentUser, providerInstance);
+        showMessage('Account linked successfully!');
+      } else {
+        const result = await signInWithPopup(authInstance, providerInstance);
+        if (getAdditionalUserInfo(result)?.isNewUser) {
+          showMessage('Account created successfully!');
+        }
+      }
+      onClose();
+    } catch (err: unknown) {
+      const code = hasAuthCode(err) ? err.code : null;
+      if (code === 'auth/credential-already-in-use') {
+        if (err instanceof FirebaseError) {
+          const credential = GoogleAuthProvider.credentialFromError(err);
+          if (credential) {
+            try {
+              await signInWithCredential(authInstance, credential);
+              onClose();
+              return;
+            } catch (signInError: unknown) {
+              setError(getErrorMessage(signInError, 'Sign-in failed after credential conflict'));
+              return;
+            }
+          }
+        }
+        setError('This Google account is already linked to another user. Please sign in with that account instead.');
+      } else {
+        setError(getErrorMessage(err, 'Google sign-in failed'));
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T01:45:21.437Z
+Question Type: select-all
+Function: addRaceTime
+Function Size: 721 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: addRaceTime (TypeScript)\n// Adds a new race time entry directly to the user's subcollection in Firestore.\n\nexport async function addRaceTime(\n  entry: Omit<RaceTimeEntry, 'id' | 'timestamp'>\n): Promise<void> {\n  const user = auth.currentUser;\n  if (!user) throw new Error('Authentication
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T01:45:25.147Z
+Question Type: select-all
+Function: handleGoogle
+Function Size: 1507 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleGoogle (TypeScript)\n// Handles Google authentication for linking or signing in.\n\nconst handleGoogle = async () => {\n    setError(null);\n    setLoading(true);\n    try {\n      const currentUser = authInstance.currentUser;\n\n      if (currentUser?.isAnonymous) {\n        await linkWith
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T01:45:28.459Z
+Question Type: function-variant
+Function: formatRaceTypeForMobile
+Function Size: 565 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: formatRaceTypeForMobile (TypeScript)\n// Formats a race type string for mobile display, including abbreviations and modifiers.\n\nexport const formatRaceTypeForMobile = (raceType: string): string => {\n  if (!raceType) {\n    return '';\n  }\n\n  const { base, modifier } = splitRaceType(raceTyp
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T01:45:29.237Z
+Question Type: function-variant
+Function: renderSortIcon
+Function Size: 491 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: renderSortIcon (TypeScript)\n// Renders the appropriate sort icon based on the current sort configuration.\n\nconst renderSortIcon = (column: SortableColumn) => {\n    if (sortConfig.key !== column) {\n        return <ChevronsUpDown className="h-3 w-3 opacity-60" aria-hidden="true" />;\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T01:45:39.213Z
+Question Type: function-variant
+Function: requestSort
+Function Size: 311 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: requestSort (TypeScript)\n// Requests sorting of the race times by a specified column.\n\nconst requestSort = (key: SortableColumn) => {\n    setSortConfig((prev) => {\n        const direction = prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc';\n        return { key, direction };
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T01:45:41.547Z
+Question Type: true-false
+Function: abbreviateRaceSegment
+Function Size: 888 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: abbreviateRaceSegment (TypeScript)\n// Abbreviates a race segment based on predefined mappings or generates a fallback.\n\nexport const abbreviateRaceSegment = (segment: string): string => {\n  const normalized = segment.trim().toLowerCase();\n  const mapped = RACE_TYPE_ABBREVIATIONS[normali
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T01:45:44.497Z
+Question Type: multiple-choice
+Function: formatRaceTimeInput
+Function Size: 1085 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: formatRaceTimeInput (TypeScript)\n// Formats race time input into a specific string format\n\nexport function formatRaceTimeInput(input: string, previousValue = ''): string {\n  const digits = input.replace(/\D/g, '').slice(0, 7);\n  const previousDigits = previousValue.replace(/\D/g, '');\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T01:45:45.377Z
+Question Type: order-sequence
+Function: splitRaceType
+Function Size: 478 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: splitRaceType (TypeScript)\n// Splits a race type string into base and modifier parts.\n\nconst splitRaceType = (raceType: string): { base: string; modifier?: string } => {\n  const [basePart, modifierPart] = raceType.split(' (');\n  if (!modifierPart) {\n    return { base: basePart };\n  }\n\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T01:45:49.860Z
+Question Type: select-all
+Function: collectSegments
+Function Size: 303 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: collectSegments (TypeScript)\n// Collects and trims segments from the base part of a race type.\n\nconst collectSegments = (raceType: string): string[] => {\n  const { base } = splitRaceType(raceType);\n  return base\n    .split('>')\n    .map((segment) => segment.trim())\n    .filter(Boolean);
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T01:45:56.597Z
+Question Type: multiple-choice
+Function: filteredTimes
+Function Size: 1268 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: filteredTimes (TypeScript)\n// Filters race times based on race type, location, and search query.\n\nconst filteredTimes = React.useMemo(() => {\n    const normalizedSearch = searchQuery.trim().toLowerCase();\n\n    const matchesSearch = (entry: RaceTimeEntry) => {\n        if (!normalizedSear
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1759996037618
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 15
+Ended: 2025-10-10T01:45:59.350Z
+================================================================================
+

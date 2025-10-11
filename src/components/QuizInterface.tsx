@@ -1212,9 +1212,12 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 {hasQuestion ? (
                   <>
                     Question {currentQuestionIndex + 1} of {totalQuestions}
-                    {currentQuestion.qualityRating && (
-                      <span className="ml-3 px-2 py-1 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full">
-                        Quality: {currentQuestion.qualityRating}/10
+                    {currentQuestion.isCached && (
+                      <span className="ml-3 px-2 py-1 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        Community Reviewed
                       </span>
                     )}
                   </>
@@ -1371,6 +1374,18 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
           ) : (
           <>
           <div className="mb-8">
+            {/* Community Reviewed Badge - Prominent */}
+            {currentQuestion.isCached && (
+              <div className="mb-4">
+                <span className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 text-green-800 dark:text-green-300 rounded-lg border-2 border-green-300 dark:border-green-700 font-semibold text-sm shadow-sm">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  ✨ Community Reviewed Question
+                </span>
+              </div>
+            )}
+            
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               {currentQuestion.question}
             </h2>
@@ -1734,8 +1749,6 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               console.log(`🔍 [QuizInterface] shouldUpdate for ${currentQuestion.id}:`, shouldUpdate, 'pollUpdatedQuestions:', Array.from(pollUpdatedQuestions));
               return shouldUpdate;
             })()}
-            questionData={currentQuestion}
-            repoUrl={quizSession?.repositoryInfo ? `https://github.com/${quizSession.repositoryInfo.owner}/${quizSession.repositoryInfo.repo}` : undefined}
             onPollUpdate={handlePollUpdate}
           />
 

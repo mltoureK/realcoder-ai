@@ -1,0 +1,1326 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1760066623335
+Started: 2025-10-10T03:23:43.335Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T03:23:43.336Z
+File: gothinkster-realworld-32a16a6/apps/api/server/auth-event-handler.ts
+Functions Extracted: 1
+
+
+Function 1: definePrivateEventHandler
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function definePrivateEventHandler<T>(
+    handler: (event: H3Event, cxt: PrivateContext) => T,
+    options: { requireAuth: boolean } = {requireAuth: true}
+) {
+    return defineEventHandler(async (event) => {
+        const token = event.req.headers['authorization']?.split(' ')[1];
+        if (options.requireAuth && !token) {
+            throw createError({ statusCode: 401, statusMessage: 'Unauthorized' });
+        }
+        const decoded = jwt.verify(token, 'your-secret-key');
+        const context: PrivateContext = { auth: { id: (decoded as any).id } };
+        return await handler(event, context);
+    });
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T03:23:53.145Z
+File: gothinkster-realworld-32a16a6/apps/api/server/routes/api/articles/index.get.ts
+Functions Extracted: 1
+
+
+Function 1: buildFindAllQuery
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+const buildFindAllQuery = (query: any, auth: {id: number} | undefined) => {
+    const queries: any = [];
+    const orAuthorQuery = [];
+    const andAuthorQuery = [];
+
+    orAuthorQuery.push({
+        demo: {
+            equals: true,
+        },
+    });
+
+    if (auth?.id) {
+        orAuthorQuery.push({
+            id: {
+                equals: auth?.id,
+            },
+        });
+    }
+
+    if ('author' in query) {
+        andAuthorQuery.push({
+            username: {
+                equals: query.author,
+            },
+        });
+    }
+
+    const authorQuery = {
+        author: {
+            OR: orAuthorQuery,
+            AND: andAuthorQuery,
+        },
+    };
+
+    queries.push(authorQuery);
+
+    if ('tag' in query) {
+        queries.push({
+            tagList: {
+                some: {
+                    name: query.tag,
+                },
+            },
+        });
+    }
+
+    if ('favorited' in query) {
+        queries.push({
+            favoritedBy: {
+                some: {
+                    username: {
+                        equals: query.favorited,
+                    },
+                },
+            },
+        });
+    }
+
+    return queries;
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T03:23:57.961Z
+File: gothinkster-realworld-32a16a6/apps/api/server/routes/api/user/index.get.ts
+Functions Extracted: 1
+
+
+Function 1: default
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export default definePrivateEventHandler(async (event, {auth}) => {
+    const user = (await usePrisma().user.findUnique({
+        where: {
+            id: auth.id,
+        },
+        select: {
+            id: true,
+            email: true,
+            username: true,
+            bio: true,
+            image: true,
+        },
+    })) as User;
+
+    return {
+        user: {
+            ...user,
+            token: useGenerateToken(user.id),
+        }
+    };
+});
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T03:24:05.661Z
+Question Type: multiple-choice
+Function: default
+Function Size: 582 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: default (TypeScript)\n// Handles user authentication and returns user details along with a generated token.\n\nexport default definePrivateEventHandler(async (event, {auth}) => {\n    const user = (await usePrisma().user.findUnique({\n        where: {\n            id: auth.id,\n        },\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T03:24:18.060Z
+Question Type: function-variant
+Function: definePrivateEventHandler
+Function Size: 765 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: definePrivateEventHandler (TypeScript)\n// Defines an event handler that requires authentication and provides a private context.\n\nexport function definePrivateEventHandler<T>(\n    handler: (event: H3Event, cxt: PrivateContext) => T,\n    options: { requireAuth: boolean } = {requireAuth: t
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T03:24:23.753Z
+Question Type: function-variant
+Function: default
+Function Size: 582 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: default (TypeScript)\n// Handles user authentication and returns user details along with a generated token.\n\nexport default definePrivateEventHandler(async (event, {auth}) => {\n    const user = (await usePrisma().user.findUnique({\n        where: {\n            id: auth.id,\n        },\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T03:24:25.323Z
+Question Type: select-all
+Function: buildFindAllQuery
+Function Size: 1317 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: buildFindAllQuery (TypeScript)\n// Builds a query for fetching articles based on various filters like author, tag, and favorites.\n\nconst buildFindAllQuery = (query: any, auth: {id: number} | undefined) => {\n    const queries: any = [];\n    const orAuthorQuery = [];\n    const andAuthorQue
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T03:24:28.531Z
+Question Type: function-variant
+Function: buildFindAllQuery
+Function Size: 1317 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: buildFindAllQuery (TypeScript)\n// Builds a query for fetching articles based on various filters like author, tag, and favorites.\n\nconst buildFindAllQuery = (query: any, auth: {id: number} | undefined) => {\n    const queries: any = [];\n    const orAuthorQuery = [];\n    const andAuthorQue
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T03:24:35.560Z
+Question Type: order-sequence
+Function: default
+Function Size: 582 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: default (TypeScript)\n// Handles user authentication and returns user details along with a generated token.\n\nexport default definePrivateEventHandler(async (event, {auth}) => {\n    const user = (await usePrisma().user.findUnique({\n        where: {\n            id: auth.id,\n        },\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T03:24:37.479Z
+Question Type: multiple-choice
+Function: definePrivateEventHandler
+Function Size: 765 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: definePrivateEventHandler (TypeScript)\n// Defines an event handler that requires authentication and provides a private context.\n\nexport function definePrivateEventHandler<T>(\n    handler: (event: H3Event, cxt: PrivateContext) => T,\n    options: { requireAuth: boolean } = {requireAuth: t
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T03:24:39.987Z
+Question Type: true-false
+Function: buildFindAllQuery
+Function Size: 1317 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: buildFindAllQuery (TypeScript)\n// Builds a query for fetching articles based on various filters like author, tag, and favorites.\n\nconst buildFindAllQuery = (query: any, auth: {id: number} | undefined) => {\n    const queries: any = [];\n    const orAuthorQuery = [];\n    const andAuthorQue
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T03:24:42.006Z
+Question Type: select-all
+Function: default
+Function Size: 582 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: default (TypeScript)\n// Handles user authentication and returns user details along with a generated token.\n\nexport default definePrivateEventHandler(async (event, {auth}) => {\n    const user = (await usePrisma().user.findUnique({\n        where: {\n            id: auth.id,\n        },\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T03:24:51.511Z
+Question Type: select-all
+Function: definePrivateEventHandler
+Function Size: 765 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: definePrivateEventHandler (TypeScript)\n// Defines an event handler that requires authentication and provides a private context.\n\nexport function definePrivateEventHandler<T>(\n    handler: (event: H3Event, cxt: PrivateContext) => T,\n    options: { requireAuth: boolean } = {requireAuth: t
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760066623335
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 3
+Ended: 2025-10-10T03:24:53.724Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T03:33:19.222Z
+File: Hashnode-starter-kit-b902752/packages/blog-starter-kit/themes/hashnode/public/js/iframe-resizer.js
+Functions Extracted: 2
+
+
+Function 1: F
+Language: JavaScript
+Lines: 51
+Full Code:
+--------------------------------------------------------------------------------
+function F(e) {
+      function n() {
+        i('Height'),
+          i('Width'),
+          C(
+            function () {
+              W(B), R(L), m('onResized', B);
+            },
+            B,
+            'init',
+          );
+      }
+      function i(e) {
+        var n = Number(f[L]['max' + e]),
+          i = Number(f[L]['min' + e]),
+          t = e.toLowerCase(),
+          o = Number(B[t]);
+        y(L, 'Checking ' + t + ' is in range ' + i + '-' + n),
+          o < i && ((o = i), y(L, 'Set ' + t + ' to min value')),
+          n < o && ((o = n), y(L, 'Set ' + t + ' to max value')),
+          (B[t] = '' + o);
+      }
+      function t(e) {
+        return A.substr(A.indexOf(':') + r + e);
+      }
+      function o(e, n) {
+        !(function (e, n, i) {
+          g[i] ||
+            (g[i] = setTimeout(function () {
+              (g[i] = null), e();
+            }, 32));
+        })(
+          function () {
+            N(
+              'Send Page Info',
+              'pageInfo:' +
+                (function () {
+                  var e = document.body.getBoundingClientRect(),
+                    n = B.iframe.getBoundingClientRect();
+                  return JSON.stringify({
+                    iframeHeight: n.height,
+                    iframeWidth: n.width,
+                    clientHeight: Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
+                    clientWidth: Math.max(document.documentElement.clientWidth, window.innerWidth, 0),
+                    offsetTop: parseInt(n.top - e.top, 10),
+                    offsetLeft: parseInt(n.left - e.left, 10),
+                    scrollTop: window.pageYOffset,
+                    scrollLeft: window.pageXOffset,
+                    documentHeight: document.documentElement.clientHeight,
+                    documentWidth: document.documentElement.clientWidth,
+                    windowHeight: window.innerHeight,
+                    windowWidth: window.innerWidth,
+                  });
+                })(),
+              e,
+              n,
+            );
+          },
+          0,
+          n,
+        );
+      }
+      function c(e) {
+        var n = e.getBoundingClientRect();
+        return O(L), { x: Math.floor(Number(n.left) + Number(d.x)), y: Math.floor(Number(n.top) + Number(d.y)) };
+      }
+      function u(e) {
+        var n = e ? c(B.iframe) : { x: 0, y: 0 },
+          i = { x: Number(B.width) + n.x, y: Number(B.height) + n.y };
+        y(L, 'Reposition requested from iFrame (offset x:' + n.x + ' y:' + n.y + ')'),
+          window.top !== window.self
+            ? window.parentIFrame
+              ? window.parentIFrame['scrollTo' + (e ? 'Offset' : '')](i.x, i.y)
+              : I(L, 'Unable to scroll to requested position, window.parentIFrame not found')
+            : ((d = i), l(), y(L, '--'));
+      }
+      function l() {
+        !1 !== m('onScroll', d) ? R(L) : T();
+      }
+      function m(e, n) {
+        return M(L, e, n);
+      }
+      var h,
+        b,
+        x,
+        F,
+        k,
+        H,
+        j,
+        P,
+        A = e.data,
+        B = {},
+        L = null;
+      '[iFrameResizerChild]Ready' === A
+        ? (function () {
+            for (var e in f) N('iFrame requested init', S(e), f[e].iframe, e);
+          })()
+        : a === ('' + A).substr(0, s) && A.substr(s).split(':')[0] in f
+        ? ((H = (k = A.substr(s).split(':'))[1] ? parseInt(k[1], 10) : 0),
+          (j = f[k[0]] && f[k[0]].iframe),
+          (P = getComputedStyle(j)),
+          (B = {
+            iframe: j,
+            id: k[0],
+            height:
+              H +
+              (function (e) {
+                return 'border-box' !== e.boxSizing
+                  ? 0
+                  : (e.paddingTop ? parseInt(e.paddingTop, 10) : 0) +
+                      (e.paddingBottom ? parseInt(e.paddingBottom, 10) : 0);
+              })(P) +
+              (function (e) {
+                return 'border-box' !== e.boxSizing
+                  ? 0
+                  : (e.borderTopWidth ? parseInt(e.borderTopWidth, 10) : 0) +
+                      (e.borderBottomWidth ? parseInt(e.borderBottomWidth, 10) : 0);
+              })(P),
+            width: k[2],
+            type: k[3],
+          }),
+          (L = B.id),
+          f[L] && (f[L].loaded = !0),
+          (F = B.type in { true: 1, false: 1, undefined: 1 }) && y(L, 'Ignoring init message from meta parent page'),
+          !F &&
+            ((x = !0), f[(b = L)] || ((x = !1), I(B.type + ' No settings for ' + b + '. Message was: ' + A)), x) &&
+            (y(L, 'Received: ' + A),
+            (h = !0),
+            null === B.iframe && (I(L, 'IFrame (' + B.id + ') not found'), (h = !1)),
+            h &&
+              (function () {
+                var n,
+                  i = e.origin,
+                  t = f[L] && f[L].checkOrigin;
+                if (
+                  t &&
+                  '' + i != 'null' &&
+                  !(t.constructor === Array
+                    ? (function () {
+                        var e = 0,
+                          n = !1;
+                        for (y(L, 'Checking connection is from allowed list of origins: ' + t); e < t.length; e++)
+                          if (t[e] === i) {
+                            n = !0;
+                            break;
+                          }
+                        return n;
+                      })()
+                    : ((n = f[L] && f[L].remoteHost), y(L, 'Checking connection is from: ' + n), i === n))
+                )
+                  throw new Error(
+                    'Unexpected message received from: ' +
+                      i +
+                      ' for ' +
+                      B.iframe.id +
+                      '. Message was: ' +
+                      e.data +
+                      '. This error can be disabled by setting the checkOrigin: false option or by providing of array of trusted domains.',
+                  );
+                return !0;
+              })() &&
+              (function () {
+                switch ((f[L] && f[L].firstRun && f[L] && (f[L].firstRun = !1), B.type)) {
+                  case 'close':
+                    z(B.iframe);
+                    break;
+                  case 'message':
+                    !(function (e) {
+                      y(L, 'onMessage passed: {iframe: ' + B.iframe.id + ', message: ' + e + '}'),
+                        m('onMessage', { iframe: B.iframe, message: JSON.parse(e) }),
+                        y(L, '--');
+                    })(t(6));
+                    break;
+                  case 'autoResize':
+                    f[L].autoResize = JSON.parse(t(9));
+                    break;
+                  case 'scrollTo':
+                    u(!1);
+                    break;
+                  case 'scrollToOffset':
+                    u(!0);
+                    break;
+                  case 'pageInfo':
+                    o(f[L] && f[L].iframe, L),
+                      (function () {
+                        function e(e, t) {
+                          function r() {
+                            f[i] ? o(f[i].iframe, i) : n();
+                          }
+                          ['scroll', 'resize'].forEach(function (n) {
+                            y(i, e + n + ' listener for sendPageInfo'), t(window, n, r);
+                          });
+                        }
+                        function n() {
+                          e('Remove ', p);
+                        }
+                        var i = L;
+                        e('Add ', w), f[i] && (f[i].stopPageInfo = n);
+                      })();
+                    break;
+                  case 'pageInfoStop':
+                    f[L] && f[L].stopPageInfo && (f[L].stopPageInfo(), delete f[L].stopPageInfo);
+                    break;
+                  case 'inPageLink':
+                    !(function (e) {
+                      var n,
+                        i = e.split('#')[1] || '',
+                        t = decodeURIComponent(i),
+                        o = document.getElementById(t) || document.getElementsByName(t)[0];
+                      o
+                        ? ((n = c(o)),
+                          y(L, 'Moving to in page link (#' + i + ') at x: ' + n.x + ' y: ' + n.y),
+                          (d = { x: n.x, y: n.y }),
+                          l(),
+                          y(L, '--'))
+                        : window.top !== window.self
+                        ? window.parentIFrame
+                          ? window.parentIFrame.moveToAnchor(i)
+                          : y(L, 'In page link #' + i + ' not found and window.parentIFrame not found')
+                        : y(L, 'In page link #' + i + ' not found');
+                    })(t(9));
+                    break;
+                  case 'reset':
+                    E(B);
+                    break;
+                  case 'init':
+                    n(), m('onInit', B.iframe);
+                    break;
+                  default:
+                    n();
+                }
+              })()))
+        : v(L, 'Ignored: ' + A);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: B
+Language: JavaScript
+Lines: 41
+Full Code:
+--------------------------------------------------------------------------------
+function B() {
+      function n(e, n) {
+        n &&
+          ((function () {
+            if (!n.tagName) throw new TypeError('Object is not a valid DOM element');
+            if ('IFRAME' !== n.tagName.toUpperCase())
+              throw new TypeError('Expected <IFRAME> tag, found <' + n.tagName + '>');
+          })(),
+          H(n, e),
+          i.push(n));
+      }
+      var i;
+      return (
+        (function () {
+          var e,
+            n = ['moz', 'webkit', 'o', 'ms'];
+          for (e = 0; e < n.length && !c; e += 1) c = window[n[e] + 'RequestAnimationFrame'];
+          c ? (c = c.bind(window)) : y('setup', 'RequestAnimationFrame not supported');
+        })(),
+        w(window, 'message', F),
+        w(window, 'resize', function () {
+          var e;
+          y('window', 'Trigger event: ' + (e = 'resize')),
+            j(function () {
+              A('Window ' + e, 'resize');
+            }, 16);
+        }),
+        w(document, 'visibilitychange', P),
+        w(document, '-webkit-visibilitychange', P),
+        function (t, o) {
+          switch (
+            ((i = []),
+            (function (e) {
+              e &&
+                e.enablePublicMethods &&
+                I('enablePublicMethods option has been removed, public methods are now always available in the iFrame');
+            })(t),
+            typeof o)
+          ) {
+            case 'undefined':
+            case 'string':
+              Array.prototype.forEach.call(document.querySelectorAll(o || 'iframe'), n.bind(e, t));
+              break;
+            case 'object':
+              n(t, o);
+              break;
+            default:
+              throw new TypeError('Unexpected data type (' + typeof o + ')');
+          }
+          return i;
+        }
+      );
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T03:34:24.778Z
+File: Hashnode-starter-kit-b902752/packages/blog-starter-kit/themes/personal/public/js/iframe-resizer.js
+Functions Extracted: 2
+
+
+Function 1: F
+Language: JavaScript
+Lines: 81
+Full Code:
+--------------------------------------------------------------------------------
+function F(e) {
+      function n() {
+        i('Height'),
+          i('Width'),
+          C(
+            function () {
+              W(B), R(L), m('onResized', B);
+            },
+            B,
+            'init',
+          );
+      }
+      function i(e) {
+        var n = Number(f[L]['max' + e]),
+          i = Number(f[L]['min' + e]),
+          t = e.toLowerCase(),
+          o = Number(B[t]);
+        y(L, 'Checking ' + t + ' is in range ' + i + '-' + n),
+          o < i && ((o = i), y(L, 'Set ' + t + ' to min value')),
+          n < o && ((o = n), y(L, 'Set ' + t + ' to max value')),
+          (B[t] = '' + o);
+      }
+      function t(e) {
+        return A.substr(A.indexOf(':') + r + e);
+      }
+      function o(e, n) {
+        !(function (e, n, i) {
+          g[i] ||
+            (g[i] = setTimeout(function () {
+              (g[i] = null), e();
+            }, 32));
+        })(
+          function () {
+            N(
+              'Send Page Info',
+              'pageInfo:' +
+                (function () {
+                  var e = document.body.getBoundingClientRect(),
+                    n = B.iframe.getBoundingClientRect();
+                  return JSON.stringify({
+                    iframeHeight: n.height,
+                    iframeWidth: n.width,
+                    clientHeight: Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
+                    clientWidth: Math.max(document.documentElement.clientWidth, window.innerWidth, 0),
+                    offsetTop: parseInt(n.top - e.top, 10),
+                    offsetLeft: parseInt(n.left - e.left, 10),
+                    scrollTop: window.pageYOffset,
+                    scrollLeft: window.pageXOffset,
+                    documentHeight: document.documentElement.clientHeight,
+                    documentWidth: document.documentElement.clientWidth,
+                    windowHeight: window.innerHeight,
+                    windowWidth: window.innerWidth,
+                  });
+                })(),
+              e,
+              n,
+            );
+          },
+          0,
+          n,
+        );
+      }
+      function c(e) {
+        var n = e.getBoundingClientRect();
+        return O(L), { x: Math.floor(Number(n.left) + Number(d.x)), y: Math.floor(Number(n.top) + Number(d.y)) };
+      }
+      function u(e) {
+        var n = e ? c(B.iframe) : { x: 0, y: 0 },
+          i = { x: Number(B.width) + n.x, y: Number(B.height) + n.y };
+        y(L, 'Reposition requested from iFrame (offset x:' + n.x + ' y:' + n.y + ')'),
+          window.top !== window.self
+            ? window.parentIFrame
+              ? window.parentIFrame['scrollTo' + (e ? 'Offset' : '')](i.x, i.y)
+              : I(L, 'Unable to scroll to requested position, window.parentIFrame not found')
+            : ((d = i), l(), y(L, '--'));
+      }
+      function l() {
+        !1 !== m('onScroll', d) ? R(L) : T();
+      }
+      function m(e, n) {
+        return M(L, e, n);
+      }
+      var h,
+        b,
+        x,
+        F,
+        k,
+        H,
+        j,
+        P,
+        A = e.data,
+        B = {},
+        L = null;
+      '[iFrameResizerChild]Ready' === A
+        ? (function () {
+            for (var e in f) N('iFrame requested init', S(e), f[e].iframe, e);
+          })()
+        : a === ('' + A).substr(0, s) && A.substr(s).split(':')[0] in f
+        ? ((H = (k = A.substr(s).split(':'))[1] ? parseInt(k[1], 10) : 0),
+          (j = f[k[0]] && f[k[0]].iframe),
+          (P = getComputedStyle(j)),
+          (B = {
+            iframe: j,
+            id: k[0],
+            height:
+              H +
+              (function (e) {
+                return 'border-box' !== e.boxSizing
+                  ? 0
+                  : (e.paddingTop ? parseInt(e.paddingTop, 10) : 0) +
+                      (e.paddingBottom ? parseInt(e.paddingBottom, 10) : 0);
+              })(P) +
+              (function (e) {
+                return 'border-box' !== e.boxSizing
+                  ? 0
+                  : (e.borderTopWidth ? parseInt(e.borderTopWidth, 10) : 0) +
+                      (e.borderBottomWidth ? parseInt(e.borderBottomWidth, 10) : 0);
+              })(P),
+            width: k[2],
+            type: k[3],
+          }),
+          (L = B.id),
+          f[L] && (f[L].loaded = !0),
+          (F = B.type in { true: 1, false: 1, undefined: 1 }) && y(L, 'Ignoring init message from meta parent page'),
+          !F &&
+            ((x = !0), f[(b = L)] || ((x = !1), I(B.type + ' No settings for ' + b + '. Message was: ' + A)), x) &&
+            (y(L, 'Received: ' + A),
+            (h = !0),
+            null === B.iframe && (I(L, 'IFrame (' + B.id + ') not found'), (h = !1)),
+            h &&
+              (function () {
+                var n,
+                  i = e.origin,
+                  t = f[L] && f[L].checkOrigin;
+                if (
+                  t &&
+                  '' + i != 'null' &&
+                  !(t.constructor === Array
+                    ? (function () {
+                        var e = 0,
+                          n = !1;
+                        for (y(L, 'Checking connection is from allowed list of origins: ' + t); e < t.length; e++)
+                          if (t[e] === i) {
+                            n = !0;
+                            break;
+                          }
+                        return n;
+                      })()
+                    : ((n = f[L] && f[L].remoteHost), y(L, 'Checking connection is from: ' + n), i === n))
+                )
+                  throw new Error(
+                    'Unexpected message received from: ' +
+                      i +
+                      ' for ' +
+                      B.iframe.id +
+                      '. Message was: ' +
+                      e.data +
+                      '. This error can be disabled by setting the checkOrigin: false option or by providing of array of trusted domains.',
+                  );
+                return !0;
+              })() &&
+              (function () {
+                switch ((f[L] && f[L].firstRun && f[L] && (f[L].firstRun = !1), B.type)) {
+                  case 'close':
+                    z(B.iframe);
+                    break;
+                  case 'message':
+                    !(function (e) {
+                      y(L, 'onMessage passed: {iframe: ' + B.iframe.id + ', message: ' + e + '}'),
+                        m('onMessage', { iframe: B.iframe, message: JSON.parse(e) }),
+                        y(L, '--');
+                    })(t(6));
+                    break;
+                  case 'autoResize':
+                    f[L].autoResize = JSON.parse(t(9));
+                    break;
+                  case 'scrollTo':
+                    u(!1);
+                    break;
+                  case 'scrollToOffset':
+                    u(!0);
+                    break;
+                  case 'pageInfo':
+                    o(f[L] && f[L].iframe, L),
+                      (function () {
+                        function e(e, t) {
+                          function r() {
+                            f[i] ? o(f[i].iframe, i) : n();
+                          }
+                          ['scroll', 'resize'].forEach(function (n) {
+                            y(i, e + n + ' listener for sendPageInfo'), t(window, n, r);
+                          });
+                        }
+                        function n() {
+                          e('Remove ', p);
+                        }
+                        var i = L;
+                        e('Add ', w), f[i] && (f[i].stopPageInfo = n);
+                      })();
+                    break;
+                  case 'pageInfoStop':
+                    f[L] && f[L].stopPageInfo && (f[L].stopPageInfo(), delete f[L].stopPageInfo);
+                    break;
+                  case 'inPageLink':
+                    !(function (e) {
+                      var n,
+                        i = e.split('#')[1] || '',
+                        t = decodeURIComponent(i),
+                        o = document.getElementById(t) || document.getElementsByName(t)[0];
+                      o
+                        ? ((n = c(o)),
+                          y(L, 'Moving to in page link (#' + i + ') at x: ' + n.x + ' y: ' + n.y),
+                          (d = { x: n.x, y: n.y }),
+                          l(),
+                          y(L, '--'))
+                        : window.top !== window.self
+                        ? window.parentIFrame
+                          ? window.parentIFrame.moveToAnchor(i)
+                          : y(L, 'In page link #' + i + ' not found and window.parentIFrame not found')
+                        : y(L, 'In page link #' + i + ' not found');
+                    })(t(9));
+                    break;
+                  case 'reset':
+                    E(B);
+                    break;
+                  case 'init':
+                    n(), m('onInit', B.iframe);
+                    break;
+                  default:
+                    n();
+                }
+              })()))
+        : v(L, 'Ignored: ' + A);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: B
+Language: JavaScript
+Lines: 55
+Full Code:
+--------------------------------------------------------------------------------
+function B() {
+      function n(e, n) {
+        n &&
+          ((function () {
+            if (!n.tagName) throw new TypeError('Object is not a valid DOM element');
+            if ('IFRAME' !== n.tagName.toUpperCase())
+              throw new TypeError('Expected <IFRAME> tag, found <' + n.tagName + '>');
+          })(),
+          H(n, e),
+          i.push(n));
+      }
+      var i;
+      return (
+        (function () {
+          var e,
+            n = ['moz', 'webkit', 'o', 'ms'];
+          for (e = 0; e < n.length && !c; e += 1) c = window[n[e] + 'RequestAnimationFrame'];
+          c ? (c = c.bind(window)) : y('setup', 'RequestAnimationFrame not supported');
+        })(),
+        w(window, 'message', F),
+        w(window, 'resize', function () {
+          var e;
+          y('window', 'Trigger event: ' + (e = 'resize')),
+            j(function () {
+              A('Window ' + e, 'resize');
+            }, 16);
+        }),
+        w(document, 'visibilitychange', P),
+        w(document, '-webkit-visibilitychange', P),
+        function (t, o) {
+          switch (
+            ((i = []),
+            (function (e) {
+              e &&
+                e.enablePublicMethods &&
+                I('enablePublicMethods option has been removed, public methods are now always available in the iFrame');
+            })(t),
+            typeof o)
+          ) {
+            case 'undefined':
+            case 'string':
+              Array.prototype.forEach.call(document.querySelectorAll(o || 'iframe'), n.bind(e, t));
+              break;
+            case 'object':
+              n(t, o);
+              break;
+            default:
+              throw new TypeError('Unexpected data type (' + typeof o + ')');
+          }
+          return i;
+        }
+      );
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T03:35:47.586Z
+File: Hashnode-starter-kit-b902752/packages/blog-starter-kit/themes/enterprise/pages/api/og/post.tsx
+Functions Extracted: 1
+
+
+Function 1: handler
+Language: TypeScript
+Lines: 66
+Full Code:
+--------------------------------------------------------------------------------
+export default async function handler(req: NextRequest) {
+	const [fontDataRegular, fontDataMedium, fontDataSemiBold, fontDataBold, fontDataExtraBold] =
+		await Promise.all([fontRegular, fontMedium, fontSemiBold, fontBold, fontExtraBold]);
+
+	const { searchParams } = new URL(req.url);
+
+	const ogData = JSON.parse(atob(searchParams.get('og') as string));
+	const {
+		author: authorEncoded,
+		isDefaultModeDark,
+		readTime,
+		comments,
+		reactions,
+		domain,
+		title: encodedTitle,
+		bgcolor,
+	} = ogData;
+	const author = decodeURIComponent(authorEncoded);
+	const photo = ogData.photo ? resizeImage(ogData.photo, {}) : DEFAULT_AVATAR;
+	const title = decodeURIComponent(encodedTitle);
+
+	let bannerBackground = isDefaultModeDark ? '#0f172a' : '#f3f4f6';
+	let titleTailwindClass;
+
+	if (bgcolor) {
+		bannerBackground = bgcolor;
+	}
+
+	if (title.length <= 79) {
+		titleTailwindClass = 'text-7xl';
+	} else if (title.length > 79 && title.length <= 109) {
+		titleTailwindClass = 'text-6xl';
+	} else {
+		titleTailwindClass = 'text-5xl';
+	}
+
+	return new ImageResponse(
+		(
+			<div
+				style={{
+					fontFamily: '"Plus Jakarta Sans"',
+					backgroundColor: bannerBackground,
+				}}
+				tw="relative flex h-full w-full flex-col p-8 subpixel-antialiased"
+			>
+				<div
+					tw={`relative flex flex-col items-center p-10 ${
+						isDefaultModeDark ? 'bg-black' : 'bg-white'
+					} ${
+						isDefaultModeDark ? 'text-white' : 'text-slate-900'
+					} h-full w-full rounded-xl shadow-md`}
+				>
+					<div tw="absolute -top-px -left-px -right-px -bottom-px rounded-xl border-2 border-black/5" />
+					<div tw="flex w-full flex-row items-center">
+						<img tw="mr-5 h-16 w-16 rounded-full" alt="name" src={photo} />
+						<div tw="flex flex-col items-start">
+							<p tw="m-0 text-2xl font-bold leading-tight">{author}</p>
+							<p tw="m-0 text-2xl leading-tight opacity-60">{domain}</p>
+						</div>
+					</div>
+					<div tw="flex flex-1 flex-col items-center justify-center">
+						<p tw={`${titleTailwindClass} mb-5 mt-0 text-center font-extrabold leading-tight`}>{title}</p>
+					</div>
+					<div tw="flex w-full flex-row items-center justify-between leading-none">
+						<div tw="flex flex-row items-center">
+							{reactions && (
+								<div tw="mr-10 flex flex-row items-center">
+									<svg
+									fill="#64748b"
+									style={{
+										height: '2rem',
+										width: '2rem',
+										marginRight: '0.75rem',
+									}}
+									viewBox="0 0 512 512"
+								>
+									<path d="m255.1 96 12-11.98C300.6 51.37 347 36.51 392.6 44.1c68.9 11.48 119.4 71.1 119.4 141v5.8c0 41.5-17.2 81.2-47.6 109.5L283.7 469.1c-7.5 7-17.4 10.9-27.7 10.9s-20.2-3.9-27.7-10.9L47.59 300.4C17.23 272.1 0 232.4 0 190.9v-5.8c0-69.9 50.52-129.52 119.4-141 44.7-7.59 92 7.27 124.6 39.92L255.1 96zm0 45.3-33.7-34.7c-25.3-25.29-61.4-36.83-96.7-30.94-53.49 8.92-93.6 55.24-93.6 109.44v5.8c0 32.7 14.45 63.8 38.32 86.1L250.1 445.7c1.6 1.5 3.7 2.3 5 2.3 3.1 0 5.2-.8 6.8-2.3L442.6 277c23.8-22.3 37.4-53.4 37.4-86.1v-5.8c0-54.2-39.2-100.52-92.7-109.44-36.2-5.89-71.4 5.65-96.7 30.94l-35.5 34.7z" />
+								</svg>
+									<p tw="m-0 text-2xl font-medium opacity-60">{reactions}</p>
+								</div>
+							)}
+							{comments && (
+								<div tw="flex flex-row items-center">
+									<svg
+									fill="#64748b"
+									style={{
+										height: '2rem',
+										width: '2rem',
+										marginRight: '0.75rem',
+									}}
+									viewBox="0 0 576 512"
+								>
+									<path d="M569.9 441.1c-.5-.4-22.6-24.2-37.9-54.9 27.5-27.1 44-61.1 44-98.2 0-80-76.5-146.1-176.2-157.9C368.4 72.5 294.3 32 208 32 93.1 32 0 103.6 0 192c0 37 16.5 71 44 98.2-15.3 30.7-37.3 54.5-37.7 54.9-6.3 6.7-8.1 16.5-4.4 25 3.6 8.5 12 14 21.2 14 53.5 0 96.7-20.2 125.2-38.8 9.1 2.1 18.4 3.7 28 4.8 31.5 57.5 105.5 98 191.8 98 20.8 0 40.8-2.4 59.8-6.8 28.5 18.5 71.6 38.8 125.2 38.8 9.2 0 17.5-5.5 21.2-14 3.6-8.5 1.9-18.3-4.4-25zM155.4 314l-13.2-3-11.4 7.4c-20.1 13.1-50.5 28.2-87.7 32.5 8.8-11.3 20.2-27.6 29.5-46.4L83 283.7l-16.5-16.3C50.7 251.9 32 226.2 32 192c0-70.6 79-128 176-128s176 57.4 176 128-79 128-176 128c-17.7 0-35.4-2-52.6-6zm289.8 100.4l-11.4-7.4-13.2 3.1c-17.2 4-34.9 6-52.6 6-65.1 0-122-25.9-152.4-64.3C326.9 348.6 416 278.4 416 192c0-9.5-1.3-18.7-3.3-27.7C488.1 178.8 544 228.7 544 288c0 34.2-18.7 59.9-34.5 75.4L493 379.7l10.3 20.7c9.4 18.9 20.8 35.2 29.5 46.4-37.1-4.2-67.5-19.4-87.6-32.4z" />
+								</svg>
+									<p tw="m-0 text-2xl font-medium opacity-60">{comments}</p>
+								</div>
+							)}
+						</div>
+						{readTime && (
+							<div tw="flex flex-row items-center">
+									<svg
+									fill="#64748b"
+									style={{
+										height: '2rem',
+										width: '2rem',
+										marginRight: '0.75rem',
+									}}
+									viewBox="0 0 576 512"
+								>
+									<path d="M540.9 56.77c-45.95-16.66-90.23-24.09-129.1-24.75-60.7.94-102.7 17.45-123.8 27.72-21.1-10.27-64.1-26.8-123.2-27.74-40-.05-84.4 8.35-129.7 24.77C14.18 64.33 0 84.41 0 106.7v302.9c0 14.66 6.875 28.06 18.89 36.8 11.81 8.531 26.64 10.98 40.73 6.781 118.9-36.34 209.3 19.05 214.3 22.19C277.8 477.6 281.2 480 287.1 480c6.52 0 10.12-2.373 14.07-4.578 10.78-6.688 98.3-57.66 214.3-22.27 14.11 4.25 28.86 1.75 40.75-6.812C569.1 437.6 576 424.2 576 409.6V106.7c0-22.28-14.2-42.35-35.1-49.93zM272 438.1c-24.95-12.03-71.01-29.37-130.5-29.37-27.83 0-58.5 3.812-91.19 13.77-4.406 1.344-9 .594-12.69-2.047C34.02 417.8 32 413.1 32 409.6V106.7c0-8.859 5.562-16.83 13.86-19.83C87.66 71.7 127.9 63.95 164.5 64c51.8.81 89.7 15.26 107.5 23.66V438.1zm272-28.5c0 4.375-2.016 8.234-5.594 10.84-3.766 2.703-8.297 3.422-12.69 2.125C424.1 391.6 341.3 420.4 304 438.3V87.66c17.8-8.4 55.7-22.85 107.4-23.66 35.31-.063 76.34 7.484 118.8 22.88 8.2 3 13.8 10.96 13.8 19.82v302.9z" />
+								</svg>
+									<p tw="m-0 text-2xl font-medium opacity-60">{readTime} min read</p>
+							</div>
+						)}
+					</div>
+				</div>
+			</div>
+		),
+		{
+			width: 1200,
+			height: 630,
+			fonts: [
+				{
+					name: 'Typewriter',
+					data: fontDataRegular,
+					style: 'normal',
+					weight: 400,
+				},
+				{
+					name: 'Typewriter',
+					data: fontDataMedium,
+					style: 'normal',
+					weight: 500,
+				},
+				{
+					name: 'Typewriter',
+					data: fontDataSemiBold,
+					style: 'normal',
+					weight: 600,
+				},
+				{
+					name: 'Typewriter',
+					data: fontDataBold,
+					style: 'normal',
+					weight: 700,
+				},
+				{
+					name: 'Typewriter',
+					data: fontDataExtraBold,
+					style: 'normal',
+					weight: 800,
+				},
+			],
+		},
+	);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T03:36:56.071Z
+File: Hashnode-starter-kit-b902752/packages/blog-starter-kit/themes/hashnode/pages/api/og/post.tsx
+Functions Extracted: 1
+
+
+Function 1: handler
+Language: TypeScript
+Lines: 83
+Full Code:
+--------------------------------------------------------------------------------
+export default async function handler(req: NextRequest) {
+	const [fontDataRegular, fontDataMedium, fontDataSemiBold, fontDataBold, fontDataExtraBold] =
+		await Promise.all([fontRegular, fontMedium, fontSemiBold, fontBold, fontExtraBold]);
+
+	const { searchParams } = new URL(req.url);
+
+	const ogData = JSON.parse(atob(searchParams.get('og') as string));
+	const {
+		author: authorEncoded,
+		isDefaultModeDark,
+		readTime,
+		comments,
+		reactions,
+		domain,
+		title: encodedTitle,
+		bgcolor,
+	} = ogData;
+	const author = decodeURIComponent(authorEncoded);
+	const photo = ogData.photo ? resizeImage(ogData.photo, {}) : DEFAULT_AVATAR;
+	const title = decodeURIComponent(encodedTitle);
+
+	let bannerBackground = isDefaultModeDark ? '#0f172a' : '#f3f4f6';
+	let titleTailwindClass;
+
+	if (bgcolor) {
+		bannerBackground = bgcolor;
+	}
+
+	if (title.length <= 79) {
+		titleTailwindClass = 'text-7xl';
+	} else if (title.length > 79 && title.length <= 109) {
+		titleTailwindClass = 'text-6xl';
+	} else {
+		titleTailwindClass = 'text-5xl';
+	}
+
+	return new ImageResponse(
+		(
+			<div
+				style={{
+					fontFamily: '"Plus Jakarta Sans"',
+					backgroundColor: bannerBackground,
+				}}
+				tw="relative flex h-full w-full flex-col p-8 subpixel-antialiased"
+			>
+				<div
+					tw={`relative flex flex-col items-center p-10 ${
+						isDefaultModeDark ? 'bg-black' : 'bg-white'
+					} ${
+						isDefaultModeDark ? 'text-white' : 'text-slate-900'
+					} h-full w-full rounded-xl shadow-md`}
+				>
+					<div tw="absolute -top-px -left-px -right-px -bottom-px rounded-xl border-2 border-black/5" />
+					<div tw="flex w-full flex-row items-center">
+						<img tw="mr-5 h-16 w-16 rounded-full" alt="name" src={photo} />
+						<div tw="flex flex-col items-start">
+							<p tw="m-0 text-2xl font-bold leading-tight">{author}</p>
+							<p tw="m-0 text-2xl leading-tight opacity-60">{domain}</p>
+						</div>
+					</div>
+					<div tw="flex flex-1 flex-col items-center justify-center">
+						<p tw={`${titleTailwindClass} mb-5 mt-0 text-center font-extrabold leading-tight`}>{title}</p>
+					</div>
+					<div tw="flex w-full flex-row items-center justify-between leading-none">
+						<div tw="flex flex-row items-center">
+							{reactions && (
+								<div tw="mr-10 flex flex-row items-center">
+									<svg
+									fill="#64748b"
+									style={{
+										height: '2rem',
+										width: '2rem',
+										marginRight: '0.75rem',
+									}}
+									viewBox="0 0 512 512"
+								>
+									<path d="m255.1 96 12-11.98C300.6 51.37 347 36.51 392.6 44.1c68.9 11.48 119.4 71.1 119.4 141v5.8c0 41.5-17.2 81.2-47.6 109.5L283.7 469.1c-7.5 7-17.4 10.9-27.7 10.9s-20.2-3.9-27.7-10.9L47.59 300.4C17.23 272.1 0 232.4 0 190.9v-5.8c0-69.9 50.52-129.52 119.4-141 44.7-7.59 92 7.27 124.6 39.92L255.1 96zm0 45.3-33.7-34.7c-25.3-25.29-61.4-36.83-96.7-30.94-53.49 8.92-93.6 55.24-93.6 109.44v5.8c0 32.7 14.45 63.8 38.32 86.1L250.1 445.7c1.6 1.5 3.7 2.3 5 2.3 3.1 0 5.2-.8 6.8-2.3L442.6 277c23.8-22.3 37.4-53.4 37.4-86.1v-5.8c0-54.2-39.2-100.52-92.7-109.44-36.2-5.89-71.4 5.65-96.7 30.94l-35.5 34.7z" />
+								</svg>
+									<p tw="m-0 text-2xl font-medium opacity-60">{reactions}</p>
+								</div>
+							)}
+							{comments && (
+								<div tw="flex flex-row items-center">
+									<svg
+									fill="#64748b"
+									style={{
+										height: '2rem',
+										width: '2rem',
+										marginRight: '0.75rem',
+									}}
+									viewBox="0 0 576 512"
+								>
+									<path d="M569.9 441.1c-.5-.4-22.6-24.2-37.9-54.9 27.5-27.1 44-61.1 44-98.2 0-80-76.5-146.1-176.2-157.9C368.4 72.5 294.3 32 208 32 93.1 32 0 103.6 0 192c0 37 16.5 71 44 98.2-15.3 30.7-37.3 54.5-37.7 54.9-6.3 6.7-8.1 16.5-4.4 25 3.6 8.5 12 14 21.2 14 53.5 0 96.7-20.2 125.2-38.8 9.1 2.1 18.4 3.7 28 4.8 31.5 57.5 105.5 98 191.8 98 20.8 0 40.8-2.4 59.8-6.8 28.5 18.5 71.6 38.8 125.2 38.8 9.2 0 17.5-5.5 21.2-14 3.6-8.5 1.9-18.3-4.4-25zM155.4 314l-13.2-3-11.4 7.4c-20.1 13.1-50.5 28.2-87.7 32.5 8.8-11.3 20.2-27.6 29.5-46.4L83 283.7l-16.5-16.3C50.7 251.9 32 226.2 32 192c0-70.6 79-128 176-128s176 57.4 176 128-79 128-176 128c-17.7 0-35.4-2-52.6-6zm289.8 100.4l-11.4-7.4-13.2 3.1c-17.2 4-34.9 6-52.6 6-65.1 0-122-25.9-152.4-64.3C326.9 348.6 416 278.4 416 192c0-9.5-1.3-18.7-3.3-27.7C488.1 178.8 544 228.7 544 288c0 34.2-18.7 59.9-34.5 75.4L493 379.7l10.3 20.7c9.4 18.9 20.8 35.2 29.5 46.4-37.1-4.2-67.5-19.4-87.6-32.4z" />
+								</svg>
+									<p tw="m-0 text-2xl font-medium opacity-60">{comments}</p>
+								</div>
+							)}
+						</div>
+						{readTime && (
+							<div tw="flex flex-row items-center">
+								<svg
+									fill="#64748b"
+									style={{
+										height: '2rem',
+										width: '2rem',
+										marginRight: '0.75rem',
+									}}
+									viewBox="0 0 576 512"
+								>
+									<path d="M540.9 56.77c-45.95-16.66-90.23-24.09-129.1-24.75-60.7.94-102.7 17.45-123.8 27.72-21.1-10.27-64.1-26.8-123.2-27.74-40-.05-84.4 8.35-129.7 24.77C14.18 64.33 0 84.41 0 106.7v302.9c0 14.66 6.875 28.06 18.89 36.8 11.81 8.531 26.64 10.98 40.73 6.781 118.9-36.34 209.3 19.05 214.3 22.19C277.8 477.6 281.2 480 287.1 480c6.52 0 10.12-2.373 14.07-4.578 10.78-6.688 98.3-57.66 214.3-22.27 14.11 4.25 28.86 1.75 40.75-6.812C569.1 437.6 576 424.2 576 409.6V106.7c0-22.28-14.2-42.35-35.1-49.93zM272 438.1c-24.95-12.03-71.01-29.37-130.5-29.37-27.83 0-58.5 3.812-91.19 13.77-4.406 1.344-9 .594-12.69-2.047C34.02 417.8 32 413.1 32 409.6V106.7c0-8.859 5.562-16.83 13.86-19.83C87.66 71.7 127.9 63.95 164.5 64c51.8.81 89.7 15.26 107.5 23.66V438.1zm272-28.5c0 4.375-2.016 8.234-5.594 10.84-3.766 2.703-8.297 3.422-12.69 2.125C424.1 391.6 341.3 420.4 304 438.3V87.66c17.8-8.4 55.7-22.85 107.4-23.66 35.31-.063 76.34 7.484 118.8 22.88 8.2 3 13.8 10.96 13.8 19.82v302.9z" />
+								</svg>
+									<p tw="m-0 text-2xl font-medium opacity-60">{readTime} min read</p>
+							</div>
+						)}
+					</div>
+				</div>
+			</div>
+		),
+		{
+			width: 1200,
+			height: 630,
+			fonts: [
+				{
+					name: 'Typewriter',
+					data: fontDataRegular,
+					style: 'normal',
+					weight: 400,
+				},
+				{
+					name: 'Typewriter',
+					data: fontDataMedium,
+					style: 'normal',
+					weight: 500,
+				},
+				{
+					name: 'Typewriter',
+					data: fontDataSemiBold,
+					style: 'normal',
+					weight: 600,
+				},
+				{
+					name: 'Typewriter',
+					data: fontDataBold,
+					style: 'normal',
+					weight: 700,
+				},
+				{
+					name: 'Typewriter',
+					data: fontDataExtraBold,
+					style: 'normal',
+					weight: 800,
+				},
+			],
+		},
+	);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T03:37:21.647Z
+Question Type: true-false
+Function: F
+Function Size: 9166 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: F (JavaScript)\n// Handles iframe resizing and messaging between parent and child frames.\n\nfunction F(e) {\n      function n() {\n        i('Height'),\n          i('Width'),\n          C(\n            function () {\n              W(B), R(L), m('onResized', B);\n            },\n            B,\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T03:37:26.628Z
+Question Type: function-variant
+Function: B
+Function Size: 1882 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: B (JavaScript)\n// Initializes iframe resizing and sets up event listeners for messaging and resizing.\n\nfunction B() {\n      function n(e, n) {\n        n &&\n          ((function () {\n            if (!n.tagName) throw new TypeError('Object is not a valid DOM element');\n            if ('IF
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T03:37:46.641Z
+Question Type: multiple-choice
+Function: handler
+Function Size: 6565 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: handler (TypeScript)\n// Generates an Open Graph image response based on request parameters.\n\nexport default async function handler(req: NextRequest) {\n	const [fontDataRegular, fontDataMedium, fontDataSemiBold, fontDataBold, fontDataExtraBold] =\n		await Promise.all([fontRegular, fontMedi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T03:37:51.699Z
+Question Type: function-variant
+Function: handler
+Function Size: 6591 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: handler (TypeScript)\n// Handles the request and generates an Open Graph image response based on provided parameters.\n\nexport default async function handler(req: NextRequest) {\n	const [fontDataRegular, fontDataMedium, fontDataSemiBold, fontDataBold, fontDataExtraBold] =\n		await Promise.a
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T03:37:56.594Z
+Question Type: select-all
+Function: handler
+Function Size: 6565 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: handler (TypeScript)\n// Generates an Open Graph image response based on request parameters.\n\nexport default async function handler(req: NextRequest) {\n	const [fontDataRegular, fontDataMedium, fontDataSemiBold, fontDataBold, fontDataExtraBold] =\n		await Promise.all([fontRegular, fontMedi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T03:37:56.605Z
+Question Type: select-all
+Function: F
+Function Size: 9166 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: F (JavaScript)\n// Handles iframe resizing and messaging between parent and child frames.\n\nfunction F(e) {\n      function n() {\n        i('Height'),\n          i('Width'),\n          C(\n            function () {\n              W(B), R(L), m('onResized', B);\n            },\n            B,\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T03:38:06.347Z
+Question Type: order-sequence
+Function: B
+Function Size: 1885 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: B (JavaScript)\n// Initializes the iframe resizer and sets up event listeners for messaging and resizing.\n\nfunction B() {\n      function n(e, n) {\n        n &&\n          ((function () {\n            if (!n.tagName) throw new TypeError('Object is not a valid DOM element');\n            if (
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T03:38:10.465Z
+Question Type: select-all
+Function: B
+Function Size: 1885 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: B (JavaScript)\n// Initializes the iframe resizer and sets up event listeners for messaging and resizing.\n\nfunction B() {\n      function n(e, n) {\n        n &&\n          ((function () {\n            if (!n.tagName) throw new TypeError('Object is not a valid DOM element');\n            if (
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T03:38:16.612Z
+Question Type: multiple-choice
+Function: handler
+Function Size: 6591 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: handler (TypeScript)\n// Handles the request and generates an Open Graph image response based on provided parameters.\n\nexport default async function handler(req: NextRequest) {\n	const [fontDataRegular, fontDataMedium, fontDataSemiBold, fontDataBold, fontDataExtraBold] =\n		await Promise.a
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T03:38:26.315Z
+Question Type: function-variant
+Function: F
+Function Size: 9185 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: F (JavaScript)\n// Handles resizing and repositioning of iframes based on messages received from the iframe.\n\nfunction F(e) {\n      function n() {\n        i('Height'),\n          i('Width'),\n          C(\n            function () {\n              W(B), R(L), m('onResized', B);\n            },
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760066623335
+Repository: Unknown
+Total Questions Generated: 3
+Total Chunks Processed: 6
+Ended: 2025-10-10T03:38:29.904Z
+================================================================================
+

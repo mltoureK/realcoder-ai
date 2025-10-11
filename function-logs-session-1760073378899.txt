@@ -1,0 +1,3599 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1760073378899
+Started: 2025-10-10T05:16:18.900Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T05:16:18.901Z
+File: laravel-laravel-b45fe69/database/factories/UserFactory.php
+Functions Extracted: 2
+
+
+Function 1: definition
+Language: PHP
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+public function definition(): array {
+        return [
+            'name' => fake()->name(),
+            'email' => fake()->unique()->safeEmail(),
+            'email_verified_at' => now(),
+            'password' => static::$password ??= Hash::make('password'),
+            'remember_token' => Str::random(10),
+        ];
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: unverified
+Language: PHP
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+public function unverified(): static {
+        return $this->state(fn (array $attributes) => [
+            'email_verified_at' => null,
+        ]);
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T05:16:26.331Z
+File: laravel-laravel-b45fe69/database/migrations/0001_01_01_000000_create_users_table.php
+Functions Extracted: 2
+
+
+Function 1: up
+Language: PHP
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+public function up(): void {
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->rememberToken();
+            $table->timestamps();
+        });
+
+        Schema::create('password_reset_tokens', function (Blueprint $table) {
+            $table->string('email')->primary();
+            $table->string('token');
+            $table->timestamp('created_at')->nullable();
+        });
+
+        Schema::create('sessions', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->foreignId('user_id')->nullable()->index();
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->longText('payload');
+            $table->integer('last_activity')->index();
+        });
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: down
+Language: PHP
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+public function down(): void {
+        Schema::dropIfExists('users');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('sessions');
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T05:16:31.083Z
+File: laravel-laravel-b45fe69/database/migrations/0001_01_01_000001_create_cache_table.php
+Functions Extracted: 2
+
+
+Function 1: up
+Language: PHP
+Lines: 13
+Full Code:
+--------------------------------------------------------------------------------
+public function up(): void {
+        Schema::create('cache', function (Blueprint $table) {
+            $table->string('key')->primary();
+            $table->mediumText('value');
+            $table->integer('expiration');
+        });
+
+        Schema::create('cache_locks', function (Blueprint $table) {
+            $table->string('key')->primary();
+            $table->string('owner');
+            $table->integer('expiration');
+        });
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: down
+Language: PHP
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+public function down(): void {
+        Schema::dropIfExists('cache');
+        Schema::dropIfExists('cache_locks');
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T05:16:40.524Z
+File: laravel-laravel-b45fe69/database/migrations/0001_01_01_000002_create_jobs_table.php
+Functions Extracted: 2
+
+
+Function 1: up
+Language: PHP
+Lines: 18
+Full Code:
+--------------------------------------------------------------------------------
+public function up(): void {
+        Schema::create('jobs', function (Blueprint $table) {
+            $table->id();
+            $table->string('queue')->index();
+            $table->longText('payload');
+            $table->unsignedTinyInteger('attempts');
+            $table->unsignedInteger('reserved_at')->nullable();
+            $table->unsignedInteger('available_at');
+            $table->unsignedInteger('created_at');
+        });
+
+        Schema::create('job_batches', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->string('name');
+            $table->integer('total_jobs');
+            $table->integer('pending_jobs');
+            $table->integer('failed_jobs');
+            $table->longText('failed_job_ids');
+            $table->mediumText('options')->nullable();
+            $table->integer('cancelled_at')->nullable();
+            $table->integer('created_at');
+            $table->integer('finished_at')->nullable();
+        });
+
+        Schema::create('failed_jobs', function (Blueprint $table) {
+            $table->id();
+            $table->string('uuid')->unique();
+            $table->text('connection');
+            $table->text('queue');
+            $table->longText('payload');
+            $table->longText('exception');
+            $table->timestamp('failed_at')->useCurrent();
+        });
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: down
+Language: PHP
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+public function down(): void {
+        Schema::dropIfExists('jobs');
+        Schema::dropIfExists('job_batches');
+        Schema::dropIfExists('failed_jobs');
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:16:49.486Z
+Question Type: multiple-choice
+Function: unverified
+Function Size: 250 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: unverified (PHP)\n// Indicates that the model's email address should be unverified.\n\npublic function unverified(): static {\n        return $this->state(fn (array $attributes) => [\n            'email_verified_at' => null,\n        ]);\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:16:50.989Z
+Question Type: function-variant
+Function: down
+Function Size: 279 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: down (PHP)\n// Drops the users, password_reset_tokens, and sessions tables from the database.\n\npublic function down(): void {\n        Schema::dropIfExists('users');\n        Schema::dropIfExists('password_reset_tokens');\n        Schema::dropIfExists('sessions');\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:16:51.886Z
+Question Type: order-sequence
+Function: unverified
+Function Size: 250 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: unverified (PHP)\n// Indicates that the model's email address should be unverified.\n\npublic function unverified(): static {\n        return $this->state(fn (array $attributes) => [\n            'email_verified_at' => null,\n        ]);\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:17:00.816Z
+Question Type: function-variant
+Function: up
+Function Size: 529 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: up (PHP)\n// Creates the cache and cache_locks tables in the database.\n\npublic function up(): void {\n        Schema::create('cache', function (Blueprint $table) {\n            $table->string('key')->primary();\n            $table->mediumText('value');\n            $table->integer('expiratio
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:17:02.381Z
+Question Type: multiple-choice
+Function: down
+Function Size: 206 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: down (PHP)\n// Drops the cache and cache_locks tables from the database.\n\npublic function down(): void {\n        Schema::dropIfExists('cache');\n        Schema::dropIfExists('cache_locks');\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:17:06.750Z
+Question Type: order-sequence
+Function: down
+Function Size: 263 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: down (PHP)\n// Drops the jobs, job_batches, and failed_jobs tables from the database.\n\npublic function down(): void {\n        Schema::dropIfExists('jobs');\n        Schema::dropIfExists('job_batches');\n        Schema::dropIfExists('failed_jobs');\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:17:10.661Z
+Question Type: select-all
+Function: up
+Function Size: 1461 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: up (PHP)\n// Creates the jobs, job_batches, and failed_jobs tables in the database.\n\npublic function up(): void {\n        Schema::create('jobs', function (Blueprint $table) {\n            $table->id();\n            $table->string('queue')->index();\n            $table->longText('payload');\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:17:14.151Z
+Question Type: multiple-choice
+Function: up
+Function Size: 1461 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: up (PHP)\n// Creates the jobs, job_batches, and failed_jobs tables in the database.\n\npublic function up(): void {\n        Schema::create('jobs', function (Blueprint $table) {\n            $table->id();\n            $table->string('queue')->index();\n            $table->longText('payload');\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:17:15.938Z
+Question Type: multiple-choice
+Function: down
+Function Size: 279 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: down (PHP)\n// Drops the users, password_reset_tokens, and sessions tables from the database.\n\npublic function down(): void {\n        Schema::dropIfExists('users');\n        Schema::dropIfExists('password_reset_tokens');\n        Schema::dropIfExists('sessions');\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:17:20.343Z
+Question Type: select-all
+Function: up
+Function Size: 1122 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: up (PHP)\n// Creates the users, password_reset_tokens, and sessions tables in the database.\n\npublic function up(): void {\n        Schema::create('users', function (Blueprint $table) {\n            $table->id();\n            $table->string('name');\n            $table->string('email')->uniqu
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:17:21.032Z
+Question Type: true-false
+Function: down
+Function Size: 206 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: down (PHP)\n// Drops the cache and cache_locks tables from the database.\n\npublic function down(): void {\n        Schema::dropIfExists('cache');\n        Schema::dropIfExists('cache_locks');\n    }
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760073378899
+Repository: Unknown
+Total Questions Generated: 19
+Total Chunks Processed: 8
+Ended: 2025-10-10T05:17:25.527Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T05:19:09.674Z
+File: meteor-meteor-4b61fbf/packages/accounts-base/accounts-base.d.ts
+Functions Extracted: 3
+
+
+Function 1: createUser
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function createUser(
+    options: {
+      username?: string | undefined;
+      email?: string | undefined;
+      password?: string | undefined;
+      profile?: Meteor.UserProfile | undefined;
+    },
+    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void
+  ): Promise<string> {
+    // logic to create a user
+    return new Promise((resolve, reject) => {
+      // simulate user creation logic
+      if (!options.email || !options.password) {
+        return reject(new Meteor.Error('invalid-params', 'Email and password are required.'));
+      }
+      // Assume user is created successfully
+      resolve('userId123');
+    });
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: changePassword
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function changePassword(
+    oldPassword: string,
+    newPassword: string,
+    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      // logic to change password
+      if (oldPassword === newPassword) {
+        return reject(new Meteor.Error('same-password', 'New password cannot be the same as the old password.'));
+      }
+      // Assume password is changed successfully
+      resolve();
+    });
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: sendEnrollmentEmail
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function sendEnrollmentEmail(
+    userId: string,
+    email?: string,
+    extraTokenData?: Record<string, unknown>,
+    extraParams?: Record<string, unknown>
+  ): Promise<SendEmailResult> {
+    return new Promise((resolve, reject) => {
+      // logic to send enrollment email
+      if (!email) {
+        return reject(new Meteor.Error('invalid-email', 'Email is required to send enrollment email.'));
+      }
+      // Assume email is sent successfully
+      resolve({
+        email: email,
+        user: { _id: userId },
+        token: 'token123',
+        url: 'http://example.com/enroll',
+        options: { from: 'noreply@example.com', to: email, subject: 'Enroll', text: 'Please enroll.' }
+      });
+    });
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T05:19:20.288Z
+File: => `true` if user roles have been loaded
+Functions Extracted: 5
+
+
+Function 1: addUsersToRoles
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function addUsersToRoles(
+    users: string | string[] | Meteor.User | Meteor.User[],
+    roles: string | string[],
+    options?: string | { scope?: string; ifExists?: boolean }
+  ): void {
+    // Logic to add users to roles
+    if (!Array.isArray(users)) {
+        users = [users];
+    }
+    if (!Array.isArray(roles)) {
+        roles = [roles];
+    }
+    users.forEach(user => {
+        roles.forEach(role => {
+            // Assuming a function exists to actually add the role
+            addRoleToUser(user, role, options);
+        });
+    });
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: createRole
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function createRole(
+    roleName: string,
+    options?: { unlessExists: boolean }
+  ): string {
+    // Logic to create a new role
+    if (roleExists(roleName) && !(options && options.unlessExists)) {
+        throw new Error('Role already exists');
+    }
+    const newRoleId = generateNewRoleId();
+    rolesDatabase[newRoleId] = { name: roleName };
+    return newRoleId;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: deleteRole
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function deleteRole(roleName: string): void {
+    // Logic to delete an existing role
+    if (!roleExists(roleName)) {
+        throw new Error('Role does not exist');
+    }
+    // Remove role from all users
+    removeRoleFromAllUsers(roleName);
+    // Delete the role
+    delete rolesDatabase[roleName];
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: getRolesForUser
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function getRolesForUser(
+    user: string | Meteor.User,
+    options?:
+      | string
+      | {
+          scope?: string;
+          anyScope?: boolean;
+          onlyScoped?: boolean;
+          onlyAssigned?: boolean;
+          fullObjects?: boolean;
+        }
+  ): string[] {
+    // Logic to retrieve user's roles
+    const userId = typeof user === 'string' ? user : user._id;
+    const userRoles = rolesDatabase[userId] || [];
+    if (options && options.onlyAssigned) {
+        return userRoles.filter(role => role.assigned);
+    }
+    return userRoles;
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: setUserRoles
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function setUserRoles(
+    users: string | string[] | Meteor.User | Meteor.User[],
+    roles: string | string[],
+    options?:
+      | string
+      | { scope?: string; anyScope?: boolean; ifExists?: boolean }
+  ): void {
+    // Logic to set users' roles
+    if (!Array.isArray(users)) {
+        users = [users];
+    }
+    if (!Array.isArray(roles)) {
+        roles = [roles];
+    }
+    users.forEach(user => {
+        roles.forEach(role => {
+            // Assuming a function exists to actually set the role
+            assignRoleToUser(user, role, options);
+        });
+    });
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T05:19:23.672Z
+File: meteor-meteor-4b61fbf/packages/webapp/webapp.d.ts
+Functions Extracted: 1
+
+
+Function 1: staticFilesMiddleware
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function staticFilesMiddleware(staticFiles: StaticFiles, req: http.IncomingMessage, res: http.ServerResponse, next: Function): void {
+    const path = req.url;
+    const file = staticFiles[path];
+    if (!file) {
+        return next();
+    }
+    res.setHeader('Content-Type', file.type);
+    res.setHeader('Cache-Control', file.cacheable ? 'public, max-age=31536000' : 'no-cache');
+    res.send(file.content);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:19:31.063Z
+Question Type: true-false
+Function: createRole
+Function Size: 433 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createRole (TypeScript)\n// Creates a new role.\n\nfunction createRole(\n    roleName: string,\n    options?: { unlessExists: boolean }\n  ): string {\n    // Logic to create a new role\n    if (roleExists(roleName) && !(options && options.unlessExists)) {\n        throw new Error('Role already 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:19:31.284Z
+Question Type: multiple-choice
+Function: createUser
+Function Size: 733 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: createUser (TypeScript)\n// Creates a new user with the provided options.\n\nfunction createUser(\n    options: {\n      username?: string | undefined;\n      email?: string | undefined;\n      password?: string | undefined;\n      profile?: Meteor.UserProfile | undefined;\n    },\n    callback?:
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:19:32.595Z
+Question Type: multiple-choice
+Function: getRolesForUser
+Function Size: 628 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: getRolesForUser (TypeScript)\n// Retrieves user's roles.\n\nfunction getRolesForUser(\n    user: string | Meteor.User,\n    options?:\n      | string\n      | {\n          scope?: string;\n          anyScope?: boolean;\n          onlyScoped?: boolean;\n          onlyAssigned?: boolean;\n          f
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:19:32.793Z
+Question Type: multiple-choice
+Function: getRolesForUser
+Function Size: 628 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: getRolesForUser (TypeScript)\n// Retrieves user's roles.\n\nfunction getRolesForUser(\n    user: string | Meteor.User,\n    options?:\n      | string\n      | {\n          scope?: string;\n          anyScope?: boolean;\n          onlyScoped?: boolean;\n          onlyAssigned?: boolean;\n          f
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:19:37.138Z
+Question Type: true-false
+Function: deleteRole
+Function Size: 372 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deleteRole (TypeScript)\n// Deletes an existing role.\n\nfunction deleteRole(roleName: string): void {\n    // Logic to delete an existing role\n    if (!roleExists(roleName)) {\n        throw new Error('Role does not exist');\n    }\n    // Remove role from all users\n    removeRoleFromAllUsers
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:19:40.628Z
+Question Type: multiple-choice
+Function: sendEnrollmentEmail
+Function Size: 813 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: sendEnrollmentEmail (TypeScript)\n// Sends an enrollment email to the specified user.\n\nfunction sendEnrollmentEmail(\n    userId: string,\n    email?: string,\n    extraTokenData?: Record<string, unknown>,\n    extraParams?: Record<string, unknown>\n  ): Promise<SendEmailResult> {\n    return 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:19:48.609Z
+Question Type: multiple-choice
+Function: staticFilesMiddleware
+Function Size: 531 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: staticFilesMiddleware (TypeScript)\n// Middleware function to serve static files based on the request URL.\n\nfunction staticFilesMiddleware(staticFiles: StaticFiles, req: http.IncomingMessage, res: http.ServerResponse, next: Function): void {\n    const path = req.url;\n    const file = sta
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:19:54.523Z
+Question Type: multiple-choice
+Function: changePassword
+Function Size: 596 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: changePassword (TypeScript)\n// Changes the user's password from oldPassword to newPassword.\n\nfunction changePassword(\n    oldPassword: string,\n    newPassword: string,\n    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void\n  ): Promise<void> {\n    return new Promise((
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:19:56.093Z
+Question Type: multiple-choice
+Function: setUserRoles
+Function Size: 643 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: setUserRoles (TypeScript)\n// Sets users' roles.\n\nfunction setUserRoles(\n    users: string | string[] | Meteor.User | Meteor.User[],\n    roles: string | string[],\n    options?:\n      | string\n      | { scope?: string; anyScope?: boolean; ifExists?: boolean }\n  ): void {\n    // Logic to s
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:20:00.855Z
+Question Type: function-variant
+Function: setUserRoles
+Function Size: 643 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setUserRoles (TypeScript)\n// Sets users' roles.\n\nfunction setUserRoles(\n    users: string | string[] | Meteor.User | Meteor.User[],\n    roles: string | string[],\n    options?:\n      | string\n      | { scope?: string; anyScope?: boolean; ifExists?: boolean }\n  ): void {\n    // Logic to s
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:20:02.500Z
+Question Type: function-variant
+Function: changePassword
+Function Size: 596 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: changePassword (TypeScript)\n// Changes the user's password from oldPassword to newPassword.\n\nfunction changePassword(\n    oldPassword: string,\n    newPassword: string,\n    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void\n  ): Promise<void> {\n    return new Promise((
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760073378899
+Repository: Unknown
+Total Questions Generated: 16
+Total Chunks Processed: 9
+Ended: 2025-10-10T05:20:06.750Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T05:28:33.168Z
+File: show a nice error message
+Functions Extracted: 2
+
+
+Function 1: loginWithPassword
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function loginWithPassword(
+    user: { username: string } | { email: string } | { id: string } | string,
+    password: string,
+    callback?: (error?: global_Error | Meteor.Error | Meteor.TypedError) => void
+  ): void {
+    // Logic to handle login with password
+    // Check if user exists and validate password
+    // If successful, set session and return success
+    // If failed, return error through callback
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: publish
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function publish(
+    name: string | null,
+    func: (
+      this: Subscription,
+      ...args: any[]
+    ) =>
+      | void
+      | Mongo.Cursor<any>
+      | Mongo.Cursor<any>[
+      | Promise<void | Mongo.Cursor<any> | Mongo.Cursor<any>[]>,
+    options?: { is_auto: boolean }
+  ): void {
+    // Logic to publish a record set to clients
+    // Register the publish function with the given name
+    // Handle client subscriptions and data sending
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T05:28:53.964Z
+File: meteor-meteor-4b61fbf/packages/accounts-base/accounts-base.d.ts
+Functions Extracted: 9
+
+
+Function 1: createUser
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function createUser(
+    options: {
+      username?: string | undefined;
+      email?: string | undefined;
+      password?: string | undefined;
+      profile?: Meteor.UserProfile | undefined;
+    },
+    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void
+  ): Promise<string> {
+    // logic to create a user
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: changePassword
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function changePassword(
+    oldPassword: string,
+    newPassword: string,
+    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void
+  ): Promise<void> {
+    // logic to change the user's password
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: forgotPassword
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function forgotPassword(
+    options: { email?: string | undefined },
+    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void
+  ): Promise<void> {
+    // logic to handle forgotten password
+  }
+--------------------------------------------------------------------------------
+
+
+Function 4: resetPassword
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function resetPassword(
+    token: string,
+    newPassword: string,
+    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void
+  ): Promise<void> {
+    // logic to reset the user's password using a token
+  }
+--------------------------------------------------------------------------------
+
+
+Function 5: sendEnrollmentEmail
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function sendEnrollmentEmail(
+    userId: string,
+    email?: string,
+    extraTokenData?: Record<string, unknown>,
+    extraParams?: Record<string, unknown>
+  ): Promise<SendEmailResult> {
+    // logic to send an enrollment email to the user
+  }
+--------------------------------------------------------------------------------
+
+
+Function 6: sendResetPasswordEmail
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function sendResetPasswordEmail(
+    userId: string,
+    email?: string,
+    extraTokenData?: Record<string, unknown>,
+    extraParams?: Record<string, unknown>
+  ): Promise<SendEmailResult> {
+    // logic to send a reset password email to the user
+  }
+--------------------------------------------------------------------------------
+
+
+Function 7: sendVerificationEmail
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function sendVerificationEmail(
+    userId: string,
+    email?: string,
+    extraTokenData?: Record<string, unknown>,
+    extraParams?: Record<string, unknown>
+  ): Promise<SendEmailResult> {
+    // logic to send a verification email to the user
+  }
+--------------------------------------------------------------------------------
+
+
+Function 8: validateLoginAttempt
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function validateLoginAttempt(
+    func: Function
+  ): {
+    stop: () => void;
+  } {
+    // logic to validate a login attempt
+  }
+--------------------------------------------------------------------------------
+
+
+Function 9: _checkPasswordAsync
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function _checkPasswordAsync(
+    user: Meteor.User,
+    password: Password
+  ): Promise<{ userId: string; error?: any }> {
+    // logic to check if the provided password matches the user's password
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T05:29:07.184Z
+File: => `true` if user roles have been loaded
+Functions Extracted: 4
+
+
+Function 1: addUsersToRoles
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function addUsersToRoles(
+    users: string | string[] | Meteor.User | Meteor.User[],
+    roles: string | string[],
+    options?: string | { scope?: string; ifExists?: boolean }
+  ): void {
+    // Logic to add users to roles goes here
+    // Check if users and roles are valid
+    if (!users || !roles) {
+      throw new Error('Users and roles must be provided');
+    }
+    // Process users and roles
+    // Add the roles to the users in the database
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: createRole
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function createRole(
+    roleName: string,
+    options?: { unlessExists: boolean }
+  ): string {
+    // Logic to create a new role
+    if (!roleName) {
+      throw new Error('Role name must be provided');
+    }
+    // Check if the role already exists
+    const existingRole = Roles.getAllRoles().find(role => role.name === roleName);
+    if (existingRole && !options?.unlessExists) {
+      throw new Error('Role already exists');
+    }
+    // Create the new role and return its ID
+    const newRoleId = generateNewRoleId(); // Assume this function generates a unique ID
+    return newRoleId;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: deleteRole
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function deleteRole(roleName: string): void {
+    // Logic to delete an existing role
+    if (!roleName) {
+      throw new Error('Role name must be provided');
+    }
+    // Check if the role exists
+    const role = Roles.getAllRoles().find(role => role.name === roleName);
+    if (!role) {
+      throw new Error('Role does not exist');
+    }
+    // Remove the role from the database
+    Roles.removeRole(roleName);
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: getRolesForUser
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function getRolesForUser(
+    user: string | Meteor.User,
+    options?:
+      | string
+      | {
+          scope?: string;
+          anyScope?: boolean;
+          onlyScoped?: boolean;
+          onlyAssigned?: boolean;
+          fullObjects?: boolean;
+        }
+  ): string[] {
+    // Logic to retrieve user's roles
+    if (!user) {
+      throw new Error('User must be provided');
+    }
+    // Fetch roles based on user and options
+    const roles = fetchRolesFromDatabase(user, options); // Assume this fetches roles
+    return roles;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T05:29:15.065Z
+File: meteor-meteor-4b61fbf/packages/webapp/webapp.d.ts
+Functions Extracted: 2
+
+
+Function 1: staticFilesMiddleware
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function staticFilesMiddleware(staticFiles: StaticFiles, req: http.IncomingMessage, res: http.ServerResponse, next: Function): void {
+    const filePath = req.url;
+    const staticFile = staticFiles[filePath];
+    if (staticFile) {
+        res.setHeader('Content-Type', staticFile.type);
+        res.setHeader('Cache-Control', staticFile.cacheable ? 'public, max-age=31536000' : 'no-cache');
+        res.sendFile(staticFile.absolutePath);
+    } else {
+        next();
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: identifyBrowser
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function identifyBrowser(userAgentString: string): { name: string; major: string; minor: string; patch: string; } {
+    const ua = userAgentString;
+    let tem;
+    const match = ua.match(/(opera|chrome|safari|firefox|msie|trident|edge)\s?\/?([\d.]+)/i);
+    if (match) {
+        const browserName = match[1];
+        const version = match[2];
+        return {
+            name: browserName,
+            major: version.split('.')[0],
+            minor: version.split('.')[1] || '0',
+            patch: version.split('.')[2] || '0'
+        };
+    }
+    return { name: 'unknown', major: '0', minor: '0', patch: '0' };
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:29:23.810Z
+Question Type: multiple-choice
+Function: loginWithPassword
+Function Size: 527 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: loginWithPassword (TypeScript)\n// Handles user login with username, email, or ID and password.\n\nfunction loginWithPassword(\n    user: { username: string } | { email: string } | { id: string } | string,\n    password: string,\n    callback?: (error?: global_Error | Meteor.Error | Meteor.Ty
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:29:25.684Z
+Question Type: multiple-choice
+Function: createRole
+Function Size: 668 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createRole (TypeScript)\n// Creates a new role in the system.\n\nfunction createRole(\n    roleName: string,\n    options?: { unlessExists: boolean }\n  ): string {\n    // Logic to create a new role\n    if (!roleName) {\n      throw new Error('Role name must be provided');\n    }\n    // Check i
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:29:26.724Z
+Question Type: multiple-choice
+Function: identifyBrowser
+Function Size: 730 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: identifyBrowser (TypeScript)\n// Identifies the browser and its version from the user agent string.\n\nfunction identifyBrowser(userAgentString: string): { name: string; major: string; minor: string; patch: string; } {\n    const ua = userAgentString;\n    let tem;\n    const match = ua.match
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:29:29.671Z
+Question Type: multiple-choice
+Function: resetPassword
+Function Size: 317 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: resetPassword (TypeScript)\n// Resets the user's password using a provided token.\n\nfunction resetPassword(\n    token: string,\n    newPassword: string,\n    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void\n  ): Promise<void> {\n    // logic to reset the user's password 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:29:33.047Z
+Question Type: order-sequence
+Function: validateLoginAttempt
+Function Size: 235 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: validateLoginAttempt (TypeScript)\n// Validates a login attempt using the provided function.\n\nfunction validateLoginAttempt(\n    func: Function\n  ): {\n    stop: () => void;\n  } {\n    // logic to validate a login attempt\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:29:40.348Z
+Question Type: multiple-choice
+Function: sendResetPasswordEmail
+Function Size: 357 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: sendResetPasswordEmail (TypeScript)\n// Sends a reset password email to the specified user.\n\nfunction sendResetPasswordEmail(\n    userId: string,\n    email?: string,\n    extraTokenData?: Record<string, unknown>,\n    extraParams?: Record<string, unknown>\n  ): Promise<SendEmailResult> {\n  
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:29:41.033Z
+Question Type: multiple-choice
+Function: publish
+Function Size: 536 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: publish (TypeScript)\n// Publishes a record set for client subscriptions.\n\nfunction publish(\n    name: string | null,\n    func: (\n      this: Subscription,\n      ...args: any[]\n    ) =>\n      | void\n      | Mongo.Cursor<any>\n      | Mongo.Cursor<any>[\n      | Promise<void | Mongo.Cursor<
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:29:43.301Z
+Question Type: multiple-choice
+Function: deleteRole
+Function Size: 499 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: deleteRole (TypeScript)\n// Deletes an existing role from the system.\n\nfunction deleteRole(roleName: string): void {\n    // Logic to delete an existing role\n    if (!roleName) {\n      throw new Error('Role name must be provided');\n    }\n    // Check if the role exists\n    const role = Ro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:29:48.953Z
+Question Type: true-false
+Function: getRolesForUser
+Function Size: 623 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getRolesForUser (TypeScript)\n// Retrieves the roles assigned to a user.\n\nfunction getRolesForUser(\n    user: string | Meteor.User,\n    options?:\n      | string\n      | {\n          scope?: string;\n          anyScope?: boolean;\n          onlyScoped?: boolean;\n          onlyAssigned?: bool
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:29:50.181Z
+Question Type: multiple-choice
+Function: sendEnrollmentEmail
+Function Size: 345 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: sendEnrollmentEmail (TypeScript)\n// Sends an enrollment email to the specified user.\n\nfunction sendEnrollmentEmail(\n    userId: string,\n    email?: string,\n    extraTokenData?: Record<string, unknown>,\n    extraParams?: Record<string, unknown>\n  ): Promise<SendEmailResult> {\n    // logi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:29:57.993Z
+Question Type: true-false
+Function: sendVerificationEmail
+Function Size: 351 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sendVerificationEmail (TypeScript)\n// Sends a verification email to the specified user.\n\nfunction sendVerificationEmail(\n    userId: string,\n    email?: string,\n    extraTokenData?: Record<string, unknown>,\n    extraParams?: Record<string, unknown>\n  ): Promise<SendEmailResult> {\n    //
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:29:59.050Z
+Question Type: function-variant
+Function: addUsersToRoles
+Function Size: 542 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: addUsersToRoles (TypeScript)\n// Adds roles to existing roles for each user.\n\nfunction addUsersToRoles(\n    users: string | string[] | Meteor.User | Meteor.User[],\n    roles: string | string[],\n    options?: string | { scope?: string; ifExists?: boolean }\n  ): void {\n    // Logic to add 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760073378899
+Repository: Unknown
+Total Questions Generated: 22
+Total Chunks Processed: 17
+Ended: 2025-10-10T05:30:01.513Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T05:32:44.300Z
+File: meteor-meteor-4b61fbf/packages/accounts-base/accounts-base.d.ts
+Functions Extracted: 7
+
+
+Function 1: createUser
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function createUser(
+    options: {
+      username?: string | undefined;
+      email?: string | undefined;
+      password?: string | undefined;
+      profile?: Meteor.UserProfile | undefined;
+    },
+    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void
+  ): Promise<string> {
+    // logic to create user
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: changePassword
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function changePassword(
+    oldPassword: string,
+    newPassword: string,
+    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void
+  ): Promise<void> {
+    // logic to change user password
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: sendEnrollmentEmail
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function sendEnrollmentEmail(
+    userId: string,
+    email?: string,
+    extraTokenData?: Record<string, unknown>,
+    extraParams?: Record<string, unknown>
+  ): Promise<SendEmailResult> {
+    // logic to send enrollment email
+  }
+--------------------------------------------------------------------------------
+
+
+Function 4: sendResetPasswordEmail
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function sendResetPasswordEmail(
+    userId: string,
+    email?: string,
+    extraTokenData?: Record<string, unknown>,
+    extraParams?: Record<string, unknown>
+  ): Promise<SendEmailResult> {
+    // logic to send reset password email
+  }
+--------------------------------------------------------------------------------
+
+
+Function 5: sendVerificationEmail
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function sendVerificationEmail(
+    userId: string,
+    email?: string,
+    extraTokenData?: Record<string, unknown>,
+    extraParams?: Record<string, unknown>
+  ): Promise<SendEmailResult> {
+    // logic to send verification email
+  }
+--------------------------------------------------------------------------------
+
+
+Function 6: validateLoginAttempt
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function validateLoginAttempt(
+    func: Function
+  ): {
+    stop: () => void;
+  } {
+    // logic to validate login attempt
+  }
+--------------------------------------------------------------------------------
+
+
+Function 7: _hashPassword
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function _hashPassword(
+    password: string
+  ): { digest: string; algorithm: string } {
+    // logic to hash the password
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T05:33:04.077Z
+File: => `true` if user roles have been loaded
+Functions Extracted: 5
+
+
+Function 1: addUsersToRoles
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function addUsersToRoles(
+    users: string | string[] | Meteor.User | Meteor.User[],
+    roles: string | string[],
+    options?: string | { scope?: string; ifExists?: boolean }
+  ): void {
+    // Logic to add users to roles
+    // Check if users and roles are valid
+    if (!users || !roles) {
+      throw new Error('Users and roles must be provided');
+    }
+    // Process users and roles
+    // Add roles to each user
+    // Handle options if provided
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: createRole
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+function createRole(
+    roleName: string,
+    options?: { unlessExists: boolean }
+  ): string {
+    // Logic to create a new role
+    if (!roleName) {
+      throw new Error('Role name must be provided');
+    }
+    // Check if role already exists
+    // Create and return new role ID
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: deleteRole
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+function deleteRole(roleName: string): void {
+    // Logic to delete an existing role
+    if (!roleName) {
+      throw new Error('Role name must be provided');
+    }
+    // Check if role exists
+    // Delete the role and unset it for users
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: getRolesForUser
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function getRolesForUser(
+    user: string | Meteor.User,
+    options?:
+      | string
+      | {
+          scope?: string;
+          anyScope?: boolean;
+          onlyScoped?: boolean;
+          onlyAssigned?: boolean;
+          fullObjects?: boolean;
+        }
+  ): string[] {
+    // Logic to retrieve user's roles
+    if (!user) {
+      throw new Error('User must be provided');
+    }
+    // Query roles based on user and options
+    // Return array of user's roles
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: setUserRoles
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function setUserRoles(
+    users: string | string[] | Meteor.User | Meteor.User[],
+    roles: string | string[],
+    options?:
+      | string
+      | { scope?: string; anyScope?: boolean; ifExists?: boolean }
+  ): void {
+    // Logic to set users' roles
+    if (!users || !roles) {
+      throw new Error('Users and roles must be provided');
+    }
+    // Process users and roles
+    // Replace existing roles with new roles
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T05:33:17.521Z
+File: meteor-meteor-4b61fbf/packages/webapp/webapp.d.ts
+Functions Extracted: 3
+
+
+Function 1: staticFilesMiddleware
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function staticFilesMiddleware(staticFiles: StaticFiles, req: http.IncomingMessage, res: http.ServerResponse, next: Function): void {
+    const path = req.url;
+    const file = staticFiles[path];
+    if (file) {
+        res.setHeader('Content-Type', file.type);
+        res.setHeader('Cache-Control', file.cacheable ? 'public, max-age=31536000' : 'no-cache');
+        res.end(file.content || '');
+    } else {
+        next();
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: identifyBrowser
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+function identifyBrowser(userAgentString: string): { name: string; major: string; minor: string; patch: string; } {
+    const userAgent = userAgentString.toLowerCase();
+    let name = 'unknown';
+    let major = '0';
+    let minor = '0';
+    let patch = '0';
+
+    if (userAgent.includes('chrome')) {
+        name = 'Chrome';
+        const match = userAgent.match(/chrome\/([0-9]+)\.([0-9]+)\.([0-9]+)/);
+        if (match) {
+            major = match[1];
+            minor = match[2];
+            patch = match[3];
+        }
+    } else if (userAgent.includes('firefox')) {
+        name = 'Firefox';
+        const match = userAgent.match(/firefox\/([0-9]+)\.([0-9]+)\.([0-9]+)/);
+        if (match) {
+            major = match[1];
+            minor = match[2];
+            patch = match[3];
+        }
+    }
+    // Additional browser detection logic can be added here
+    return { name, major, minor, patch };
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: generateBoilerplateInstance
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function generateBoilerplateInstance(arch: string, manifest: any, additionalOptions: any): any {
+    const boilerplate = { arch, manifest, options: additionalOptions };
+    // Logic to generate the boilerplate instance based on architecture and manifest
+    // This could involve more complex logic depending on the manifest structure
+    return boilerplate;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:33:23.602Z
+Question Type: true-false
+Function: sendEnrollmentEmail
+Function Size: 330 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sendEnrollmentEmail (TypeScript)\n// Sends an enrollment email to the specified user.\n\nfunction sendEnrollmentEmail(\n    userId: string,\n    email?: string,\n    extraTokenData?: Record<string, unknown>,\n    extraParams?: Record<string, unknown>\n  ): Promise<SendEmailResult> {\n    // logi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:33:24.895Z
+Question Type: multiple-choice
+Function: getRolesForUser
+Function Size: 565 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: getRolesForUser (TypeScript)\n// Retrieves all roles assigned to a specified user.\n\nfunction getRolesForUser(\n    user: string | Meteor.User,\n    options?:\n      | string\n      | {\n          scope?: string;\n          anyScope?: boolean;\n          onlyScoped?: boolean;\n          onlyAssig
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:33:27.277Z
+Question Type: select-all
+Function: createUser
+Function Size: 415 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createUser (TypeScript)\n// Creates a new user with the specified options.\n\nfunction createUser(\n    options: {\n      username?: string | undefined;\n      email?: string | undefined;\n      password?: string | undefined;\n      profile?: Meteor.UserProfile | undefined;\n    },\n    callback?
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:33:34.317Z
+Question Type: multiple-choice
+Function: createUser
+Function Size: 415 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createUser (TypeScript)\n// Creates a new user with the specified options.\n\nfunction createUser(\n    options: {\n      username?: string | undefined;\n      email?: string | undefined;\n      password?: string | undefined;\n      profile?: Meteor.UserProfile | undefined;\n    },\n    callback?
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:33:37.972Z
+Question Type: function-variant
+Function: setUserRoles
+Function Size: 529 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setUserRoles (TypeScript)\n// Sets the roles for specified users, replacing existing roles.\n\nfunction setUserRoles(\n    users: string | string[] | Meteor.User | Meteor.User[],\n    roles: string | string[],\n    options?:\n      | string\n      | { scope?: string; anyScope?: boolean; ifExist
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:33:41.389Z
+Question Type: multiple-choice
+Function: staticFilesMiddleware
+Function Size: 553 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: staticFilesMiddleware (TypeScript)\n// Middleware function to serve static files based on the request URL.\n\nfunction staticFilesMiddleware(staticFiles: StaticFiles, req: http.IncomingMessage, res: http.ServerResponse, next: Function): void {\n    const path = req.url;\n    const file = sta
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:33:51.792Z
+Question Type: multiple-choice
+Function: sendResetPasswordEmail
+Function Size: 343 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: sendResetPasswordEmail (TypeScript)\n// Sends a reset password email to the specified user.\n\nfunction sendResetPasswordEmail(\n    userId: string,\n    email?: string,\n    extraTokenData?: Record<string, unknown>,\n    extraParams?: Record<string, unknown>\n  ): Promise<SendEmailResult> {\n  
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:33:53.577Z
+Question Type: function-variant
+Function: deleteRole
+Function Size: 332 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deleteRole (TypeScript)\n// Deletes an existing role and unsets it for users.\n\nfunction deleteRole(roleName: string): void {\n    // Logic to delete an existing role\n    if (!roleName) {\n      throw new Error('Role name must be provided');\n    }\n    // Check if role exists\n    // Delete t
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:33:57.781Z
+Question Type: order-sequence
+Function: generateBoilerplateInstance
+Function Size: 491 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: generateBoilerplateInstance (TypeScript)\n// Generates a boilerplate instance based on the architecture and manifest.\n\nfunction generateBoilerplateInstance(arch: string, manifest: any, additionalOptions: any): any {\n    const boilerplate = { arch, manifest, options: additionalOptions };\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:33:59.980Z
+Question Type: multiple-choice
+Function: sendVerificationEmail
+Function Size: 337 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: sendVerificationEmail (TypeScript)\n// Sends a verification email to the specified user.\n\nfunction sendVerificationEmail(\n    userId: string,\n    email?: string,\n    extraTokenData?: Record<string, unknown>,\n    extraParams?: Record<string, unknown>\n  ): Promise<SendEmailResult> {\n    //
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:34:01.033Z
+Question Type: multiple-choice
+Function: setUserRoles
+Function Size: 529 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: setUserRoles (TypeScript)\n// Sets the roles for specified users, replacing existing roles.\n\nfunction setUserRoles(\n    users: string | string[] | Meteor.User | Meteor.User[],\n    roles: string | string[],\n    options?:\n      | string\n      | { scope?: string; anyScope?: boolean; ifExist
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:34:07.841Z
+Question Type: multiple-choice
+Function: validateLoginAttempt
+Function Size: 232 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: validateLoginAttempt (TypeScript)\n// Validates a login attempt with the provided function.\n\nfunction validateLoginAttempt(\n    func: Function\n  ): {\n    stop: () => void;\n  } {\n    // logic to validate login attempt\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:34:08.175Z
+Question Type: select-all
+Function: sendVerificationEmail
+Function Size: 337 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sendVerificationEmail (TypeScript)\n// Sends a verification email to the specified user.\n\nfunction sendVerificationEmail(\n    userId: string,\n    email?: string,\n    extraTokenData?: Record<string, unknown>,\n    extraParams?: Record<string, unknown>\n  ): Promise<SendEmailResult> {\n    //
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:34:13.609Z
+Question Type: multiple-choice
+Function: _hashPassword
+Function Size: 238 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: _hashPassword (TypeScript)\n// Hashes the provided password and returns the digest and algorithm.\n\nfunction _hashPassword(\n    password: string\n  ): { digest: string; algorithm: string } {\n    // logic to hash the password\n  }
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760073378899
+Repository: Unknown
+Total Questions Generated: 15
+Total Chunks Processed: 15
+Ended: 2025-10-10T05:34:16.611Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T05:38:05.622Z
+File: when a PathEditor is in an iframe in an environment like codepen, this helps avoid situations where the DELETE key won't actually work because the parent frame is intercepting the event.
+Functions Extracted: 6
+
+
+Function 1: _onMove
+Language: JavaScript
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+var self = this,
+      originalEvent = e,
+      touches,
+      i;
+
+  if (!self._enabled || _isMultiTouching || !self.isPressed || !e) {
+    return;
+  }
+
+  self.pointerEvent = e;
+  touches = e.changedTouches;
+
+  if (touches) {
+    //touch events store the data slightly differently
+    e = touches[0];
+
+    if (e !== self.touch && e.identifier !== self.touchID) {
+      //Usually changedTouches[0] will be what we're looking for, but in case it's not, look through the rest of the array...(and Android browsers don't reuse the event like iOS)
+      i = touches.length;
+
+      while (--i > -1 && (e = touches[i]).identifier !== self.touchID) {}
+
+      if (i < 0) {
+        return;
+      }
+    }
+  } else if (e.pointerId && self.touchID && e.pointerId !== self.touchID) {
+    //for some Microsoft browsers, we must attach the listener to the doc rather than the trigger so that when the finger moves outside the bounds of the trigger, things still work. So if the event we're receiving has a pointerId that doesn't match the touchID, ignore it (for multi-touch)
+    return;
+  }
+
+  _preventDefault(originalEvent);
+
+  self.setPointerPosition(e.pageX, e.pageY);
+
+  if (self.vars.onDrag) {
+    self.vars.onDrag.call(self.vars.callbackScope || self, self.pointerEvent);
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: _onRelease
+Language: JavaScript
+Lines: 60
+Full Code:
+--------------------------------------------------------------------------------
+var self = this;
+
+  if (!self._enabled || !self.isPressed || e && self.touchID != null && !force && (e.pointerId && e.pointerId !== self.touchID || e.changedTouches && !_hasTouchID(e.changedTouches, self.touchID))) {
+    //for some Microsoft browsers, we must attach the listener to the doc rather than the trigger so that when the finger moves outside the bounds of the trigger, things still work. So if the event we're receiving has a pointerId that doesn't match the touchID, ignore it (for multi-touch)
+    return;
+  }
+
+  _interacted();
+
+  self.isPressed = _isPressed = false; //TODO: if we want to accommodate multi-touch, we'd need to introduce a counter to track how many touches there are and only toggle this when they're all off.
+
+  var originalEvent = e,
+      wasDragging = self.isDragging,
+      touchEventTarget = self.touchEventTarget,
+      touches,
+      i;
+
+  if (touchEventTarget) {
+    _removeListener(touchEventTarget, "touchend", self._onRelease);
+
+    _removeListener(touchEventTarget, "touchmove", self._onMove);
+
+    _removeListener(touchEventTarget, "touchcancel", self._onRelease);
+
+    _removeListener(_doc, "touchstart", _onMultiTouchDocument);
+  } else {
+    _removeListener(_doc, "mousemove", self._onMove);
+  }
+
+  if (!_supportsPointer) {
+    _removeListener(_doc, "mouseup", self._onRelease);
+
+    if (e && e.target) {
+      _removeListener(e.target, "mouseup", self._onRelease);
+    }
+  }
+
+  if (wasDragging) {
+    self.isDragging = false;
+  } else if (self.vars.onClick) {
+    self.vars.onClick.call(self.vars.callbackScope || self, originalEvent);
+  }
+
+  if (e) {
+    touches = e.changedTouches;
+
+    if (touches) {
+      //touch events store the data slightly differently
+      e = touches[0];
+
+      if (e !== self.touch && e.identifier !== self.touchID) {
+        //Usually changedTouches[0] will be what we're looking for, but in case it's not, look through the rest of the array...(and Android browsers don't reuse the event like iOS)
+        i = touches.length;
+
+        while (--i > -1 && (e = touches[i]).identifier !== self.touchID) {}
+
+        if (i < 0) {
+          return;
+        }
+      }
+    }
+
+    self.pointerEvent = originalEvent;
+    self.pointerX = e.pageX;
+    self.pointerY = e.pageY;
+  }
+
+  if (originalEvent && !wasDragging && self.vars.onDragRelease) {
+    self.vars.onDragRelease.call(self, self.pointerEvent);
+  } else {
+    if (originalEvent) {
+      _preventDefault(originalEvent);
+    }
+
+    if (self.vars.onRelease) {
+      self.vars.onRelease.call(self.vars.callbackScope || self, self.pointerEvent);
+    }
+  }
+
+  if (wasDragging && self.vars.onDragEnd) {
+    self.vars.onDragEnd.call(self.vars.callbackScope || self, self.pointerEvent);
+  }
+
+  return true;
+--------------------------------------------------------------------------------
+
+
+Function 3: _createSegmentAnchors
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+var segment = rawPath[j],
+      l = segment.length - (segment.closed ? 6 : 0),
+      a = [],
+      i;
+
+  for (i = 0; i < l; i += 6) {
+    a.push(new Anchor(editor, rawPath, j, i, vars));
+  }
+
+  segment.closed && (a[0].isClosedStart = true);
+  return a;
+--------------------------------------------------------------------------------
+
+
+Function 4: enabled
+Language: JavaScript
+Lines: 50
+Full Code:
+--------------------------------------------------------------------------------
+if (!arguments.length) {
+      return this._enabled;
+    }
+
+    var dragging;
+    this._enabled = _enabled;
+
+    if (_enabled) {
+      if (!_supportsPointer) {
+        _addListener(this.target, "mousedown", this._onPress);
+      }
+
+      _addListener(this.target, "touchstart", this._onPress);
+
+      _addListener(this.target, "click", this._onClick, true); //note: used to pass true for capture but it prevented click-to-play-video functionality in Firefox.
+
+    } else {
+      dragging = this.isDragging;
+
+      _removeListener(this.target, "mousedown", this._onPress);
+
+      _removeListener(this.target, "touchstart", this._onPress);
+
+      _removeListener(_win, "touchforcechange", _preventDefault);
+
+      _removeListener(this.target, "click", this._onClick);
+
+      if (this.touchEventTarget) {
+        _removeListener(this.touchEventTarget, "touchcancel", this._onRelease);
+
+        _removeListener(this.touchEventTarget, "touchend", this._onRelease);
+
+        _removeListener(this.touchEventTarget, "touchmove", this._onMove);
+      }
+
+      _removeListener(_doc, "mouseup", this._onRelease);
+
+      _removeListener(_doc, "mousemove", this._onMove);
+
+      this.isDragging = this.isPressed = false;
+
+      if (dragging) {
+        _callback("onDragEnd", this, this.pointerEvent);
+      }
+    }
+
+    return this;
+--------------------------------------------------------------------------------
+
+
+Function 5: _onClickSelectionPath
+Language: JavaScript
+Lines: 60
+Full Code:
+--------------------------------------------------------------------------------
+if (this._selection.style.visibility === "hidden") {
+      this.select();
+    } else if (_ALT || e && e.altKey) {
+      var anchorVars = {
+        callbackScope: this,
+        snap: this.vars.anchorSnap,
+        onDrag: this._onDragAnchor,
+        onPress: this._onPressAnchor,
+        onRelease: this._onRelease,
+        onClick: this._onClickAnchor,
+        onDragEnd: this._onDragEndAnchor,
+        maxX: this.vars.maxX,
+        minX: this.vars.minX
+      },
+          ctm = this._selection.getScreenCTM().inverse(),
+          newIndex,
+          _i,
+          anchor,
+          x,
+          y,
+          closestData;
+
+      if (this._draggable) {
+        this._draggable._onRelease(e); //otherwise, ALT-click/dragging on a path would create a new anchor AND drag the entire path.
+
+      }
+
+      if (ctm) {
+        x = e.clientX * ctm.a + e.clientY * ctm.c + ctm.e;
+        y = e.clientX * ctm.b + e.clientY * ctm.d + ctm.f;
+      } //DEBUG: _createSVG("circle", this._selection, {fill:"red", r:5, cx:x, cy:y});
+
+      closestData = getClosestData(this._rawPath, x, y);
+      subdivideSegment(this._rawPath[closestData.j], closestData.i, closestData.t);
+      newIndex = closestData.i + 6;
+
+      for (_i = 0; _i < this._anchors.length; _i++) {
+        if (this._anchors[_i].i >= newIndex && this._anchors[_i].j === closestData.j) {
+          this._anchors[_i].i += 6;
+        }
+      }
+
+      anchor = new Anchor(this, this._rawPath, closestData.j, newIndex, anchorVars);
+
+      this._selection.appendChild(this._handle1); //for stacking order (handles should always be on top)
+
+      this._selection.appendChild(this._handle2);
+
+      anchor._draggable._onPress(e);
+
+      _recentlyAddedAnchor = anchor;
+
+      this._anchors.push(anchor);
+
+      this._selectedAnchors.length = 0;
+
+      this._selectedAnchors.push(anchor);
+
+      this._updateAnchors();
+
+      this.update();
+
+      this._saveState();
+    }
+
+    _resetSelection();
+
+    _addListener(_win, "touchforcechange", _preventDefault); //otherwise iOS will scroll when dragging.
+
+    _callback("onPress", this);
+--------------------------------------------------------------------------------
+
+
+Function 6: update
+Language: JavaScript
+Lines: 50
+Full Code:
+--------------------------------------------------------------------------------
+var d = "",
+        anchor = this._editingAnchor,
+        i,
+        s,
+        x,
+        y,
+        pi;
+
+    if (readPath) {
+      this.init();
+    }
+
+    if (anchor) {
+      i = anchor.i;
+      s = anchor.segment;
+
+      if (i || anchor.isClosedStart) {
+        pi = anchor.isClosedStart ? s.length - 4 : i - 2;
+        x = s[pi];
+        y = s[pi + 1];
+
+        this._handle1.setAttribute("transform", "translate(" + x + _comma + y + ")");
+
+        this._line1.setAttribute("points", x + _comma + y + _comma + s[i] + _comma + s[i + 1]);
+      }
+
+      if (i < s.length - 2) {
+        x = s[i + 2];
+        y = s[i + 3];
+
+        this._handle2.setAttribute("transform", "translate(" + x + _comma + y + ")");
+
+        this._line2.setAttribute("points", s[i] + _comma + s[i + 1] + _comma + x + _comma + y);
+      }
+    }
+
+    if (readPath) {
+      d = this.path.getAttribute("d");
+    } else {
+      for (i = 0; i < this._rawPath.length; i++) {
+        s = this._rawPath[i];
+
+        if (s.length > 7) {
+          d += "M" + s[0] + _comma + s[1] + "C" + s.slice(2).join(_comma);
+        }
+      }
+
+      this.path.setAttribute("d", d);
+
+      this._selectionPath.setAttribute("d", d);
+
+      this._selectionHittest.setAttribute("d", d);
+    }
+
+    if (this.vars.onUpdate && this._enabled) {
+      _callback("onUpdate", this, d);
+    }
+
+    return this;
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T05:38:50.120Z
+File: greensock-GSAP-9f8eca1/esm/GSDevTools.js
+Functions Extracted: 8
+
+
+Function 1: _getChildrenOf
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+var a = [],
+    cnt = 0,
+    Tween = gsap.core.Tween,
+    tween = timeline._first;
+
+while (tween) {
+    if (tween instanceof Tween) {
+        if (tween.vars.id) {
+            a[cnt++] = tween;
+        }
+    } else {
+        if (includeTimelines && tween.vars.id) {
+            a[cnt++] = tween;
+        }
+        a = a.concat(_getChildrenOf(tween, includeTimelines));
+        cnt = a.length;
+    }
+    tween = tween._next;
+}
+
+return a;
+--------------------------------------------------------------------------------
+
+
+Function 2: _getClippedDuration
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+var max = 0,
+    repeat = Math.max(0, animation._repeat),
+    t = animation._first;
+
+if (!t) {
+    max = animation.duration();
+}
+
+while (t) {
+    max = Math.max(max, t.totalDuration() > 999 ? t.endTime(false) : t._start + t._tDur / t._ts);
+    t = t._next;
+}
+
+return !excludeRootRepeats && repeat ? max * (repeat + 1) + animation._rDelay * repeat : max;
+--------------------------------------------------------------------------------
+
+
+Function 3: _timeToProgress
+Language: JavaScript
+Lines: 25
+Full Code:
+--------------------------------------------------------------------------------
+var add, i, a;
+
+if (_isString(time)) {
+    if (time.charAt(1) === "=") {
+        add = parseInt(time.charAt(0) + "1", 10) * parseFloat(time.substr(2));
+        if (add < 0 && relativeProgress === 0) {
+            relativeProgress = 100;
+        }
+        time = relativeProgress / 100 * animation.duration() + add;
+    } else if (isNaN(time) && animation.labels && animation.labels[time] !== -1) {
+        time = animation.labels[time];
+    } else if (animation === _recordedRoot) {
+        i = time.indexOf("=");
+        if (i > 0) {
+            add = parseInt(time.charAt(i - 1) + "1", 10) * parseFloat(time.substr(i + 1));
+            time = time.substr(0, i - 1);
+        } else {
+            add = 0;
+        }
+        a = gsap.getById(time);
+        if (a) {
+            time = _globalizeTime(a, defaultValue / 100 * a.duration()) + add;
+        }
+    }
+}
+
+time = isNaN(time) ? defaultValue : parseFloat(time);
+return Math.min(100, Math.max(0, time / animation.duration() * 100));
+--------------------------------------------------------------------------------
+
+
+Function 4: _merge
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+var t = _globalTimeline._first,
+    duration,
+    next,
+    target;
+
+if (_rootInstance) {
+    duration = _recordedRoot._dur;
+    while (t) {
+        next = t._next;
+        target = t._targets && t._targets[0];
+        if (!(_isFunction(target) && target === t.vars.onComplete && !t._dur) && !(target && target._gsIgnore)) {
+            _recordedRoot.add(t, t._start - t._delay);
+        }
+        t = next;
+    }
+    return duration !== _recordedRoot.duration();
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: _updateRootDuration
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+if (_rootInstance) {
+    _rootInstance.update();
+    _rootIsDirty = false;
+}
+
+gsap.ticker.remove(_updateRootDuration);
+--------------------------------------------------------------------------------
+
+
+Function 6: _buildPlayPauseMorph
+Language: JavaScript
+Lines: 25
+Full Code:
+--------------------------------------------------------------------------------
+var tl = gsap.timeline({
+    data: "root",
+    parent: _independentRoot,
+    onComplete: function onComplete() {
+        return tl.kill();
+    }
+}, _independentRoot._time);
+tl.to(svg.querySelector(".play-1"), {
+    duration: 0.4,
+    attr: {
+        d: "M5.75,3.13 C5.75,9.79 5.75,16.46 5.75,23.13 4.08,23.13 2.41,23.13 0.75,23.13 0.75,16.46 0.75,9.79 0.75,3.12 2.41,3.12 4.08,3.12 5.75,3.12"
+    },
+    ease: "power2.inOut",
+    rotation: 360,
+    transformOrigin: "50% 50%"
+}).to(svg.querySelector(".play-2"), {
+    duration: 0.4,
+    attr: {
+        d: "M16.38,3.13 C16.38,9.79 16.38,16.46 16.38,23.13 14.71,23.13 13.04,23.13 11.38,23.13 11.38,16.46 11.38,9.79 11.38,3.12 13.04,3.12 14.71,3.12 16.38,3.12"
+    },
+    ease: "power2.inOut",
+    rotation: 360,
+    transformOrigin: "50% 50%"
+}, 0.05);
+return tl;
+--------------------------------------------------------------------------------
+
+
+Function 7: _buildLoopAnimation
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+var tl = gsap.timeline({
+    data: "root",
+    id: "loop",
+    parent: _independentRoot,
+    paused: true,
+    onComplete: function onComplete() {
+        return tl.kill();
+    }
+}, _independentRoot._time);
+tl.to(svg, {
+    duration: 0.5,
+    rotation: 360,
+    ease: "power3.inOut",
+    transformOrigin: "50% 50%"
+}).to(svg.querySelectorAll(".loop-path"), {
+    duration: 0.5,
+    fill: "#91e600",
+    ease: "none"
+}, 0);
+return tl;
+--------------------------------------------------------------------------------
+
+
+Function 8: _initCore
+Language: JavaScript
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+gsap = core || _getGSAP();
+
+if (!_coreInitted) {
+    if (gsap && _windowExists()) {
+        _doc = document;
+        _docEl = _doc.documentElement;
+        _win = window;
+
+        _context = gsap.core.context || function () {};
+
+        gsap.registerPlugin(Draggable);
+        _globalTimeline = gsap.globalTimeline;
+        _globalTimeline._sort = true;
+        _globalTimeline.autoRemoveChildren = false;
+        Animation = gsap.core.Animation;
+        _independentRoot = gsap.timeline({
+            data: "indy",
+            autoRemoveChildren: true,
+            smoothChildTiming: true
+        });
+
+        _independentRoot.kill();
+
+        _independentRoot._dp = 0;
+
+        _independentRoot.to({}, {
+            duration: 1e12
+        });
+
+        _recordedRoot = gsap.timeline({
+            data: "root",
+            id: "Global Timeline",
+            autoRemoveChildren: false,
+            smoothChildTiming: true,
+            parent: _independentRoot
+        }, 0);
+        _rootTween = gsap.to(_recordedRoot, {
+            duration: 1,
+            time: 1,
+            ease: "none",
+            data: "root",
+            id: "_rootTween",
+            paused: true,
+            immediateRender: false,
+            parent: _independentRoot
+        }, 0);
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T05:40:18.829Z
+File: greensock-GSAP-9f8eca1/esm/MorphSVGPlugin.js
+Functions Extracted: 7
+
+
+Function 1: _getAverageXY
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+var l = segment.length,
+      x = 0,
+      y = 0,
+      i;
+
+  for (i = 0; i < l; i++) {
+    x += segment[i++];
+    y += segment[i];
+  }
+
+  return [x / (l / 2), y / (l / 2)];
+--------------------------------------------------------------------------------
+
+
+Function 2: _getSize
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+var l = segment.length,
+      xMax = segment[0],
+      xMin = xMax,
+      yMax = segment[1],
+      yMin = yMax,
+      x,
+      y,
+      i;
+
+  for (i = 6; i < l; i += 6) {
+    x = segment[i];
+    y = segment[i + 1];
+
+    if (x > xMax) {
+      xMax = x;
+    } else if (x < xMin) {
+      xMin = x;
+    }
+
+    if (y > yMax) {
+      yMax = y;
+    } else if (y < yMin) {
+      yMin = y;
+    }
+  }
+
+  segment.centerX = (xMax + xMin) / 2;
+  segment.centerY = (yMax + yMin) / 2;
+  return segment.size = (xMax - xMin) * (yMax - yMin);
+--------------------------------------------------------------------------------
+
+
+Function 3: _getTotalSize
+Language: JavaScript
+Lines: 37
+Full Code:
+--------------------------------------------------------------------------------
+if (samplesPerBezier === void 0) {
+    samplesPerBezier = 3;
+  }
+
+  var j = rawPath.length,
+      xMax = rawPath[0][0],
+      xMin = xMax,
+      yMax = rawPath[0][1],
+      yMin = yMax,
+      inc = 1 / samplesPerBezier,
+      l,
+      x,
+      y,
+      i,
+      segment,
+      k,
+      t,
+      inv,
+      x1,
+      y1,
+      x2,
+      x3,
+      x4,
+      y2,
+      y3,
+      y4;
+
+  while (--j > -1) {
+    segment = rawPath[j];
+    l = segment.length;
+
+    for (i = 6; i < l; i += 6) {
+      x1 = segment[i];
+      y1 = segment[i + 1];
+      x2 = segment[i + 2] - x1;
+      y2 = segment[i + 3] - y1;
+      x3 = segment[i + 4] - x1;
+      y3 = segment[i + 5] - y1;
+      x4 = segment[i + 6] - x1;
+      y4 = segment[i + 7] - y1;
+      k = samplesPerBezier;
+
+      while (--k > -1) {
+        t = inc * k;
+        inv = 1 - t;
+        x = (t * t * x4 + 3 * inv * (t * x3 + inv * x2)) * t + x1;
+        y = (t * t * y4 + 3 * inv * (t * y3 + inv * y2)) * t + y1;
+
+        if (x > xMax) {
+          xMax = x;
+        } else if (x < xMin) {
+          xMin = x;
+        }
+
+        if (y > yMax) {
+          yMax = y;
+        } else if (y < yMin) {
+          yMin = y;
+        }
+      }
+    }
+  }
+
+  rawPath.centerX = (xMax + xMin) / 2;
+  rawPath.centerY = (yMax + yMin) / 2;
+  rawPath.left = xMin;
+  rawPath.width = xMax - xMin;
+  rawPath.top = yMin;
+  rawPath.height = yMax - yMin;
+  return rawPath.size = (xMax - xMin) * (yMax - yMin);
+--------------------------------------------------------------------------------
+
+
+Function 4: _getClosestShapeIndex
+Language: JavaScript
+Lines: 25
+Full Code:
+--------------------------------------------------------------------------------
+var l = sb.length,
+      sCenter = _getAverageXY(sb),
+      eCenter = _getAverageXY(eb),
+      offsetX = eCenter[0] - sCenter[0],
+      offsetY = eCenter[1] - sCenter[1],
+      min = _getTotalMovement(sb, eb, 0, offsetX, offsetY),
+      minIndex = 0,
+      copy,
+      d,
+      i;
+
+  for (i = 6; i < l; i += 6) {
+    d = _getTotalMovement(sb, eb, i / 6, offsetX, offsetY);
+
+    if (d < min) {
+      min = d;
+      minIndex = i;
+    }
+  }
+
+  if (checkReverse) {
+    copy = sb.slice(0);
+    reverseSegment(copy);
+
+    for (i = 6; i < l; i += 6) {
+      d = _getTotalMovement(copy, eb, i / 6, offsetX, offsetY);
+
+      if (d < min) {
+        min = d;
+        minIndex = -i;
+      }
+    }
+  }
+
+  return minIndex / 6;
+--------------------------------------------------------------------------------
+
+
+Function 5: _equalizeSegmentQuantity
+Language: JavaScript
+Lines: 67
+Full Code:
+--------------------------------------------------------------------------------
+var dif = end.length - start.length,
+      longer = dif > 0 ? end : start,
+      shorter = dif > 0 ? start : end,
+      added = 0,
+      sortMethod = map === "complexity" ? _sortByComplexity : _sortBySize,
+      sortRatio = map === "position" ? 0 : typeof map === "number" ? map : 0.8,
+      i = shorter.length,
+      shapeIndices = typeof shapeIndex === "object" && shapeIndex.push ? shapeIndex.slice(0) : [shapeIndex],
+      reverse = shapeIndices[0] === "reverse" || shapeIndices[0] < 0,
+      log = shapeIndex === "log",
+      eb,
+      sb,
+      b,
+      x,
+      y,
+      offsetX,
+      offsetY;
+
+  if (!shorter[0]) {
+    return;
+  }
+
+  if (longer.length > 1) {
+    start.sort(sortMethod);
+    end.sort(sortMethod);
+    offsetX = longer.size || _getTotalSize(longer);
+
+    offsetX = shorter.size || _getTotalSize(shorter);
+    offsetX = longer.centerX - shorter.centerX;
+    offsetY = longer.centerY - shorter.centerY;
+
+    if (sortMethod === _sortBySize) {
+      for (i = 0; i < shorter.length; i++) {
+        longer.splice(i, 0, _getClosestSegment(shorter[i], longer, i, sortRatio, offsetX, offsetY));
+      }
+    }
+  }
+
+  if (dif) {
+    if (dif < 0) {
+      dif = -dif;
+    }
+
+    if (longer[0].length > shorter[0].length) {
+      _subdivideSegmentQty(shorter[0], (longer[0].length - shorter[0].length) / 6 | 0);
+    }
+
+    i = shorter.length;
+
+    while (added < dif) {
+      x = longer[i].size || _getSize(longer[i]);
+      b = _getClosestAnchor(shorter, longer[i].centerX, longer[i].centerY);
+      x = b[0];
+      y = b[1];
+      shorter[i++] = [x, y, x, y, x, y, x, y];
+      shorter.totalPoints += 8;
+      added++;
+    }
+  }
+
+  for (i = 0; i < start.length; i++) {
+    eb = end[i];
+    sb = start[i];
+    dif = eb.length - sb.length;
+
+    if (dif < 0) {
+      _subdivideSegmentQty(eb, -dif / 6 | 0);
+    } else if (dif > 0) {
+      _subdivideSegmentQty(sb, dif / 6 | 0);
+    }
+
+    if (reverse && fillSafe !== false && !sb.reversed) {
+      reverseSegment(sb);
+    }
+
+    shapeIndex = shapeIndices[i] || shapeIndices[i] === 0 ? shapeIndices[i] : "auto";
+
+    if (shapeIndex) {
+      if (sb.closed || Math.abs(sb[0] - sb[sb.length - 2]) < 0.5 && Math.abs(sb[1] - sb[sb.length - 1]) < 0.5) {
+        if (shapeIndex === "auto" || shapeIndex === "log") {
+          shapeIndices[i] = shapeIndex = _getClosestShapeIndex(sb, eb, !i || fillSafe === false);
+
+          if (shapeIndex < 0) {
+            reverse = true;
+            reverseSegment(sb);
+            shapeIndex = -shapeIndex;
+          }
+
+          _offsetSegment(sb, shapeIndex * 6);
+        } else if (shapeIndex !== "reverse") {
+          if (i && shapeIndex < 0) {
+            reverseSegment(sb);
+          }
+
+          _offsetSegment(sb, (shapeIndex < 0 ? -shapeIndex : shapeIndex) * 6);
+        }
+      } else if (!reverse && (shapeIndex === "auto" && Math.abs(eb[0] - sb[0]) + Math.abs(eb[1] - sb[1]) + Math.abs(eb[eb.length - 2] - sb[sb.length - 2]) + Math.abs(eb[eb.length - 1] - sb[sb.length - 1]) > Math.abs(eb[0] - sb[sb.length - 2]) + Math.abs(eb[1] - sb[sb.length - 1]) + Math.abs(eb[eb.length - 2] - sb[0]) + Math.abs(eb[eb.length - 1] - sb[1]) || shapeIndex % 2)) {
+        reverseSegment(sb);
+        shapeIndices[i] = -1;
+        reverse = true;
+      } else if (shapeIndex === "auto") {
+        shapeIndices[i] = 0;
+      } else if (shapeIndex === "reverse") {
+        shapeIndices[i] = -1;
+      }
+
+      if (sb.closed !== eb.closed) {
+        sb.closed = eb.closed = false;
+      }
+    }
+  }
+
+  log && _log("shapeIndex:[" + shapeIndices.join(",") + "]");
+  start.shapeIndex = shapeIndices;
+  return shapeIndices;
+--------------------------------------------------------------------------------
+
+
+Function 6: _pathFilter
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+var start = stringToRawPath(a[0]),
+      end = stringToRawPath(a[1]);
+
+  if (!_equalizeSegmentQuantity(start, end, shapeIndex || shapeIndex === 0 ? shapeIndex : "auto", map, fillSafe)) {
+    return;
+  }
+
+  a[0] = rawPathToString(start);
+  a[1] = rawPathToString(end);
+
+  if (precompile === "log" || precompile === true) {
+    _log('precompile:["' + a[0] + '","' + a[1] + '"]');
+  }
+--------------------------------------------------------------------------------
+
+
+Function 7: _populateSmoothData
+Language: JavaScript
+Lines: 41
+Full Code:
+--------------------------------------------------------------------------------
+var j = rawPath.length,
+      limit = 0.2 * (tolerance || 1),
+      smooth,
+      segment,
+      x,
+      y,
+      x2,
+      y2,
+      i,
+      l,
+      a,
+      a2,
+      isSmooth,
+      smoothData;
+
+  while (--j > -1) {
+    segment = rawPath[j];
+    isSmooth = segment.isSmooth = segment.isSmooth || [0, 0, 0, 0];
+    smoothData = segment.smoothData = segment.smoothData || [0, 0, 0, 0];
+    isSmooth.length = 4;
+    l = segment.length - 2;
+
+    for (i = 6; i < l; i += 6) {
+      x = segment[i] - segment[i - 2];
+      y = segment[i + 1] - segment[i - 1];
+      x2 = segment[i + 2] - segment[i];
+      y2 = segment[i + 3] - segment[i + 1];
+      a = _atan2(y, x);
+      a2 = _atan2(y2, x2);
+      smooth = Math.abs(a - a2) < limit;
+
+      if (smooth) {
+        smoothData[i - 2] = a;
+        smoothData[i + 2] = a2;
+        smoothData[i - 1] = _sqrt(x * x + y * y);
+        smoothData[i + 3] = _sqrt(x2 * x2 + y2 * y2);
+      }
+
+      isSmooth.push(smooth, smooth, 0, 0, smooth, smooth);
+    }
+
+    if (segment[l] === segment[0] && segment[l + 1] === segment[1]) {
+      x = segment[0] - segment[l - 2];
+      y = segment[1] - segment[l - 1];
+      x2 = segment[2] - segment[0];
+      y2 = segment[3] - segment[1];
+      a = _atan2(y, x);
+      a2 = _atan2(y2, x2);
+
+      if (Math.abs(a - a2) < limit) {
+        smoothData[l - 2] = a;
+        smoothData[2] = a2;
+        smoothData[l - 1] = _sqrt(x * x + y * y);
+        smoothData[3] = _sqrt(x2 * x2 + y2 * y2);
+        isSmooth[l - 2] = isSmooth[l - 1] = true;
+      }
+    }
+  }
+
+  return rawPath;
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T05:40:39.337Z
+File: greensock-GSAP-9f8eca1/esm/InertiaPlugin.js
+Functions Extracted: 1
+
+
+Function 1: _calculateTweenDuration
+Language: JavaScript
+Lines: 63
+Full Code:
+--------------------------------------------------------------------------------
+function _calculateTweenDuration(target, vars, maxDuration, minDuration, overshootTolerance, recordEnd) {
+  if (maxDuration === void 0) {
+    maxDuration = 10;
+  }
+
+  if (minDuration === void 0) {
+    minDuration = 0.2;
+  }
+
+  if (overshootTolerance === void 0) {
+    overshootTolerance = 1;
+  }
+
+  if (recordEnd === void 0) {
+    recordEnd = 0;
+  }
+
+  _isString(target) && (target = _toArray(target)[0]);
+
+  if (!target) {
+    return 0;
+  }
+
+  var duration = 0,
+      clippedDuration = _bigNum,
+      inertiaVars = vars.inertia || vars,
+      getVal = _getCache(target).get,
+      resistance = _getNumOrDefault(inertiaVars, "resistance", _config.resistance),
+      p,
+      curProp,
+      curDuration,
+      curVelocity,
+      curVal,
+      end,
+      curClippedDuration,
+      tracker,
+      unitFactor,
+      linkedProps;
+
+  linkedProps = _processLinkedProps(target, inertiaVars, getVal, resistance);
+
+  for (p in inertiaVars) {
+    if (!_reservedProps[p]) {
+      curProp = inertiaVars[p];
+
+      if (!_isObject(curProp)) {
+        tracker = tracker || _getTracker(target);
+
+        if (tracker && tracker.isTracking(p)) {
+          curProp = _isNumber(curProp) ? {
+            velocity: curProp
+          } : {
+            velocity: tracker.get(p)
+          };
+        } else {
+          curVelocity = +curProp || 0;
+          curDuration = Math.abs(curVelocity / resistance);
+        }
+      }
+
+      if (_isObject(curProp)) {
+        if (_isNumber(curProp.velocity)) {
+          curVelocity = curProp.velocity;
+        } else {
+          tracker = tracker || _getTracker(target);
+          curVelocity = tracker && tracker.isTracking(p) ? tracker.get(p) : 0;
+        }
+
+        curDuration = _clamp(minDuration, maxDuration, Math.abs(curVelocity / _getNumOrDefault(curProp, "resistance", resistance)));
+        curVal = parseFloat(getVal(target, p)) || 0;
+        end = curVal + _calculateChange(curVelocity, curDuration);
+
+        if ("end" in curProp) {
+          curProp = _parseEnd(curProp, linkedProps && p in linkedProps ? linkedProps : end, curProp.max, curProp.min, p, inertiaVars.radius, curVelocity);
+
+          if (recordEnd) {
+            _processingVars === vars && (_processingVars = inertiaVars = _deepClone(vars));
+            inertiaVars[p] = _extend(curProp, inertiaVars[p], "end");
+          }
+        }
+
+        if ("max" in curProp && end > +curProp.max + _tinyNum) {
+          unitFactor = curProp.unitFactor || _config.unitFactors[p] || 1;
+          curClippedDuration = curVal > curProp.max && curProp.min !== curProp.max || curVelocity * unitFactor > -15 && curVelocity * unitFactor < 45 ? minDuration + (maxDuration - minDuration) * 0.1 : _calculateDuration(curVal, curProp.max, curVelocity);
+
+          if (curClippedDuration + overshootTolerance < clippedDuration) {
+            clippedDuration = curClippedDuration + overshootTolerance;
+          }
+        } else if ("min" in curProp && end < +curProp.min - _tinyNum) {
+          unitFactor = curProp.unitFactor || _config.unitFactors[p] || 1;
+          curClippedDuration = curVal < curProp.min && curProp.min !== curProp.max || curVelocity * unitFactor > -45 && curVelocity * unitFactor < 15 ? minDuration + (maxDuration - minDuration) * 0.1 : _calculateDuration(curVal, curProp.min, curVelocity);
+
+          if (curClippedDuration + overshootTolerance < clippedDuration) {
+            clippedDuration = curClippedDuration + overshootTolerance;
+          }
+        }
+
+        curClippedDuration > duration && (duration = curClippedDuration);
+      }
+
+      curDuration > duration && (duration = curDuration);
+    }
+  }
+
+  duration > clippedDuration && (duration = clippedDuration);
+  return duration > maxDuration ? maxDuration : duration < minDuration ? minDuration : duration;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T05:41:32.103Z
+File: only call if moving forward in the timeline (in case it's nested in a timeline that gets reversed)
+Functions Extracted: 15
+
+
+Function 1: loadState
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+ _proto4.loadState = function loadState(done) {
+    done || (done = function done() {
+      return 0;
+    });
+    var queue = [];
+    this.actions.forEach(function (c) {
+      if (c.vars.loadState) {
+        var i,
+            f = function f(targets) {
+          targets && (c.targets = targets);
+          i = queue.indexOf(f);
+
+          if (~i) {
+            queue.splice(i, 1);
+            queue.length || done();
+          }
+        };
+
+        queue.push(f);
+        c.vars.loadState(f);
+      }
+    });
+    queue.length || done();
+    return this;
+  };
+--------------------------------------------------------------------------------
+
+
+Function 2: setState
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+ _proto4.setState = function setState() {
+    this.actions.forEach(function (c) {
+      return c.targets = c.vars.setState && c.vars.setState(c);
+    });
+    return this;
+  };
+--------------------------------------------------------------------------------
+
+
+Function 3: killConflicts
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+ _proto4.killConflicts = function killConflicts(soft) {
+    this.state.interrupt(soft);
+
+    this._kill.forEach(function (state) {
+      return state.interrupt(soft);
+    });
+
+    return this;
+  };
+--------------------------------------------------------------------------------
+
+
+Function 4: run
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+ _proto4.run = function run(skipGetState, merge) {
+    var _this5 = this;
+
+    if (this !== _batch) {
+      skipGetState || this.getState(merge);
+      this.loadState(function () {
+        if (!_this5._killed) {
+          _this5.setState();
+
+          _this5.animate();
+        }
+      });
+    }
+
+    return this;
+  };
+--------------------------------------------------------------------------------
+
+
+Function 5: clear
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+ _proto4.clear = function clear(stateOnly) {
+    this.state.clear();
+    stateOnly || (this.actions.length = 0);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 6: getStateById
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+ _proto4.getStateById = function getStateById(id) {
+    var i = this.actions.length,
+        s;
+
+    while (i--) {
+      s = this.actions[i].getStateById(id);
+
+      if (s) {
+        return s;
+      }
+    }
+
+    return this.state.idLookup[id] && this.state;
+  };
+--------------------------------------------------------------------------------
+
+
+Function 7: kill
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+ _proto4.kill = function kill() {
+    this._killed = 1;
+    this.clear();
+    delete _batchLookup[this.id];
+  };
+--------------------------------------------------------------------------------
+
+
+Function 8: getState
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+Flip.getState = function getState(targets, vars) {
+    var state = _parseState(targets, vars);
+
+    _batchAction && _batchAction.states.push(state);
+    vars && vars.batch && Flip.batch(vars.batch).state.add(state);
+    return state;
+  };
+--------------------------------------------------------------------------------
+
+
+Function 9: from
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+Flip.from = function from(state, vars) {
+    vars = vars || {};
+    "clearProps" in vars || (vars.clearProps = true);
+    return _fromTo(state, _parseState(vars.targets || state.targets, {
+      props: vars.props || state.props,
+      simple: vars.simple,
+      kill: !!vars.kill
+    }), vars, -1);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 10: to
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+Flip.to = function to(state, vars) {
+    return _fromTo(state, _parseState(vars.targets || state.targets, {
+      props: vars.props || state.props,
+      simple: vars.simple,
+      kill: !!vars.kill
+    }), vars, 1);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 11: fit
+Language: JavaScript
+Lines: 42
+Full Code:
+--------------------------------------------------------------------------------
+Flip.fit = function fit(fromEl, toEl, vars) {
+    var v = vars ? _copy(vars, _fitReserved) : {},
+        _ref = vars || v,
+        absolute = _ref.absolute,
+        scale = _ref.scale,
+        getVars = _ref.getVars,
+        props = _ref.props,
+        runBackwards = _ref.runBackwards,
+        onComplete = _ref.onComplete,
+        simple = _ref.simple,
+        fitChild = vars && vars.fitChild && _getEl(vars.fitChild),
+        before = _parseElementState(toEl, props, simple, fromEl),
+        after = _parseElementState(fromEl, 0, simple, before),
+        inlineProps = props ? _memoizedRemoveProps[props] : _removeProps,
+        ctx = gsap.context();
+
+    props && _applyProps(v, before.props);
+
+    _recordInlineStyles(after, inlineProps);
+
+    if (runBackwards) {
+      "immediateRender" in v || (v.immediateRender = true);
+
+      v.onComplete = function () {
+        _applyInlineStyles(after);
+
+        onComplete && onComplete.apply(this, arguments);
+      };
+    }
+
+    absolute && _makeAbsolute(after, before);
+    v = _fit(after, before, scale || fitChild, !v.duration && props, fitChild, v.duration || getVars ? v : 0);
+    typeof vars === "object" && "zIndex" in vars && (v.zIndex = vars.zIndex);
+    ctx && !getVars && ctx.add(function () {
+      return function () {
+        return _applyInlineStyles(after);
+      };
+    });
+    return getVars ? v : v.duration ? gsap.to(after.element, v) : null;
+  };
+--------------------------------------------------------------------------------
+
+
+Function 12: killFlipsOf
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+Flip.killFlipsOf = function killFlipsOf(targets, complete) {
+    (targets instanceof FlipState ? targets.targets : _toArray(targets)).forEach(function (t) {
+      return t && _killFlip(t._flip, complete !== false ? 1 : 2);
+    });
+  };
+--------------------------------------------------------------------------------
+
+
+Function 13: isFlipping
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+Flip.isFlipping = function isFlipping(target) {
+    var f = Flip.getByTarget(target);
+    return !!f && f.isActive();
+  };
+--------------------------------------------------------------------------------
+
+
+Function 14: convertCoordinates
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+Flip.convertCoordinates = function convertCoordinates(fromElement, toElement, point) {
+    var m = getGlobalMatrix(toElement, true, true).multiply(getGlobalMatrix(fromElement));
+    return point ? m.apply(point) : m;
+  };
+--------------------------------------------------------------------------------
+
+
+Function 15: register
+Language: JavaScript
+Lines: 18
+Full Code:
+--------------------------------------------------------------------------------
+Flip.register = function register(core) {
+    _body = typeof document !== "undefined" && document.body;
+
+    if (_body) {
+      gsap = core;
+
+      _setDoc(_body);
+
+      _toArray = gsap.utils.toArray;
+      _getStyleSaver = gsap.core.getStyleSaver;
+      var snap = gsap.utils.snap(0.1);
+
+      _closestTenth = function _closestTenth(value, add) {
+        return snap(parseFloat(value) + add);
+      };
+    }
+  };
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:41:46.993Z
+Question Type: order-sequence
+Function: from
+Function Size: 379 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from (JavaScript)\n// Creates an animation from a given state.\n\nFlip.from = function from(state, vars) {\n    vars = vars || {};\n    "clearProps" in vars || (vars.clearProps = true);\n    return _fromTo(state, _parseState(vars.targets || state.targets, {\n      props: vars.props || state.pr
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:41:47.778Z
+Question Type: function-variant
+Function: to
+Function Size: 293 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: to (JavaScript)\n// Creates an animation to a given state.\n\nFlip.to = function to(state, vars) {\n    return _fromTo(state, _parseState(vars.targets || state.targets, {\n      props: vars.props || state.props,\n      simple: vars.simple,\n      kill: !!vars.kill\n    }), vars, 1);\n  };
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:41:48.856Z
+Question Type: multiple-choice
+Function: _calculateTweenDuration
+Function Size: 3907 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: _calculateTweenDuration (JavaScript)\n// Calculates the duration of a tween based on target properties and their velocities.\n\nfunction _calculateTweenDuration(target, vars, maxDuration, minDuration, overshootTolerance, recordEnd) {\n  if (maxDuration === void 0) {\n    maxDuration = 10;\n  
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:41:54.940Z
+Question Type: select-all
+Function: _populateSmoothData
+Function Size: 1659 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _populateSmoothData (JavaScript)\n// Populates smooth data for each segment in the raw path.\n\nvar j = rawPath.length,\n      limit = 0.2 * (tolerance || 1),\n      smooth,\n      segment,\n      x,\n      y,\n      x2,\n      y2,\n      i,\n      l,\n      a,\n      a2,\n      isSmooth,\n      smooth
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:41:58.328Z
+Question Type: multiple-choice
+Function: _merge
+Function Size: 578 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: _merge (JavaScript)\n// Merges animations from the global timeline into the recorded root timeline.\n\nvar t = _globalTimeline._first,\n    duration,\n    next,\n    target;\n\nif (_rootInstance) {\n    duration = _recordedRoot._dur;\n    while (t) {\n        next = t._next;\n        target = t._ta
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:42:03.769Z
+Question Type: multiple-choice
+Function: _equalizeSegmentQuantity
+Function Size: 3724 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: _equalizeSegmentQuantity (JavaScript)\n// Equalizes the number of segments between two shapes for morphing.\n\nvar dif = end.length - start.length,\n      longer = dif > 0 ? end : start,\n      shorter = dif > 0 ? start : end,\n      added = 0,\n      sortMethod = map === "complexity" ? _sortB
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:42:04.670Z
+Question Type: function-variant
+Function: run
+Function Size: 405 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: run (JavaScript)\n// Runs the animation sequence after loading the state.\n\n _proto4.run = function run(skipGetState, merge) {\n    var _this5 = this;\n\n    if (this !== _batch) {\n      skipGetState || this.getState(merge);\n      this.loadState(function () {\n        if (!_this5._killed) {\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:42:05.537Z
+Question Type: multiple-choice
+Function: _onRelease
+Function Size: 2820 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: _onRelease (JavaScript)\n// Handles the release event for dragging functionality.\n\nvar self = this;\n\n  if (!self._enabled || !self.isPressed || e && self.touchID != null && !force && (e.pointerId && e.pointerId !== self.touchID || e.changedTouches && !_hasTouchID(e.changedTouches, self.t
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:42:12.753Z
+Question Type: true-false
+Function: convertCoordinates
+Function Size: 320 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: convertCoordinates (JavaScript)\n// Converts coordinates from one element to another.\n\nFlip.convertCoordinates = function convertCoordinates(fromElement, toElement, point) {\n    var m = getGlobalMatrix(toElement, true, true).multiply(getGlobalMatrix(fromElement));\n    return point ? m.ap
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:42:18.321Z
+Question Type: multiple-choice
+Function: _getChildrenOf
+Function Size: 562 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: _getChildrenOf (JavaScript)\n// Recursively retrieves all children of a timeline, optionally including timelines.\n\nvar a = [],\n    cnt = 0,\n    Tween = gsap.core.Tween,\n    tween = timeline._first;\n\nwhile (tween) {\n    if (tween instanceof Tween) {\n        if (tween.vars.id) {\n          
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:42:19.042Z
+Question Type: multiple-choice
+Function: killFlipsOf
+Function Size: 332 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: killFlipsOf (JavaScript)\n// Kills all flips associated with the specified targets.\n\nFlip.killFlipsOf = function killFlipsOf(targets, complete) {\n    (targets instanceof FlipState ? targets.targets : _toArray(targets)).forEach(function (t) {\n      return t && _killFlip(t._flip, complete 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:42:27.728Z
+Question Type: multiple-choice
+Function: _onMove
+Function Size: 1354 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: _onMove (JavaScript)\n// Handles the move event for dragging functionality.\n\nvar self = this,\n      originalEvent = e,\n      touches,\n      i;\n\n  if (!self._enabled || _isMultiTouching || !self.isPressed || !e) {\n    return;\n  }\n\n  self.pointerEvent = e;\n  touches = e.changedTouches;\n\n  
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T05:42:27.825Z
+Question Type: true-false
+Function: register
+Function Size: 516 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: register (JavaScript)\n// Registers the core GSAP library and sets up utility functions.\n\nFlip.register = function register(core) {\n    _body = typeof document !== "undefined" && document.body;\n\n    if (_body) {\n      gsap = core;\n\n      _setDoc(_body);\n\n      _toArray = gsap.utils.toArr
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760073378899
+Repository: Unknown
+Total Questions Generated: 18
+Total Chunks Processed: 37
+Ended: 2025-10-10T05:42:33.256Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T17:18:13.393Z
+File: util.inspect.custom support for node 6+
+Functions Extracted: 5
+
+
+Function 1: listen
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+listen (...args) {
+    debug('listen')
+    const server = http.createServer(this.callback())
+    return server.listen(...args)
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: use
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+use (fn) {
+    if (typeof fn !== 'function') { throw new TypeError('middleware must be a function!') }
+    debug('use %s', fn._name || fn.name || '-')
+    this.middleware.push(fn)
+    return this
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: callback
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+callback () {
+    const fn = this.compose(this.middleware)
+
+    if (!this.listenerCount('error')) this.on('error', this.onerror)
+
+    const handleRequest = (req, res) => {
+      const ctx = this.createContext(req, res)
+      if (!this.ctxStorage) {
+        return this.handleRequest(ctx, fn)
+      }
+      return this.ctxStorage.run(ctx, async () => {
+        return await this.handleRequest(ctx, fn)
+      })
+    }
+
+    return handleRequest
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: handleRequest
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+handleRequest (ctx, fnMiddleware) {
+    const res = ctx.res
+    res.statusCode = 404
+    const onerror = (err) => ctx.onerror(err)
+    const handleResponse = () => respond(ctx)
+    onFinished(res, onerror)
+    return fnMiddleware(ctx).then(handleResponse).catch(onerror)
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: createContext
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+createContext (req, res) {
+    /** @type {Context} */
+    const context = Object.create(this.context)
+    /** @type {KoaRequest} */
+    const request = (context.request = Object.create(this.request))
+    /** @type {KoaResponse} */
+    const response = (context.response = Object.create(this.response))
+    context.app = request.app = response.app = this
+    context.req = request.req = response.req = req
+    context.res = request.res = response.res = res
+    request.ctx = response.ctx = context
+    request.response = response
+    response.request = request
+    context.originalUrl = request.originalUrl = req.url
+    context.state = {}
+    return context
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T17:18:19.195Z
+File: koajs-koa-83128eb/lib/application.js
+Functions Extracted: 1
+
+
+Function 1: constructor
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+constructor (options) {
+    super()
+    options = options || {}
+    this.proxy = options.proxy || false
+    this.subdomainOffset = options.subdomainOffset || 2
+    this.proxyIpHeader = options.proxyIpHeader || 'X-Forwarded-For'
+    this.maxIpsCount = options.maxIpsCount || 0
+    this.env = options.env || process.env.NODE_ENV || 'development'
+    this.compose = options.compose || compose
+    if (options.keys) this.keys = options.keys
+    this.middleware = []
+    this.context = Object.create(context)
+    this.request = Object.create(request)
+    this.response = Object.create(response)
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T17:18:39.118Z
+File: koajs-koa-83128eb/__tests__/application/index.test.js
+Functions Extracted: 6
+
+
+Function 1: it
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+it('should handle socket errors', async () => {
+    const app = new Koa()
+    let errorCaught = false
+
+    app.use((ctx) => {
+      ctx.socket.destroy(new Error('boom'))
+    })
+
+    app.on('error', err => {
+      assert.strictEqual(err.message, 'boom')
+      errorCaught = true
+    })
+
+    const server = app.listen()
+
+    try {
+      const req = require('http').get({
+        port: server.address().port
+      })
+      req.on('error', () => {})
+
+      const [err] = await once(app, 'error')
+      assert.strictEqual(err.message, 'boom')
+      assert.strictEqual(errorCaught, true)
+    } finally {
+      await server.close()
+    }
+  })
+--------------------------------------------------------------------------------
+
+
+Function 2: it
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+it('should set development env when NODE_ENV missing', () => {
+    const NODE_ENV = process.env.NODE_ENV
+    process.env.NODE_ENV = ''
+    const app = new Koa()
+    process.env.NODE_ENV = NODE_ENV
+    assert.strictEqual(app.env, 'development')
+  })
+--------------------------------------------------------------------------------
+
+
+Function 3: it
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+it('should set env from the constructor', () => {
+    const env = 'custom'
+    const app = new Koa({ env })
+    assert.strictEqual(app.env, env)
+  })
+--------------------------------------------------------------------------------
+
+
+Function 4: it
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+it('should set proxy flag from the constructor', () => {
+    const proxy = true
+    const app = new Koa({ proxy })
+    assert.strictEqual(app.proxy, proxy)
+  })
+--------------------------------------------------------------------------------
+
+
+Function 5: it
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+it('should set signed cookie keys from the constructor', () => {
+    const keys = ['customkey']
+    const app = new Koa({ keys })
+    assert.strictEqual(app.keys, keys)
+  })
+--------------------------------------------------------------------------------
+
+
+Function 6: it
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+it('should set subdomainOffset from the constructor', () => {
+    const subdomainOffset = 3
+    const app = new Koa({ subdomainOffset })
+    assert.strictEqual(app.subdomainOffset, subdomainOffset)
+  })
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T17:18:47.766Z
+File: koajs-koa-83128eb/lib/search-params.js
+Functions Extracted: 2
+
+
+Function 1: stringify
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const stringify = (obj) => {
+    const searchParams = new URLSearchParams()
+    const addKey = (k, v, params) => {
+      const val = typeof v === 'string' || typeof v === 'number' ? v : ''
+      params.append(k, val)
+    }
+
+    for (const [key, value] of Object.entries(obj)) {
+      if (Array.isArray(value)) {
+        const lgth = value.length
+        for (let i = 0; i < lgth; i++) {
+          addKey(key, value[i], searchParams)
+        }
+      } else {
+        addKey(key, value, searchParams)
+      }
+    }
+    return searchParams.toString()
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: parse
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+const parse = (str) => {
+    const searchParams = new URLSearchParams(str)
+    const obj = {}
+    for (const key of searchParams.keys()) {
+      const values = searchParams.getAll(key)
+      obj[key] = values.length <= 1 ? values[0] : values
+    }
+    return obj
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T17:18:51.345Z
+File: koajs-koa-83128eb/__tests__/request/idempotent.test.js
+Functions Extracted: 1
+
+
+Function 1: check
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function check (method) {
+        const req = request()
+        req.method = method
+        assert.strictEqual(req.idempotent, true)
+      }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T17:18:55.245Z
+Question Type: true-false
+Function: use
+Function Size: 278 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: use (JavaScript)\n// Adds a middleware function to the application.\n\nuse (fn) {\n    if (typeof fn !== 'function') { throw new TypeError('middleware must be a function!') }\n    debug('use %s', fn._name || fn.name || '-')\n    this.middleware.push(fn)\n    return this\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T17:19:02.412Z
+Question Type: multiple-choice
+Function: constructor
+Function Size: 692 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: constructor (JavaScript)\n// Initializes a new Application instance with given options.\n\nconstructor (options) {\n    super()\n    options = options || {}\n    this.proxy = options.proxy || false\n    this.subdomainOffset = options.subdomainOffset || 2\n    this.proxyIpHeader = options.proxyI
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T17:19:07.942Z
+Question Type: function-variant
+Function: callback
+Function Size: 545 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: callback (JavaScript)\n// Returns a request handler callback for the native HTTP server.\n\ncallback () {\n    const fn = this.compose(this.middleware)\n\n    if (!this.listenerCount('error')) this.on('error', this.onerror)\n\n    const handleRequest = (req, res) => {\n      const ctx = this.cre
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T17:19:08.648Z
+Question Type: select-all
+Function: it
+Function Size: 736 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: it (JavaScript)\n// Tests error handling in Koa application when a socket error occurs.\n\nit('should handle socket errors', async () => {\n    const app = new Koa()\n    let errorCaught = false\n\n    app.use((ctx) => {\n      ctx.socket.destroy(new Error('boom'))\n    })\n\n    app.on('error', e
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T17:19:10.795Z
+Question Type: function-variant
+Function: it
+Function Size: 275 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: it (JavaScript)\n// Tests that Koa sets signed cookie keys from the constructor options.\n\nit('should set signed cookie keys from the constructor', () => {\n    const keys = ['customkey']\n    const app = new Koa({ keys })\n    assert.strictEqual(app.keys, keys)\n  })
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T17:19:18.682Z
+Question Type: multiple-choice
+Function: createContext
+Function Size: 759 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: createContext (JavaScript)\n// Initializes a new context for the request and response.\n\ncreateContext (req, res) {\n    /** @type {Context} */\n    const context = Object.create(this.context)\n    /** @type {KoaRequest} */\n    const request = (context.request = Object.create(this.request))\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T17:19:20.603Z
+Question Type: multiple-choice
+Function: parse
+Function Size: 346 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: parse (JavaScript)\n// Parses a URL-encoded string into an object.\n\nconst parse = (str) => {\n    const searchParams = new URLSearchParams(str)\n    const obj = {}\n    for (const key of searchParams.keys()) {\n      const values = searchParams.getAll(key)\n      obj[key] = values.length <= 1
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T17:19:21.715Z
+Question Type: order-sequence
+Function: it
+Function Size: 358 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: it (JavaScript)\n// Tests that Koa sets the environment to development when NODE_ENV is missing.\n\nit('should set development env when NODE_ENV missing', () => {\n    const NODE_ENV = process.env.NODE_ENV\n    process.env.NODE_ENV = ''\n    const app = new Koa()\n    process.env.NODE_ENV = NO
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T17:19:31.336Z
+Question Type: order-sequence
+Function: handleRequest
+Function Size: 384 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleRequest (JavaScript)\n// Handles the request in the callback, managing responses and errors.\n\nhandleRequest (ctx, fnMiddleware) {\n    const res = ctx.res\n    res.statusCode = 404\n    const onerror = (err) => ctx.onerror(err)\n    const handleResponse = () => respond(ctx)\n    onFinis
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T17:19:32.887Z
+Question Type: multiple-choice
+Function: it
+Function Size: 248 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: it (JavaScript)\n// Tests that Koa sets the environment from the constructor options.\n\nit('should set env from the constructor', () => {\n    const env = 'custom'\n    const app = new Koa({ env })\n    assert.strictEqual(app.env, env)\n  })
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760073378899
+Repository: Unknown
+Total Questions Generated: 16
+Total Chunks Processed: 15
+Ended: 2025-10-10T17:19:36.459Z
+================================================================================
+

@@ -188,6 +188,41 @@ export async function getQuizHistoryByRepo(repoUrl: string, limitCount: number =
 }
 
 /**
+ * Get quiz history by repository and user
+ */
+export async function getUserQuizHistoryByRepo(
+  repoUrl: string, 
+  userId: string, 
+  limitCount: number = 10
+): Promise<QuizHistoryDoc[]> {
+  try {
+    const q = query(
+      collection(db, COLLECTIONS.QUIZ_HISTORY),
+      where('userId', '==', userId),
+      where('repoUrl', '==', repoUrl),
+      orderBy('completedAt', 'desc'),
+      limit(limitCount)
+    );
+
+    const querySnapshot = await getDocs(q);
+    const quizHistory: QuizHistoryDoc[] = [];
+    
+    querySnapshot.forEach((doc) => {
+      quizHistory.push({
+        id: doc.id,
+        ...doc.data()
+      } as QuizHistoryDoc);
+    });
+
+    console.log(`📊 Retrieved ${quizHistory.length} quiz history records for user ${userId} and repo ${repoUrl}`);
+    return quizHistory;
+  } catch (error) {
+    console.error('❌ Error getting user quiz history by repo:', error);
+    throw error;
+  }
+}
+
+/**
  * Update user's quiz usage count
  */
 export async function updateUserQuizUsage(userId: string): Promise<void> {
@@ -456,6 +491,8 @@ export const addQuestionToBank = async (
     const normalizedQuestion = normalizeQuestionForStorage(question);
     console.log(`🔍 [addQuestionToBank] Normalized question:`, normalizedQuestion);
     
+    const now = Timestamp.now(); // Use actual timestamp instead of serverTimestamp for arrays
+    
     const storedQuestion: StoredQuestion = {
       ...normalizedQuestion,
       upvotes: 1, // Initial upvote that triggered addition
@@ -479,6 +516,13 @@ export const addQuestionToBank = async (
     await setDoc(questionRef, storedQuestion, { merge: true });
     console.log(`✅ Question ${question.id} saved to questions collection with complete data`);
     
+    // For questionBanks array, convert serverTimestamp to actual timestamp
+    const storedQuestionForArray = {
+      ...storedQuestion,
+      createdAt: now,
+      lastUpdated: now
+    };
+    
     if (bankSnap.exists()) {
       const currentData = bankSnap.data();
       const existingQuestions = currentData.questions || [];
@@ -488,7 +532,7 @@ export const addQuestionToBank = async (
       
       if (!questionExists) {
         await updateDoc(bankRef, {
-          questions: [...existingQuestions, storedQuestion],
+          questions: [...existingQuestions, storedQuestionForArray],
           totalQuestions: existingQuestions.length + 1,
           activeQuestions: (currentData.activeQuestions || existingQuestions.length) + 1,
           lastUpdated: serverTimestamp()
@@ -503,7 +547,7 @@ export const addQuestionToBank = async (
         repoUrl,
         repoKey,
         ...extractRepoInfo(repoUrl),
-        questions: [storedQuestion],
+        questions: [storedQuestionForArray],
         totalQuestions: 1,
         activeQuestions: 1,
         createdAt: serverTimestamp(),
@@ -631,5 +675,168 @@ export const getQuestionBankStats = async (repoUrl: string): Promise<{
   } catch (error) {
     console.error('Error getting question bank stats:', error);
     return { totalQuestions: 0, activeQuestions: 0, averageQuality: 0 };
+  }
+};
+
+/**
+ * Get cached questions for a repository
+ * Returns upvoted questions from the question bank
+ * Optionally filters out questions the user has already passed
+ */
+export const getCachedQuestions = async (
+  repoUrl: string,
+  limitCount: number = 50,
+  userId?: string
+): Promise<Question[]> => {
+  try {
+    console.log(`🔍 [getCachedQuestions] Querying cached questions for: ${repoUrl}`);
+    console.log(`🔍 [getCachedQuestions] Query conditions: upvotes > 0, orderBy upvotes desc, limit ${limitCount}`);
+    
+    // Try the optimized query first - check for questions with upvotes OR active status
+    const q = query(
+      collection(db, COLLECTIONS.QUESTIONS),
+      where('repoUrl', '==', repoUrl),
+      where('upvotes', '>', 0),
+      orderBy('upvotes', 'desc'),
+      limit(limitCount)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    const questions: Question[] = [];
+    
+    querySnapshot.forEach((doc) => {
+      const storedQuestion = doc.data() as StoredQuestion;
+      try {
+        const question = denormalizeQuestionFromStorage(storedQuestion);
+        questions.push(question);
+      } catch (error) {
+        console.error(`❌ Error denormalizing question ${doc.id}:`, error);
+      }
+    });
+    
+    console.log(`✅ Retrieved ${questions.length} cached questions for ${repoUrl}`);
+    
+    // Filter out questions user has already passed (if userId provided)
+    if (userId) {
+      try {
+        console.log(`🔍 [getCachedQuestions] Filtering out passed questions for user: ${userId}`);
+        const userHistory = await getUserQuizHistoryByRepo(repoUrl, userId, 20);
+        
+        // Extract question IDs the user has already passed
+        const passedQuestionIds = userHistory
+          .flatMap(quiz => quiz.results || [])
+          .filter(result => result.isCorrect)
+          .map(result => result.questionId);
+        
+        console.log(`📊 [getCachedQuestions] User has passed ${passedQuestionIds.length} questions`);
+        
+        if (passedQuestionIds.length > 0) {
+          const originalCount = questions.length;
+          const filteredQuestions = questions.filter(q => !passedQuestionIds.includes(q.id));
+          console.log(`🎯 [getCachedQuestions] Filtered out ${originalCount - filteredQuestions.length} passed questions`);
+          return filteredQuestions.slice(0, limitCount);
+        }
+      } catch (filterError) {
+        console.warn('⚠️ Error filtering passed questions, returning all questions:', filterError);
+      }
+    }
+    
+    return questions;
+  } catch (error: any) {
+    console.error('❌ Error getting cached questions:', error);
+    console.error('❌ Error details:', {
+      message: error.message,
+      code: error.code,
+      stack: error.stack
+    });
+    
+    // If composite index doesn't exist, try simpler query
+    const needsIndex = error.code === 'failed-precondition' || 
+                       error.message?.includes('index') ||
+                       error.message?.includes('requires an index');
+    
+    if (needsIndex) {
+      console.warn('⚠️ Composite index not found, trying simpler query');
+      console.log('📝 Create index here:', error.message);
+      console.log('🔍 Debug - needsIndex check passed:', { 
+        code: error.code, 
+        hasIndexInMessage: error.message?.includes('index'),
+        hasRequiresInMessage: error.message?.includes('requires an index')
+      });
+      
+      // Extract the index creation URL if available
+      const urlMatch = error.message?.match(/(https:\/\/console\.firebase\.google\.com[^\s]+)/);
+      if (urlMatch) {
+        console.log('🔗 Quick link to create index:', urlMatch[1]);
+      }
+      
+      try {
+        // Ultra-simple query - just get by repoUrl, filter everything else in memory
+        const simpleQ = query(
+          collection(db, COLLECTIONS.QUESTIONS),
+          where('repoUrl', '==', repoUrl)
+        );
+        
+        const querySnapshot = await getDocs(simpleQ);
+        const questions: Question[] = [];
+        
+        querySnapshot.forEach((doc) => {
+          const storedQuestion = doc.data() as StoredQuestion;
+          try {
+            // Filter in memory: only include questions with upvotes > 0 (status is optional)
+            if ((storedQuestion.upvotes || 0) > 0) {
+              const question = denormalizeQuestionFromStorage(storedQuestion);
+              questions.push(question);
+            }
+          } catch (denormError) {
+            console.error(`❌ Error denormalizing question ${doc.id}:`, denormError);
+          }
+        });
+        
+        // Sort in memory by upvotes (descending)
+        questions.sort((a, b) => {
+          const aUpvotes = (a as any).upvotes || 0;
+          const bUpvotes = (b as any).upvotes || 0;
+          return bUpvotes - aUpvotes;
+        });
+        
+        // Apply limit in memory
+        const limitedQuestions = questions.slice(0, limitCount);
+        
+        console.log(`✅ Retrieved ${limitedQuestions.length} cached questions (ultra-simple query) for ${repoUrl}`);
+        
+        // Filter out questions user has already passed (if userId provided)
+        if (userId) {
+          try {
+            console.log(`🔍 [getCachedQuestions] Filtering out passed questions for user: ${userId} (fallback query)`);
+            const userHistory = await getUserQuizHistoryByRepo(repoUrl, userId, 20);
+            
+            // Extract question IDs the user has already passed
+            const passedQuestionIds = userHistory
+              .flatMap(quiz => quiz.results || [])
+              .filter(result => result.isCorrect)
+              .map(result => result.questionId);
+            
+            console.log(`📊 [getCachedQuestions] User has passed ${passedQuestionIds.length} questions (fallback query)`);
+            
+            if (passedQuestionIds.length > 0) {
+              const originalCount = limitedQuestions.length;
+              const filteredQuestions = limitedQuestions.filter(q => !passedQuestionIds.includes(q.id));
+              console.log(`🎯 [getCachedQuestions] Filtered out ${originalCount - filteredQuestions.length} passed questions (fallback query)`);
+              return filteredQuestions.slice(0, limitCount);
+            }
+          } catch (filterError) {
+            console.warn('⚠️ Error filtering passed questions (fallback query), returning all questions:', filterError);
+          }
+        }
+        
+        return limitedQuestions;
+      } catch (fallbackError) {
+        console.error('❌ Fallback query also failed:', fallbackError);
+        return [];
+      }
+    }
+    
+    return [];
   }
 };

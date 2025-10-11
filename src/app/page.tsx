@@ -38,7 +38,27 @@ export default function Home() {
   const [isLoadingTrending, setIsLoadingTrending] = useState(false);
   const [showLoadingOverlay, setShowLoadingOverlay] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
+  const [cachedQuestionCount, setCachedQuestionCount] = useState<number>(0);
+  const [hidePassedQuestions, setHidePassedQuestions] = useState(false);
 
+  // Refresh cached question count when hidePassedQuestions toggle changes
+  useEffect(() => {
+    if (githubRepo.owner && githubRepo.repo && user) {
+      const refreshCacheCount = async () => {
+        try {
+          const repoUrl = `https://github.com/${githubRepo.owner}/${githubRepo.repo}`;
+          const { getCachedQuestions } = await import('@/lib/quiz-history');
+          const cached = await getCachedQuestions(repoUrl, 50, hidePassedQuestions ? user.uid : undefined);
+          setCachedQuestionCount(cached.length);
+          console.log(`🔄 Cache count refreshed: ${cached.length} questions (hidePassed: ${hidePassedQuestions})`);
+        } catch (error) {
+          console.error('Error refreshing cache count:', error);
+        }
+      };
+      
+      refreshCacheCount();
+    }
+  }, [hidePassedQuestions, githubRepo.owner, githubRepo.repo, user]);
 
   // Load trending repositories
   const loadTrendingRepos = async () => {
@@ -252,6 +272,45 @@ export default function Home() {
         console.log('✅ Branches loaded:', data.branches.map((b: any) => b.name));
         console.log('🎯 Using default branch:', data.defaultBranch);
         
+        // Check cache count for this repo
+        const repoUrl = url.replace(/\/tree\/.*$/, ''); // Remove /tree/branch part
+        const { getCachedQuestions } = await import('@/lib/quiz-history');
+        const cached = await getCachedQuestions(repoUrl, 50, hidePassedQuestions ? user?.uid : undefined);
+        setCachedQuestionCount(cached.length);
+        console.log(`📦 Cache status: ${cached.length} questions available for ${repoUrl}`);
+        
+        // If we have enough cached questions, show them immediately
+        if (cached.length >= 15) {
+          console.log('⚡ Showing cached questions immediately (15+ available)');
+          const shuffled = cached.sort(() => Math.random() - 0.5);
+          const selectedQuestions = shuffled.slice(0, 15).map((q) => ({
+            ...q,
+            isCached: true
+          }));
+          
+          const cachedSession = {
+            id: Date.now().toString(),
+            title: 'Community Reviewed Quiz',
+            questions: selectedQuestions,
+            currentQuestionIndex: 0,
+            score: 0,
+            lives: 3,
+            lastLifeRefill: new Date(),
+            completed: false,
+            repositoryInfo: {
+              owner: githubRepo.owner,
+              repo: githubRepo.repo,
+              branch: data.defaultBranch || 'main'
+            },
+            isCached: true
+          };
+          
+          setQuizSession(cachedSession);
+          setIsLoading(false);
+          setShowLoadingOverlay(false);
+          return; // Skip repository processing
+        }
+        
         // Also process the repository to detect languages using the correct branch
         const branchUrl = `${url}/tree/${data.defaultBranch}`;
         await processRepository(branchUrl);
@@ -311,6 +370,82 @@ export default function Home() {
         
         if (repositoryFiles.length === 0) {
           throw new Error('No repository files available. Please ensure the repository was processed successfully.');
+        }
+        
+        // CACHE CHECK: Try to load cached questions first
+        const repoUrl = `https://github.com/${githubRepo.owner}/${githubRepo.repo}`;
+        console.log('🔍 Checking for cached questions for:', repoUrl);
+        
+        const { getCachedQuestions } = await import('@/lib/quiz-history');
+        const cachedQuestions = await getCachedQuestions(repoUrl, 50, hidePassedQuestions ? user?.uid : undefined);
+        
+        setCachedQuestionCount(cachedQuestions.length); // Update state for UI display
+        
+        console.log(`📦 Found ${cachedQuestions.length} cached questions for ${repoUrl}`);
+        if (cachedQuestions.length > 0) {
+          console.log('📋 First cached question:', cachedQuestions[0]);
+        }
+        
+        // STRATEGY: If ≥50 cached, use only cached. If <50, use up to 10 cached + generate rest
+        if (cachedQuestions.length >= 50) {
+          console.log('✅ Using ONLY cached questions (50+ available)');
+          
+          // Shuffle and pick 15 random cached questions
+          const shuffled = cachedQuestions.sort(() => Math.random() - 0.5);
+          const selectedQuestions = shuffled.slice(0, 15).map((q, index) => ({
+            ...q,
+            isCached: true // Mark as community reviewed
+          }));
+          
+          console.log('✨ Selected cached questions:', selectedQuestions.map(q => ({
+            id: q.id,
+            type: q.type,
+            isCached: q.isCached,
+            question: q.question?.substring(0, 50)
+          })));
+          
+          const cachedSession = {
+            id: Date.now().toString(),
+            title: 'Community Reviewed Quiz',
+            questions: selectedQuestions,
+            currentQuestionIndex: 0,
+            score: 0,
+            lives: 3,
+            lastLifeRefill: new Date(),
+            completed: false,
+            repositoryInfo: {
+              owner: githubRepo.owner,
+              repo: githubRepo.repo,
+              branch: selectedBranch || 'main'
+            },
+            isCached: true
+          };
+          
+          setQuizSession(cachedSession);
+          setIsLoading(false);
+          setShowLoadingOverlay(false);
+          return; // Skip API generation
+        } else if (cachedQuestions.length > 0 && cachedQuestions.length < 50) {
+          // Use up to 10 cached + generate the rest
+          const numCached = Math.min(10, cachedQuestions.length);
+          const cachedToUse = cachedQuestions.slice(0, numCached).map(q => ({
+            ...q,
+            isCached: true
+          }));
+          
+          console.log(`🔄 Using ${numCached} cached questions + generating ${15 - numCached} new ones`);
+          console.log('✨ Cached questions to use:', cachedToUse.map(q => ({
+            id: q.id,
+            type: q.type,
+            isCached: q.isCached,
+            question: q.question?.substring(0, 50)
+          })));
+          
+          // We'll merge these with generated questions after the API call
+          // Store temporarily
+          (window as any).__cachedQuestionsToMerge = cachedToUse;
+        } else {
+          console.log('⚡ No cached questions found - generating all from scratch');
         }
         
         // Use stored repository files and filter by selected languages
@@ -412,6 +547,33 @@ export default function Home() {
                 });
               } else if (evt.type === 'done') {
                 console.log('✅ Stream done:', evt.count);
+                
+                // Merge cached questions if any
+                const cachedToMerge = (window as any).__cachedQuestionsToMerge;
+                if (cachedToMerge && cachedToMerge.length > 0) {
+                  console.log(`🔄 Merging ${cachedToMerge.length} cached questions with generated ones`);
+                  setQuizSession((prev: any) => {
+                    if (!prev) return prev;
+                    // Cached questions FIRST, then new ones
+                    const allQuestions = [...cachedToMerge, ...prev.questions];
+                    const finalQuestions = allQuestions.slice(0, 15);
+                    
+                    console.log('✅ Final quiz composition:', {
+                      total: finalQuestions.length,
+                      cached: finalQuestions.filter(q => q.isCached).length,
+                      new: finalQuestions.filter(q => !q.isCached).length,
+                      order: finalQuestions.map((q, i) => `Q${i+1}: ${q.isCached ? 'CACHED' : 'NEW'}`)
+                    });
+                    
+                    return {
+                      ...prev,
+                      questions: finalQuestions, // Cached first, then new
+                      title: 'Community Reviewed + AI Quiz'
+                    };
+                  });
+                  // Clear the temporary storage
+                  delete (window as any).__cachedQuestionsToMerge;
+                }
               } else if (evt.type === 'error') {
                 console.warn('⚠️ Stream error event');
               }
@@ -967,9 +1129,65 @@ export default function Home() {
                 'Generate Quiz'
               )}
             </button>
-            <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-2">
-              Uses 1 life • Quiz will be generated based on your code
-            </p>
+            <div className="mt-3 space-y-2">
+              <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                Uses 1 life • Quiz will be generated based on your code
+              </p>
+              
+              {/* Cache Status - Always show for GitHub repos after branch loads */}
+              {activeTab === 'github' && githubRepo.owner && githubRepo.repo && availableBranches.length > 0 && (
+                <div className="flex items-center justify-center gap-2">
+                  {cachedQuestionCount > 0 ? (
+                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-300 dark:border-green-700 rounded-lg px-4 py-2">
+                      <div className="flex items-center gap-2">
+                        <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                          <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        <div>
+                          <div className="text-sm font-bold text-green-800 dark:text-green-200">
+                            {cachedQuestionCount >= 50 ? '⚡ INSTANT QUIZ' : `${cachedQuestionCount} Cached Questions`}
+                          </div>
+                          <div className="text-xs text-green-600 dark:text-green-400">
+                            {cachedQuestionCount >= 50 
+                              ? 'All questions from community (no loading!)' 
+                              : `${Math.min(10, cachedQuestionCount)} will load instantly`}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-2">
+                      <div className="flex items-center gap-2">
+                        <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                        </svg>
+                        <span className="text-xs text-gray-600 dark:text-gray-400">
+                          No cached questions yet - be the first to build the question bank!
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {/* Hide Passed Questions Toggle - Only show for logged-in users */}
+              {activeTab === 'github' && user && (
+                <div className="flex items-center justify-center mt-3">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={hidePassedQuestions}
+                      onChange={(e) => setHidePassedQuestions(e.target.checked)}
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    />
+                    <span className="text-sm text-gray-700 dark:text-gray-300">
+                      Hide questions I've already passed
+                    </span>
+                  </label>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

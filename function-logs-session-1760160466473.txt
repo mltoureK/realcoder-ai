@@ -1,0 +1,4564 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1760160466473
+Started: 2025-10-11T05:27:46.473Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T05:27:46.475Z
+File: TODO: Convert to DELETE
+Functions Extracted: 10
+
+
+Function 1: putUpdateMyAbout
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyAbout(
+  values: MyAbout
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-about', { ...values });
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: putUpdateMyUsername
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyUsername(
+  username: string
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-username', { username });
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: putUpdateMyProfileUI
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyProfileUI(
+  profileUI: User['profileUI']
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-profileui', { profileUI });
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: putUpdateMySocials
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMySocials(
+  update: Record<string, string>
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-socials', update);
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: putUpdateMyKeyboardShortcuts
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyKeyboardShortcuts(
+  update: Record<string, string>
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-keyboard-shortcuts', update);
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: putUpdateMyHonesty
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyHonesty(
+  update: Record<string, string>
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-honesty', update);
+}
+--------------------------------------------------------------------------------
+
+
+Function 7: putUpdateMyQuincyEmail
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyQuincyEmail(update: {
+  sendQuincyEmail: boolean;
+}): Promise<ResponseWithData<void>> {
+  return put('/update-my-quincy-email', update);
+}
+--------------------------------------------------------------------------------
+
+
+Function 8: putUpdateMyPortfolio
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyPortfolio(
+  update: Record<string, string>
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-portfolio', update);
+}
+--------------------------------------------------------------------------------
+
+
+Function 9: putUserUpdateEmail
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUserUpdateEmail(
+  email: string
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-email', { email });
+}
+--------------------------------------------------------------------------------
+
+
+Function 10: putVerifyCert
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putVerifyCert(
+  certSlug: string
+): Promise<ResponseWithData<void>> {
+  return put('/certificate/verify', { certSlug });
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T05:28:31.422Z
+File: freeCodeCamp-freeCodeCamp-9932f6e/client/src/components/profile/components/portfolio.tsx
+Functions Extracted: 5
+
+
+Function 1: createEmptyPortfolioItem
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function createEmptyPortfolioItem(): PortfolioProjectData {
+  return {
+    id: nanoid(),
+    title: '',
+    description: '',
+    url: '',
+    image: ''
+  };
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: checkIfValidImage
+Language: TypeScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+const checkIfValidImage = (url: string): Promise<ProfileValidation> => {
+    const img = new Image();
+
+    return new Promise(resolve => {
+      img.onerror = () =>
+        resolve({ state: 'error', message: t('validation.url-not-image') });
+      img.onload = () => resolve({ state: 'success', message: '' });
+      img.src = url;
+    });
+  };
+--------------------------------------------------------------------------------
+
+
+Function 3: updateItem
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+const updateItem = (
+    id: string,
+    updatedPortfolio?: PortfolioProjectData[]
+  ) => {
+    if (unsavedItemId === id) {
+      setUnsavedItemId(null);
+    }
+    const portfolioToUpdate = updatedPortfolio || portfolio;
+    updateMyPortfolio({ portfolio: portfolioToUpdate });
+    setIsEditing(false);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 4: formCorrect
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+const formCorrect = (portfolioItem: PortfolioProjectData) => {
+    const { id, title, description, url, image } = portfolioItem;
+    const { state: titleState, message: titleMessage } = getTitleValidation(title);
+    const { state: urlState, message: urlMessage } = getUrlValidation(url);
+    const { state: descriptionState, message: descriptionMessage } = getDescriptionValidation(description);
+    const { state: imageState, message: imageMessage } = getUrlValidation(image);
+    const pristine = isFormPristine(id);
+    const urlIsValid = !isURL(url, {
+      protocols: ['http', 'https'],
+      require_tld: true,
+      require_protocol: true
+    });
+    const isButtonDisabled = [
+      titleState,
+      urlState,
+      descriptionState,
+      imageState,
+      urlIsValid
+    ].some(state => state === 'error' || false);
+    return {
+      isButtonDisabled,
+      title: { titleState, titleMessage },
+      url: { urlState, urlMessage },
+      image: { imageState, imageMessage },
+      desc: { descriptionState, descriptionMessage },
+      pristine
+    };
+  };
+--------------------------------------------------------------------------------
+
+
+Function 5: renderPortfolio
+Language: TypeScript
+Lines: 66
+Full Code:
+--------------------------------------------------------------------------------
+const renderPortfolio = (
+    portfolioItem: PortfolioProjectData,
+    index: number,
+    arr: PortfolioProjectData[]
+  ) => {
+    const { id, title, description, url, image } = portfolioItem;
+    const {
+      isButtonDisabled,
+      title: { titleState, titleMessage },
+      url: { urlState, urlMessage },
+      image: { imageState, imageMessage },
+      desc: { descriptionState, descriptionMessage },
+      pristine
+    } = formCorrect(portfolioItem);
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>, id: string) => {
+      e.preventDefault();
+      if (isButtonDisabled) return null;
+      setIsEditing(false);
+      return updateItem(id);
+    };
+    const combineImageStatus =
+      imageState === 'success' && imageValidation.state === 'success'
+        ? null
+        : 'error';
+    const combineImageMessage = imageMessage || imageValidation.message;
+    return (
+      <FullWidthRow key={id}>
+        <form
+          onSubmit={e => handleSubmit(e, id)}
+          id='portfolio-items'
+          data-playwright-test-label='portfolio-items'
+        >
+          <FormGroup
+            controlId={`${id}-title`}
+            validationState={
+              pristine || (!pristine && !title) ? null : titleState
+            }
+          >
+            <ControlLabel htmlFor={`${id}-title-input`}>
+              {t('settings.labels.title')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'title')}
+              required
+              type='text'
+              value={title}
+              name='portfolio-title'
+              id={`${id}-title-input`}
+            />
+            {titleMessage ? (
+              <HelpBlock data-playwright-test-label='title-validation'>
+                {titleMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-url`}
+            validationState={pristine || (!pristine && !url) ? null : urlState}
+          >
+            <ControlLabel htmlFor={`${id}-url-input`}>
+              {t('settings.labels.url')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'url')}
+              required
+              type='url'
+              value={url}
+              name='portfolio-url'
+              id={`${id}-url-input`}
+            />
+            {urlMessage ? (
+              <HelpBlock data-playwright-test-label='url-validation'>
+                {urlMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-image`}
+            validationState={pristine ? null : combineImageStatus}
+          >
+            <ControlLabel htmlFor={`${id}-image-input`}>
+              {t('settings.labels.image')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'image')}
+              type='url'
+              value={image}
+              name='portfolio-image'
+              id={`${id}-image-input`}
+            />
+            {combineImageMessage ? (
+              <HelpBlock data-playwright-test-label='image-validation'>
+                {combineImageMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-description`}
+            validationState={pristine ? null : descriptionState}
+          >
+            <ControlLabel htmlFor={`${id}-description-input`}>
+              {t('settings.labels.description')}
+            </ControlLabel>
+            <FormControl
+              componentClass='textarea'
+              onChange={createOnChangeHandler(id, 'description')}
+              value={description}
+              name='portfolio-description'
+              id={`${id}-description-input`}
+            />
+            {descriptionMessage ? (
+              <HelpBlock data-playwright-test-label='description-validation'>
+                {descriptionMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <BlockSaveButton
+            disabled={isButtonDisabled}
+            bgSize='large'
+            data-playwright-test-label='save-portfolio'
+            {...(isButtonDisabled && { tabIndex: -1 })}
+          >
+            {t('buttons.save-portfolio')}
+          </BlockSaveButton>
+          <Spacer size='xs' />
+          <Button
+            block
+            size='large'
+            variant='danger'
+            onClick={() => handleRemoveItem(id)}
+            type='button'
+          >
+            {t('buttons.remove-portfolio')}
+          </Button>
+        </form>
+        {index + 1 !== arr.length && (
+          <>
+            <Spacer size='m' />
+            <hr />
+            <Spacer size='m' />
+          </>
+        )}
+      </FullWidthRow>
+    );
+  };
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T05:28:49.346Z
+File: freeCodeCamp-freeCodeCamp-9932f6e/client/src/components/Donation/donation-modal-body.tsx
+Functions Extracted: 3
+
+
+Function 1: DonationModalBody
+Language: TypeScript
+Lines: 36
+Full Code:
+--------------------------------------------------------------------------------
+function DonationModalBody({ closeDonationModal, donatableSectionRecentlyCompleted, setCanClose }: DonationModalBodyProps): JSX.Element {
+  const [donationAttempted, setDonationAttempted] = useState(false);
+  const [showHeaderAndFooter, setShowHeaderAndFooter] = useState(true);
+  const [isAnimationVisible, setIsAnimationVisible] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [secondsRemaining, setSecondsRemaining] = useState(20);
+  const useShortDonationBlocks = useFeature('short-donation-blocks').on;
+
+  const handleProcessing = () => {
+    setDonationAttempted(true);
+  };
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    if (useShortDonationBlocks && donatableSectionRecentlyCompleted) {
+      setIsAnimationVisible(false);
+      setCanClose(true);
+    } else {
+      intervalId = setInterval(() => {
+        setSecondsRemaining(prevSeconds => prevSeconds - 1);
+      }, 1000);
+      if (secondsRemaining <= 0) {
+        setIsAnimationVisible(false);
+        setCanClose(true);
+        clearInterval(intervalId);
+      }
+    }
+    return () => clearInterval(intervalId);
+  }, [
+    secondsRemaining,
+    setCanClose,
+    donatableSectionRecentlyCompleted,
+    useShortDonationBlocks
+  ]);
+
+  return (
+    <Modal.Body borderless alignment='start'>
+      <div aria-live='polite' className='donation-modal'>
+        {isAnimationVisible ? (
+          <AnimationContainer secondsRemaining={secondsRemaining} />
+        ) : (
+          <BecomeASupporterConfirmation
+            donatableSectionRecentlyCompleted={donatableSectionRecentlyCompleted}
+            showHeaderAndFooter={showHeaderAndFooter}
+            closeDonationModal={closeDonationModal}
+            donationAttempted={donationAttempted}
+            showForm={showForm}
+            setShowHeaderAndFooter={setShowHeaderAndFooter}
+            handleProcessing={handleProcessing}
+            setShowForm={setShowForm}
+            useShortDonationBlocks={useShortDonationBlocks}
+          />
+        )}
+      </div>
+    </Modal.Body>
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: handleBecomeSupporterClick
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+const handleBecomeSupporterClick = () => {
+    callGA({
+      event: 'donation_related',
+      action: `Modal Become Supporter Click`
+    });
+    setShowForm(true);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 3: useEffect
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    if (useShortDonationBlocks && donatableSectionRecentlyCompleted) {
+      setIsAnimationVisible(false);
+      setCanClose(true);
+    } else {
+      intervalId = setInterval(() => {
+        setSecondsRemaining(prevSeconds => prevSeconds - 1);
+      }, 1000);
+      if (secondsRemaining <= 0) {
+        setIsAnimationVisible(false);
+        setCanClose(true);
+        clearInterval(intervalId);
+      }
+    }
+    return () => clearInterval(intervalId);
+  }, [
+    secondsRemaining,
+    setCanClose,
+    donatableSectionRecentlyCompleted,
+    useShortDonationBlocks
+  ]);
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T05:29:10.885Z
+File: Items per page in timeline.
+Functions Extracted: 4
+
+
+Function 1: viewProject
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function viewProject(completedChallenge: CompletedChallenge): void {
+    setCompletedChallenge(completedChallenge);
+    setProjectTitle(
+      idToNameMap.get(completedChallenge.id)?.challengeTitle ?? ''
+    );
+    openModal('projectPreview');
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: viewExamResults
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function viewExamResults(completedChallenge: CompletedChallenge): void {
+    setCompletedChallenge(completedChallenge);
+    setProjectTitle(
+      idToNameMap.get(completedChallenge.id)?.challengeTitle ?? ''
+    );
+    openModal('examResults');
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: renderViewButton
+Language: TypeScript
+Lines: 13
+Full Code:
+--------------------------------------------------------------------------------
+function renderViewButton(
+    completedChallenge: CompletedChallenge
+  ): React.ReactNode {
+    const { id } = completedChallenge;
+    const projectTitle = idToNameMap.get(id)?.challengeTitle || '';
+    return (
+      <SolutionDisplayWidget
+        completedChallenge={completedChallenge}
+        projectTitle={projectTitle}
+        showUserCode={() => viewSolution(completedChallenge)}
+        showProjectPreview={() => viewProject(completedChallenge)}
+        showExamResults={() => viewExamResults(completedChallenge)}
+        displayContext='timeline'
+      ></SolutionDisplayWidget>
+    );
+  }
+--------------------------------------------------------------------------------
+
+
+Function 4: renderCompletion
+Language: TypeScript
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+function renderCompletion(completed: CompletedChallenge) {
+    const { id } = completed;
+    const challenge = idToNameMap.get(id);
+    if (!challenge) return;
+    const { challengeTitle, challengePath, certPath } = challenge;
+    const completedDate = new Date(completed.completedDate);
+    return (
+      <tr className='timeline-row' key={id}>
+        <td>
+          {certPath ? (
+            <Link
+              className='timeline-cert-link'
+              to={`/certification/${username}/${certPath}`}
+            >
+              {challengeTitle}
+              <CertificationIcon />
+            </Link>
+          ) : (
+            <Link to={challengePath}>{challengeTitle}</Link>
+          )}
+        </td>
+        <td>{renderViewButton(completed)}</td>
+        <td className='text-center'>
+          <time dateTime={completedDate.toISOString()}>
+            {completedDate.toLocaleString([localeCode, 'en-US'], {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            })}
+          </time>
+        </td>
+      </tr>
+    );
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T05:29:53.192Z
+File: freeCodeCamp-freeCodeCamp-9932f6e/client/src/components/settings/email.tsx
+Functions Extracted: 1
+
+
+Function 1: EmailSettings
+Language: TypeScript
+Lines: 109
+Full Code:
+--------------------------------------------------------------------------------
+function EmailSettings({
+  email,
+  isEmailVerified,
+  sendQuincyEmail,
+  t,
+  updateMyEmail,
+  updateQuincyEmail
+}: EmailProps): JSX.Element {
+  const [emailForm, setEmailForm] = useState<EmailForm>({
+    currentEmail: email,
+    newEmail: '',
+    confirmNewEmail: '',
+    isPristine: true
+  });
+
+  function handleSubmit(e: React.FormEvent): void {
+    e.preventDefault();
+    updateMyEmail(emailForm.newEmail);
+  }
+
+  function createHandleEmailFormChange(
+    key: 'newEmail' | 'confirmNewEmail'
+  ): (e: React.ChangeEvent<HTMLInputElement>) => void {
+    return e => {
+      e.preventDefault();
+      const userInput = e.target.value.slice();
+      setEmailForm(prev => ({
+        ...prev,
+        [key]: userInput,
+        isPristine: userInput === prev.currentEmail
+      }));
+    };
+  }
+
+  function getValidationForNewEmail(): EmailValidation {
+    const { newEmail, currentEmail } = emailForm;
+    if (!maybeEmailRE.test(newEmail)) {
+      return {
+        state: null,
+        message: ''
+      };
+    }
+    if (newEmail === currentEmail) {
+      return {
+        state: 'error',
+        message: t('validation.same-email')
+      };
+    }
+    if (isEmail(newEmail)) {
+      return { state: 'success', message: '' };
+    } else {
+      return {
+        state: 'error',
+        message: t('validation.invalid-email')
+      };
+    }
+  }
+
+  function getValidationForConfirmEmail(): EmailValidation {
+    const { confirmNewEmail, newEmail } = emailForm;
+    if (!maybeEmailRE.test(newEmail)) {
+      return {
+        state: null,
+        message: ''
+      };
+    }
+    const isMatch = newEmail === confirmNewEmail;
+    if (maybeEmailRE.test(confirmNewEmail)) {
+      return {
+        state: isMatch ? 'success' : 'error',
+        message: isMatch ? '' : t('validation.email-mismatch')
+      };
+    } else {
+      return {
+        state: null,
+        message: ''
+      };
+    }
+  }
+
+  const { newEmail, confirmNewEmail, currentEmail, isPristine } = emailForm;
+
+  const { state: newEmailValidation, message: newEmailValidationMessage } =
+    getValidationForNewEmail();
+
+  const {
+    state: confirmEmailValidation,
+    message: confirmEmailValidationMessage
+  } = getValidationForConfirmEmail();
+  const isDisabled =
+    newEmailValidation !== 'success' ||
+    confirmEmailValidation !== 'success' ||
+    isPristine;
+  if (!currentEmail) {
+    return (
+      <div>
+        <FullWidthRow>
+          <p className='large-p text-center'>{t('settings.email.missing')}</p>
+        </FullWidthRow>
+        <FullWidthRow>
+          <Button
+            block={true}
+            size='large'
+            variant='primary'
+            href='/update-email'
+          >
+            {t('buttons.edit')}
+          </Button>
+        </FullWidthRow>
+      </div>
+    );
+  }
+  return (
+    <div className='email-settings'>
+      <SectionHeader>{t('settings.email.heading')}</SectionHeader>
+      {isEmailVerified ? null : (
+        <FullWidthRow>
+          <HelpBlock>
+            <Callout
+              variant='info'
+              className='text-center'
+              data-playwright-test-label='email-verification-alert'
+            >
+              {t('settings.email.not-verified')}
+              <br />
+              <Trans i18nKey='settings.email.check'>
+                <Link
+                  data-playwright-test-label='email-verification-link'
+                  to='/update-email'
+                />
+              </Trans>
+            </Callout>
+          </HelpBlock>
+        </FullWidthRow>
+      )}
+      <FullWidthRow>
+        <form
+          id='form-update-email'
+          {...(!isDisabled
+            ? { onSubmit: handleSubmit }
+            : { onSubmit: e => e.preventDefault() })}
+        >
+          <FormGroup controlId='current-email'>
+            <ControlLabel>{t('settings.email.current')}</ControlLabel>
+            <FormControl.Static>{currentEmail}</FormControl.Static>
+          </FormGroup>
+          <div role='group' aria-label={t('settings.email.heading')}>
+            <FormGroup
+              controlId='new-email'
+              validationState={newEmailValidation}
+            >
+              <ControlLabel htmlFor='new-email-input'>
+                {t('settings.email.new')}
+              </ControlLabel>
+              <FormControl
+                onChange={createHandleEmailFormChange('newEmail')}
+                type='email'
+                value={newEmail}
+                id='new-email-input'
+              />
+              {newEmailValidationMessage ? (
+                <HelpBlock data-playwright-test-label='new-email-validation'>
+                  {newEmailValidationMessage}
+                </HelpBlock>
+              ) : null}
+            </FormGroup>
+            <FormGroup
+              controlId='confirm-email'
+              validationState={confirmEmailValidation}
+            >
+              <ControlLabel htmlFor='confirm-email-input'>
+                {t('settings.email.confirm')}
+              </ControlLabel>
+              <FormControl
+                onChange={createHandleEmailFormChange('confirmNewEmail')}
+                type='email'
+                value={confirmNewEmail}
+                id='confirm-email-input'
+              />
+              {confirmEmailValidationMessage ? (
+                <HelpBlock data-playwright-test-label='confirm-email-validation'>
+                  {confirmEmailValidationMessage}
+                </HelpBlock>
+              ) : null}
+            </FormGroup>
+          </div>
+          <BlockSaveButton
+            disabled={isDisabled}
+            bgSize='large'
+            {...(isDisabled && { tabIndex: -1 })}
+          >
+            {t('buttons.save')}{' '}
+            <span className='sr-only'>{t('settings.email.heading')}</span>
+          </BlockSaveButton>
+        </form>
+      </FullWidthRow>
+      <Spacer size='m' />
+      <FullWidthRow>
+        <ToggleButtonSetting
+          action={t('settings.email.weekly')}
+          flag={!!sendQuincyEmail}
+          flagName='sendQuincyEmail'
+          offLabel={t('buttons.no-thanks')}
+          onLabel={t('buttons.yes-please')}
+          toggleFlag={() => updateQuincyEmail(!sendQuincyEmail)}
+        />
+      </FullWidthRow>
+    </div>
+  );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:30:02.543Z
+Question Type: true-false
+Function: useEffect
+Function Size: 733 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useEffect (TypeScript)\n// Sets up an effect to manage the countdown and animation visibility.\n\nuseEffect(() => {\n    let intervalId: NodeJS.Timeout;\n    if (useShortDonationBlocks && donatableSectionRecentlyCompleted) {\n      setIsAnimationVisible(false);\n      setCanClose(true);\n    } 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:30:03.727Z
+Question Type: function-variant
+Function: putVerifyCert
+Function Size: 222 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putVerifyCert (TypeScript)\n// Verifies a certificate using its slug.\n\nexport function putVerifyCert(\n  certSlug: string\n): Promise<ResponseWithData<void>> {\n  return put('/certificate/verify', { certSlug });\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:30:11.144Z
+Question Type: multiple-choice
+Function: putUpdateMyHonesty
+Function Size: 237 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: putUpdateMyHonesty (TypeScript)\n// Updates the user's honesty settings.\n\nexport function putUpdateMyHonesty(\n  update: Record<string, string>\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-honesty', update);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:30:16.749Z
+Question Type: select-all
+Function: formCorrect
+Function Size: 1190 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: formCorrect (TypeScript)\n// Validates the form fields of a portfolio item and returns the validation state.\n\nconst formCorrect = (portfolioItem: PortfolioProjectData) => {\n    const { id, title, description, url, image } = portfolioItem;\n    const { state: titleState, message: titleMess
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:30:19.288Z
+Question Type: select-all
+Function: DonationModalBody
+Function Size: 2171 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: DonationModalBody (TypeScript)\n// Handles the donation modal body logic including animation and confirmation.\n\nfunction DonationModalBody({ closeDonationModal, donatableSectionRecentlyCompleted, setCanClose }: DonationModalBodyProps): JSX.Element {\n  const [donationAttempted, setDonatio
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:30:23.873Z
+Question Type: function-variant
+Function: EmailSettings
+Function Size: 6287 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: EmailSettings (TypeScript)\n// Handles email settings including validation and submission.\n\nfunction EmailSettings({\n  email,\n  isEmailVerified,\n  sendQuincyEmail,\n  t,\n  updateMyEmail,\n  updateQuincyEmail\n}: EmailProps): JSX.Element {\n  const [emailForm, setEmailForm] = useState<EmailFo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:30:26.491Z
+Question Type: order-sequence
+Function: handleBecomeSupporterClick
+Function Size: 276 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleBecomeSupporterClick (TypeScript)\n// Handles the click event for becoming a supporter.\n\nconst handleBecomeSupporterClick = () => {\n    callGA({\n      event: 'donation_related',\n      action: `Modal Become Supporter Click`\n    });\n    setShowForm(true);\n  };
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:30:28.340Z
+Question Type: multiple-choice
+Function: checkIfValidImage
+Function Size: 486 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: checkIfValidImage (TypeScript)\n// Checks if the provided URL is a valid image and returns a promise with the validation result.\n\nconst checkIfValidImage = (url: string): Promise<ProfileValidation> => {\n    const img = new Image();\n\n    return new Promise(resolve => {\n      img.onerror =
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760160466473
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 23
+Ended: 2025-10-11T05:30:28.368Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T05:46:15.026Z
+File: RidwaanT-motorfest-platform-29a1fe8b3979f3ddc51015b2617b71423ab3bb4c/src/features/raceTimes/components/raceTypeLabels.ts
+Functions Extracted: 5
+
+
+Function 1: splitRaceType
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+const splitRaceType = (raceType: string): { base: string; modifier?: string } => {
+  const [basePart, modifierPart] = raceType.split(' (');
+  if (!modifierPart) {
+    return { base: basePart };
+  }
+
+  const sanitizedModifier = modifierPart.endsWith(')')
+    ? modifierPart.slice(0, -1)
+    : modifierPart;
+
+  return {
+    base: basePart,
+    modifier: sanitizedModifier,
+  };
+};
+--------------------------------------------------------------------------------
+
+
+Function 2: collectSegments
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+const collectSegments = (raceType: string): string[] => {
+  const { base } = splitRaceType(raceType);
+  return base
+    .split('>')
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+};
+--------------------------------------------------------------------------------
+
+
+Function 3: abbreviateRaceSegment
+Language: TypeScript
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+export const abbreviateRaceSegment = (segment: string): string => {
+  const normalized = segment.trim().toLowerCase();
+  const mapped = RACE_TYPE_ABBREVIATIONS[normalized];
+  if (mapped) {
+    return mapped;
+  }
+
+  const tokens = segment
+    .trim()
+    .split(/[^A-Za-z0-9]+/)
+    .filter(Boolean);
+
+  if (tokens.length === 0) {
+    return segment.trim();
+  }
+
+  const fallback = tokens
+    .map((token) => {
+      if (/^\d+$/.test(token)) {
+        return token;
+      }
+      const cleaned = token.replace(/[^A-Za-z0-9]/g, '');
+      if (!cleaned) {
+        return '';
+      }
+      if (/^\d+$/.test(cleaned)) {
+        return cleaned;
+      }
+      return cleaned.charAt(0).toUpperCase();
+    })
+    .join('');
+
+  return fallback || segment.trim();
+};
+--------------------------------------------------------------------------------
+
+
+Function 4: formatRaceTypeForMobile
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export const formatRaceTypeForMobile = (raceType: string): string => {
+  if (!raceType) {
+    return '';
+  }
+
+  const { base, modifier } = splitRaceType(raceType);
+  const segments = base
+    .split('>')
+    .map((part) => part.trim())
+    .filter(Boolean);
+  const abbreviated = segments.map(abbreviateRaceSegment).join(' \u203a ');
+
+  if (modifier) {
+    return `${abbreviated} (${modifier})`;
+  }
+
+  return abbreviated;
+};
+--------------------------------------------------------------------------------
+
+
+Function 5: getRaceTypeSearchTokens
+Language: TypeScript
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+export const getRaceTypeSearchTokens = (raceType: string): string[] => {
+  const normalized = raceType.trim();
+  if (!normalized) {
+    return [];
+  }
+
+  const lower = normalized.toLowerCase();
+  const segments = collectSegments(normalized);
+  const abbreviations = segments.map(abbreviateRaceSegment);
+  const abbreviatedChain = abbreviations.join(' \u203a ');
+
+  const tokens = new Set<string>();
+  tokens.add(lower);
+  segments.forEach((segment) => tokens.add(segment.toLowerCase()));
+  abbreviations.forEach((abbr) => tokens.add(abbr.toLowerCase()));
+  if (abbreviatedChain) {
+    tokens.add(abbreviatedChain.toLowerCase());
+  }
+
+  return Array.from(tokens);
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T05:46:37.506Z
+File: For displaying the list of race times in a table
+Functions Extracted: 5
+
+
+Function 1: filteredTimes
+Language: TypeScript
+Lines: 21
+Full Code:
+--------------------------------------------------------------------------------
+const filteredTimes = React.useMemo(() => {
+    const normalizedSearch = searchQuery.trim().toLowerCase();
+
+    const matchesSearch = (entry: RaceTimeEntry) => {
+        if (!normalizedSearch) {
+            return true;
+        }
+
+        const raceTypeTokens = getRaceTypeSearchTokens(entry.raceType);
+        const searchableParts = [
+            entry.raceType,
+            formatRaceTypeForMobile(entry.raceType),
+            ...raceTypeTokens,
+            entry.location,
+            entry.time,
+            entry.source,
+            entry.position !== undefined ? String(entry.position) : '',
+            ...entry.vehicles,
+            ...entry.vehicleClasses,
+        ].filter((value) => value && value.trim().length > 0);
+
+        const searchableText = searchableParts.join(' ').toLowerCase();
+
+        return searchableText.includes(normalizedSearch);
+    };
+
+    return raceTimes.filter(
+        (rt) =>
+            (filterRaceType ? rt.raceType === filterRaceType : true) &&
+            (filterLocation ? rt.location === filterLocation : true) &&
+            matchesSearch(rt)
+    );
+}, [raceTimes, filterRaceType, filterLocation, searchQuery]);
+--------------------------------------------------------------------------------
+
+
+Function 2: sortedTimes
+Language: TypeScript
+Lines: 21
+Full Code:
+--------------------------------------------------------------------------------
+const sortedTimes = React.useMemo(() => {
+    const sorted = [...filteredTimes];
+    if (!sortConfig.key) {
+        return sorted;
+    }
+
+    const compare = (a: RaceTimeEntry, b: RaceTimeEntry) => {
+        switch (sortConfig.key) {
+            case 'time':
+                return raceTimeToMilliseconds(a.time) - raceTimeToMilliseconds(b.time);
+            case 'position':
+                return (a.position ?? Number.MAX_SAFE_INTEGER) - (b.position ?? Number.MAX_SAFE_INTEGER);
+            case 'location':
+                return a.location.localeCompare(b.location);
+            case 'raceType':
+                return a.raceType.localeCompare(b.raceType);
+            default:
+                return 0;
+        }
+    };
+
+    sorted.sort((a, b) => {
+        const result = compare(a, b);
+        return sortConfig.direction === 'asc' ? result : -result;
+    });
+
+    return sorted;
+}, [filteredTimes, sortConfig]);
+--------------------------------------------------------------------------------
+
+
+Function 3: requestSort
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+const requestSort = (key: SortableColumn) => {
+    setSortConfig((prev) => {
+        const direction = prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc';
+        return { key, direction };
+    });
+};
+--------------------------------------------------------------------------------
+
+
+Function 4: getAriaSort
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+const getAriaSort = (column: SortableColumn): 'none' | 'ascending' | 'descending' => {
+    if (sortConfig.key !== column) {
+        return 'none';
+    }
+    return sortConfig.direction === 'asc' ? 'ascending' : 'descending';
+};
+--------------------------------------------------------------------------------
+
+
+Function 5: renderSortIcon
+Language: TypeScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+const renderSortIcon = (column: SortableColumn) => {
+    if (sortConfig.key !== column) {
+        return <ChevronsUpDown className="h-3 w-3 opacity-60" aria-hidden="true" />;
+    }
+
+    return sortConfig.direction === 'asc' ? (
+        <ChevronUp className="h-3 w-3" aria-hidden="true" />
+    ) : (
+        <ChevronDown className="h-3 w-3" aria-hidden="true" />
+    );
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T05:46:45.584Z
+File: RidwaanT-motorfest-platform-29a1fe8b3979f3ddc51015b2617b71423ab3bb4c/src/utils/time.ts
+Functions Extracted: 1
+
+
+Function 1: formatRaceTimeInput
+Language: TypeScript
+Lines: 21
+Full Code:
+--------------------------------------------------------------------------------
+export function formatRaceTimeInput(input: string, previousValue = ''): string {
+  const digits = input.replace(/\D/g, '').slice(0, 7);
+  const previousDigits = previousValue.replace(/\D/g, '');
+  const isDeleting =
+    digits.length < previousDigits.length || input.length < previousValue.length;
+  const isAddingDigit = digits.length > previousDigits.length;
+
+  if (digits.length === 0) {
+    return '';
+  }
+
+  if (digits.length <= 2) {
+    if (digits.length === 2 && !isDeleting) {
+      return `${digits}:`;
+    }
+    return digits;
+  }
+
+  const minutes = digits.slice(0, 2);
+  const seconds = digits.slice(2, 4);
+  const milliseconds = digits.slice(4, 7);
+
+  if (digits.length === 3) {
+    return `${minutes}:${seconds}`;
+  }
+
+  if (digits.length === 4) {
+    const base = `${minutes}:${seconds}`;
+    if (!isDeleting && (isAddingDigit || previousValue.includes('.'))) {
+      return `${base}.`;
+    }
+    return base;
+  }
+  return `${minutes}:${seconds}.${milliseconds}`;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T05:46:54.158Z
+File: RidwaanT-motorfest-platform-29a1fe8b3979f3ddc51015b2617b71423ab3bb4c/src/features/raceTimes/api/raceTimes.ts
+Functions Extracted: 2
+
+
+Function 1: addRaceTime
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export async function addRaceTime(
+  entry: Omit<RaceTimeEntry, 'id' | 'timestamp'>
+): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Authentication required to add a race time.');
+
+  try {
+    const raceTimesCollection = collection(db, 'users', user.uid, 'raceTimes');
+    await addDoc(raceTimesCollection, {
+      ...entry,
+      timestamp: serverTimestamp(),
+    });
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : 'Unable to save race time';
+    console.error('Error adding document: ', message);
+    throw new Error(message);
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: updateRaceTime
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export async function updateRaceTime(id: string, time: string): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Authentication required to update a race time.');
+
+  try {
+    const raceTimeDoc = doc(db, 'users', user.uid, 'raceTimes', id);
+    await updateDoc(raceTimeDoc, {
+      time,
+      source: 'manual',
+    });
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : 'Unable to update race time';
+    console.error('Error updating document: ', message);
+    throw new Error(message);
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T05:47:07.529Z
+File: RidwaanT-motorfest-platform-29a1fe8b3979f3ddc51015b2617b71423ab3bb4c/src/features/auth/components/AuthModal.tsx
+Functions Extracted: 3
+
+
+Function 1: hasAuthCode
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+const hasAuthCode = (error: unknown): error is { code: string } =>
+  typeof error === 'object' &&
+  error !== null &&
+  'code' in error &&
+  typeof (error as { code: unknown }).code === 'string';
+--------------------------------------------------------------------------------
+
+
+Function 2: handleEmailAuth
+Language: TypeScript
+Lines: 31
+Full Code:
+--------------------------------------------------------------------------------
+const handleEmailAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      const currentUser = authInstance.currentUser;
+
+      if (isRegister) {
+        try {
+          if (currentUser?.isAnonymous) {
+            const credential = EmailAuthProvider.credential(email, password);
+            await linkWithCredential(currentUser, credential);
+            if (auth.currentUser) {
+              await sendEmailVerification(auth.currentUser);
+              showMessage('Verification email sent! Please check your inbox (and spam folder).');
+            }
+          } else {
+            const userCredential = await createUserWithEmailAndPassword(
+              authInstance,
+              email,
+              password
+            );
+            await sendEmailVerification(userCredential.user);
+            showMessage('Verification email sent! Please check your inbox (and spam folder).');
+          }
+        } catch (err) {
+          const code = hasAuthCode(err) ? err.code : null;
+          if (code === 'auth/email-already-in-use' || code === 'auth/credential-already-in-use') {
+            setError('This email is already in use. Please sign in or use a different email.');
+          } else {
+            setError(getErrorMessage(err, 'Registration failed.'));
+          }
+          return;
+        }
+      } else {
+        await signInWithEmailAndPassword(authInstance, email, password);
+      }
+      onClose();
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Authentication failed'));
+    } finally {
+      setLoading(false);
+    }
+  };
+--------------------------------------------------------------------------------
+
+
+Function 3: handleGoogle
+Language: TypeScript
+Lines: 31
+Full Code:
+--------------------------------------------------------------------------------
+const handleGoogle = async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      const currentUser = authInstance.currentUser;
+
+      if (currentUser?.isAnonymous) {
+        await linkWithPopup(currentUser, providerInstance);
+        showMessage('Account linked successfully!');
+      } else {
+        const result = await signInWithPopup(authInstance, providerInstance);
+        if (getAdditionalUserInfo(result)?.isNewUser) {
+          showMessage('Account created successfully!');
+        }
+      }
+      onClose();
+    } catch (err: unknown) {
+      const code = hasAuthCode(err) ? err.code : null;
+      if (code === 'auth/credential-already-in-use') {
+        if (err instanceof FirebaseError) {
+          const credential = GoogleAuthProvider.credentialFromError(err);
+          if (credential) {
+            try {
+              await signInWithCredential(authInstance, credential);
+              onClose();
+              return;
+            } catch (signInError: unknown) {
+              setError(getErrorMessage(signInError, 'Sign-in failed after credential conflict'));
+              return;
+            }
+          }
+        }
+        setError('This Google account is already linked to another user. Please sign in with that account instead.');
+      } else {
+        setError(getErrorMessage(err, 'Google sign-in failed'));
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:47:16.139Z
+Question Type: multiple-choice
+Function: sortedTimes
+Function Size: 1033 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: sortedTimes (TypeScript)\n// Sorts the filtered race times based on the selected sort configuration.\n\nconst sortedTimes = React.useMemo(() => {\n    const sorted = [...filteredTimes];\n    if (!sortConfig.key) {\n        return sorted;\n    }\n\n    const compare = (a: RaceTimeEntry, b: RaceTi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:47:16.294Z
+Question Type: multiple-choice
+Function: collectSegments
+Function Size: 303 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: collectSegments (TypeScript)\n// Collects and trims segments from the base part of a race type.\n\nconst collectSegments = (raceType: string): string[] => {\n  const { base } = splitRaceType(raceType);\n  return base\n    .split('>')\n    .map((segment) => segment.trim())\n    .filter(Boolean);
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:47:21.734Z
+Question Type: order-sequence
+Function: getAriaSort
+Function Size: 359 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getAriaSort (TypeScript)\n// Determines the ARIA sort state for accessibility based on the current sort configuration.\n\nconst getAriaSort = (column: SortableColumn): 'none' | 'ascending' | 'descending' => {\n    if (sortConfig.key !== column) {\n        return 'none';\n    }\n    return sort
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:47:22.208Z
+Question Type: true-false
+Function: renderSortIcon
+Function Size: 491 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: renderSortIcon (TypeScript)\n// Renders the appropriate sort icon based on the current sort configuration.\n\nconst renderSortIcon = (column: SortableColumn) => {\n    if (sortConfig.key !== column) {\n        return <ChevronsUpDown className="h-3 w-3 opacity-60" aria-hidden="true" />;\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:47:22.460Z
+Question Type: select-all
+Function: filteredTimes
+Function Size: 1264 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: filteredTimes (TypeScript)\n// Filters race times based on search query and selected filters.\n\nconst filteredTimes = React.useMemo(() => {\n    const normalizedSearch = searchQuery.trim().toLowerCase();\n\n    const matchesSearch = (entry: RaceTimeEntry) => {\n        if (!normalizedSearch) 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:47:29.638Z
+Question Type: function-variant
+Function: splitRaceType
+Function Size: 487 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: splitRaceType (TypeScript)\n// Splits a race type string into base and optional modifier parts.\n\nconst splitRaceType = (raceType: string): { base: string; modifier?: string } => {\n  const [basePart, modifierPart] = raceType.split(' (');\n  if (!modifierPart) {\n    return { base: basePart 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:47:30.698Z
+Question Type: select-all
+Function: hasAuthCode
+Function Size: 287 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: hasAuthCode (TypeScript)\n// Checks if the error object has a 'code' property.\n\nconst hasAuthCode = (error: unknown): error is { code: string } =>\n  typeof error === 'object' &&\n  error !== null &&\n  'code' in error &&\n  typeof (error as { code: unknown }).code === 'string';
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:47:38.086Z
+Question Type: function-variant
+Function: requestSort
+Function Size: 323 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: requestSort (TypeScript)\n// Requests a sort on the specified column, toggling the sort direction.\n\nconst requestSort = (key: SortableColumn) => {\n    setSortConfig((prev) => {\n        const direction = prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc';\n        return { key, 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760160466473
+Repository: Unknown
+Total Questions Generated: 12
+Total Chunks Processed: 16
+Ended: 2025-10-11T05:47:38.089Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T05:49:38.389Z
+File: RidwaanT-motorfest-platform-29a1fe8b3979f3ddc51015b2617b71423ab3bb4c/src/features/raceTimes/components/raceTypeLabels.ts
+Functions Extracted: 5
+
+
+Function 1: splitRaceType
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+const splitRaceType = (raceType: string): { base: string; modifier?: string } => {
+  const [basePart, modifierPart] = raceType.split(' (');
+  if (!modifierPart) {
+    return { base: basePart };
+  }
+
+  const sanitizedModifier = modifierPart.endsWith(')')
+    ? modifierPart.slice(0, -1)
+    : modifierPart;
+
+  return {
+    base: basePart,
+    modifier: sanitizedModifier,
+  };
+};
+--------------------------------------------------------------------------------
+
+
+Function 2: collectSegments
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+const collectSegments = (raceType: string): string[] => {
+  const { base } = splitRaceType(raceType);
+  return base
+    .split('>')
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+};
+--------------------------------------------------------------------------------
+
+
+Function 3: abbreviateRaceSegment
+Language: TypeScript
+Lines: 21
+Full Code:
+--------------------------------------------------------------------------------
+export const abbreviateRaceSegment = (segment: string): string => {
+  const normalized = segment.trim().toLowerCase();
+  const mapped = RACE_TYPE_ABBREVIATIONS[normalized];
+  if (mapped) {
+    return mapped;
+  }
+
+  const tokens = segment
+    .trim()
+    .split(/[^A-Za-z0-9]+/)
+    .filter(Boolean);
+
+  if (tokens.length === 0) {
+    return segment.trim();
+  }
+
+  const fallback = tokens
+    .map((token) => {
+      if (/^\d+$/.test(token)) {
+        return token;
+      }
+      const cleaned = token.replace(/[^A-Za-z0-9]/g, '');
+      if (!cleaned) {
+        return '';
+      }
+      if (/^\d+$/.test(cleaned)) {
+        return cleaned;
+      }
+      return cleaned.charAt(0).toUpperCase();
+    })
+    .join('');
+
+  return fallback || segment.trim();
+};
+--------------------------------------------------------------------------------
+
+
+Function 4: formatRaceTypeForMobile
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export const formatRaceTypeForMobile = (raceType: string): string => {
+  if (!raceType) {
+    return '';
+  }
+
+  const { base, modifier } = splitRaceType(raceType);
+  const segments = base
+    .split('>')
+    .map((part) => part.trim())
+    .filter(Boolean);
+  const abbreviated = segments.map(abbreviateRaceSegment).join(' \u203a ');
+
+  if (modifier) {
+    return `${abbreviated} (${modifier})`;
+  }
+
+  return abbreviated;
+};
+--------------------------------------------------------------------------------
+
+
+Function 5: getRaceTypeSearchTokens
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+export const getRaceTypeSearchTokens = (raceType: string): string[] => {
+  const normalized = raceType.trim();
+  if (!normalized) {
+    return [];
+  }
+
+  const lower = normalized.toLowerCase();
+  const segments = collectSegments(normalized);
+  const abbreviations = segments.map(abbreviateRaceSegment);
+  const abbreviatedChain = abbreviations.join(' \u203a ');
+
+  const tokens = new Set<string>();
+  tokens.add(lower);
+  segments.forEach((segment) => tokens.add(segment.toLowerCase()));
+  abbreviations.forEach((abbr) => tokens.add(abbr.toLowerCase()));
+  if (abbreviatedChain) {
+    tokens.add(abbreviatedChain.toLowerCase());
+  }
+
+  return Array.from(tokens);
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T05:50:06.874Z
+File: For displaying the list of race times in a table
+Functions Extracted: 5
+
+
+Function 1: filteredTimes
+Language: TypeScript
+Lines: 21
+Full Code:
+--------------------------------------------------------------------------------
+const filteredTimes = React.useMemo(() => {
+    const normalizedSearch = searchQuery.trim().toLowerCase();
+
+    const matchesSearch = (entry: RaceTimeEntry) => {
+        if (!normalizedSearch) {
+            return true;
+        }
+
+        const raceTypeTokens = getRaceTypeSearchTokens(entry.raceType);
+        const searchableParts = [
+            entry.raceType,
+            formatRaceTypeForMobile(entry.raceType),
+            ...raceTypeTokens,
+            entry.location,
+            entry.time,
+            entry.source,
+            entry.position !== undefined ? String(entry.position) : '',
+            ...entry.vehicles,
+            ...entry.vehicleClasses,
+        ].filter((value) => value && value.trim().length > 0);
+
+        const searchableText = searchableParts.join(' ').toLowerCase();
+
+        return searchableText.includes(normalizedSearch);
+    };
+
+    return raceTimes.filter(
+        (rt) =>
+            (filterRaceType ? rt.raceType === filterRaceType : true) &&
+            (filterLocation ? rt.location === filterLocation : true) &&
+            matchesSearch(rt)
+    );
+}, [raceTimes, filterRaceType, filterLocation, searchQuery]);
+--------------------------------------------------------------------------------
+
+
+Function 2: sortedTimes
+Language: TypeScript
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+const sortedTimes = React.useMemo(() => {
+    const sorted = [...filteredTimes];
+    if (!sortConfig.key) {
+        return sorted;
+    }
+
+    const compare = (a: RaceTimeEntry, b: RaceTimeEntry) => {
+        switch (sortConfig.key) {
+            case 'time':
+                return raceTimeToMilliseconds(a.time) - raceTimeToMilliseconds(b.time);
+            case 'position':
+                return (a.position ?? Number.MAX_SAFE_INTEGER) - (b.position ?? Number.MAX_SAFE_INTEGER);
+            case 'location':
+                return a.location.localeCompare(b.location);
+            case 'raceType':
+                return a.raceType.localeCompare(b.raceType);
+            default:
+                return 0;
+        }
+    };
+
+    sorted.sort((a, b) => {
+        const result = compare(a, b);
+        return sortConfig.direction === 'asc' ? result : -result;
+    });
+
+    return sorted;
+}, [filteredTimes, sortConfig]);
+--------------------------------------------------------------------------------
+
+
+Function 3: requestSort
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+const requestSort = (key: SortableColumn) => {
+    setSortConfig((prev) => {
+        const direction = prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc';
+        return { key, direction };
+    });
+};
+--------------------------------------------------------------------------------
+
+
+Function 4: getAriaSort
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+const getAriaSort = (column: SortableColumn): 'none' | 'ascending' | 'descending' => {
+    if (sortConfig.key !== column) {
+        return 'none';
+    }
+    return sortConfig.direction === 'asc' ? 'ascending' : 'descending';
+};
+--------------------------------------------------------------------------------
+
+
+Function 5: renderSortIcon
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+const renderSortIcon = (column: SortableColumn) => {
+    if (sortConfig.key !== column) {
+        return <ChevronsUpDown className="h-3 w-3 opacity-60" aria-hidden="true" />;
+    }
+
+    return sortConfig.direction === 'asc' ? (
+        <ChevronUp className="h-3 w-3" aria-hidden="true" />
+    ) : (
+        <ChevronDown className="h-3 w-3" aria-hidden="true" />
+    );
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T05:50:16.491Z
+File: RidwaanT-motorfest-platform-29a1fe8b3979f3ddc51015b2617b71423ab3bb4c/src/utils/time.ts
+Functions Extracted: 1
+
+
+Function 1: formatRaceTimeInput
+Language: TypeScript
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+export function formatRaceTimeInput(input: string, previousValue = ''): string {
+  const digits = input.replace(/\D/g, '').slice(0, 7);
+  const previousDigits = previousValue.replace(/\D/g, '');
+  const isDeleting =
+    digits.length < previousDigits.length || input.length < previousValue.length;
+  const isAddingDigit = digits.length > previousDigits.length;
+
+  if (digits.length === 0) {
+    return '';
+  }
+
+  if (digits.length <= 2) {
+
+    if (digits.length === 2 && !isDeleting) {
+      return `${digits}:`;
+    }
+    return digits;
+  }
+
+  const minutes = digits.slice(0, 2);
+  const seconds = digits.slice(2, 4);
+  const milliseconds = digits.slice(4, 7);
+
+  if (digits.length === 3) {
+    return `${minutes}:${seconds}`;
+  }
+
+  if (digits.length === 4) {
+    const base = `${minutes}:${seconds}`;
+    if (!isDeleting && (isAddingDigit || previousValue.includes('.'))) {
+      return `${base}.`;
+    }
+
+    return base;
+  }
+  return `${minutes}:${seconds}.${milliseconds}`;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T05:50:25.754Z
+File: RidwaanT-motorfest-platform-29a1fe8b3979f3ddc51015b2617b71423ab3bb4c/src/features/raceTimes/api/raceTimes.ts
+Functions Extracted: 2
+
+
+Function 1: addRaceTime
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export async function addRaceTime(
+  entry: Omit<RaceTimeEntry, 'id' | 'timestamp'>
+): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Authentication required to add a race time.');
+
+  try {
+    const raceTimesCollection = collection(db, 'users', user.uid, 'raceTimes');
+    await addDoc(raceTimesCollection, {
+      ...entry,
+      timestamp: serverTimestamp(),
+    });
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : 'Unable to save race time';
+    console.error('Error adding document: ', message);
+    throw new Error(message);
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: updateRaceTime
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export async function updateRaceTime(id: string, time: string): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Authentication required to update a race time.');
+
+  try {
+    const raceTimeDoc = doc(db, 'users', user.uid, 'raceTimes', id);
+    await updateDoc(raceTimeDoc, {
+      time,
+      source: 'manual',
+    });
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : 'Unable to update race time';
+    console.error('Error updating document: ', message);
+    throw new Error(message);
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T05:50:40.363Z
+File: RidwaanT-motorfest-platform-29a1fe8b3979f3ddc51015b2617b71423ab3bb4c/src/features/auth/components/AuthModal.tsx
+Functions Extracted: 2
+
+
+Function 1: handleEmailAuth
+Language: TypeScript
+Lines: 26
+Full Code:
+--------------------------------------------------------------------------------
+const handleEmailAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      const currentUser = authInstance.currentUser;
+
+      if (isRegister) {
+        try {
+          if (currentUser?.isAnonymous) {
+            const credential = EmailAuthProvider.credential(email, password);
+            await linkWithCredential(currentUser, credential);
+            if (auth.currentUser) {
+              await sendEmailVerification(auth.currentUser);
+              showMessage('Verification email sent! Please check your inbox (and spam folder).');
+            }
+          } else {
+            const userCredential = await createUserWithEmailAndPassword(
+              authInstance,
+              email,
+              password
+            );
+            await sendEmailVerification(userCredential.user);
+            showMessage('Verification email sent! Please check your inbox (and spam folder).');
+          }
+        } catch (err) {
+          const code = hasAuthCode(err) ? err.code : null;
+          if (code === 'auth/email-already-in-use' || code === 'auth/credential-already-in-use') {
+            setError('This email is already in use. Please sign in or use a different email.');
+          } else {
+            setError(getErrorMessage(err, 'Registration failed.'));
+          }
+          return;
+        }
+      } else {
+        await signInWithEmailAndPassword(authInstance, email, password);
+      }
+      onClose();
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Authentication failed'));
+    } finally {
+      setLoading(false);
+    }
+  };
+--------------------------------------------------------------------------------
+
+
+Function 2: handleGoogle
+Language: TypeScript
+Lines: 24
+Full Code:
+--------------------------------------------------------------------------------
+const handleGoogle = async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      const currentUser = authInstance.currentUser;
+
+      if (currentUser?.isAnonymous) {
+        await linkWithPopup(currentUser, providerInstance);
+        showMessage('Account linked successfully!');
+      } else {
+        const result = await signInWithPopup(authInstance, providerInstance);
+        if (getAdditionalUserInfo(result)?.isNewUser) {
+          showMessage('Account created successfully!');
+        }
+      }
+      onClose();
+    } catch (err: unknown) {
+      const code = hasAuthCode(err) ? err.code : null;
+      if (code === 'auth/credential-already-in-use') {
+        if (err instanceof FirebaseError) {
+          const credential = GoogleAuthProvider.credentialFromError(err);
+          if (credential) {
+            try {
+              await signInWithCredential(authInstance, credential);
+              onClose();
+              return;
+            } catch (signInError: unknown) {
+              setError(getErrorMessage(signInError, 'Sign-in failed after credential conflict'));
+              return;
+            }
+          }
+        }
+        setError('This Google account is already linked to another user. Please sign in with that account instead.');
+      } else {
+        setError(getErrorMessage(err, 'Google sign-in failed'));
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:50:49.639Z
+Question Type: multiple-choice
+Function: updateRaceTime
+Function Size: 655 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: updateRaceTime (TypeScript)\n// Updates the time for a specific race entry in Firestore.\n\nexport async function updateRaceTime(id: string, time: string): Promise<void> {\n  const user = auth.currentUser;\n  if (!user) throw new Error('Authentication required to update a race time.');\n\n  tr
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:50:54.485Z
+Question Type: order-sequence
+Function: requestSort
+Function Size: 320 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: requestSort (TypeScript)\n// Requests a sort on a specific column, toggling the sort direction.\n\nconst requestSort = (key: SortableColumn) => {\n    setSortConfig((prev) => {\n        const direction = prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc';\n        return { key, dir
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:50:54.963Z
+Question Type: select-all
+Function: formatRaceTimeInput
+Function Size: 1095 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: formatRaceTimeInput (TypeScript)\n// Formats the race time input string into a specific time format.\n\nexport function formatRaceTimeInput(input: string, previousValue = ''): string {\n  const digits = input.replace(/\D/g, '').slice(0, 7);\n  const previousDigits = previousValue.replace(/\D
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:50:55.261Z
+Question Type: true-false
+Function: renderSortIcon
+Function Size: 494 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: renderSortIcon (TypeScript)\n// Renders the appropriate sorting icon based on the current sort configuration.\n\nconst renderSortIcon = (column: SortableColumn) => {\n    if (sortConfig.key !== column) {\n        return <ChevronsUpDown className="h-3 w-3 opacity-60" aria-hidden="true" />;\n  
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:50:59.749Z
+Question Type: function-variant
+Function: abbreviateRaceSegment
+Function Size: 874 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: abbreviateRaceSegment (TypeScript)\n// Abbreviates a race segment based on predefined mappings and logic.\n\nexport const abbreviateRaceSegment = (segment: string): string => {\n  const normalized = segment.trim().toLowerCase();\n  const mapped = RACE_TYPE_ABBREVIATIONS[normalized];\n  if (ma
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:51:02.561Z
+Question Type: select-all
+Function: collectSegments
+Function Size: 303 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: collectSegments (TypeScript)\n// Collects and trims segments from the base part of a race type.\n\nconst collectSegments = (raceType: string): string[] => {\n  const { base } = splitRaceType(raceType);\n  return base\n    .split('>')\n    .map((segment) => segment.trim())\n    .filter(Boolean);
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:51:03.593Z
+Question Type: multiple-choice
+Function: handleGoogle
+Function Size: 1507 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: handleGoogle (TypeScript)\n// Handles Google authentication for linking or signing in.\n\nconst handleGoogle = async () => {\n    setError(null);\n    setLoading(true);\n    try {\n      const currentUser = authInstance.currentUser;\n\n      if (currentUser?.isAnonymous) {\n        await linkWith
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T05:51:11.859Z
+Question Type: function-variant
+Function: splitRaceType
+Function Size: 478 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: splitRaceType (TypeScript)\n// Splits a race type string into base and modifier parts.\n\nconst splitRaceType = (raceType: string): { base: string; modifier?: string } => {\n  const [basePart, modifierPart] = raceType.split(' (');\n  if (!modifierPart) {\n    return { base: basePart };\n  }\n\n 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760160466473
+Repository: Unknown
+Total Questions Generated: 12
+Total Chunks Processed: 15
+Ended: 2025-10-11T05:51:11.862Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T14:29:58.177Z
+File: RidwaanT-motorfest-platform-29a1fe8b3979f3ddc51015b2617b71423ab3bb4c/src/features/raceTimes/components/raceTypeLabels.ts
+Functions Extracted: 5
+
+
+Function 1: splitRaceType
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+const splitRaceType = (raceType: string): { base: string; modifier?: string } => {
+  const [basePart, modifierPart] = raceType.split(' (');
+  if (!modifierPart) {
+    return { base: basePart };
+  }
+
+  const sanitizedModifier = modifierPart.endsWith(')')
+    ? modifierPart.slice(0, -1)
+    : modifierPart;
+
+  return {
+    base: basePart,
+    modifier: sanitizedModifier,
+  };
+};
+--------------------------------------------------------------------------------
+
+
+Function 2: collectSegments
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+const collectSegments = (raceType: string): string[] => {
+  const { base } = splitRaceType(raceType);
+  return base
+    .split('>')
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+};
+--------------------------------------------------------------------------------
+
+
+Function 3: abbreviateRaceSegment
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+export const abbreviateRaceSegment = (segment: string): string => {
+  const normalized = segment.trim().toLowerCase();
+  const mapped = RACE_TYPE_ABBREVIATIONS[normalized];
+  if (mapped) {
+    return mapped;
+  }
+
+  const tokens = segment
+    .trim()
+    .split(/[^A-Za-z0-9]+/)
+    .filter(Boolean);
+
+  if (tokens.length === 0) {
+    return segment.trim();
+  }
+
+  const fallback = tokens
+    .map((token) => {
+      if (/^\d+$/.test(token)) {
+        return token;
+      }
+      const cleaned = token.replace(/[^A-Za-z0-9]/g, '');
+      if (!cleaned) {
+        return '';
+      }
+      if (/^\d+$/.test(cleaned)) {
+        return cleaned;
+      }
+      return cleaned.charAt(0).toUpperCase();
+    })
+    .join('');
+
+  return fallback || segment.trim();
+};
+--------------------------------------------------------------------------------
+
+
+Function 4: formatRaceTypeForMobile
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export const formatRaceTypeForMobile = (raceType: string): string => {
+  if (!raceType) {
+    return '';
+  }
+
+  const { base, modifier } = splitRaceType(raceType);
+  const segments = base
+    .split('>')
+    .map((part) => part.trim())
+    .filter(Boolean);
+  const abbreviated = segments.map(abbreviateRaceSegment).join(' \u203a ');
+
+  if (modifier) {
+    return `${abbreviated} (${modifier})`;
+  }
+
+  return abbreviated;
+};
+--------------------------------------------------------------------------------
+
+
+Function 5: getRaceTypeSearchTokens
+Language: TypeScript
+Lines: 21
+Full Code:
+--------------------------------------------------------------------------------
+export const getRaceTypeSearchTokens = (raceType: string): string[] => {
+  const normalized = raceType.trim();
+  if (!normalized) {
+    return [];
+  }
+
+  const lower = normalized.toLowerCase();
+  const segments = collectSegments(normalized);
+  const abbreviations = segments.map(abbreviateRaceSegment);
+  const abbreviatedChain = abbreviations.join(' \u203a ');
+
+  const tokens = new Set<string>();
+  tokens.add(lower);
+  segments.forEach((segment) => tokens.add(segment.toLowerCase()));
+  abbreviations.forEach((abbr) => tokens.add(abbr.toLowerCase()));
+  if (abbreviatedChain) {
+    tokens.add(abbreviatedChain.toLowerCase());
+  }
+
+  return Array.from(tokens);
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T14:30:33.905Z
+File: For displaying the list of race times in a table
+Functions Extracted: 5
+
+
+Function 1: filteredTimes
+Language: TypeScript
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+const filteredTimes = React.useMemo(() => {
+    const normalizedSearch = searchQuery.trim().toLowerCase();
+
+    const matchesSearch = (entry: RaceTimeEntry) => {
+        if (!normalizedSearch) {
+            return true;
+        }
+
+        const raceTypeTokens = getRaceTypeSearchTokens(entry.raceType);
+        const searchableParts = [
+            entry.raceType,
+            formatRaceTypeForMobile(entry.raceType),
+            ...raceTypeTokens,
+            entry.location,
+            entry.time,
+            entry.source,
+            entry.position !== undefined ? String(entry.position) : '',
+            ...entry.vehicles,
+            ...entry.vehicleClasses,
+        ].filter((value) => value && value.trim().length > 0);
+
+        const searchableText = searchableParts.join(' ').toLowerCase();
+
+        return searchableText.includes(normalizedSearch);
+    };
+
+    return raceTimes.filter(
+        (rt) =>
+            (filterRaceType ? rt.raceType === filterRaceType : true) &&
+            (filterLocation ? rt.location === filterLocation : true) &&
+            matchesSearch(rt)
+    );
+}, [raceTimes, filterRaceType, filterLocation, searchQuery]);
+--------------------------------------------------------------------------------
+
+
+Function 2: sortedTimes
+Language: TypeScript
+Lines: 21
+Full Code:
+--------------------------------------------------------------------------------
+const sortedTimes = React.useMemo(() => {
+    const sorted = [...filteredTimes];
+    if (!sortConfig.key) {
+        return sorted;
+    }
+
+    const compare = (a: RaceTimeEntry, b: RaceTimeEntry) => {
+        switch (sortConfig.key) {
+            case 'time':
+                return raceTimeToMilliseconds(a.time) - raceTimeToMilliseconds(b.time);
+            case 'position':
+                return (a.position ?? Number.MAX_SAFE_INTEGER) - (b.position ?? Number.MAX_SAFE_INTEGER);
+            case 'location':
+                return a.location.localeCompare(b.location);
+            case 'raceType':
+                return a.raceType.localeCompare(b.raceType);
+            default:
+                return 0;
+        }
+    };
+
+    sorted.sort((a, b) => {
+        const result = compare(a, b);
+        return sortConfig.direction === 'asc' ? result : -result;
+    });
+
+    return sorted;
+}, [filteredTimes, sortConfig]);
+--------------------------------------------------------------------------------
+
+
+Function 3: requestSort
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+const requestSort = (key: SortableColumn) => {
+    setSortConfig((prev) => {
+        const direction = prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc';
+        return { key, direction };
+    });
+};
+--------------------------------------------------------------------------------
+
+
+Function 4: getAriaSort
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+const getAriaSort = (column: SortableColumn): 'none' | 'ascending' | 'descending' => {
+    if (sortConfig.key !== column) {
+        return 'none';
+    }
+    return sortConfig.direction === 'asc' ? 'ascending' : 'descending';
+};
+--------------------------------------------------------------------------------
+
+
+Function 5: renderSortIcon
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+const renderSortIcon = (column: SortableColumn) => {
+    if (sortConfig.key !== column) {
+        return <ChevronsUpDown className="h-3 w-3 opacity-60" aria-hidden="true" />;
+    }
+
+    return sortConfig.direction === 'asc' ? (
+        <ChevronUp className="h-3 w-3" aria-hidden="true" />
+    ) : (
+        <ChevronDown className="h-3 w-3" aria-hidden="true" />
+    );
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T14:30:47.129Z
+File: RidwaanT-motorfest-platform-29a1fe8b3979f3ddc51015b2617b71423ab3bb4c/src/utils/time.ts
+Functions Extracted: 1
+
+
+Function 1: formatRaceTimeInput
+Language: TypeScript
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+export function formatRaceTimeInput(input: string, previousValue = ''): string {
+  const digits = input.replace(/\D/g, '').slice(0, 7);
+  const previousDigits = previousValue.replace(/\D/g, '');
+  const isDeleting =
+    digits.length < previousDigits.length || input.length < previousValue.length;
+  const isAddingDigit = digits.length > previousDigits.length;
+
+  if (digits.length === 0) {
+    return '';
+  }
+
+  if (digits.length <= 2) {
+    if (digits.length === 2 && !isDeleting) {
+      return `${digits}:`;
+    }
+    return digits;
+  }
+
+  const minutes = digits.slice(0, 2);
+  const seconds = digits.slice(2, 4);
+  const milliseconds = digits.slice(4, 7);
+
+  if (digits.length === 3) {
+    return `${minutes}:${seconds}`;
+  }
+
+  if (digits.length === 4) {
+    const base = `${minutes}:${seconds}`;
+    if (!isDeleting && (isAddingDigit || previousValue.includes('.'))) {
+      return `${base}.`;
+    }
+
+    return base;
+  }
+  return `${minutes}:${seconds}.${milliseconds}`;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T14:31:03.412Z
+File: RidwaanT-motorfest-platform-29a1fe8b3979f3ddc51015b2617b71423ab3bb4c/src/features/raceTimes/api/raceTimes.ts
+Functions Extracted: 2
+
+
+Function 1: addRaceTime
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export async function addRaceTime(
+  entry: Omit<RaceTimeEntry, 'id' | 'timestamp'>
+): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Authentication required to add a race time.');
+
+  try {
+    const raceTimesCollection = collection(db, 'users', user.uid, 'raceTimes');
+    await addDoc(raceTimesCollection, {
+      ...entry,
+      timestamp: serverTimestamp(),
+    });
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : 'Unable to save race time';
+    console.error('Error adding document: ', message);
+    throw new Error(message);
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: updateRaceTime
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export async function updateRaceTime(id: string, time: string): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Authentication required to update a race time.');
+
+  try {
+    const raceTimeDoc = doc(db, 'users', user.uid, 'raceTimes', id);
+    await updateDoc(raceTimeDoc, {
+      time,
+      source: 'manual',
+    });
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : 'Unable to update race time';
+    console.error('Error updating document: ', message);
+    throw new Error(message);
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T14:31:23.904Z
+File: RidwaanT-motorfest-platform-29a1fe8b3979f3ddc51015b2617b71423ab3bb4c/src/features/auth/components/AuthModal.tsx
+Functions Extracted: 3
+
+
+Function 1: hasAuthCode
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+const hasAuthCode = (error: unknown): error is { code: string } =>
+  typeof error === 'object' &&
+  error !== null &&
+  'code' in error &&
+  typeof (error as { code: unknown }).code === 'string';
+--------------------------------------------------------------------------------
+
+
+Function 2: handleEmailAuth
+Language: TypeScript
+Lines: 33
+Full Code:
+--------------------------------------------------------------------------------
+const handleEmailAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      const currentUser = authInstance.currentUser;
+
+      if (isRegister) {
+        try {
+          if (currentUser?.isAnonymous) {
+            const credential = EmailAuthProvider.credential(email, password);
+            await linkWithCredential(currentUser, credential);
+            if (auth.currentUser) {
+              await sendEmailVerification(auth.currentUser);
+              showMessage('Verification email sent! Please check your inbox (and spam folder).');
+            }
+          } else {
+            const userCredential = await createUserWithEmailAndPassword(
+              authInstance,
+              email,
+              password
+            );
+            await sendEmailVerification(userCredential.user);
+            showMessage('Verification email sent! Please check your inbox (and spam folder).');
+          }
+        } catch (err) {
+          const code = hasAuthCode(err) ? err.code : null;
+          if (code === 'auth/email-already-in-use' || code === 'auth/credential-already-in-use') {
+            setError('This email is already in use. Please sign in or use a different email.');
+          } else {
+            setError(getErrorMessage(err, 'Registration failed.'));
+          }
+          return;
+        }
+      } else {
+        await signInWithEmailAndPassword(authInstance, email, password);
+      }
+      onClose();
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Authentication failed'));
+    } finally {
+      setLoading(false);
+    }
+  };
+--------------------------------------------------------------------------------
+
+
+Function 3: handleGoogle
+Language: TypeScript
+Lines: 34
+Full Code:
+--------------------------------------------------------------------------------
+const handleGoogle = async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      const currentUser = authInstance.currentUser;
+
+      if (currentUser?.isAnonymous) {
+        await linkWithPopup(currentUser, providerInstance);
+        showMessage('Account linked successfully!');
+      } else {
+        const result = await signInWithPopup(authInstance, providerInstance);
+        if (getAdditionalUserInfo(result)?.isNewUser) {
+          showMessage('Account created successfully!');
+        }
+      }
+      onClose();
+    } catch (err: unknown) {
+      const code = hasAuthCode(err) ? err.code : null;
+      if (code === 'auth/credential-already-in-use') {
+        if (err instanceof FirebaseError) {
+          const credential = GoogleAuthProvider.credentialFromError(err);
+          if (credential) {
+            try {
+              await signInWithCredential(authInstance, credential);
+              onClose();
+              return;
+            } catch (signInError: unknown) {
+              setError(getErrorMessage(signInError, 'Sign-in failed after credential conflict'));
+              return;
+            }
+          }
+        }
+        setError('This Google account is already linked to another user. Please sign in with that account instead.');
+      } else {
+        setError(getErrorMessage(err, 'Google sign-in failed'));
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T14:31:34.240Z
+Question Type: multiple-choice
+Function: handleGoogle
+Function Size: 1512 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: handleGoogle (TypeScript)\n// Handles Google authentication for sign in or linking accounts\n\nconst handleGoogle = async () => {\n    setError(null);\n    setLoading(true);\n    try {\n      const currentUser = authInstance.currentUser;\n\n      if (currentUser?.isAnonymous) {\n        await lin
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T14:31:35.402Z
+Question Type: multiple-choice
+Function: handleEmailAuth
+Function Size: 1728 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: handleEmailAuth (TypeScript)\n// Handles email authentication for sign in or registration\n\nconst handleEmailAuth = async (e: React.FormEvent) => {\n    e.preventDefault();\n    setError(null);\n    setLoading(true);\n    try {\n      const currentUser = authInstance.currentUser;\n\n      if (is
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T14:31:38.525Z
+Question Type: select-all
+Function: abbreviateRaceSegment
+Function Size: 901 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: abbreviateRaceSegment (TypeScript)\n// Abbreviates a race segment based on predefined mappings or generates a fallback abbreviation.\n\nexport const abbreviateRaceSegment = (segment: string): string => {\n  const normalized = segment.trim().toLowerCase();\n  const mapped = RACE_TYPE_ABBREVIA
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T14:31:45.591Z
+Question Type: select-all
+Function: filteredTimes
+Function Size: 1268 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: filteredTimes (TypeScript)\n// Filters the race times based on search query and selected filters.\n\nconst filteredTimes = React.useMemo(() => {\n    const normalizedSearch = searchQuery.trim().toLowerCase();\n\n    const matchesSearch = (entry: RaceTimeEntry) => {\n        if (!normalizedSear
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T14:31:46.826Z
+Question Type: true-false
+Function: splitRaceType
+Function Size: 487 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: splitRaceType (TypeScript)\n// Splits a race type string into base and optional modifier parts.\n\nconst splitRaceType = (raceType: string): { base: string; modifier?: string } => {\n  const [basePart, modifierPart] = raceType.split(' (');\n  if (!modifierPart) {\n    return { base: basePart 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T14:31:51.873Z
+Question Type: order-sequence
+Function: collectSegments
+Function Size: 303 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: collectSegments (TypeScript)\n// Collects and trims segments from the base part of a race type.\n\nconst collectSegments = (raceType: string): string[] => {\n  const { base } = splitRaceType(raceType);\n  return base\n    .split('>')\n    .map((segment) => segment.trim())\n    .filter(Boolean);
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T14:32:05.308Z
+Question Type: function-variant
+Function: getAriaSort
+Function Size: 320 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getAriaSort (TypeScript)\n// Determines the ARIA sort state for a given column.\n\nconst getAriaSort = (column: SortableColumn): 'none' | 'ascending' | 'descending' => {\n    if (sortConfig.key !== column) {\n        return 'none';\n    }\n    return sortConfig.direction === 'asc' ? 'ascending
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T14:32:05.582Z
+Question Type: function-variant
+Function: sortedTimes
+Function Size: 1033 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: sortedTimes (TypeScript)\n// Sorts the filtered race times based on the selected sort configuration.\n\nconst sortedTimes = React.useMemo(() => {\n    const sorted = [...filteredTimes];\n    if (!sortConfig.key) {\n        return sorted;\n    }\n\n    const compare = (a: RaceTimeEntry, b: RaceTi
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760160466473
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 16
+Ended: 2025-10-11T14:32:05.584Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T15:02:19.711Z
+File: RidwaanT-motorfest-platform-29a1fe8b3979f3ddc51015b2617b71423ab3bb4c/src/features/raceTimes/components/raceTypeLabels.ts
+Functions Extracted: 5
+
+
+Function 1: splitRaceType
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+const splitRaceType = (raceType: string): { base: string; modifier?: string } => {
+  const [basePart, modifierPart] = raceType.split(' (');
+  if (!modifierPart) {
+    return { base: basePart };
+  }
+
+  const sanitizedModifier = modifierPart.endsWith(')')
+    ? modifierPart.slice(0, -1)
+    : modifierPart;
+
+  return {
+    base: basePart,
+    modifier: sanitizedModifier,
+  };
+};
+--------------------------------------------------------------------------------
+
+
+Function 2: collectSegments
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+const collectSegments = (raceType: string): string[] => {
+  const { base } = splitRaceType(raceType);
+  return base
+    .split('>')
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+};
+--------------------------------------------------------------------------------
+
+
+Function 3: abbreviateRaceSegment
+Language: TypeScript
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+export const abbreviateRaceSegment = (segment: string): string => {
+  const normalized = segment.trim().toLowerCase();
+  const mapped = RACE_TYPE_ABBREVIATIONS[normalized];
+  if (mapped) {
+    return mapped;
+  }
+
+  const tokens = segment
+    .trim()
+    .split(/[^A-Za-z0-9]+/)
+    .filter(Boolean);
+
+  if (tokens.length === 0) {
+    return segment.trim();
+  }
+
+  const fallback = tokens
+    .map((token) => {
+      if (/^\d+$/.test(token)) {
+        return token;
+      }
+      const cleaned = token.replace(/[^A-Za-z0-9]/g, '');
+      if (!cleaned) {
+        return '';
+      }
+      if (/^\d+$/.test(cleaned)) {
+        return cleaned;
+      }
+      return cleaned.charAt(0).toUpperCase();
+    })
+    .join('');
+
+  return fallback || segment.trim();
+};
+--------------------------------------------------------------------------------
+
+
+Function 4: formatRaceTypeForMobile
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export const formatRaceTypeForMobile = (raceType: string): string => {
+  if (!raceType) {
+    return '';
+  }
+
+  const { base, modifier } = splitRaceType(raceType);
+  const segments = base
+    .split('>')
+    .map((part) => part.trim())
+    .filter(Boolean);
+  const abbreviated = segments.map(abbreviateRaceSegment).join(' \u203a ');
+
+  if (modifier) {
+    return `${abbreviated} (${modifier})`;
+  }
+
+  return abbreviated;
+};
+--------------------------------------------------------------------------------
+
+
+Function 5: getRaceTypeSearchTokens
+Language: TypeScript
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+export const getRaceTypeSearchTokens = (raceType: string): string[] => {
+  const normalized = raceType.trim();
+  if (!normalized) {
+    return [];
+  }
+
+  const lower = normalized.toLowerCase();
+  const segments = collectSegments(normalized);
+  const abbreviations = segments.map(abbreviateRaceSegment);
+  const abbreviatedChain = abbreviations.join(' \u203a ');
+
+  const tokens = new Set<string>();
+  tokens.add(lower);
+  segments.forEach((segment) => tokens.add(segment.toLowerCase()));
+  abbreviations.forEach((abbr) => tokens.add(abbr.toLowerCase()));
+  if (abbreviatedChain) {
+    tokens.add(abbreviatedChain.toLowerCase());
+  }
+
+  return Array.from(tokens);
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T15:03:10.504Z
+File: For displaying the list of race times in a table
+Functions Extracted: 5
+
+
+Function 1: filteredTimes
+Language: TypeScript
+Lines: 23
+Full Code:
+--------------------------------------------------------------------------------
+const filteredTimes = React.useMemo(() => {
+    const normalizedSearch = searchQuery.trim().toLowerCase();
+
+    const matchesSearch = (entry: RaceTimeEntry) => {
+        if (!normalizedSearch) {
+            return true;
+        }
+
+        const raceTypeTokens = getRaceTypeSearchTokens(entry.raceType);
+        const searchableParts = [
+            entry.raceType,
+            formatRaceTypeForMobile(entry.raceType),
+            ...raceTypeTokens,
+            entry.location,
+            entry.time,
+            entry.source,
+            entry.position !== undefined ? String(entry.position) : '',
+            ...entry.vehicles,
+            ...entry.vehicleClasses,
+        ].filter((value) => value && value.trim().length > 0);
+
+        const searchableText = searchableParts.join(' ').toLowerCase();
+
+        return searchableText.includes(normalizedSearch);
+    };
+
+    return raceTimes.filter(
+        (rt) =>
+            (filterRaceType ? rt.raceType === filterRaceType : true) &&
+            (filterLocation ? rt.location === filterLocation : true) &&
+            matchesSearch(rt)
+    );
+}, [raceTimes, filterRaceType, filterLocation, searchQuery]);
+--------------------------------------------------------------------------------
+
+
+Function 2: sortedTimes
+Language: TypeScript
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+const sortedTimes = React.useMemo(() => {
+    const sorted = [...filteredTimes];
+    if (!sortConfig.key) {
+        return sorted;
+    }
+
+    const compare = (a: RaceTimeEntry, b: RaceTimeEntry) => {
+        switch (sortConfig.key) {
+            case 'time':
+                return raceTimeToMilliseconds(a.time) - raceTimeToMilliseconds(b.time);
+            case 'position':
+                return (a.position ?? Number.MAX_SAFE_INTEGER) - (b.position ?? Number.MAX_SAFE_INTEGER);
+            case 'location':
+                return a.location.localeCompare(b.location);
+            case 'raceType':
+                return a.raceType.localeCompare(b.raceType);
+            default:
+                return 0;
+        }
+    };
+
+    sorted.sort((a, b) => {
+        const result = compare(a, b);
+        return sortConfig.direction === 'asc' ? result : -result;
+    });
+
+    return sorted;
+}, [filteredTimes, sortConfig]);
+--------------------------------------------------------------------------------
+
+
+Function 3: requestSort
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+const requestSort = (key: SortableColumn) => {
+    setSortConfig((prev) => {
+        const direction = prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc';
+        return { key, direction };
+    });
+};
+--------------------------------------------------------------------------------
+
+
+Function 4: getAriaSort
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+const getAriaSort = (column: SortableColumn): 'none' | 'ascending' | 'descending' => {
+    if (sortConfig.key !== column) {
+        return 'none';
+    }
+    return sortConfig.direction === 'asc' ? 'ascending' : 'descending';
+};
+--------------------------------------------------------------------------------
+
+
+Function 5: renderSortIcon
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+const renderSortIcon = (column: SortableColumn) => {
+    if (sortConfig.key !== column) {
+        return <ChevronsUpDown className="h-3 w-3 opacity-60" aria-hidden="true" />;
+    }
+
+    return sortConfig.direction === 'asc' ? (
+        <ChevronUp className="h-3 w-3" aria-hidden="true" />
+    ) : (
+        <ChevronDown className="h-3 w-3" aria-hidden="true" />
+    );
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T15:03:21.103Z
+File: RidwaanT-motorfest-platform-29a1fe8b3979f3ddc51015b2617b71423ab3bb4c/src/utils/time.ts
+Functions Extracted: 1
+
+
+Function 1: formatRaceTimeInput
+Language: TypeScript
+Lines: 21
+Full Code:
+--------------------------------------------------------------------------------
+export function formatRaceTimeInput(input: string, previousValue = ''): string {
+  const digits = input.replace(/\D/g, '').slice(0, 7);
+  const previousDigits = previousValue.replace(/\D/g, '');
+  const isDeleting =
+    digits.length < previousDigits.length || input.length < previousValue.length;
+  const isAddingDigit = digits.length > previousDigits.length;
+
+  if (digits.length === 0) {
+    return '';
+  }
+
+  if (digits.length <= 2) {
+
+    if (digits.length === 2 && !isDeleting) {
+      return `${digits}:`;
+    }
+    return digits;
+  }
+
+  const minutes = digits.slice(0, 2);
+  const seconds = digits.slice(2, 4);
+  const milliseconds = digits.slice(4, 7);
+
+  if (digits.length === 3) {
+    return `${minutes}:${seconds}`;
+  }
+
+  if (digits.length === 4) {
+    const base = `${minutes}:${seconds}`;
+    if (!isDeleting && (isAddingDigit || previousValue.includes('.'))) {
+      return `${base}.`;
+    }
+
+    return base;
+  }
+  return `${minutes}:${seconds}.${milliseconds}`;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T15:03:30.738Z
+File: RidwaanT-motorfest-platform-29a1fe8b3979f3ddc51015b2617b71423ab3bb4c/src/features/raceTimes/api/raceTimes.ts
+Functions Extracted: 2
+
+
+Function 1: addRaceTime
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export async function addRaceTime(
+  entry: Omit<RaceTimeEntry, 'id' | 'timestamp'>
+): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Authentication required to add a race time.');
+
+  try {
+    const raceTimesCollection = collection(db, 'users', user.uid, 'raceTimes');
+    await addDoc(raceTimesCollection, {
+      ...entry,
+      timestamp: serverTimestamp(),
+    });
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : 'Unable to save race time';
+    console.error('Error adding document: ', message);
+    throw new Error(message);
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: updateRaceTime
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export async function updateRaceTime(id: string, time: string): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Authentication required to update a race time.');
+
+  try {
+    const raceTimeDoc = doc(db, 'users', user.uid, 'raceTimes', id);
+    await updateDoc(raceTimeDoc, {
+      time,
+      source: 'manual',
+    });
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : 'Unable to update race time';
+    console.error('Error updating document: ', message);
+    throw new Error(message);
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T15:03:47.975Z
+File: RidwaanT-motorfest-platform-29a1fe8b3979f3ddc51015b2617b71423ab3bb4c/src/features/auth/components/AuthModal.tsx
+Functions Extracted: 2
+
+
+Function 1: handleEmailAuth
+Language: TypeScript
+Lines: 31
+Full Code:
+--------------------------------------------------------------------------------
+const handleEmailAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      const currentUser = authInstance.currentUser;
+
+      if (isRegister) {
+        try {
+          if (currentUser?.isAnonymous) {
+            const credential = EmailAuthProvider.credential(email, password);
+            await linkWithCredential(currentUser, credential);
+            if (auth.currentUser) {
+              await sendEmailVerification(auth.currentUser);
+              showMessage('Verification email sent! Please check your inbox (and spam folder).');
+            }
+          } else {
+            const userCredential = await createUserWithEmailAndPassword(
+              authInstance,
+              email,
+              password
+            );
+            await sendEmailVerification(userCredential.user);
+            showMessage('Verification email sent! Please check your inbox (and spam folder).');
+          }
+        } catch (err) {
+          const code = hasAuthCode(err) ? err.code : null;
+          if (code === 'auth/email-already-in-use' || code === 'auth/credential-already-in-use') {
+            setError('This email is already in use. Please sign in or use a different email.');
+          } else {
+            setError(getErrorMessage(err, 'Registration failed.'));
+          }
+          return;
+        }
+      } else {
+        await signInWithEmailAndPassword(authInstance, email, password);
+      }
+      onClose();
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Authentication failed'));
+    } finally {
+      setLoading(false);
+    }
+  };
+--------------------------------------------------------------------------------
+
+
+Function 2: handleGoogle
+Language: TypeScript
+Lines: 31
+Full Code:
+--------------------------------------------------------------------------------
+const handleGoogle = async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      const currentUser = authInstance.currentUser;
+
+      if (currentUser?.isAnonymous) {
+        await linkWithPopup(currentUser, providerInstance);
+        showMessage('Account linked successfully!');
+      } else {
+        const result = await signInWithPopup(authInstance, providerInstance);
+        if (getAdditionalUserInfo(result)?.isNewUser) {
+          showMessage('Account created successfully!');
+        }
+      }
+      onClose();
+    } catch (err: unknown) {
+      const code = hasAuthCode(err) ? err.code : null;
+      if (code === 'auth/credential-already-in-use') {
+        if (err instanceof FirebaseError) {
+          const credential = GoogleAuthProvider.credentialFromError(err);
+          if (credential) {
+            try {
+              await signInWithCredential(authInstance, credential);
+              onClose();
+              return;
+            } catch (signInError: unknown) {
+              setError(getErrorMessage(signInError, 'Sign-in failed after credential conflict'));
+              return;
+            }
+          }
+        }
+        setError('This Google account is already linked to another user. Please sign in with that account instead.');
+      } else {
+        setError(getErrorMessage(err, 'Google sign-in failed'));
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T15:03:57.587Z
+Question Type: true-false
+Function: sortedTimes
+Function Size: 1033 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sortedTimes (TypeScript)\n// Sorts the filtered race times based on the selected sort configuration.\n\nconst sortedTimes = React.useMemo(() => {\n    const sorted = [...filteredTimes];\n    if (!sortConfig.key) {\n        return sorted;\n    }\n\n    const compare = (a: RaceTimeEntry, b: RaceTi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T15:03:59.234Z
+Question Type: order-sequence
+Function: updateRaceTime
+Function Size: 655 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateRaceTime (TypeScript)\n// Updates the time for a specific race entry in Firestore.\n\nexport async function updateRaceTime(id: string, time: string): Promise<void> {\n  const user = auth.currentUser;\n  if (!user) throw new Error('Authentication required to update a race time.');\n\n  tr
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T15:04:00.573Z
+Question Type: select-all
+Function: formatRaceTypeForMobile
+Function Size: 565 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: formatRaceTypeForMobile (TypeScript)\n// Formats a race type string for mobile display, including abbreviations and modifiers.\n\nexport const formatRaceTypeForMobile = (raceType: string): string => {\n  if (!raceType) {\n    return '';\n  }\n\n  const { base, modifier } = splitRaceType(raceTyp
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T15:04:06.826Z
+Question Type: multiple-choice
+Function: abbreviateRaceSegment
+Function Size: 892 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: abbreviateRaceSegment (TypeScript)\n// Abbreviates a race segment based on predefined mappings or by generating a fallback.\n\nexport const abbreviateRaceSegment = (segment: string): string => {\n  const normalized = segment.trim().toLowerCase();\n  const mapped = RACE_TYPE_ABBREVIATIONS[nor
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T15:04:08.295Z
+Question Type: function-variant
+Function: requestSort
+Function Size: 320 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: requestSort (TypeScript)\n// Requests a sort on a specific column, toggling the sort direction.\n\nconst requestSort = (key: SortableColumn) => {\n    setSortConfig((prev) => {\n        const direction = prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc';\n        return { key, dir
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T15:04:10.280Z
+Question Type: multiple-choice
+Function: formatRaceTimeInput
+Function Size: 1095 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: formatRaceTimeInput (TypeScript)\n// Formats the race time input string into a specific time format.\n\nexport function formatRaceTimeInput(input: string, previousValue = ''): string {\n  const digits = input.replace(/\D/g, '').slice(0, 7);\n  const previousDigits = previousValue.replace(/\D
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T15:04:10.881Z
+Question Type: function-variant
+Function: collectSegments
+Function Size: 303 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: collectSegments (TypeScript)\n// Collects and trims segments from the base part of a race type.\n\nconst collectSegments = (raceType: string): string[] => {\n  const { base } = splitRaceType(raceType);\n  return base\n    .split('>')\n    .map((segment) => segment.trim())\n    .filter(Boolean);
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T15:04:17.862Z
+Question Type: select-all
+Function: filteredTimes
+Function Size: 1268 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: filteredTimes (TypeScript)\n// Filters race times based on race type, location, and search query.\n\nconst filteredTimes = React.useMemo(() => {\n    const normalizedSearch = searchQuery.trim().toLowerCase();\n\n    const matchesSearch = (entry: RaceTimeEntry) => {\n        if (!normalizedSear
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760160466473
+Repository: Unknown
+Total Questions Generated: 12
+Total Chunks Processed: 15
+Ended: 2025-10-11T15:04:17.865Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T15:55:06.418Z
+File: junit-team-junit-framework-bad4d1b/junit-platform-commons/src/main/java/org/junit/platform/commons/support/ReflectionSupport.java
+Functions Extracted: 3
+
+
+Function 1: findAllClassesInClasspathRoot
+Language: Java
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+public static List<Class<?>> findAllClassesInClasspathRoot(URI root, Predicate<Class<?>> classFilter,
+            Predicate<String> classNameFilter) {
+
+        return ReflectionUtils.findAllClassesInClasspathRoot(root, classFilter, classNameFilter);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: findMethods
+Language: Java
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+public static List<Method> findMethods(Class<?> clazz, Predicate<Method> predicate,
+            HierarchyTraversalMode traversalMode) {
+        Preconditions.notNull(traversalMode, "HierarchyTraversalMode must not be null");
+
+        return ReflectionUtils.findMethods(clazz, predicate,
+            ReflectionUtils.HierarchyTraversalMode.valueOf(traversalMode.name()));
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: findNestedClasses
+Language: Java
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+public static List<Class<?>> findNestedClasses(Class<?> clazz, Predicate<Class<?>> predicate)
+            throws JUnitException {
+        return ReflectionUtils.findNestedClasses(clazz, predicate);
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T15:55:15.512Z
+File: junit-team-junit-framework-bad4d1b/junit-platform-commons/src/main/java/org/junit/platform/commons/support/AnnotationSupport.java
+Functions Extracted: 3
+
+
+Function 1: findAnnotation
+Language: Java
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public static <A extends Annotation> Optional<A> findAnnotation(@Nullable Class<?> clazz, Class<A> annotationType, List<Class<?>> enclosingInstanceTypes) {
+        Preconditions.notNull(enclosingInstanceTypes, "enclosingInstanceTypes must not be null");
+
+        Optional<A> annotation = findAnnotation(clazz, annotationType);
+        if (annotation.isEmpty()) {
+            ListIterator<Class<?>> iterator = enclosingInstanceTypes.listIterator(enclosingInstanceTypes.size());
+            while (iterator.hasPrevious()) {
+                annotation = findAnnotation(iterator.previous(), annotationType);
+                if (annotation.isPresent()) {
+                    break;
+                }
+            }
+        }
+        return annotation;
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: findAnnotatedFields
+Language: Java
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+public static List<Field> findAnnotatedFields(Class<?> clazz, Class<? extends Annotation> annotationType, Predicate<Field> predicate, HierarchyTraversalMode traversalMode) {
+        Preconditions.notNull(traversalMode, "HierarchyTraversalMode must not be null");
+
+        return AnnotationUtils.findAnnotatedFields(clazz, annotationType, predicate, ReflectionUtils.HierarchyTraversalMode.valueOf(traversalMode.name()));
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: findAnnotatedFieldValues
+Language: Java
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+public static List<@Nullable Object> findAnnotatedFieldValues(Object instance, Class<? extends Annotation> annotationType) {
+        Preconditions.notNull(instance, "instance must not be null");
+
+        List<Field> fields = findAnnotatedFields(instance.getClass(), annotationType, ModifierSupport::isNotStatic, HierarchyTraversalMode.TOP_DOWN);
+
+        @SuppressWarnings("unchecked")
+        List<@Nullable Object> result = (List<@Nullable Object>) ReflectionUtils.readFieldValues(fields, instance);
+        return result;
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T15:55:45.927Z
+File: junit-team-junit-framework-bad4d1b/junit-platform-commons/src/main/java/org/junit/platform/commons/support/ModifierSupport.java
+Functions Extracted: 6
+
+
+Function 1: isNotAbstract
+Language: Java
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+@API(status = EXPERIMENTAL, since = "6.0")
+	public static boolean isNotAbstract(Class<?> clazz) {
+		return ReflectionUtils.isNotAbstract(clazz);
+	}
+--------------------------------------------------------------------------------
+
+
+Function 2: isNotAbstract
+Language: Java
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+@API(status = EXPERIMENTAL, since = "6.0")
+	public static boolean isNotAbstract(Member member) {
+		return ReflectionUtils.isNotAbstract(member);
+	}
+--------------------------------------------------------------------------------
+
+
+Function 3: isFinal
+Language: Java
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+@API(status = MAINTAINED, since = "1.5")
+	public static boolean isFinal(Class<?> clazz) {
+		return ReflectionUtils.isFinal(clazz);
+	}
+--------------------------------------------------------------------------------
+
+
+Function 4: isNotFinal
+Language: Java
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+@API(status = MAINTAINED, since = "1.5")
+	public static boolean isNotFinal(Class<?> clazz) {
+		return ReflectionUtils.isNotFinal(clazz);
+	}
+--------------------------------------------------------------------------------
+
+
+Function 5: isFinal
+Language: Java
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+@API(status = MAINTAINED, since = "1.5")
+	public static boolean isFinal(Member member) {
+		return ReflectionUtils.isFinal(member);
+	}
+--------------------------------------------------------------------------------
+
+
+Function 6: isNotFinal
+Language: Java
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+@API(status = MAINTAINED, since = "1.5")
+	public static boolean isNotFinal(Member member) {
+		return ReflectionUtils.isNotFinal(member);
+	}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T15:55:52.046Z
+File: junit-team-junit-framework-bad4d1b/junit-jupiter-api/src/main/java/org/junit/jupiter/api/parallel/ResourceLocksProvider.java
+Functions Extracted: 2
+
+
+Function 1: equals
+Language: Java
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+@Override
+public boolean equals(Object o) {
+    if (this == o) {
+        return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+        return false;
+    }
+    Lock that = (Lock) o;
+    return this.key.equals(that.key) && this.accessMode == that.accessMode;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: toString
+Language: Java
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+@Override
+public String toString() {
+    return new ToStringBuilder(this) 
+            .append("key", this.key) 
+            .append("accessMode", this.accessMode) 
+            .toString();
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T15:56:16.342Z
+File: junit-team-junit-framework-bad4d1b/junit-jupiter-api/src/main/java/org/junit/jupiter/api/DisplayNameGenerator.java
+Functions Extracted: 6
+
+
+Function 1: generateDisplayNameForClass
+Language: Java
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+@Override
+public String generateDisplayNameForClass(Class<?> testClass) {
+    String name = testClass.getName();
+    int lastDot = name.lastIndexOf('.');
+    return name.substring(lastDot + 1);
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: generateDisplayNameForMethod
+Language: Java
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+@Override
+public String generateDisplayNameForMethod(List<Class<?>> enclosingInstanceTypes, Class<?> testClass,
+        Method testMethod) {
+    return testMethod.getName() + parameterTypesAsString(testMethod);
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: generateDisplayNameForMethod
+Language: Java
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+@Override
+public String generateDisplayNameForMethod(List<Class<?>> enclosingInstanceTypes, Class<?> testClass,
+        Method testMethod) {
+    String displayName = testMethod.getName();
+    if (hasParameters(testMethod)) {
+        displayName += ' ' + parameterTypesAsString(testMethod);
+    }
+    return displayName;
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: generateDisplayNameForMethod
+Language: Java
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+@Override
+public String generateDisplayNameForMethod(List<Class<?>> enclosingInstanceTypes, Class<?> testClass,
+        Method testMethod) {
+    return replaceUnderscores(
+        super.generateDisplayNameForMethod(enclosingInstanceTypes, testClass, testMethod));
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: generateDisplayNameForClass
+Language: Java
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+@Override
+public String generateDisplayNameForClass(Class<?> testClass) {
+    String sentenceFragment = getSentenceFragment(testClass);
+    return (sentenceFragment != null ? sentenceFragment
+            : getGeneratorFor(testClass, emptyList()).generateDisplayNameForClass(testClass));
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: generateDisplayNameForMethod
+Language: Java
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+@Override
+public String generateDisplayNameForMethod(List<Class<?>> enclosingInstanceTypes, Class<?> testClass,
+        Method testMethod) {
+    String displayName = getSentenceBeginning(testClass, enclosingInstanceTypes)
+            + getFragmentSeparator(testClass, enclosingInstanceTypes);
+
+    String sentenceFragment = getSentenceFragment(testMethod);
+    displayName += (sentenceFragment != null ? sentenceFragment
+            : getGeneratorFor(testClass, enclosingInstanceTypes).generateDisplayNameForMethod(
+                enclosingInstanceTypes, testClass, testMethod));
+    return displayName;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T15:56:21.659Z
+Question Type: true-false
+Function: isNotFinal
+Function Size: 220 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isNotFinal (Java)\n// Determine if the supplied class is not final.\n\n@API(status = MAINTAINED, since = "1.5")\n	public static boolean isNotFinal(Class<?> clazz) {\n		return ReflectionUtils.isNotFinal(clazz);\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T15:56:25.971Z
+Question Type: multiple-choice
+Function: findNestedClasses
+Function Size: 337 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: findNestedClasses (Java)\n// Finds all nested classes within the supplied class that conform to the specified predicate.\n\npublic static List<Class<?>> findNestedClasses(Class<?> clazz, Predicate<Class<?>> predicate)\n            throws JUnitException {\n        return ReflectionUtils.findN
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T15:56:26.992Z
+Question Type: select-all
+Function: generateDisplayNameForClass
+Function Size: 426 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: generateDisplayNameForClass (Java)\n// Generates a display name for the given class, using a sentence fragment if available.\n\n@Override\npublic String generateDisplayNameForClass(Class<?> testClass) {\n    String sentenceFragment = getSentenceFragment(testClass);\n    return (sentenceFragme
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T15:56:29.852Z
+Question Type: order-sequence
+Function: isNotAbstract
+Function Size: 234 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isNotAbstract (Java)\n// Determine if the supplied class is not abstract.\n\n@API(status = EXPERIMENTAL, since = "6.0")\n	public static boolean isNotAbstract(Class<?> clazz) {\n		return ReflectionUtils.isNotAbstract(clazz);\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T15:56:34.589Z
+Question Type: select-all
+Function: isFinal
+Function Size: 208 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isFinal (Java)\n// Determine if the supplied member is final.\n\n@API(status = MAINTAINED, since = "1.5")\n	public static boolean isFinal(Member member) {\n		return ReflectionUtils.isFinal(member);\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T15:56:34.913Z
+Question Type: multiple-choice
+Function: equals
+Function Size: 353 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: equals (Java)\n// Checks if this Lock is equal to another object.\n\n@Override\npublic boolean equals(Object o) {\n    if (this == o) {\n        return true;\n    }\n    if (o == null || getClass() != o.getClass()) {\n        return false;\n    }\n    Lock that = (Lock) o;\n    return this.key.equa
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T15:56:36.610Z
+Question Type: function-variant
+Function: generateDisplayNameForMethod
+Function Size: 317 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: generateDisplayNameForMethod (Java)\n// Generates a display name for the given test method.\n\n@Override\npublic String generateDisplayNameForMethod(List<Class<?>> enclosingInstanceTypes, Class<?> testClass,\n        Method testMethod) {\n    return testMethod.getName() + parameterTypesAsStri
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T15:56:40.893Z
+Question Type: function-variant
+Function: generateDisplayNameForMethod
+Function Size: 479 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: generateDisplayNameForMethod (Java)\n// Generates a display name for the given test method, removing parentheses for methods with no parameters.\n\n@Override\npublic String generateDisplayNameForMethod(List<Class<?>> enclosingInstanceTypes, Class<?> testClass,\n        Method testMethod) {\n 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760160466473
+Repository: Unknown
+Total Questions Generated: 12
+Total Chunks Processed: 20
+Ended: 2025-10-11T15:56:40.895Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T16:14:27.731Z
+File: airbnb-lottie-web-bede03d/player/js/utils/common.js
+Functions Extracted: 6
+
+
+Function 1: BMMath.abs
+Language: JavaScript
+Lines: 11
+Full Code:
+--------------------------------------------------------------------------------
+BMMath.abs = function (val) {
+  var tOfVal = typeof val;
+  if (tOfVal === 'object' && val.length) {
+    var absArr = createSizedArray(val.length);
+    var i;
+    var len = val.length;
+    for (i = 0; i < len; i += 1) {
+      absArr[i] = Math.abs(val[i]);
+    }
+    return absArr;
+  }
+  return Math.abs(val);
+};
+--------------------------------------------------------------------------------
+
+
+Function 2: HSVtoRGB
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function HSVtoRGB(h, s, v) {
+  var r;
+  var g;
+  var b;
+  var i;
+  var f;
+  var p;
+  var q;
+  var t;
+  i = Math.floor(h * 6);
+  f = h * 6 - i;
+  p = v * (1 - s);
+  q = v * (1 - f * s);
+  t = v * (1 - (1 - f) * s);
+  switch (i % 6) {
+    case 0: r = v; g = t; b = p; break;
+    case 1: r = q; g = v; b = p; break;
+    case 2: r = p; g = v; b = t; break;
+    case 3: r = p; g = q; b = v; break;
+    case 4: r = t; g = p; b = v; break;
+    case 5: r = v; g = p; b = q; break;
+    default: break;
+  }
+  return [r, g, b];
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: RGBtoHSV
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function RGBtoHSV(r, g, b) {
+  var max = Math.max(r, g, b);
+  var min = Math.min(r, g, b);
+  var d = max - min;
+  var h;
+  var s = (max === 0 ? 0 : d / max);
+  var v = max / 255;
+
+  switch (max) {
+    case min: h = 0; break;
+    case r: h = (g - b) + d * (g < b ? 6 : 0); h /= 6 * d; break;
+    case g: h = (b - r) + d * 2; h /= 6 * d; break;
+    case b: h = (r - g) + d * 4; h /= 6 * d; break;
+    default: break;
+  }
+
+  return [h, s, v];
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: addSaturationToRGB
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function addSaturationToRGB(color, offset) {
+  var hsv = RGBtoHSV(color[0] * 255, color[1] * 255, color[2] * 255);
+  hsv[1] += offset;
+  if (hsv[1] > 1) {
+    hsv[1] = 1;
+  } else if (hsv[1] <= 0) {
+    hsv[1] = 0;
+  }
+  return HSVtoRGB(hsv[0], hsv[1], hsv[2]);
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: addBrightnessToRGB
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function addBrightnessToRGB(color, offset) {
+  var hsv = RGBtoHSV(color[0] * 255, color[1] * 255, color[2] * 255);
+  hsv[2] += offset;
+  if (hsv[2] > 1) {
+    hsv[2] = 1;
+  } else if (hsv[2] < 0) {
+    hsv[2] = 0;
+  }
+  return HSVtoRGB(hsv[0], hsv[1], hsv[2]);
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: addHueToRGB
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function addHueToRGB(color, offset) {
+  var hsv = RGBtoHSV(color[0] * 255, color[1] * 255, color[2] * 255);
+  hsv[0] += offset / 360;
+  if (hsv[0] > 1) {
+    hsv[0] -= 1;
+  } else if (hsv[0] < 0) {
+    hsv[0] += 1;
+  }
+  return HSVtoRGB(hsv[0], hsv[1], hsv[2]);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T16:14:59.061Z
+File: airbnb-lottie-web-bede03d/player/js/animation/AnimationManager.js
+Functions Extracted: 10
+
+
+Function 1: removeElement
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function removeElement(ev) {
+    var i = 0;
+    var animItem = ev.target;
+    while (i < len) {
+      if (registeredAnimations[i].animation === animItem) {
+        registeredAnimations.splice(i, 1);
+        i -= 1;
+        len -= 1;
+        if (!animItem.isPaused) {
+          subtractPlayingCount();
+        }
+      }
+      i += 1;
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: registerAnimation
+Language: JavaScript
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+function registerAnimation(element, animationData) {
+    if (!element) {
+      return null;
+    }
+    var i = 0;
+    while (i < len) {
+      if (registeredAnimations[i].elem === element && registeredAnimations[i].elem !== null) {
+        return registeredAnimations[i].animation;
+      }
+      i += 1;
+    }
+    var animItem = new AnimationItem();
+    setupAnimation(animItem, element);
+    animItem.setData(element, animationData);
+    return animItem;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: getRegisteredAnimations
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function getRegisteredAnimations() {
+    var i;
+    var lenAnims = registeredAnimations.length;
+    var animations = [];
+    for (i = 0; i < lenAnims; i += 1) {
+      animations.push(registeredAnimations[i].animation);
+    }
+    return animations;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 4: loadAnimation
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function loadAnimation(params) {
+    var animItem = new AnimationItem();
+    setupAnimation(animItem, null);
+    animItem.setParams(params);
+    return animItem;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 5: setSpeed
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function setSpeed(val, animation) {
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.setSpeed(val, animation);
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 6: play
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function play(animation) {
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.play(animation);
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 7: resume
+Language: JavaScript
+Lines: 13
+Full Code:
+--------------------------------------------------------------------------------
+function resume(nowTime) {
+    var elapsedTime = nowTime - initTime;
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.advanceTime(elapsedTime);
+    }
+    initTime = nowTime;
+    if (playingAnimationsNum && !_isFrozen) {
+      window.requestAnimationFrame(resume);
+    } else {
+      _stopped = true;
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 8: searchAnimations
+Language: JavaScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+function searchAnimations(animationData, standalone, renderer) {
+    var animElements = [].concat([].slice.call(document.getElementsByClassName('lottie'),
+      [].slice.call(document.getElementsByClassName('bodymovin')));
+    var i;
+    var lenAnims = animElements.length;
+    for (i = 0; i < lenAnims; i += 1) {
+      if (renderer) {
+        animElements[i].setAttribute('data-bm-type', renderer);
+      }
+      registerAnimation(animElements[i], animationData);
+    }
+    if (standalone && lenAnims === 0) {
+      if (!renderer) {
+        renderer = 'svg';
+      }
+      var body = document.getElementsByTagName('body')[0];
+      body.innerText = '';
+      var div = createTag('div');
+      div.style.width = '100%';
+      div.style.height = '100%';
+      div.setAttribute('data-bm-type', renderer);
+      body.appendChild(div);
+      registerAnimation(div, animationData);
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 9: resize
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function resize() {
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.resize();
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 10: setVolume
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function setVolume(val, animation) {
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.setVolume(val, animation);
+    }
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T16:15:34.687Z
+File: airbnb-lottie-web-bede03d/player/js/animation/AnimationManagerWorkerOverride.js
+Functions Extracted: 12
+
+
+Function 1: removeElement
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function removeElement(ev) {
+    var i = 0;
+    var animItem = ev.target;
+    while (i < len) {
+      if (registeredAnimations[i].animation === animItem) {
+        registeredAnimations.splice(i, 1);
+        i -= 1;
+        len -= 1;
+        if (!animItem.isPaused) {
+          subtractPlayingCount();
+        }
+      }
+      i += 1;
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: registerAnimation
+Language: JavaScript
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+function registerAnimation(element, animationData) {
+    if (!element) {
+      return null;
+    }
+    var i = 0;
+    while (i < len) {
+      if (registeredAnimations[i].elem === element && registeredAnimations[i].elem !== null) {
+        return registeredAnimations[i].animation;
+      }
+      i += 1;
+    }
+    var animItem = new AnimationItem();
+    setupAnimation(animItem, element);
+    animItem.setData(element, animationData);
+    return animItem;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: getRegisteredAnimations
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function getRegisteredAnimations() {
+    var i;
+    var lenAnims = registeredAnimations.length;
+    var animations = [];
+    for (i = 0; i < lenAnims; i += 1) {
+      animations.push(registeredAnimations[i].animation);
+    }
+    return animations;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 4: setupAnimation
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function setupAnimation(animItem, element) {
+    animItem.addEventListener('destroy', removeElement);
+    animItem.addEventListener('_active', addPlayingCount);
+    animItem.addEventListener('_idle', subtractPlayingCount);
+    registeredAnimations.push({ elem: element, animation: animItem });
+    len += 1;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 5: loadAnimation
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function loadAnimation(params) {
+    var animItem = new AnimationItem();
+    setupAnimation(animItem, null);
+    animItem.setParams(params);
+    return animItem;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 6: setSpeed
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function setSpeed(val, animation) {
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.setSpeed(val, animation);
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 7: play
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function play(animation) {
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.play(animation);
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 8: resume
+Language: JavaScript
+Lines: 13
+Full Code:
+--------------------------------------------------------------------------------
+function resume(nowTime) {
+    var elapsedTime = nowTime - initTime;
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.advanceTime(elapsedTime);
+    }
+    initTime = nowTime;
+    if (playingAnimationsNum && !_isFrozen) {
+      requestAnimationFrame(resume);
+    } else {
+      _stopped = true;
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 9: pause
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function pause(animation) {
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.pause(animation);
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 10: stop
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function stop(animation) {
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.stop(animation);
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 11: resize
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function resize() {
+    var i;
+    for (i = 0; i < len; i += 1) {
+      registeredAnimations[i].animation.resize();
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 12: activate
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+function activate() {
+    if (!_isFrozen && playingAnimationsNum) {
+      if (_stopped) {
+        requestAnimationFrame(first);
+        _stopped = false;
+      }
+    }
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-11T16:17:55.827Z
+File: airbnb-lottie-web-bede03d/player/js/utils/imagePreloader.js
+Functions Extracted: 11
+
+
+Function 1: imageLoaded
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function imageLoaded() {
+    this.loadedAssets += 1;
+    if (this.loadedAssets === this.totalImages && this.loadedFootagesCount === this.totalFootages) {
+        if (this.imagesLoadedCb) {
+            this.imagesLoadedCb(null);
+        }
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: footageLoaded
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function footageLoaded() {
+    this.loadedFootagesCount += 1;
+    if (this.loadedAssets === this.totalImages && this.loadedFootagesCount === this.totalFootages) {
+        if (this.imagesLoadedCb) {
+            this.imagesLoadedCb(null);
+        }
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: getAssetsPath
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function getAssetsPath(assetData, assetsPath, originalPath) {
+    var path = '';
+    if (assetData.e) {
+        path = assetData.p;
+    } else if (assetsPath) {
+        var imagePath = assetData.p;
+        if (imagePath.indexOf('images/') !== -1) {
+            imagePath = imagePath.split('/')[1];
+        }
+        path = assetsPath + imagePath;
+    } else {
+        path = originalPath;
+        path += assetData.u ? assetData.u : '';
+        path += assetData.p;
+    }
+    return path;
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: testImageLoaded
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function testImageLoaded(img) {
+    var _count = 0;
+    var intervalId = setInterval(function () {
+        var box = img.getBBox();
+        if (box.width || _count > 500) {
+            this._imageLoaded();
+            clearInterval(intervalId);
+        }
+        _count += 1;
+    }.bind(this), 50);
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: createImageData
+Language: JavaScript
+Lines: 21
+Full Code:
+--------------------------------------------------------------------------------
+function createImageData(assetData) {
+    var path = getAssetsPath(assetData, this.assetsPath, this.path);
+    var img = createNS('image');
+    if (isSafari) {
+        this.testImageLoaded(img);
+    } else {
+        img.addEventListener('load', this._imageLoaded, false);
+    }
+    img.addEventListener('error', function () {
+        ob.img = proxyImage;
+        this._imageLoaded();
+    }.bind(this), false);
+    img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', path);
+    if (this._elementHelper.append) {
+        this._elementHelper.append(img);
+    } else {
+        this._elementHelper.appendChild(img);
+    }
+    var ob = {
+        img: img,
+        assetData: assetData,
+    };
+    return ob;
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: createImgData
+Language: JavaScript
+Lines: 17
+Full Code:
+--------------------------------------------------------------------------------
+function createImgData(assetData) {
+    var path = getAssetsPath(assetData, this.assetsPath, this.path);
+    var img = createTag('img');
+    img.crossOrigin = 'anonymous';
+    img.addEventListener('load', this._imageLoaded, false);
+    img.addEventListener('error', function () {
+        ob.img = proxyImage;
+        this._imageLoaded();
+    }.bind(this), false);
+    img.src = path;
+    var ob = {
+        img: img,
+        assetData: assetData,
+    };
+    return ob;
+}
+--------------------------------------------------------------------------------
+
+
+Function 7: createFootageData
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function createFootageData(data) {
+    var ob = {
+        assetData: data,
+    };
+    var path = getAssetsPath(data, this.assetsPath, this.path);
+    dataManager.loadData(path, function (footageData) {
+        ob.img = footageData;
+        this._footageLoaded();
+    }.bind(this), function () {
+        ob.img = {};
+        this._footageLoaded();
+    }.bind(this));
+    return ob;
+}
+--------------------------------------------------------------------------------
+
+
+Function 8: loadAssets
+Language: JavaScript
+Lines: 17
+Full Code:
+--------------------------------------------------------------------------------
+function loadAssets(assets, cb) {
+    this.imagesLoadedCb = cb;
+    var i;
+    var len = assets.length;
+    for (i = 0; i < len; i += 1) {
+        if (!assets[i].layers) {
+            if (!assets[i].t || assets[i].t === 'seq') {
+                this.totalImages += 1;
+                this.images.push(this._createImageData(assets[i]));
+            } else if (assets[i].t === 3) {
+                this.totalFootages += 1;
+                this.images.push(this.createFootageData(assets[i]));
+            }
+        }
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 9: getAsset
+Language: JavaScript
+Lines: 11
+Full Code:
+--------------------------------------------------------------------------------
+function getAsset(assetData) {
+    var i = 0;
+    var len = this.images.length;
+    while (i < len) {
+        if (this.images[i].assetData === assetData) {
+            return this.images[i].img;
+        }
+        i += 1;
+    }
+    return null;
+}
+--------------------------------------------------------------------------------
+
+
+Function 10: setCacheType
+Language: JavaScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+function setCacheType(type, elementHelper) {
+    if (type === 'svg') {
+        this._elementHelper = elementHelper;
+        this._createImageData = this.createImageData.bind(this);
+    } else {
+        this._createImageData = this.createImgData.bind(this);
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 11: ImagePreloaderFactory
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function ImagePreloaderFactory() {
+    this._imageLoaded = imageLoaded.bind(this);
+    this._footageLoaded = footageLoaded.bind(this);
+    this.testImageLoaded = testImageLoaded.bind(this);
+    this.createFootageData = createFootageData.bind(this);
+    this.assetsPath = '';
+    this.path = '';
+    this.totalImages = 0;
+    this.totalFootages = 0;
+    this.loadedAssets = 0;
+    this.loadedFootagesCount = 0;
+    this.imagesLoadedCb = null;
+    this.images = [];
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T16:18:04.319Z
+Question Type: select-all
+Function: setCacheType
+Function Size: 379 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setCacheType (JavaScript)\n// Sets the type of cache and binds the appropriate image creation method.\n\nfunction setCacheType(type, elementHelper) {\n    if (type === 'svg') {\n        this._elementHelper = elementHelper;\n        this._createImageData = this.createImageData.bind(this);\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T16:18:05.429Z
+Question Type: function-variant
+Function: loadAnimation
+Function Size: 254 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: loadAnimation (JavaScript)\n// Loads a new animation with given parameters.\n\nfunction loadAnimation(params) {\n    var animItem = new AnimationItem();\n    setupAnimation(animItem, null);\n    animItem.setParams(params);\n    return animItem;\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T16:18:05.884Z
+Question Type: true-false
+Function: setSpeed
+Function Size: 242 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setSpeed (JavaScript)\n// Sets the speed for all registered animations.\n\nfunction setSpeed(val, animation) {\n    var i;\n    for (i = 0; i < len; i += 1) {\n      registeredAnimations[i].animation.setSpeed(val, animation);\n    }\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T16:18:06.625Z
+Question Type: multiple-choice
+Function: testImageLoaded
+Function Size: 415 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: testImageLoaded (JavaScript)\n// Tests if an image is loaded by checking its bounding box repeatedly.\n\nfunction testImageLoaded(img) {\n    var _count = 0;\n    var intervalId = setInterval(function () {\n        var box = img.getBBox();\n        if (box.width || _count > 500) {\n            
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T16:18:14.145Z
+Question Type: multiple-choice
+Function: resume
+Function Size: 426 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: resume (JavaScript)\n// Resumes the animations based on the elapsed time.\n\nfunction resume(nowTime) {\n    var elapsedTime = nowTime - initTime;\n    var i;\n    for (i = 0; i < len; i += 1) {\n      registeredAnimations[i].animation.advanceTime(elapsedTime);\n    }\n    initTime = nowTime;\n  
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T16:18:15.508Z
+Question Type: select-all
+Function: registerAnimation
+Function Size: 571 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: registerAnimation (JavaScript)\n// Registers a new animation for a given element and animation data.\n\nfunction registerAnimation(element, animationData) {\n    if (!element) {\n      return null;\n    }\n    var i = 0;\n    while (i < len) {\n      if (registeredAnimations[i].elem === element 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T16:18:16.632Z
+Question Type: function-variant
+Function: stop
+Function Size: 207 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: stop (JavaScript)\n// Stops all registered animations.\n\nfunction stop(animation) {\n    var i;\n    for (i = 0; i < len; i += 1) {\n      registeredAnimations[i].animation.stop(animation);\n    }\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-11T16:18:17.071Z
+Question Type: order-sequence
+Function: loadAssets
+Function Size: 622 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: loadAssets (JavaScript)\n// Loads assets and categorizes them into images and footages.\n\nfunction loadAssets(assets, cb) {\n    this.imagesLoadedCb = cb;\n    var i;\n    var len = assets.length;\n    for (i = 0; i < len; i += 1) {\n        if (!assets[i].layers) {\n            if (!assets[i].
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760160466473
+Repository: Unknown
+Total Questions Generated: 12
+Total Chunks Processed: 39
+Ended: 2025-10-11T16:18:17.073Z
+================================================================================
+

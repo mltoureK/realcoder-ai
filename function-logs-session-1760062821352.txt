@@ -1,0 +1,1359 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1760062821352
+Started: 2025-10-10T02:20:21.352Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T02:20:21.353Z
+File: the API is ~stable, so this should be fine
+Functions Extracted: 2
+
+
+Function 1: closeSpanWithError
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+const closeSpanWithError = (span: Span, error?: Error) => {
+  if (isBubbledError(error) && error.bubble) {
+    span.setAttribute('next.bubble', true)
+  } else {
+    if (error) {
+      span.recordException(error)
+      span.setAttribute('error.type', error.name)
+    }
+    span.setStatus({ code: SpanStatusCode.ERROR, message: error?.message })
+  }
+  span.end()
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: getTracePropagationData
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+public getTracePropagationData(): ClientTraceDataEntry[] {
+    const activeContext = context.active()
+    const entries: ClientTraceDataEntry[] = []
+    propagation.inject(activeContext, entries, clientTraceDataSetter)
+    return entries
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T02:20:35.097Z
+File: vercel-next.js-8f731e6/packages/next/src/compiled/@edge-runtime/cookies/index.d.ts
+Functions Extracted: 3
+
+
+Function 1: stringifyCookie
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+declare function stringifyCookie(c: ResponseCookie | RequestCookie): string {
+    const cookieParts: string[] = [];
+    cookieParts.push(`${c.name}=${c.value}`);
+    if (c.domain) cookieParts.push(`Domain=${c.domain}`);
+    if (c.path) cookieParts.push(`Path=${c.path}`);
+    if (c.expires) cookieParts.push(`Expires=${new Date(c.expires).toUTCString()}`);
+    if (c.httpOnly) cookieParts.push(`HttpOnly`);
+    if (c.secure) cookieParts.push(`Secure`);
+    if (c.sameSite) cookieParts.push(`SameSite=${c.sameSite}`);
+    return cookieParts.join('; ');
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: parseCookie
+Language: TypeScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+declare function parseCookie(cookie: string): Map<string, string> {
+    const result = new Map<string, string>();
+    const cookies = cookie.split('; ');
+    for (const c of cookies) {
+        const [name, value] = c.split('=');
+        result.set(decodeURIComponent(name), decodeURIComponent(value));
+    }
+    return result;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: parseSetCookie
+Language: TypeScript
+Lines: 19
+Full Code:
+--------------------------------------------------------------------------------
+declare function parseSetCookie(setCookie: string): undefined | ResponseCookie {
+    const cookie: ResponseCookie = { name: '', value: '' };
+    const parts = setCookie.split('; ');
+    const [nameValue] = parts;
+    const [name, value] = nameValue.split('=');
+    cookie.name = decodeURIComponent(name);
+    cookie.value = decodeURIComponent(value);
+    for (let i = 1; i < parts.length; i++) {
+        const [key, val] = parts[i].split('=');
+        switch (key.toLowerCase()) {
+            case 'expires':
+                cookie.expires = new Date(val);
+                break;
+            case 'httponly':
+                cookie.httpOnly = true;
+                break;
+            case 'secure':
+                cookie.secure = true;
+                break;
+            case 'samesite':
+                cookie.sameSite = val;
+                break;
+            // Add other attributes as needed
+        }
+    }
+    return cookie;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T02:21:02.127Z
+File: @ts-expect-error - Argument of type 'Buffer<ArrayBufferLike>' is not assignable to parameter of type 'BufferSource'.
+Functions Extracted: 4
+
+
+Function 1: buildEnvironmentVariablesFrom
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function buildEnvironmentVariablesFrom(
+  injectedEnvironments: Record<string, string>
+): Record<string, string | undefined> {
+  const pairs = Object.keys(process.env).map((key) => [key, process.env[key]])
+  const env = Object.fromEntries(pairs)
+  for (const key of Object.keys(injectedEnvironments)) {
+    env[key] = injectedEnvironments[key]
+  }
+  env.NEXT_RUNTIME = 'edge'
+  return env
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: throwUnsupportedAPIError
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function throwUnsupportedAPIError(name: string) {
+  const error =
+    new Error(`A Node.js API is used (${name}) which is not supported in the Edge Runtime.
+Learn more: https://nextjs.org/docs/api-reference/edge-runtime`)
+  decorateServerError(error, COMPILER_NAMES.edgeServer)
+  throw error
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: createProcessPolyfill
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function createProcessPolyfill(env: Record<string, string>) {
+  const processPolyfill = { env: buildEnvironmentVariablesFrom(env) }
+  const overriddenValue: Record<string, any> = {}
+
+  for (const key of Object.keys(process)) {
+    if (key === 'env') continue
+    Object.defineProperty(processPolyfill, key, {
+      get() {
+        if (overriddenValue[key] !== undefined) {
+          return overriddenValue[key]
+        }
+        if (typeof (process as any)[key] === 'function') {
+          return () => throwUnsupportedAPIError(`process.${key}`)
+        }
+        return undefined
+      },
+      set(value) {
+        overriddenValue[key] = value
+      },
+      enumerable: false,
+    })
+  }
+  return processPolyfill
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: createModuleContext
+Language: TypeScript
+Lines: 41
+Full Code:
+--------------------------------------------------------------------------------
+async function createModuleContext(options: ModuleContextOptions) {
+  const warnedEvals = new Set<string>()
+  const warnedWasmCodegens = new Set<string>()
+  const { edgeFunctionEntry } = options
+  const wasm = await loadWasm(edgeFunctionEntry.wasm ?? [])
+  const runtime = new EdgeRuntime({
+    codeGeneration:
+      process.env.NODE_ENV !== 'production'
+        ? { strings: true, wasm: true }
+        : undefined,
+    extend: (context) => {
+      context.process = createProcessPolyfill(edgeFunctionEntry.env)
+
+      Object.defineProperty(context, 'require', {
+        enumerable: false,
+        value: (id: string) => {
+          const value = NativeModuleMap.get(id)
+          if (!value) {
+            throw TypeError('Native module not found: ' + id)
+          }
+          return value
+        },
+      })
+
+      if (process.env.NODE_ENV !== 'production') {
+        context.__next_log_error__ = function (err: unknown) {
+          options.onError(err)
+        }
+      }
+
+      context.__next_eval__ = function __next_eval__(fn: Function) {
+        const key = fn.toString()
+        if (!warnedEvals.has(key)) {
+          const warning = getServerError(
+            new Error(
+              `Dynamic Code Evaluation (e. g. 'eval', 'new Function') not allowed in Edge Runtime
+Learn More: https://nextjs.org/docs/messages/edge-dynamic-code-evaluation`
+            ),
+            COMPILER_NAMES.edgeServer
+          )
+          warning.name = 'DynamicCodeEvaluationWarning'
+          Error.captureStackTrace(warning, __next_eval__)
+          warnedEvals.add(key)
+          options.onWarning(warning)
+        }
+        return fn()
+      }
+
+      context.__next_webassembly_compile__ =
+        function __next_webassembly_compile__(fn: Function) {
+          const key = fn.toString()
+          if (!warnedWasmCodegens.has(key)) {
+            const warning = getServerError(
+              new Error(`Dynamic WASM code generation (e. g. 'WebAssembly.compile') not allowed in Edge Runtime.
+Learn More: https://nextjs.org/docs/messages/edge-dynamic-code-evaluation`),
+              COMPILER_NAMES.edgeServer
+            )
+            warning.name = 'DynamicWasmCodeGenerationWarning'
+            Error.captureStackTrace(warning, __next_webassembly_compile__)
+            warnedWasmCodegens.add(key)
+            options.onWarning(warning)
+          }
+          return fn()
+        }
+
+      context.__next_webassembly_instantiate__ =
+        async function __next_webassembly_instantiate__(fn: Function) {
+          const result = await fn()
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T02:21:09.666Z
+File: This keeps autocompletion working for static routes.
+Functions Extracted: 1
+
+
+Function 1: generateValidatorFile
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function generateValidatorFile(
+  routesManifest: RouteTypesManifest
+): string {
+  const generateValidations = (
+    paths: string[],
+    type:
+      | 'AppPageConfig'
+      | 'PagesPageConfig'
+      | 'LayoutConfig'
+      | 'RouteHandlerConfig'
+      | 'ApiRouteConfig',
+    pathToRouteMap?: Map<string, string>
+  ) =>
+    paths
+      .sort()
+      .map(path => {
+        const route = pathToRouteMap ? pathToRouteMap.get(path) : undefined;
+        return `Validation for ${path} of type ${type} with route ${route}`;
+      });
+
+  return 'Validator file generated';
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T02:21:51.196Z
+File: vercel-next.js-8f731e6/packages/next/src/server/route-modules/route-module.ts
+Functions Extracted: 2
+
+
+Function 1: instrumentationOnRequestError
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+public async instrumentationOnRequestError(
+    req: IncomingMessage | BaseNextRequest,
+    ...args: Parameters<InstrumentationOnRequestError>
+) {
+    if (process.env.NEXT_RUNTIME === 'edge') {
+        const { getEdgeInstrumentationModule } = await import('../web/globals')
+        const instrumentation = await getEdgeInstrumentationModule()
+
+        if (instrumentation) {
+            await instrumentation.onRequestError?.(...args)
+        }
+    } else {
+        const { join } = require('node:path') as typeof import('node:path')
+        const absoluteProjectDir = join(
+            /* turbopackIgnore: true */
+            process.cwd(),
+            getRequestMeta(req, 'relativeProjectDir') || this.relativeProjectDir
+        )
+
+        const { instrumentationOnRequestError } = await import(
+            '../lib/router-utils/instrumentation-globals.external.js'
+        )
+
+        return instrumentationOnRequestError(
+            absoluteProjectDir,
+            this.distDir,
+            ...args
+        )
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: loadManifests
+Language: TypeScript
+Lines: 90
+Full Code:
+--------------------------------------------------------------------------------
+private loadManifests(
+    srcPage: string,
+    projectDir?: string
+): {
+    buildId: string
+    buildManifest: BuildManifest
+    fallbackBuildManifest: BuildManifest
+    routesManifest: DeepReadonly<DevRoutesManifest>
+    nextFontManifest: DeepReadonly<NextFontManifest>
+    prerenderManifest: DeepReadonly<PrerenderManifest>
+    serverFilesManifest: RequiredServerFilesManifest
+    reactLoadableManifest: DeepReadonly<ReactLoadableManifest>
+    subresourceIntegrityManifest: any
+    clientReferenceManifest: any
+    serverActionsManifest: any
+    dynamicCssManifest: any
+    interceptionRoutePatterns: RegExp[]
+} {
+    if (process.env.NEXT_RUNTIME === 'edge') {
+        const { getEdgePreviewProps } =
+            require('../web/get-edge-preview-props') as typeof import('../web/get-edge-preview-props')
+
+        const maybeJSONParse = (str?: string) =>
+            str ? JSON.parse(str) : undefined
+
+        return {
+            buildId: process.env.__NEXT_BUILD_ID || '',
+            buildManifest: self.__BUILD_MANIFEST as any,
+            fallbackBuildManifest: {} as any,
+            reactLoadableManifest: maybeJSONParse(self.__REACT_LOADABLE_MANIFEST),
+            nextFontManifest: maybeJSONParse(self.__NEXT_FONT_MANIFEST),
+            prerenderManifest: {
+                routes: {},
+                dynamicRoutes: {},
+                notFoundRoutes: [],
+                version: 4,
+                preview: getEdgePreviewProps(),
+            },
+            routesManifest: {
+                version: 4,
+                caseSensitive: Boolean(process.env.__NEXT_CASE_SENSITIVE_ROUTES),
+                basePath: process.env.__NEXT_BASE_PATH || '',
+                rewrites: (process.env.__NEXT_REWRITES as any) || {
+                    beforeFiles: [],
+                    afterFiles: [],
+                    fallback: [],
+                },
+                redirects: [],
+                headers: [],
+                i18n:
+                    (process.env.__NEXT_I18N_CONFIG as any as I18NConfig) || undefined,
+                skipMiddlewareUrlNormalize: Boolean(
+                    process.env.__NEXT_NO_MIDDLEWARE_URL_NORMALIZE
+                ),
+            },
+            serverFilesManifest: {
+                config: (globalThis as any).nextConfig || {},
+            } as any,
+            clientReferenceManifest: self.__RSC_MANIFEST?.[srcPage],
+            serverActionsManifest: maybeJSONParse(self.__RSC_SERVER_MANIFEST),
+            subresourceIntegrityManifest: maybeJSONParse(
+                self.__SUBRESOURCE_INTEGRITY_MANIFEST
+            ),
+            dynamicCssManifest: maybeJSONParse(self.__DYNAMIC_CSS_MANIFEST),
+            interceptionRoutePatterns: (
+                maybeJSONParse(self.__INTERCEPTION_ROUTE_REWRITE_MANIFEST) ?? []
+            ).map((rewrite: any) => new RegExp(rewrite.regex)),
+        }
+    } else {
+        if (!projectDir) {
+            throw new Error('Invariant: projectDir is required for node runtime')
+        }
+        const { loadManifestFromRelativePath } =
+            require('../load-manifest.external') as typeof import('../load-manifest.external')
+        const normalizedPagePath = normalizePagePath(srcPage)
+
+        const router =
+            this.definition.kind === RouteKind.PAGES ||
+            this.definition.kind === RouteKind.PAGES_API
+                ? 'pages'
+                : 'app'
+
+        const [
+            routesManifest,
+            prerenderManifest,
+            buildManifest,
+            fallbackBuildManifest,
+            reactLoadableManifest,
+            nextFontManifest,
+            clientReferenceManifest,
+            serverActionsManifest,
+            subresourceIntegrityManifest,
+            serverFilesManifest,
+            buildId,
+            dynamicCssManifest,
+        ] = [
+            loadManifestFromRelativePath<DevRoutesManifest>({
+                projectDir,
+                distDir: this.distDir,
+                manifest: ROUTES_MANIFEST,
+                shouldCache: !this.isDev,
+            }),
+            loadManifestFromRelativePath<PrerenderManifest>({
+                projectDir,
+                distDir: this.distDir,
+                manifest: PRERENDER_MANIFEST,
+                shouldCache: !this.isDev,
+            }),
+            loadManifestFromRelativePath<BuildManifest>({
+                projectDir,
+                distDir: this.distDir,
+                manifest: BUILD_MANIFEST,
+                shouldCache: !this.isDev,
+            }),
+            srcPage === '/_error'
+                ? loadManifestFromRelativePath<BuildManifest>({
+                      projectDir,
+                      distDir: this.distDir,
+                      manifest: `fallback-${BUILD_MANIFEST}`,
+                      shouldCache: !this.isDev,
+                      handleMissing: true,
+                  })
+                : ({} as BuildManifest),
+            loadManifestFromRelativePath<ReactLoadableManifest>({
+                projectDir,
+                distDir: this.distDir,
+                manifest: process.env.TURBOPACK
+                    ? `server/${router === 'app' ? 'app' : 'pages'}${normalizedPagePath}/${REACT_LOADABLE_MANIFEST}`
+                    : REACT_LOADABLE_MANIFEST,
+                handleMissing: true,
+                shouldCache: !this.isDev,
+            }),
+            loadManifestFromRelativePath<NextFontManifest>({
+                projectDir,
+                distDir: this.distDir,
+                manifest: `server/${NEXT_FONT_MANIFEST}.json`,
+                shouldCache: !this.isDev,
+            }),
+            router === 'app' && !isStaticMetadataRoute(srcPage)
+                ? loadManifestFromRelativePath({
+                      distDir: this.distDir,
+                      projectDir,
+                      useEval: true,
+                      handleMissing: true,
+                      manifest: `server/app${srcPage.replace(/%5F/g, '_') + '_' + CLIENT_REFERENCE_MANIFEST}.js`,
+                      shouldCache: !this.isDev,
+                  })
+                : undefined,
+            router === 'app'
+                ? loadManifestFromRelativePath<any>({
+                      distDir: this.distDir,
+                      projectDir,
+                      manifest: `server/${SERVER_REFERENCE_MANIFEST}.json`,
+                      handleMissing: true,
+                      shouldCache: !this.isDev,
+                  })
+                : {},
+            loadManifestFromRelativePath<Record<string, string>>({
+                projectDir,
+                distDir: this.distDir,
+                manifest: `server/${SUBRESOURCE_INTEGRITY_MANIFEST}.json`,
+                handleMissing: true,
+                shouldCache: !this.isDev,
+            }),
+            this.isDev
+                ? ({} as any)
+                : loadManifestFromRelativePath<RequiredServerFilesManifest>({
+                      projectDir,
+                      distDir: this.distDir,
+                      manifest: SERVER_FILES_MANIFEST,
+                  }),
+            this.isDev
+                ? 'development'
+                : loadManifestFromRelativePath<any>({
+                      projectDir,
+                      distDir: this.distDir,
+                      manifest: BUILD_ID_FILE,
+                      skipParse: true,
+                  }),
+            loadManifestFromRelativePath<any>({
+                projectDir,
+                distDir: this.distDir,
+                manifest: DYNAMIC_CSS_MANIFEST,
+                handleMissing: true,
+            }),
+        ]
+
+        return {
+            buildId,
+            buildManifest,
+            fallbackBuildManifest,
+            routesManifest,
+            nextFontManifest,
+            prerenderManifest,
+            serverFilesManifest,
+            reactLoadableManifest,
+            clientReferenceManifest: (clientReferenceManifest as any)
+                ?.__RSC_MANIFEST?.[srcPage.replace(/%5F/g, '_')],
+            serverActionsManifest,
+            subresourceIntegrityManifest,
+            dynamicCssManifest,
+            interceptionRoutePatterns: routesManifest.rewrites.beforeFiles
+                .filter(isInterceptionRouteRewrite)
+                .map((rewrite) => new RegExp(rewrite.regex)),
+        }
+    }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T02:22:01.782Z
+Question Type: select-all
+Function: buildEnvironmentVariablesFrom
+Function Size: 523 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: buildEnvironmentVariablesFrom (TypeScript)\n// Builds environment variables from injected environments and process.env.\n\nfunction buildEnvironmentVariablesFrom(\n  injectedEnvironments: Record<string, string>\n): Record<string, string | undefined> {\n  const pairs = Object.keys(process.env)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T02:22:04.044Z
+Question Type: order-sequence
+Function: throwUnsupportedAPIError
+Function Size: 414 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: throwUnsupportedAPIError (TypeScript)\n// Throws an error for unsupported Node.js APIs in the Edge Runtime.\n\nfunction throwUnsupportedAPIError(name: string) {\n  const error =\n    new Error(`A Node.js API is used (${name}) which is not supported in the Edge Runtime.\nLearn more: https://ne
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T02:22:05.219Z
+Question Type: select-all
+Function: generateValidatorFile
+Function Size: 684 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: generateValidatorFile (TypeScript)\n// Generates a validator file based on the routes manifest.\n\nexport function generateValidatorFile(\n  routesManifest: RouteTypesManifest\n): string {\n  const generateValidations = (\n    paths: string[],\n    type:\n      | 'AppPageConfig'\n      | 'PagesPa
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T02:22:13.386Z
+Question Type: true-false
+Function: closeSpanWithError
+Function Size: 468 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: closeSpanWithError (TypeScript)\n// Closes a span and records error information if provided.\n\nconst closeSpanWithError = (span: Span, error?: Error) => {\n  if (isBubbledError(error) && error.bubble) {\n    span.setAttribute('next.bubble', true)\n  } else {\n    if (error) {\n      span.recor
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T02:22:18.640Z
+Question Type: function-variant
+Function: createProcessPolyfill
+Function Size: 839 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createProcessPolyfill (TypeScript)\n// Creates a polyfill for the process object with overridden properties.\n\nfunction createProcessPolyfill(env: Record<string, string>) {\n  const processPolyfill = { env: buildEnvironmentVariablesFrom(env) }\n  const overriddenValue: Record<string, any> =
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T02:22:21.593Z
+Question Type: select-all
+Function: createModuleContext
+Function Size: 2659 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createModuleContext (TypeScript)\n// Creates a module context with specific options and runtime configuration.\n\nasync function createModuleContext(options: ModuleContextOptions) {\n  const warnedEvals = new Set<string>()\n  const warnedWasmCodegens = new Set<string>()\n  const { edgeFunctio
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T02:22:32.968Z
+Question Type: multiple-choice
+Function: parseCookie
+Function Size: 438 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: parseCookie (TypeScript)\n// Parses a Cookie header value into a Map of cookie names and values.\n\ndeclare function parseCookie(cookie: string): Map<string, string> {\n    const result = new Map<string, string>();\n    const cookies = cookie.split('; ');\n    for (const c of cookies) {\n     
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T02:22:36.669Z
+Question Type: multiple-choice
+Function: loadManifests
+Function Size: 8359 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: loadManifests (TypeScript)\n// Loads various manifests based on the runtime environment and project directory.\n\nprivate loadManifests(\n    srcPage: string,\n    projectDir?: string\n): {\n    buildId: string\n    buildManifest: BuildManifest\n    fallbackBuildManifest: BuildManifest\n    route
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T02:22:37.966Z
+Question Type: function-variant
+Function: parseSetCookie
+Function Size: 1041 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: parseSetCookie (TypeScript)\n// Parses a Set-Cookie header value into a ResponseCookie object.\n\ndeclare function parseSetCookie(setCookie: string): undefined | ResponseCookie {\n    const cookie: ResponseCookie = { name: '', value: '' };\n    const parts = setCookie.split('; ');\n    const 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T02:22:47.076Z
+Question Type: function-variant
+Function: instrumentationOnRequestError
+Function Size: 1156 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: instrumentationOnRequestError (TypeScript)\n// Handles instrumentation errors for requests in both edge and node runtimes.\n\npublic async instrumentationOnRequestError(\n    req: IncomingMessage | BaseNextRequest,\n    ...args: Parameters<InstrumentationOnRequestError>\n) {\n    if (process.e
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760062821352
+Repository: Unknown
+Total Questions Generated: 7
+Total Chunks Processed: 12
+Ended: 2025-10-10T02:22:49.848Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T02:25:16.440Z
+File: heroui-inc-heroui-3737870/packages/utilities/react-utils/src/dom.ts
+Functions Extracted: 9
+
+
+Function 1: getUserAgentBrowser
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function getUserAgentBrowser(navigator: Navigator) {
+  const {userAgent: ua, vendor} = navigator;
+  const android = /(android)/i.test(ua);
+
+  switch (true) {
+    case /CriOS/.test(ua):
+      return "Chrome for iOS";
+    case /Edg\//.test(ua):
+      return "Edge";
+    case android && /Silk\//.test(ua):
+      return "Silk";
+    case /Chrome/.test(ua) && /Google Inc/.test(vendor):
+      return "Chrome";
+    case /Firefox\/\d+\.\d+$/.test(ua):
+      return "Firefox";
+    case android:
+      return "AOSP";
+    case /MSIE|Trident/.test(ua):
+      return "IE";
+    case /Safari/.test(navigator.userAgent) && /Apple Computer/.test(ua):
+      return "Safari";
+    case /AppleWebKit/.test(ua):
+      return "WebKit";
+    default:
+      return null;
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: getUserAgentOS
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function getUserAgentOS(navigator: Navigator) {
+  const {userAgent: ua, platform} = navigator;
+
+  switch (true) {
+    case /Android/.test(ua):
+      return "Android";
+    case /iPhone|iPad|iPod/.test(platform):
+      return "iOS";
+    case /Win/.test(platform):
+      return "Windows";
+    case /Mac/.test(platform):
+      return "Mac";
+    case /CrOS/.test(ua):
+      return "Chrome OS";
+    case /Firefox/.test(ua):
+      return "Firefox OS";
+    default:
+      return null;
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: detectDeviceType
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+export function detectDeviceType(navigator: Navigator) {
+  const {userAgent: ua} = navigator;
+
+  if (/(tablet)|(iPad)|(Nexus 9)/i.test(ua)) return "tablet";
+  if (/(mobi)/i.test(ua)) return "phone";
+
+  return "desktop";
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: detectOS
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+export function detectOS(os: UserAgentOS) {
+  if (!isBrowser) return false;
+
+  return getUserAgentOS(window.navigator) === os;
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: detectBrowser
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+export function detectBrowser(browser: UserAgentBrowser) {
+  if (!isBrowser) return false;
+
+  return getUserAgentBrowser(window.navigator) === browser;
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: detectTouch
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+export function detectTouch() {
+  if (!isBrowser) return false;
+
+  return window.ontouchstart === null && window.ontouchmove === null && window.ontouchend === null;
+}
+--------------------------------------------------------------------------------
+
+
+Function 7: createFocusableRef
+Language: TypeScript
+Lines: 11
+Full Code:
+--------------------------------------------------------------------------------
+export function createFocusableRef<T extends HTMLElement = HTMLElement>(
+  domRef: RefObject<T>,
+  focusableRef: RefObject<HTMLElement> = domRef,
+): FocusableRefValue<T> {
+  return {
+    ...createDOMRef(domRef),
+    focus() {
+      if (focusableRef.current) {
+        focusableRef.current.focus();
+      }
+    },
+  };
+}
+--------------------------------------------------------------------------------
+
+
+Function 8: useDOMRef
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+export function useDOMRef<T extends HTMLElement = HTMLElement>(
+  ref?: RefObject<T | null> | Ref<T | null>,
+) {
+  const domRef = useRef<T>(null);
+
+  useImperativeHandle(ref, () => domRef.current);
+
+  return domRef;
+}
+--------------------------------------------------------------------------------
+
+
+Function 9: useFocusableRef
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export function useFocusableRef<T extends HTMLElement = HTMLElement>(
+  ref: FocusableRef<T>,
+  focusableRef?: RefObject<HTMLElement>,
+): RefObject<T> {
+  const domRef = useRef<T>(null);
+
+  useImperativeHandle(ref, () => createFocusableRef(domRef, focusableRef));
+
+  return domRef;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T02:25:23.587Z
+File: returns ''
+Functions Extracted: 2
+
+
+Function 1: callAllHandlers
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export function callAllHandlers<T extends (event: any) => void>(...fns: (T | undefined)[]) {
+  return function func(event: Args<T>[0]) {
+    fns.some((fn) => {
+      fn?.(event);
+
+      return event?.defaultPrevented;
+    });
+  };
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: callAll
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+export function callAll<T extends AnyFunction>(...fns: (T | undefined)[]) {
+  return function mergedFn(arg: Args<T>[0]) {
+    fns.forEach((fn) => {
+      fn?.(arg);
+    });
+  };
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T02:25:35.833Z
+File: heroui-inc-heroui-3737870/apps/docs/libs/docs/page.ts
+Functions Extracted: 4
+
+
+Function 1: getCurrentTag
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export async function getCurrentTag(tag?: string) {
+  if (tag) return tag;
+  if (FORCE_TAG) return TAG;
+
+  return getLatestTag();
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: fetchDocsManifest
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+export async function fetchDocsManifest(tag: string) {
+  if (!__PROD__ || __PREVIEW__) return localRoutes;
+
+  const res = await getRawFileFromRepo(`${CONTENT_PATH}/docs/manifest.json`, tag);
+
+  return JSON.parse(res);
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: findRouteByPath
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export function findRouteByPath(path: string, routes: Route[]): Route | null | undefined {
+  for (const route of routes) {
+    if (route.path && removeFromLast(route.path, ".") === path) {
+      return route;
+    }
+    const childPath = route.routes ? findRouteByPath(path, route.routes) : null;
+
+    if (childPath) return childPath;
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: getPaths
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+export function getPaths(nextRoutes: Route[], carry: Carry[] = [{params: {slug: []}}]) {
+  nextRoutes.forEach((route: Route) => {
+    if (route.comingSoon) {
+      return;
+    }
+    if (route.path) {
+      carry.push(removeFromLast(route.path, ".") as Carry);
+    } else if (route.routes) {
+      getPaths(route.routes, carry);
+    }
+  });
+
+  return carry;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T02:26:08.854Z
+File: eslint-disable-next-line no-console
+Functions Extracted: 8
+
+
+Function 1: setCssBackground
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+export function setCssBackground(value: string) {
+  const showcaseEl = document.getElementById(showcaseId);
+  const baseColor = document.getElementById(baseColorsId);
+  const hslValue = hexToHsl(value);
+
+  baseColor?.style.setProperty("--heroui-background", hslValue);
+  showcaseEl?.style.setProperty("--heroui-background", hslValue);
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: setCssFontSize
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function setCssFontSize(type: keyof ConfigLayout["fontSize"], value: string) {
+  const el = document.getElementById(showcaseId);
+
+  el?.style.setProperty(`--heroui-font-size-${type}`, `${value}rem`);
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: setCssLineHeight
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function setCssLineHeight(type: keyof ConfigLayout["lineHeight"], value: string) {
+  const el = document.getElementById(showcaseId);
+
+  el?.style.setProperty(`--heroui-line-height-${type}`, `${value}rem`);
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: setCssRadius
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function setCssRadius(type: keyof ConfigLayout["radius"], value: string) {
+  const el = document.getElementById(showcaseId);
+
+  el?.style.setProperty(`--heroui-radius-${type}`, `${value}rem`);
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: setCssBorderWidth
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function setCssBorderWidth(type: keyof ConfigLayout["borderWidth"], value: string) {
+  const el = document.getElementById(showcaseId);
+
+  el?.style.setProperty(`--heroui-border-width-${type}`, `${value}px`);
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: setCssContentColor
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function setCssContentColor(level: 1 | 2 | 3 | 4, value: string, heroValue: string) {
+  const showcaseEl = document.getElementById(showcaseId);
+  const baseColorEl = document.getElementById(baseColorsId);
+  const configurationContainer = document.getElementById("configuration-container");
+
+  const hslValue = hexToHsl(value);
+  const heroHslValue = hexToHsl(heroValue);
+
+  showcaseEl?.style.setProperty(`--heroui-content${level}`, hslValue);
+  showcaseEl?.style.setProperty(
+    `--heroui-content${level}-foreground`,
+    hexToHsl(readableColor(value)),
+  );
+  baseColorEl?.style.setProperty(`--heroui-content${level}`, hslValue);
+  baseColorEl?.style.setProperty(
+    `--heroui-content${level}-foreground`,
+    hexToHsl(readableColor(value)),
+  );
+
+  configurationContainer?.style.setProperty(`--heroui-content${level}`, heroHslValue);
+  configurationContainer?.style.setProperty(
+    `--heroui-content${level}-foreground`,
+    hexToHsl(readableColor(heroValue)),
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 7: setCssOtherColor
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+export function setCssOtherColor(
+  type: "background" | "foreground" | "focus" | "overlay",
+  value: string,
+) {
+  const showcaseEl = document.getElementById(showcaseId);
+  const otherColors = document.getElementById(otherColorsId);
+  const hslValue = hexToHsl(value);
+
+  otherColors?.style.setProperty(`--heroui-${type}`, hslValue);
+  showcaseEl?.style.setProperty(`--heroui-${type}`, hslValue);
+}
+--------------------------------------------------------------------------------
+
+
+Function 8: setOtherCssParams
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+export function setOtherCssParams(type: keyof ConfigLayout["otherParams"], value: string) {
+  const el = document.getElementById(showcaseId);
+
+  if (!el) return;
+
+  switch (type) {
+    case "disabledOpacity":
+      el.style.setProperty("--heroui-disabled-opacity", value);
+      break;
+    case "dividerWeight":
+      el.style.setProperty("--heroui-divider-weight", `${value}px`);
+      break;
+    case "hoverOpacity":
+      el.style.setProperty("--heroui-hover-opacity", value);
+      break;
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-10T02:26:25.182Z
+File: heroui-inc-heroui-3737870/packages/hooks/use-pagination/src/index.ts
+Functions Extracted: 1
+
+
+Function 1: usePagination
+Language: TypeScript
+Lines: 63
+Full Code:
+--------------------------------------------------------------------------------
+export function usePagination(props: UsePaginationProps) {
+  const {
+    page,
+    total,
+    siblings = 1,
+    boundaries = 1,
+    initialPage = 1,
+    showControls = false,
+    onChange,
+  } = props;
+  const [activePage, setActivePage] = useState(page || initialPage);
+
+  const {direction} = useLocale();
+
+  const isRTL = direction === "rtl";
+
+  const onChangeActivePage = (newPage: number) => {
+    setActivePage(newPage);
+    onChange && onChange(newPage);
+  };
+
+  useEffect(() => {
+    if (page && page !== activePage) {
+      setActivePage(page);
+    }
+  }, [page]);
+
+  const setPage = useCallback(
+    (pageNumber: number) => {
+      if (pageNumber <= 0) {
+        onChangeActivePage(1);
+      } else if (pageNumber > total) {
+        onChangeActivePage(total);
+      } else {
+        onChangeActivePage(pageNumber);
+      }
+    },
+    [total, activePage, onChangeActivePage],
+  );
+
+  const next = () => setPage(activePage + 1);
+  const previous = () => setPage(activePage - 1);
+  const first = () => setPage(1);
+  const last = () => setPage(total);
+
+  const formatRange = useCallback(
+    (range: PaginationItemValue[]) => {
+      if (showControls) {
+        return [PaginationItemType.PREV, ...range, PaginationItemType.NEXT];
+      }
+
+      return range;
+    },
+    [isRTL, showControls],
+  );
+
+  const paginationRange = useMemo((): PaginationItemValue[] => {
+    const totalPageNumbers = siblings * 2 + 3 + boundaries * 2;
+
+    if (totalPageNumbers >= total) {
+      return formatRange(range(1, total));
+    }
+    const leftSiblingIndex = Math.max(activePage - siblings, boundaries);
+    const rightSiblingIndex = Math.min(activePage + siblings, total - boundaries);
+
+    const shouldShowLeftDots = leftSiblingIndex > boundaries + 2;
+    const shouldShowRightDots = rightSiblingIndex < total - (boundaries + 1);
+
+    if (!shouldShowLeftDots && shouldShowRightDots) {
+      const leftItemCount = siblings * 2 + boundaries + 2;
+
+      return formatRange([
+        ...range(1, leftItemCount),
+        PaginationItemType.DOTS,
+        ...range(total - (boundaries - 1), total),
+      ]);
+    }
+
+    if (shouldShowLeftDots && !shouldShowRightDots) {
+      const rightItemCount = boundaries + 1 + 2 * siblings;
+
+      return formatRange([
+        ...range(1, boundaries),
+        PaginationItemType.DOTS,
+        ...range(total - rightItemCount, total),
+      ]);
+    }
+
+    return formatRange([
+      ...range(1, boundaries),
+      PaginationItemType.DOTS,
+      ...range(leftSiblingIndex, rightSiblingIndex),
+      PaginationItemType.DOTS,
+      ...range(total - boundaries + 1, total),
+    ]);
+  }, [total, activePage, siblings, boundaries, formatRange]);
+
+  return {
+    range: paginationRange,
+    activePage,
+    setPage,
+    next,
+    previous,
+    first,
+    last,
+  };
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T02:26:31.242Z
+Question Type: true-false
+Function: callAllHandlers
+Function Size: 384 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: callAllHandlers (TypeScript)\n// Creates a function that invokes each provided function with the same argument until one prevents default.\n\nexport function callAllHandlers<T extends (event: any) => void>(...fns: (T | undefined)[]) {\n  return function func(event: Args<T>[0]) {\n    fns.som
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T02:26:36.040Z
+Question Type: select-all
+Function: findRouteByPath
+Function Size: 445 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: findRouteByPath (TypeScript)\n// Finds a route by its path, searching through nested routes.\n\nexport function findRouteByPath(path: string, routes: Route[]): Route | null | undefined {\n  for (const route of routes) {\n    if (route.path && removeFromLast(route.path, ".") === path) {\n     
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T02:26:36.983Z
+Question Type: multiple-choice
+Function: getPaths
+Function Size: 489 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getPaths (TypeScript)\n// Recursively collects paths from the provided routes, excluding those marked as coming soon.\n\nexport function getPaths(nextRoutes: Route[], carry: Carry[] = [{params: {slug: []}}]) {\n  nextRoutes.forEach((route: Route) => {\n    if (route.comingSoon) {\n      retur
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T02:26:41.852Z
+Question Type: select-all
+Function: getUserAgentBrowser
+Function Size: 867 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: getUserAgentBrowser (TypeScript)\n// Determines the browser type based on the user agent string.\n\nexport function getUserAgentBrowser(navigator: Navigator) {\n  const {userAgent: ua, vendor} = navigator;\n  const android = /(android)/i.test(ua);\n\n  switch (true) {\n    case /CriOS/.test(ua)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T02:26:50.697Z
+Question Type: order-sequence
+Function: useFocusableRef
+Function Size: 416 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useFocusableRef (TypeScript)\n// Custom hook that creates a focusable reference and exposes it to the parent component.\n\nexport function useFocusableRef<T extends HTMLElement = HTMLElement>(\n  ref: FocusableRef<T>,\n  focusableRef?: RefObject<HTMLElement>,\n): RefObject<T> {\n  const domRef
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T02:26:51.543Z
+Question Type: function-variant
+Function: setCssFontSize
+Function Size: 298 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setCssFontSize (TypeScript)\n// Sets the CSS font size for a specified type.\n\nexport function setCssFontSize(type: keyof ConfigLayout["fontSize"], value: string) {\n  const el = document.getElementById(showcaseId);\n\n  el?.style.setProperty(`--heroui-font-size-${type}`, `${value}rem`);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T02:26:53.630Z
+Question Type: select-all
+Function: setCssLineHeight
+Function Size: 308 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setCssLineHeight (TypeScript)\n// Sets the CSS line height for a specified type.\n\nexport function setCssLineHeight(type: keyof ConfigLayout["lineHeight"], value: string) {\n  const el = document.getElementById(showcaseId);\n\n  el?.style.setProperty(`--heroui-line-height-${type}`, `${value}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T02:26:58.107Z
+Question Type: function-variant
+Function: setCssBorderWidth
+Function Size: 312 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setCssBorderWidth (TypeScript)\n// Sets the CSS border width for a specified type.\n\nexport function setCssBorderWidth(type: keyof ConfigLayout["borderWidth"], value: string) {\n  const el = document.getElementById(showcaseId);\n\n  el?.style.setProperty(`--heroui-border-width-${type}`, `${v
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T02:26:59.702Z
+Question Type: multiple-choice
+Function: detectOS
+Function Size: 232 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: detectOS (TypeScript)\n// Checks if the current operating system matches the specified OS.\n\nexport function detectOS(os: UserAgentOS) {\n  if (!isBrowser) return false;\n\n  return getUserAgentOS(window.navigator) === os;\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-10T02:27:11.843Z
+Question Type: function-variant
+Function: setCssBackground
+Function Size: 435 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setCssBackground (TypeScript)\n// Sets the CSS background color based on a hex value.\n\nexport function setCssBackground(value: string) {\n  const showcaseEl = document.getElementById(showcaseId);\n  const baseColor = document.getElementById(baseColorsId);\n  const hslValue = hexToHsl(value)
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760062821352
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 24
+Ended: 2025-10-10T02:27:14.608Z
+================================================================================
+

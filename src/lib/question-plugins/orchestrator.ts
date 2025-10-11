@@ -1,7 +1,5 @@
 import { GenerateParams, QuestionPlugin, RawQuestion } from './QuestionPlugin';
 import { shuffleVariants } from './utils';
-import { tinyJudge } from '../judge';
-import { qualityFilterOrchestrator } from '../quality-filters/QualityFilterOrchestrator';
 import { getChunkLogger } from '../chunk-logger';
 
 interface OrchestrateArgs {
@@ -34,13 +32,13 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
   console.log(`🎯 Quality Generation Target: ${numQuestions} questions (rated 1-10)`);
   console.log(`📊 Generation Budget: ${budget} API calls`);
   
-  // TEMPORARY: All MCQ for testing
+  // Balanced allocation for all question types
   const callAllocation: Record<string, number> = {
-    'select-all': 0,
-    'multiple-choice': 10, // ALL MCQ for testing
-    'function-variant': 0,
-    'order-sequence': 0,
-    'true-false': 0
+    'select-all': Math.max(1, Math.floor(budget * 0.25)),
+    'multiple-choice': Math.max(1, Math.floor(budget * 0.25)),
+    'function-variant': Math.max(1, Math.floor(budget * 0.2)),
+    'order-sequence': Math.max(1, Math.floor(budget * 0.15)),
+    'true-false': Math.max(1, Math.floor(budget * 0.15))
   };
   
   // Assign different functions to each plugin call to ensure diversity
@@ -93,8 +91,7 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
           return false;
         }
       }
-      console.log(`✅ Quality Generation Complete: ${results.length} questions generated and rated`);
-      qualityFilterOrchestrator.displayQualityRatingSummary();
+      console.log(`✅ Question Generation Complete: ${results.length} questions generated (community will decide quality)`);
       return true;
     }
     
@@ -141,43 +138,12 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
         for (const q of generated) {
           if (stopRequested) break;
           
-          // Simple quality rating: Just rate the question 1-10 without filtering
-          const quiz: any = (q as any).quiz || {};
+          // No AI quality filtering - let the community decide!
+          console.log(`✅ Question generated: ${(q as any)?.quiz?.question?.substring(0, 50)}...`);
           
-          // Convert letter-based correctAnswers to numbers for quality filter
-          let correctAnswersForFilter = quiz.correctAnswers;
-          if (Array.isArray(quiz.correctAnswers) && quiz.correctAnswers.length > 0) {
-            if (typeof quiz.correctAnswers[0] === 'string') {
-              // Convert letters to numbers for quality filter
-              correctAnswersForFilter = quiz.correctAnswers.map((letter: string) => {
-                const charCode = letter.charCodeAt(0);
-                return charCode - 65; // A=0, B=1, C=2, etc.
-              });
-            }
-          }
-          
-          const qualityInput = {
-            type: quiz.type,
-            question: quiz.question,
-            options: quiz.options,
-            variants: quiz.variants,
-            codeContext: (q as any).codeContext,
-            snippet: (q as any).snippet,
-            explanation: quiz.explanation,
-            correctAnswers: correctAnswersForFilter
-          };
-          
-          try {
-            const rating = await qualityFilterOrchestrator.rateQuestionQuality(qualityInput);
-            console.log(`📊 Question rated ${rating.score}/10: ${quiz.question?.substring(0, 50)}...`);
-            // Store the rating in the question object
-            q.qualityRating = rating.score;
-            apiCallsSuccessful++;
-          } catch (error) {
-            console.error('❌ Error in quality rating:', error);
-            apiCallsSuccessful++; // Still count as successful since we're not filtering
-          }
           results.push(q);
+          apiCallsSuccessful++;
+          
           try {
             if (onQuestion) {
               console.log('🎯 Orchestrator calling onQuestion for:', (q as any)?.quiz?.type);
