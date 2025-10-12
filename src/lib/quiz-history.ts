@@ -54,9 +54,34 @@ export interface UserDoc {
   name: string;
   provider: 'google' | 'github' | 'anonymous';
   plan: 'free' | 'pro' | 'edu';
+  
+  // Legacy field (deprecated - use quizzesThisMonth instead)
   quizzesUsed: number;
+  
+  // New usage tracking fields
+  quizzesThisWeek: number;
+  quizzesThisMonth: number;
+  totalQuizzes: number;
+  
+  // Reset dates
+  weekResetDate?: Timestamp;
+  monthResetDate?: Timestamp;
   lastQuizDate?: Timestamp;
+  
+  // Premium fields
+  isPremium?: boolean;
+  isFounder?: boolean;
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  subscriptionStatus?: 'active' | 'canceled' | 'past_due' | 'unpaid' | 'trialing';
+  
+  // Timestamps
   joinedAt: Timestamp;
+  lastSeen?: Timestamp;
+  upgradedAt?: Timestamp;
+  updatedAt?: string;
+  
+  // Legacy fields
   isFirst100Users?: boolean;
 }
 

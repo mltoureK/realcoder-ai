@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { stripe } from '@/lib/stripe';
-import { db } from '@/lib/firebase';
-import { doc, updateDoc } from 'firebase/firestore';
+import { updateUserPremiumStatus } from '@/lib/user-management';
 
 // Disable body parsing for webhooks (we need raw body)
 export const runtime = 'nodejs';
@@ -76,16 +75,14 @@ export async function POST(req: NextRequest) {
           );
         }
 
-        // Update user in Firebase
+        // Update user in Firebase using user management system
         console.log(`\n🔥 Updating Firebase user: ${userId}`);
-        const userRef = doc(db, 'users', userId);
-        await updateDoc(userRef, {
+        await updateUserPremiumStatus(userId, {
           isPremium: true,
           isFounder: isFounder,
           stripeCustomerId: session.customer as string,
           stripeSubscriptionId: session.subscription as string,
           subscriptionStatus: 'active',
-          updatedAt: new Date().toISOString(),
         });
 
         console.log(`✅ User ${userId} updated successfully`);
@@ -131,11 +128,9 @@ export async function POST(req: NextRequest) {
 
         // Update user to remove premium status
         console.log(`\n🔥 Updating Firebase user: ${userId}`);
-        const userRef = doc(db, 'users', userId);
-        await updateDoc(userRef, {
+        await updateUserPremiumStatus(userId, {
           isPremium: false,
           subscriptionStatus: 'canceled',
-          updatedAt: new Date().toISOString(),
         });
 
         console.log(`✅ User ${userId} updated successfully`);
@@ -178,11 +173,9 @@ export async function POST(req: NextRequest) {
         const isPremium = ['active', 'trialing'].includes(subscription.status);
         
         console.log(`\n🔥 Updating Firebase user: ${userId}`);
-        const userRef = doc(db, 'users', userId);
-        await updateDoc(userRef, {
+        await updateUserPremiumStatus(userId, {
           isPremium: isPremium,
-          subscriptionStatus: subscription.status,
-          updatedAt: new Date().toISOString(),
+          subscriptionStatus: subscription.status as any,
         });
 
         console.log(`✅ User ${userId} updated successfully`);
