@@ -1192,6 +1192,36 @@ export default function Home() {
 
           {/* Generate Quiz Button */}
           <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+            {/* Time Estimate Warning for repos without cache */}
+            {activeTab === 'github' && githubRepo.owner && githubRepo.repo && availableBranches.length > 0 && cachedQuestionCount < 15 && (
+              <div className="mb-4 p-4 bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-300 dark:border-amber-700 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <svg className="w-6 h-6 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-amber-900 dark:text-amber-100 text-sm mb-1">
+                      ⏱️ First Generation Takes ~40 seconds
+                    </h4>
+                    <p className="text-xs text-amber-800 dark:text-amber-200 mb-2">
+                      This repository has {cachedQuestionCount === 0 ? 'no' : `only ${cachedQuestionCount}`} cached question{cachedQuestionCount !== 1 ? 's' : ''}. 
+                      The AI needs time to analyze the code and generate quality questions.
+                    </p>
+                    <div className="bg-white dark:bg-gray-800 rounded p-2 border border-amber-200 dark:border-amber-800">
+                      <p className="text-xs font-medium text-amber-900 dark:text-amber-100 mb-1">
+                        💡 Help speed it up for everyone:
+                      </p>
+                      <ul className="text-xs text-amber-800 dark:text-amber-200 space-y-0.5 ml-4 list-disc">
+                        <li>Wait for generation to complete (grab a ☕!)</li>
+                        <li>Upvote good questions after taking the quiz</li>
+                        <li>Next time it'll be instant with cached questions!</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <button
               onClick={handleGenerateQuiz}
               disabled={!canGenerateQuiz() || isLoading}
@@ -1202,6 +1232,8 @@ export default function Home() {
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                   <span>Generating Quiz...</span>
                 </div>
+              ) : cachedQuestionCount >= 15 ? (
+                <span>⚡ Generate Quiz (Instant!)</span>
               ) : (
                 'Generate Quiz'
               )}
@@ -1313,7 +1345,11 @@ export default function Home() {
       {/* Loading Overlay */}
       {showLoadingOverlay && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 50 }}>
-          <LoadingScreen />
+          <LoadingScreen 
+            message="Generating your personalized quiz..."
+            estimatedTime={cachedQuestionCount >= 15 ? 10 : 40}
+            showProgress={true}
+          />
         </div>
       )}
 

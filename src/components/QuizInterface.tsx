@@ -450,6 +450,16 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
           };
           
           console.log(`🚨 [QuizInterface] About to call addQuestionToBank with complete data...`);
+          console.log(`🚨 [QuizInterface] Question validation check:`, {
+            hasId: !!questionWithRepo.id,
+            hasType: !!questionWithRepo.type,
+            hasQuestion: !!questionWithRepo.question,
+            hasOptions: !!questionWithRepo.options,
+            hasCorrectAnswer: !!questionWithRepo.correctAnswer,
+            hasVariants: !!questionWithRepo.variants,
+            hasSteps: !!questionWithRepo.steps
+          });
+          
           await addQuestionToBank(repoUrl, questionWithRepo as any, 85); // Start with high quality score
           console.log(`✅ Question added to ${repoUrl} question bank!`);
         } else {
@@ -457,10 +467,14 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         }
       } catch (error) {
         console.error('❌ Error adding question to bank:', error);
+        console.error('❌ Error details:', error.message);
+        console.error('❌ Error stack:', error.stack);
       }
     } else {
       console.log(`❌ [QuizInterface] Not saving to question bank:`, { 
-        reason: rating !== 'up' ? 'not upvote' : 'no repository info' 
+        reason: rating !== 'up' ? 'not upvote' : 'no repository info',
+        hasRepositoryInfo: !!quizSession.repositoryInfo,
+        repositoryInfo: quizSession.repositoryInfo
       });
     }
     
