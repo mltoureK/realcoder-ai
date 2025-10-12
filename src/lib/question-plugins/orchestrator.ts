@@ -1,6 +1,12 @@
 import { GenerateParams, QuestionPlugin, RawQuestion } from './QuestionPlugin';
 import { shuffleVariants } from './utils';
 import { getChunkLogger } from '../chunk-logger';
+import { 
+  getCallAllocation, 
+  getTotalApiCalls, 
+  validateDistribution,
+  NEVER_FIRST_TYPES 
+} from './question-distribution-config';
 
 interface OrchestrateArgs {
   chunks: string[];
@@ -26,25 +32,27 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
 
   // Create scheduled tasks with custom allocation
   const budgetedTasks: Array<{ plugin: QuestionPlugin; chunk: string }> = [];
-  const budget = settings.maxCalls;
   const shuffledChunks = shuffleVariants(chunks);
   
-  console.log(`🎯 Quality Generation Target: ${numQuestions} questions (rated 1-10)`);
-  console.log(`📊 Generation Budget: ${budget} API calls`);
+  // Use configured distribution (15 API calls: 5 FV, 5 SA, 2 OS, 2 TF, 1 MCQ)
+  const totalCalls = getTotalApiCalls();
+  validateDistribution(totalCalls);
   
-  // Balanced allocation for all question types
-  const callAllocation: Record<string, number> = {
-    'select-all': Math.max(1, Math.floor(budget * 0.25)),
-    'multiple-choice': Math.max(1, Math.floor(budget * 0.25)),
-    'function-variant': Math.max(1, Math.floor(budget * 0.2)),
-    'order-sequence': Math.max(1, Math.floor(budget * 0.15)),
-    'true-false': Math.max(1, Math.floor(budget * 0.15))
-  };
+  console.log(`🎯 Question Generation Target: ${numQuestions} questions`);
+  console.log(`📊 Generation Budget: ${totalCalls} API calls (5 FV, 5 SA, 2 OS, 2 TF, 1 MCQ)`);
+  console.log(`📋 See QUESTION_DISTRIBUTION_CONFIG.md to customize distribution`);
+  
+  // Get call allocation from config
+  const callAllocation = getCallAllocation();
   
   // Assign different functions to each plugin call to ensure diversity
   let chunkIndex = 0;
   for (const plugin of plugins) {
-    const calls = callAllocation[plugin.type] || Math.max(1, Math.floor(budget / plugins.length));
+    const calls = callAllocation[plugin.type] || 0;
+    if (calls === 0) {
+      console.log(`⏭️  Skipping ${plugin.type} (not in distribution config)`);
+      continue;
+    }
     for (let call = 1; call <= calls; call++) {
       // Pick next unique chunk (function) to ensure no duplicates
       const chunk = shuffledChunks[chunkIndex % shuffledChunks.length];
@@ -199,7 +207,34 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
   // Log session summary
   chunkLogger.logSessionSummary(results.length, chunks.length);
 
-  return results.slice(0, numQuestions);
+  // Ensure Order Sequence (or other NEVER_FIRST_TYPES) never appears first
+  const finalResults = results.slice(0, numQuestions);
+  
+  if (finalResults.length > 1) {
+    const firstQuestion = finalResults[0];
+    const firstType = (firstQuestion as any)?.quiz?.type;
+    
+    if (firstType && NEVER_FIRST_TYPES.includes(firstType)) {
+      console.log(`🔄 Moving ${firstType} from first position (not suitable as opening question)`);
+      
+      // Find first question that's NOT in NEVER_FIRST_TYPES
+      const suitableIndex = finalResults.findIndex((q, idx) => {
+        if (idx === 0) return false;
+        const qType = (q as any)?.quiz?.type;
+        return qType && !NEVER_FIRST_TYPES.includes(qType);
+      });
+      
+      if (suitableIndex > 0) {
+        // Swap first question with suitable question
+        const temp = finalResults[0];
+        finalResults[0] = finalResults[suitableIndex];
+        finalResults[suitableIndex] = temp;
+        console.log(`✅ Swapped positions: ${(finalResults[0] as any)?.quiz?.type} is now first`);
+      }
+    }
+  }
+
+  return finalResults;
 }
 
 
