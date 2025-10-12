@@ -19,10 +19,9 @@ export default function ConsoleEasterEgg() {
     ║  │  🎯 RealCoder AI was built to help developers learn    │ ║
     ║  │     from real-world code through interactive quizzes!   │ ║
     ║  │                                                         │ ║
-    ║  │  🔧 Built with: Next.js, TypeScript, Tailwind CSS,     │ ║
-    ║  │     Firebase, Stripe, and lots of ☕                   │ ║
+    ║  │  🔧 Built with: Next.js and lots of ☕                  │ ║
     ║  │                                                         │ ║
-    ║  │  🚀 Want to contribute? Check out the source code!     │ ║
+    ║  │  🚀 Upgrade to Founder Tier for lifetime benefits!     │ ║
     ║  │                                                         │ ║
     ║  │  👋 Happy coding, fellow developer! 👋                 │ ║
     ║  │                                                         │ ║
@@ -80,12 +79,8 @@ export default function ConsoleEasterEgg() {
 
     // Add some technical info (but not too much)
     console.group('%c🔧 Technical Stack', 'color: #6C5CE7; font-weight: bold;');
-    console.log('Frontend: Next.js 15.5.2 with TypeScript');
-    console.log('Styling: Tailwind CSS');
-    console.log('Database: Firebase Firestore');
-    console.log('Authentication: Firebase Auth');
-    console.log('Payments: Stripe');
-    console.log('AI: OpenAI GPT-4');
+    console.log('Built with: Next.js');
+    console.log('Powered by AI to help you learn from real code');
     console.groupEnd();
 
     // Add a fun challenge
