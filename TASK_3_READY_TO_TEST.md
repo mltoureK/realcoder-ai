@@ -7,7 +7,7 @@ All setup tasks are complete and verified:
 - ✅ Stripe CLI installed
 - ✅ Stripe CLI authenticated (account: acct_1LHfVSD6l0yPpU4i)
 - ✅ Webhook secret generated and saved to `.env.local`
-- ✅ Webhook secret: `whsec_9285d8078d780f664cd32d92e61613628f0cceb9cd12517a8339d73e5abf9672`
+- ⚠️  **Webhook secret is in `.env.local` (keep private!)**
 - ✅ Webhook route created: `src/app/api/stripe-webhook/route.ts`
 - ✅ Handles `checkout.session.completed` event ✅
 - ✅ Handles `customer.subscription.deleted` event ✅
