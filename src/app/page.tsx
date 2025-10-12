@@ -8,6 +8,7 @@ import CuratedRepos from '@/components/CuratedRepos';
 import Auth from '@/components/Auth';
 import UserProfile from '@/components/UserProfile';
 import { useAuth } from '@/context/AuthContext';
+import { checkQuizLimit, incrementQuizCount } from '@/lib/user-management';
 
 interface GitHubRepo {
   owner: string;
@@ -40,6 +41,36 @@ export default function Home() {
   const [showAuth, setShowAuth] = useState(false);
   const [cachedQuestionCount, setCachedQuestionCount] = useState<number>(0);
   const [hidePassedQuestions, setHidePassedQuestions] = useState(false);
+  const [quizLimit, setQuizLimit] = useState<{
+    canTake: boolean;
+    weeklyRemaining: number;
+    monthlyRemaining: number;
+    weeklyLimit: number;
+    monthlyLimit: number;
+    isPremium: boolean;
+    reason?: string;
+    weekResetDate?: Date;
+    monthResetDate?: Date;
+  } | null>(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+  // Fetch quiz limit when user logs in
+  useEffect(() => {
+    if (user) {
+      const fetchQuizLimit = async () => {
+        try {
+          const limit = await checkQuizLimit(user.uid);
+          setQuizLimit(limit);
+          console.log('📊 Quiz limit:', limit);
+        } catch (error) {
+          console.error('❌ Error fetching quiz limit:', error);
+        }
+      };
+      fetchQuizLimit();
+    } else {
+      setQuizLimit(null);
+    }
+  }, [user]);
 
   // Refresh cached question count when hidePassedQuestions toggle changes
   useEffect(() => {
@@ -358,10 +389,28 @@ export default function Home() {
       return;
     }
 
+    // Check quiz limit before starting
+    if (quizLimit && !quizLimit.canTake) {
+      console.log('⚠️ Quiz limit reached:', quizLimit.reason);
+      setShowUpgradeModal(true);
+      return;
+    }
+
     setIsLoading(true);
     setShowLoadingOverlay(true);
     try {
       console.log('🚀 Starting quiz generation process...');
+      
+      // Increment quiz count
+      try {
+        await incrementQuizCount(user.uid);
+        // Refresh limit display
+        const newLimit = await checkQuizLimit(user.uid);
+        setQuizLimit(newLimit);
+        console.log('✅ Quiz count incremented, new limit:', newLimit);
+      } catch (error) {
+        console.error('❌ Error incrementing quiz count:', error);
+      }
       
       if (activeTab === 'github' && githubUrl) {
         console.log('📁 Generating quiz from stored repository files');
@@ -1113,6 +1162,28 @@ export default function Home() {
             </div>
           )}
 
+          {/* Quiz Limit Display (only for non-premium users) */}
+          {user && quizLimit && !quizLimit.isPremium && (
+            <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                    {quizLimit.weeklyRemaining} quizzes remaining this week
+                  </p>
+                  <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                    {quizLimit.monthlyRemaining} remaining this month • Resets {new Date(quizLimit.weekResetDate || Date.now()).toLocaleDateString()}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowUpgradeModal(true)}
+                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-medium rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all"
+                >
+                  Upgrade
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Generate Quiz Button */}
           <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
             <button
@@ -1243,6 +1314,66 @@ export default function Home() {
       {/* Auth Modal */}
       {showAuth && (
         <Auth onClose={() => setShowAuth(false)} />
+      )}
+
+      {/* Upgrade Modal (Simple placeholder - Task 9 will enhance this) */}
+      {showUpgradeModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
+            <button
+              onClick={() => setShowUpgradeModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            <div className="text-center">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900 dark:to-blue-900">
+                <svg className="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h3 className="mt-4 text-2xl font-bold text-gray-900 dark:text-white">
+                Quiz Limit Reached
+              </h3>
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                {quizLimit?.reason}
+              </p>
+              
+              <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  🏆 Upgrade to Founder Tier
+                </h4>
+                <ul className="text-sm text-left text-gray-700 dark:text-gray-300 space-y-2">
+                  <li>✅ Unlimited quizzes</li>
+                  <li>✅ Founder badge</li>
+                  <li>✅ Lifetime pricing ($5/month)</li>
+                  <li>✅ Support development</li>
+                </ul>
+              </div>
+
+              <div className="mt-6 flex gap-3">
+                <button
+                  onClick={() => setShowUpgradeModal(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  Maybe Later
+                </button>
+                <button
+                  onClick={() => {
+                    // TODO: Task 9 will integrate Stripe checkout here
+                    alert('Stripe checkout integration coming in Task 9!');
+                  }}
+                  className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all font-medium"
+                >
+                  Upgrade Now
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
