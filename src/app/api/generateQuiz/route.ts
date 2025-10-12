@@ -17,7 +17,7 @@ import {
   balanceVariantVerbosity,
   validateQuestionStructure
 } from '@/lib/question-plugins/utils';
-import { extractFunctionsFromFiles, functionsToChunks } from '@/lib/function-extractor';
+import { extractFunctionsFromFiles, extractFunctionsFromFilesStreaming, functionsToChunks } from '@/lib/function-extractor';
 
 // Route now uses plugin-based orchestrator; helpers moved to shared utils.
 
@@ -74,17 +74,6 @@ export async function POST(request: NextRequest) {
     }
     
     console.log(`📊 Parsed ${parsedFiles.length} files from repository`);
-    
-    // Extract functions from top 5 high-score files
-    console.log('🔍 Step 2: Extracting complete functions from top files...');
-    const extractedFunctions = await extractFunctionsFromFiles(parsedFiles, openaiApiKey, 5);
-    
-    console.log(`✅ Extracted ${extractedFunctions.length} complete functions`);
-    
-    // Convert extracted functions to chunks (one function per chunk)
-    const chunks = functionsToChunks(extractedFunctions);
-    
-    console.log(`📦 Created ${chunks.length} function-based chunks (all complete)`);
 
     // Select plugins per requested types
     const availablePlugins: Record<string, any> = {
@@ -265,6 +254,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Streaming path: NDJSON when stream=1
+    // NEW: Start streaming questions as soon as first batch of functions is extracted
     if (streamParam === '1') {
       const encoder = new TextEncoder();
       let counter = 0;
@@ -275,29 +265,91 @@ export async function POST(request: NextRequest) {
             const meta = { type: 'meta', expectedTotal: desiredTotal };
             controller.enqueue(encoder.encode(JSON.stringify(meta) + '\n'));
 
-            await orchestrateGeneration({
-              chunks,
-              plugins: selectedPlugins,
-              numQuestions: desiredTotal,
-              settings,
-              apiKey: openaiApiKey,
-              options: { difficulty: difficulty || 'medium' },
-              onQuestion: async (q) => {
-                console.log('🔍 onQuestion callback received:', JSON.stringify(q, null, 2));
-                const ui = mapToUi(q as any, counter);
-                console.log('🔍 mapToUi returned:', JSON.stringify(ui, null, 2));
-                // Shuffle variants if present and balance
-                if (ui.variants && ui.variants.length > 0) {
-                  ui.variants = shuffleVariants(ui.variants);
-                  ui.variants = balanceVariantVerbosity(ui.variants);
-                }
-                counter += 1;
-                console.log('📤 Streaming question', counter, ':', ui.type, ui.question?.substring(0, 50) + '...');
-                controller.enqueue(encoder.encode(JSON.stringify({ type: 'question', question: ui }) + '\n'));
+            console.log('⚡ FAST MODE: Starting streaming function extraction...');
+            
+            // Create async generator for function extraction
+            const functionGenerator = extractFunctionsFromFilesStreaming(parsedFiles, openaiApiKey, 8);
+            
+            let allChunks: string[] = [];
+            let batchCount = 0;
+            let questionsGenerated = 0;
+            
+            // Process each batch of functions as they arrive
+            for await (const batchFunctions of functionGenerator) {
+              batchCount++;
+              const batchChunks = functionsToChunks(batchFunctions);
+              allChunks.push(...batchChunks);
+              
+              console.log(`⚡ Batch ${batchCount}: Got ${batchFunctions.length} functions (${batchChunks.length} chunks), total chunks: ${allChunks.length}`);
+              
+              // Start generating questions immediately after first batch
+              if (batchCount === 1 && batchChunks.length > 0) {
+                console.log(`🚀 FIRST QUESTIONS INCOMING! Starting question generation with ${batchChunks.length} initial chunks...`);
               }
-            });
+              
+              // Generate questions from this batch's chunks
+              // Use a portion of the target based on available chunks
+              const targetForThisBatch = Math.min(
+                Math.ceil(desiredTotal * (batchChunks.length / 8)), // Estimate based on chunks
+                desiredTotal - questionsGenerated
+              );
+              
+              if (targetForThisBatch > 0 && batchChunks.length > 0) {
+                await orchestrateGeneration({
+                  chunks: batchChunks, // Only use this batch's chunks for variety
+                  plugins: selectedPlugins,
+                  numQuestions: targetForThisBatch,
+                  settings,
+                  apiKey: openaiApiKey,
+                  options: { difficulty: difficulty || 'medium' },
+                  onQuestion: async (q) => {
+                    const ui = mapToUi(q as any, counter);
+                    // Shuffle variants if present and balance
+                    if (ui.variants && ui.variants.length > 0) {
+                      ui.variants = shuffleVariants(ui.variants);
+                      ui.variants = balanceVariantVerbosity(ui.variants);
+                    }
+                    counter += 1;
+                    questionsGenerated += 1;
+                    console.log(`📤 Streaming question ${counter} from batch ${batchCount}`);
+                    controller.enqueue(encoder.encode(JSON.stringify({ type: 'question', question: ui }) + '\n'));
+                  }
+                });
+              }
+              
+              // Stop if we've generated enough questions
+              if (questionsGenerated >= desiredTotal) {
+                console.log(`✅ Generated ${questionsGenerated} questions, stopping early`);
+                break;
+              }
+            }
+            
+            // If we still need more questions, generate from all chunks
+            if (questionsGenerated < desiredTotal && allChunks.length > 0) {
+              console.log(`🔄 Generating remaining ${desiredTotal - questionsGenerated} questions from all ${allChunks.length} chunks`);
+              await orchestrateGeneration({
+                chunks: allChunks,
+                plugins: selectedPlugins,
+                numQuestions: desiredTotal - questionsGenerated,
+                settings,
+                apiKey: openaiApiKey,
+                options: { difficulty: difficulty || 'medium' },
+                onQuestion: async (q) => {
+                  const ui = mapToUi(q as any, counter);
+                  if (ui.variants && ui.variants.length > 0) {
+                    ui.variants = shuffleVariants(ui.variants);
+                    ui.variants = balanceVariantVerbosity(ui.variants);
+                  }
+                  counter += 1;
+                  controller.enqueue(encoder.encode(JSON.stringify({ type: 'question', question: ui }) + '\n'));
+                }
+              });
+            }
+            
             controller.enqueue(encoder.encode(JSON.stringify({ type: 'done', count: counter }) + '\n'));
+            console.log(`🎉 Streaming complete! Generated ${counter} questions from ${batchCount} batches`);
           } catch (e) {
+            console.error('❌ Streaming error:', e);
             controller.enqueue(encoder.encode(JSON.stringify({ type: 'error', message: 'stream-failed' }) + '\n'));
           } finally {
             controller.close();
@@ -314,6 +366,17 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // Non-streaming path: Extract all functions first, then generate
+    console.log('🔍 Step 2: Extracting complete functions from top files...');
+    const extractedFunctions = await extractFunctionsFromFiles(parsedFiles, openaiApiKey, 8);
+    
+    console.log(`✅ Extracted ${extractedFunctions.length} complete functions`);
+    
+    // Convert extracted functions to chunks (one function per chunk)
+    const chunks = functionsToChunks(extractedFunctions);
+    
+    console.log(`📦 Created ${chunks.length} function-based chunks (all complete)`);
+
     let rawGenerated = await orchestrateGeneration({
       chunks,
       plugins: selectedPlugins,
@@ -326,7 +389,7 @@ export async function POST(request: NextRequest) {
     // Fallback: attempt direct select-all generation if none were generated
     if (Array.isArray(requestedTypes) && requestedTypes.includes('select-all')) {
       const hasSelectAll = rawGenerated.some((q: any) => q?.quiz?.type === 'select-all');
-      if (!hasSelectAll && chunks.length > 0) {
+      if (!hasSelectAll && chunks && chunks.length > 0) {
         try {
           console.log('🛟 Fallback: attempting direct select-all generation on first chunk');
           const sa = await selectAllPlugin.generate({

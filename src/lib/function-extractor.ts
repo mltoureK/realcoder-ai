@@ -171,35 +171,116 @@ CRITICAL:
 }
 
 /**
- * Extract functions from multiple high-score files
+ * Extract functions from multiple files with batching and concatenation for efficiency
+ * Returns an async generator that yields functions as they're extracted
+ */
+export async function* extractFunctionsFromFilesStreaming(
+  files: Array<{ name: string; content: string; score: number }>,
+  apiKey: string,
+  maxFiles: number = 8
+): AsyncGenerator<ExtractedFunction[], void, unknown> {
+  console.log(`🎯 Starting streaming function extraction from up to ${maxFiles} files...`);
+
+  // CRITICAL: Add randomization to prevent repetitive questions
+  // Shuffle files before scoring to add variety
+  const shuffledFiles = [...files].sort(() => Math.random() - 0.5);
+  
+  // Sort by score but with some randomness (take top 2x, then shuffle)
+  const topCandidates = shuffledFiles
+    .sort((a, b) => b.score - a.score)
+    .slice(0, maxFiles * 2); // Get 2x candidates
+  
+  // Shuffle candidates and take maxFiles for more variety
+  const selectedFiles = topCandidates
+    .sort(() => Math.random() - 0.5)
+    .slice(0, maxFiles);
+
+  console.log(`📊 Selected ${selectedFiles.length} files with randomization for diversity`);
+
+  // Group small files together to maximize API efficiency
+  const MIN_CHARS_PER_CALL = 1500;
+  const MAX_CHARS_PER_CALL = 12000;
+  
+  const batches: Array<{ files: typeof selectedFiles; totalChars: number }> = [];
+  let currentBatch: typeof selectedFiles = [];
+  let currentChars = 0;
+
+  for (const file of selectedFiles) {
+    const fileChars = file.content.length;
+    
+    // If file is huge, extract it alone
+    if (fileChars > MAX_CHARS_PER_CALL) {
+      if (currentBatch.length > 0) {
+        batches.push({ files: currentBatch, totalChars: currentChars });
+        currentBatch = [];
+        currentChars = 0;
+      }
+      batches.push({ files: [file], totalChars: fileChars });
+      continue;
+    }
+    
+    // If adding this file would exceed max, start new batch
+    if (currentChars + fileChars > MAX_CHARS_PER_CALL && currentBatch.length > 0) {
+      batches.push({ files: currentBatch, totalChars: currentChars });
+      currentBatch = [file];
+      currentChars = fileChars;
+    } else {
+      currentBatch.push(file);
+      currentChars += fileChars;
+    }
+  }
+  
+  // Add remaining batch
+  if (currentBatch.length > 0) {
+    batches.push({ files: currentBatch, totalChars: currentChars });
+  }
+
+  console.log(`📦 Created ${batches.length} extraction batches (concatenating small files for efficiency)`);
+
+  // Extract functions from each batch and yield immediately
+  for (let i = 0; i < batches.length; i++) {
+    const batch = batches[i];
+    console.log(`⚡ Extracting batch ${i + 1}/${batches.length} (${batch.files.length} files, ${batch.totalChars} chars)...`);
+    
+    // Concatenate files in this batch
+    const concatenatedContent = batch.files
+      .map(f => `// File: ${f.name}\n${f.content}\n\n`)
+      .join('\n\n');
+    
+    const batchName = batch.files.length === 1 
+      ? batch.files[0].name 
+      : `[${batch.files.length} files: ${batch.files.map(f => f.name.split('/').pop()).join(', ')}]`;
+    
+    const functions = await extractFunctionsFromFile(concatenatedContent, batchName, apiKey);
+    
+    if (functions.length > 0) {
+      console.log(`✅ Batch ${i + 1} extracted ${functions.length} functions - yielding immediately!`);
+      yield functions; // Yield immediately so questions can start generating
+    }
+    
+    // No delay needed - we want speed!
+  }
+
+  console.log(`🎉 Streaming extraction complete!`);
+}
+
+/**
+ * Extract functions from multiple high-score files (legacy non-streaming version)
  */
 export async function extractFunctionsFromFiles(
   files: Array<{ name: string; content: string; score: number }>,
   apiKey: string,
-  maxFiles: number = 5
+  maxFiles: number = 8
 ): Promise<ExtractedFunction[]> {
-  console.log(`🎯 Extracting functions from top ${maxFiles} files...`);
-
-  // Sort by score and take top N files
-  const topFiles = files
-    .sort((a, b) => b.score - a.score)
-    .slice(0, maxFiles);
-
-  console.log(`📊 Selected ${topFiles.length} files for function extraction`);
-
+  console.log(`🎯 Extracting functions from files (non-streaming mode)...`);
+  
   const allFunctions: ExtractedFunction[] = [];
-
-  // Extract functions from each file sequentially (to avoid rate limits)
-  for (const file of topFiles) {
-    const functions = await extractFunctionsFromFile(file.content, file.name, apiKey);
-    allFunctions.push(...functions);
-    
-    // Small delay to avoid rate limits
-    await new Promise(resolve => setTimeout(resolve, 500));
+  
+  for await (const batchFunctions of extractFunctionsFromFilesStreaming(files, apiKey, maxFiles)) {
+    allFunctions.push(...batchFunctions);
   }
-
-  console.log(`✅ Total functions extracted: ${allFunctions.length} from ${topFiles.length} files`);
-
+  
+  console.log(`✅ Total functions extracted: ${allFunctions.length}`);
   return allFunctions;
 }
 
