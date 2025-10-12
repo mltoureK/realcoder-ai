@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import LoadingScreen from '@/components/LoadingScreen';
 import { generateQuizFromRepository } from '@/lib/quiz-service';
 import QuizInterface from '@/components/QuizInterface';
 import CuratedRepos from '@/components/CuratedRepos';
 import Auth from '@/components/Auth';
 import UserProfile from '@/components/UserProfile';
+import FounderCounter from '@/components/FounderCounter';
 import { useAuth } from '@/context/AuthContext';
 import { checkQuizLimit, incrementQuizCount } from '@/lib/user-management';
 
@@ -17,6 +19,7 @@ interface GitHubRepo {
 
 export default function Home() {
   const { user, loading } = useAuth();
+  const router = useRouter();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [githubRepo, setGithubRepo] = useState<GitHubRepo>({ owner: '', repo: '' });
   const [githubUrl, setGithubUrl] = useState('');
@@ -795,6 +798,9 @@ export default function Home() {
           </p>
         </div>
 
+        {/* Founder Counter - Above the fold */}
+        <FounderCounter />
+
         {/* Input Card */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-8">
           {/* Tab Navigation */}
@@ -1363,8 +1369,8 @@ export default function Home() {
                 </button>
                 <button
                   onClick={() => {
-                    // TODO: Task 9 will integrate Stripe checkout here
-                    alert('Stripe checkout integration coming in Task 9!');
+                    setShowUpgradeModal(false);
+                    router.push('/pricing');
                   }}
                   className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all font-medium"
                 >

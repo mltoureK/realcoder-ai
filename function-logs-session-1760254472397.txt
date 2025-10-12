@@ -1,0 +1,1920 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1760254472397
+Started: 2025-10-12T07:34:32.397Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-12T07:34:32.398Z
+File: TODO: Convert to DELETE
+Functions Extracted: 10
+
+
+Function 1: putUpdateMyAbout
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyAbout(
+  values: MyAbout
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-about', { ...values });
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: putUpdateMyUsername
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyUsername(
+  username: string
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-username', { username });
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: putUpdateMyProfileUI
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyProfileUI(
+  profileUI: User['profileUI']
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-profileui', { profileUI });
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: putUpdateMySocials
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMySocials(
+  update: Record<string, string>
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-socials', update);
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: putUpdateMyKeyboardShortcuts
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyKeyboardShortcuts(
+  update: Record<string, string>
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-keyboard-shortcuts', update);
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: putUpdateMyHonesty
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyHonesty(
+  update: Record<string, string>
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-honesty', update);
+}
+--------------------------------------------------------------------------------
+
+
+Function 7: putUpdateMyQuincyEmail
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyQuincyEmail(update: {
+  sendQuincyEmail: boolean;
+}): Promise<ResponseWithData<void>> {
+  return put('/update-my-quincy-email', update);
+}
+--------------------------------------------------------------------------------
+
+
+Function 8: putUpdateMyPortfolio
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyPortfolio(
+  update: Record<string, string>
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-portfolio', update);
+}
+--------------------------------------------------------------------------------
+
+
+Function 9: putUserUpdateEmail
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUserUpdateEmail(
+  email: string
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-email', { email });
+}
+--------------------------------------------------------------------------------
+
+
+Function 10: putVerifyCert
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putVerifyCert(
+  certSlug: string
+): Promise<ResponseWithData<void>> {
+  return put('/certificate/verify', { certSlug });
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-12T07:35:09.057Z
+File: freeCodeCamp-freeCodeCamp-7709d3d/client/src/components/profile/components/portfolio.tsx
+Functions Extracted: 7
+
+
+Function 1: createEmptyPortfolioItem
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function createEmptyPortfolioItem(): PortfolioProjectData {
+  return {
+    id: nanoid(),
+    title: '',
+    description: '',
+    url: '',
+    image: ''
+  };
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: checkIfValidImage
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+const checkIfValidImage = (url: string): Promise<ProfileValidation> => {
+  const img = new Image();
+
+  return new Promise(resolve => {
+    img.onerror = () =>
+      resolve({ state: 'error', message: t('validation.url-not-image') });
+    img.onload = () => resolve({ state: 'success', message: '' });
+    img.src = url;
+  });
+};
+--------------------------------------------------------------------------------
+
+
+Function 3: createOnChangeHandler
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const createOnChangeHandler = (id: string, key: 'description' | 'image' | 'title' | 'url') => (e: React.ChangeEvent<HTMLInputElement>) => {
+  e.preventDefault();
+  const userInput = e.target.value.slice();
+  setPortfolio(prevPortfolio => {
+    const mutablePortfolio = [...prevPortfolio];
+    const index = findIndex(prevPortfolio, p => p.id === id);
+    mutablePortfolio[index] = {
+      ...mutablePortfolio[index],
+      [key]: userInput
+    };
+    if (key === 'image' && userInput) {
+      void checkIfValidImage(userInput).then(imageValidation => {
+        setImageValid(imageValidation);
+      });
+    } else if (key === 'image' && !userInput) {
+      setImageValid({ state: 'success', message: '' });
+    }
+    return mutablePortfolio;
+  });
+};
+--------------------------------------------------------------------------------
+
+
+Function 4: updateItem
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+const updateItem = (id: string, updatedPortfolio?: PortfolioProjectData[]) => {
+    if (unsavedItemId === id) {
+      setUnsavedItemId(null);
+    }
+    const portfolioToUpdate = updatedPortfolio || portfolio;
+    updateMyPortfolio({ portfolio: portfolioToUpdate });
+    setIsEditing(false);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 5: handleRemoveItem
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+const handleRemoveItem = (id: string) => {
+    const newPortfolio = portfolio.filter(p => p.id !== id);
+    setPortfolio(newPortfolio);
+    updateItem(id, newPortfolio);
+    setIsEditing(false);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 6: formCorrect
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const formCorrect = (portfolioItem: PortfolioProjectData) => {
+    const { id, title, description, url, image } = portfolioItem;
+    const { state: titleState, message: titleMessage } = getTitleValidation(title);
+    const { state: urlState, message: urlMessage } = getUrlValidation(url);
+    const { state: descriptionState, message: descriptionMessage } = getDescriptionValidation(description);
+    const { state: imageState, message: imageMessage } = getUrlValidation(image);
+    const pristine = isFormPristine(id);
+    const urlIsValid = !isURL(url, {
+      protocols: ['http', 'https'],
+      require_tld: true,
+      require_protocol: true
+    });
+    const isButtonDisabled = [
+      titleState,
+      urlState,
+      descriptionState,
+      imageState,
+      urlIsValid
+    ].some(state => state === 'error' || false);
+    return {
+      isButtonDisabled,
+      title: { titleState, titleMessage },
+      url: { urlState, urlMessage },
+      image: { imageState, imageMessage },
+      desc: { descriptionState, descriptionMessage },
+      pristine
+    };
+  };
+--------------------------------------------------------------------------------
+
+
+Function 7: renderPortfolio
+Language: TypeScript
+Lines: 45
+Full Code:
+--------------------------------------------------------------------------------
+const renderPortfolio = (portfolioItem: PortfolioProjectData, index: number, arr: PortfolioProjectData[]) => {
+    const { id, title, description, url, image } = portfolioItem;
+    const {
+      isButtonDisabled,
+      title: { titleState, titleMessage },
+      url: { urlState, urlMessage },
+      image: { imageState, imageMessage },
+      desc: { descriptionState, descriptionMessage },
+      pristine
+    } = formCorrect(portfolioItem);
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>, id: string) => {
+      e.preventDefault();
+      if (isButtonDisabled) return null;
+      setIsEditing(false);
+      return updateItem(id);
+    };
+    const combineImageStatus =
+      imageState === 'success' && imageValidation.state === 'success'
+        ? null
+        : 'error';
+    const combineImageMessage = imageMessage || imageValidation.message;
+    return (
+      <FullWidthRow key={id}>
+        <form
+          onSubmit={e => handleSubmit(e, id)}
+          id='portfolio-items'
+          data-playwright-test-label='portfolio-items'
+        >
+          <FormGroup
+            controlId={`${id}-title`}
+            validationState={
+              pristine || (!pristine && !title) ? null : titleState
+            }
+          >
+            <ControlLabel htmlFor={`${id}-title-input`}>
+              {t('settings.labels.title')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'title')}
+              required
+              type='text'
+              value={title}
+              name='portfolio-title'
+              id={`${id}-title-input`}
+            />
+            {titleMessage ? (
+              <HelpBlock data-playwright-test-label='title-validation'>
+                {titleMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-url`}
+            validationState={pristine || (!pristine && !url) ? null : urlState}
+          >
+            <ControlLabel htmlFor={`${id}-url-input`}>
+              {t('settings.labels.url')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'url')}
+              required
+              type='url'
+              value={url}
+              name='portfolio-url'
+              id={`${id}-url-input`}
+            />
+            {urlMessage ? (
+              <HelpBlock data-playwright-test-label='url-validation'>
+                {urlMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-image`}
+            validationState={pristine ? null : combineImageStatus}
+          >
+            <ControlLabel htmlFor={`${id}-image-input`}>
+              {t('settings.labels.image')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'image')}
+              type='url'
+              value={image}
+              name='portfolio-image'
+              id={`${id}-image-input`}
+            />
+            {combineImageMessage ? (
+              <HelpBlock data-playwright-test-label='image-validation'>
+                {combineImageMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-description`}
+            validationState={pristine ? null : descriptionState}
+          >
+            <ControlLabel htmlFor={`${id}-description-input`}>
+              {t('settings.labels.description')}
+            </ControlLabel>
+            <FormControl
+              componentClass='textarea'
+              onChange={createOnChangeHandler(id, 'description')}
+              value={description}
+              name='portfolio-description'
+              id={`${id}-description-input`}
+            />
+            {descriptionMessage ? (
+              <HelpBlock data-playwright-test-label='description-validation'>
+                {descriptionMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <BlockSaveButton
+            disabled={isButtonDisabled}
+            bgSize='large'
+            data-playwright-test-label='save-portfolio'
+            {...(isButtonDisabled && { tabIndex: -1 })}
+          >
+            {t('buttons.save-portfolio')}
+          </BlockSaveButton>
+          <Spacer size='xs' />
+          <Button
+            block
+            size='large'
+            variant='danger'
+            onClick={() => handleRemoveItem(id)}
+            type='button'
+          >
+            {t('buttons.remove-portfolio')}
+          </Button>
+        </form>
+        {index + 1 !== arr.length && (
+          <>
+            <Spacer size='m' />
+            <hr />
+            <Spacer size='m' />
+          </>
+        )}
+      </FullWidthRow>
+    );
+  };
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-12T07:36:10.163Z
+File: Items per page in timeline.
+Functions Extracted: 4
+
+
+Function 1: viewProject
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function viewProject(completedChallenge: CompletedChallenge): void {
+    setCompletedChallenge(completedChallenge);
+    setProjectTitle(
+      idToNameMap.get(completedChallenge.id)?.challengeTitle ?? ''
+    );
+    openModal('projectPreview');
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: viewExamResults
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function viewExamResults(completedChallenge: CompletedChallenge): void {
+    setCompletedChallenge(completedChallenge);
+    setProjectTitle(
+      idToNameMap.get(completedChallenge.id)?.challengeTitle ?? ''
+    );
+    openModal('examResults');
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: renderViewButton
+Language: TypeScript
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+function renderViewButton(
+    completedChallenge: CompletedChallenge
+  ): React.ReactNode {
+    const { id } = completedChallenge;
+    const projectTitle = idToNameMap.get(id)?.challengeTitle || '';
+    return (
+      <SolutionDisplayWidget
+        completedChallenge={completedChallenge}
+        projectTitle={projectTitle}
+        showUserCode={() => viewSolution(completedChallenge)}
+        showProjectPreview={() => viewProject(completedChallenge)}
+        showExamResults={() => viewExamResults(completedChallenge)}
+        displayContext='timeline'
+      ></SolutionDisplayWidget>
+    );
+  }
+--------------------------------------------------------------------------------
+
+
+Function 4: renderCompletion
+Language: TypeScript
+Lines: 23
+Full Code:
+--------------------------------------------------------------------------------
+function renderCompletion(completed: CompletedChallenge) {
+    const { id } = completed;
+    const challenge = idToNameMap.get(id);
+    if (!challenge) return;
+    const { challengeTitle, challengePath, certPath } = challenge;
+    const completedDate = new Date(completed.completedDate);
+    return (
+      <tr className='timeline-row' key={id}>
+        <td>
+          {certPath ? (
+            <Link
+              className='timeline-cert-link'
+              to={`/certification/${username}/${certPath}`}
+            >
+              {challengeTitle}
+              <CertificationIcon />
+            </Link>
+          ) : (
+            <Link to={challengePath}>{challengeTitle}</Link>
+          )}
+        </td>
+        <td>{renderViewButton(completed)}</td>
+        <td className='text-center'>
+          <time dateTime={completedDate.toISOString()}>
+            {completedDate.toLocaleString([localeCode, 'en-US'], {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            })}
+          </time>
+        </td>
+      </tr>
+    );
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-12T07:36:40.150Z
+File: freeCodeCamp-freeCodeCamp-7709d3d/client/src/components/settings/email.tsx
+Functions Extracted: 1
+
+
+Function 1: EmailSettings
+Language: TypeScript
+Lines: 66
+Full Code:
+--------------------------------------------------------------------------------
+function EmailSettings({
+  email,
+  isEmailVerified,
+  sendQuincyEmail,
+  t,
+  updateMyEmail,
+  updateQuincyEmail
+}: EmailProps): JSX.Element {
+  const [emailForm, setEmailForm] = useState<EmailForm>({
+    currentEmail: email,
+    newEmail: '',
+    confirmNewEmail: '',
+    isPristine: true
+  });
+
+  function handleSubmit(e: React.FormEvent): void {
+    e.preventDefault();
+    updateMyEmail(emailForm.newEmail);
+  }
+
+  function createHandleEmailFormChange(
+    key: 'newEmail' | 'confirmNewEmail'
+  ): (e: React.ChangeEvent<HTMLInputElement>) => void {
+    return e => {
+      e.preventDefault();
+      const userInput = e.target.value.slice();
+      setEmailForm(prev => ({
+        ...prev,
+        [key]: userInput,
+        isPristine: userInput === prev.currentEmail
+      }));
+    };
+  }
+
+  function getValidationForNewEmail(): EmailValidation {
+    const { newEmail, currentEmail } = emailForm;
+    if (!maybeEmailRE.test(newEmail)) {
+      return {
+        state: null,
+        message: ''
+      };
+    }
+    if (newEmail === currentEmail) {
+      return {
+        state: 'error',
+        message: t('validation.same-email')
+      };
+    }
+    if (isEmail(newEmail)) {
+      return { state: 'success', message: '' };
+    } else {
+      return {
+        state: 'error',
+        message: t('validation.invalid-email')
+      };
+    }
+  }
+
+  function getValidationForConfirmEmail(): EmailValidation {
+    const { confirmNewEmail, newEmail } = emailForm;
+    if (!maybeEmailRE.test(newEmail)) {
+      return {
+        state: null,
+        message: ''
+      };
+    }
+    const isMatch = newEmail === confirmNewEmail;
+    if (maybeEmailRE.test(confirmNewEmail)) {
+      return {
+        state: isMatch ? 'success' : 'error',
+        message: isMatch ? '' : t('validation.email-mismatch')
+      };
+    } else {
+      return {
+        state: null,
+        message: ''
+      };
+    }
+  }
+
+  const { newEmail, confirmNewEmail, currentEmail, isPristine } = emailForm;
+
+  const { state: newEmailValidation, message: newEmailValidationMessage } =
+    getValidationForNewEmail();
+
+  const {
+    state: confirmEmailValidation,
+    message: confirmEmailValidationMessage
+  } = getValidationForConfirmEmail();
+  const isDisabled =
+    newEmailValidation !== 'success' ||
+    confirmEmailValidation !== 'success' ||
+    isPristine;
+  if (!currentEmail) {
+    return (
+      <div>
+        <FullWidthRow>
+          <p className='large-p text-center'>{t('settings.email.missing')}</p>
+        </FullWidthRow>
+        <FullWidthRow>
+          <Button
+            block={true}
+            size='large'
+            variant='primary'
+            href='/update-email'
+          >
+            {t('buttons.edit')}
+          </Button>
+        </FullWidthRow>
+      </div>
+    );
+  }
+  return (
+    <div className='email-settings'>
+      <SectionHeader>{t('settings.email.heading')}</SectionHeader>
+      {isEmailVerified ? null : (
+        <FullWidthRow>
+          <HelpBlock>
+            <Callout
+              variant='info'
+              className='text-center'
+              data-playwright-test-label='email-verification-alert'
+            >
+              {t('settings.email.not-verified')}
+              <br />
+              <Trans i18nKey='settings.email.check'>
+                <Link
+                  data-playwright-test-label='email-verification-link'
+                  to='/update-email'
+                />
+              </Trans>
+            </Callout>
+          </HelpBlock>
+        </FullWidthRow>
+      )}
+      <FullWidthRow>
+        <form
+          id='form-update-email'
+          {...(!isDisabled
+            ? { onSubmit: handleSubmit }
+            : { onSubmit: e => e.preventDefault() })}
+        >
+          <FormGroup controlId='current-email'>
+            <ControlLabel>{t('settings.email.current')}</ControlLabel>
+            <FormControl.Static>{currentEmail}</FormControl.Static>
+          </FormGroup>
+          <div role='group' aria-label={t('settings.email.heading')}>
+            <FormGroup
+              controlId='new-email'
+              validationState={newEmailValidation}
+            >
+              <ControlLabel htmlFor='new-email-input'>
+                {t('settings.email.new')}
+              </ControlLabel>
+              <FormControl
+                onChange={createHandleEmailFormChange('newEmail')}
+                type='email'
+                value={newEmail}
+                id='new-email-input'
+              />
+              {newEmailValidationMessage ? (
+                <HelpBlock data-playwright-test-label='new-email-validation'>
+                  {newEmailValidationMessage}
+                </HelpBlock>
+              ) : null}
+            </FormGroup>
+            <FormGroup
+              controlId='confirm-email'
+              validationState={confirmEmailValidation}
+            >
+              <ControlLabel htmlFor='confirm-email-input'>
+                {t('settings.email.confirm')}
+              </ControlLabel>
+              <FormControl
+                onChange={createHandleEmailFormChange('confirmNewEmail')}
+                type='email'
+                value={confirmNewEmail}
+                id='confirm-email-input'
+              />
+              {confirmEmailValidationMessage ? (
+                <HelpBlock data-playwright-test-label='confirm-email-validation'>
+                  {confirmEmailValidationMessage}
+                </HelpBlock>
+              ) : null}
+            </FormGroup>
+          </div>
+          <BlockSaveButton
+            disabled={isDisabled}
+            bgSize='large'
+            {...(isDisabled && { tabIndex: -1 })}
+          >
+            {t('buttons.save')}{' '}
+            <span className='sr-only'>{t('settings.email.heading')}</span>
+          </BlockSaveButton>
+        </form>
+      </FullWidthRow>
+      <Spacer size='m' />
+      <FullWidthRow>
+        <ToggleButtonSetting
+          action={t('settings.email.weekly')}
+          flag={!!sendQuincyEmail}
+          flagName='sendQuincyEmail'
+          offLabel={t('buttons.no-thanks')}
+          onLabel={t('buttons.yes-please')}
+          toggleFlag={() => updateQuincyEmail(!sendQuincyEmail)}
+        />
+      </FullWidthRow>
+    </div>
+  );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:36:45.136Z
+Question Type: true-false
+Function: checkIfValidImage
+Function Size: 435 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: checkIfValidImage (TypeScript)\n// Checks if the provided URL is a valid image by loading it.\n\nconst checkIfValidImage = (url: string): Promise<ProfileValidation> => {\n  const img = new Image();\n\n  return new Promise(resolve => {\n    img.onerror = () =>\n      resolve({ state: 'error', me
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:36:48.783Z
+Question Type: select-all
+Function: renderViewButton
+Function Size: 697 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: renderViewButton (TypeScript)\n// Renders the view button for a completed challenge.\n\nfunction renderViewButton(\n    completedChallenge: CompletedChallenge\n  ): React.ReactNode {\n    const { id } = completedChallenge;\n    const projectTitle = idToNameMap.get(id)?.challengeTitle || '';\n  
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:36:51.201Z
+Question Type: select-all
+Function: renderCompletion
+Function Size: 1182 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: renderCompletion (TypeScript)\n// Renders the completion details of a completed challenge.\n\nfunction renderCompletion(completed: CompletedChallenge) {\n    const { id } = completed;\n    const challenge = idToNameMap.get(id);\n    if (!challenge) return;\n    const { challengeTitle, challeng
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:36:56.580Z
+Question Type: true-false
+Function: putUserUpdateEmail
+Function Size: 218 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUserUpdateEmail (TypeScript)\n// Updates the user's email address.\n\nexport function putUserUpdateEmail(\n  email: string\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-email', { email });\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:36:56.886Z
+Question Type: select-all
+Function: viewProject
+Function Size: 353 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: viewProject (TypeScript)\n// Sets the completed challenge and opens the project preview modal.\n\nfunction viewProject(completedChallenge: CompletedChallenge): void {\n    setCompletedChallenge(completedChallenge);\n    setProjectTitle(\n      idToNameMap.get(completedChallenge.id)?.challenge
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:37:00.673Z
+Question Type: function-variant
+Function: putUpdateMyPortfolio
+Function Size: 248 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMyPortfolio (TypeScript)\n// Updates the user's portfolio information.\n\nexport function putUpdateMyPortfolio(\n  update: Record<string, string>\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-portfolio', update);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:37:04.866Z
+Question Type: multiple-choice
+Function: putUpdateMyKeyboardShortcuts
+Function Size: 270 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: putUpdateMyKeyboardShortcuts (TypeScript)\n// Updates the user's keyboard shortcuts.\n\nexport function putUpdateMyKeyboardShortcuts(\n  update: Record<string, string>\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-keyboard-shortcuts', update);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:37:06.980Z
+Question Type: select-all
+Function: putUpdateMyQuincyEmail
+Function Size: 263 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMyQuincyEmail (TypeScript)\n// Updates the user's Quincy email preferences.\n\nexport function putUpdateMyQuincyEmail(update: {\n  sendQuincyEmail: boolean;\n}): Promise<ResponseWithData<void>> {\n  return put('/update-my-quincy-email', update);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:37:12.731Z
+Question Type: order-sequence
+Function: putUpdateMyProfileUI
+Function Size: 251 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMyProfileUI (TypeScript)\n// Updates the user's profile UI settings.\n\nexport function putUpdateMyProfileUI(\n  profileUI: User['profileUI']\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-profileui', { profileUI });\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:37:14.080Z
+Question Type: select-all
+Function: putUpdateMyAbout
+Function Size: 224 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: putUpdateMyAbout (TypeScript)\n// Updates the user's about information.\n\nexport function putUpdateMyAbout(\n  values: MyAbout\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-about', { ...values });\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:37:15.218Z
+Question Type: function-variant
+Function: createOnChangeHandler
+Function Size: 857 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createOnChangeHandler (TypeScript)\n// Creates an onChange handler for portfolio item fields.\n\nconst createOnChangeHandler = (id: string, key: 'description' | 'image' | 'title' | 'url') => (e: React.ChangeEvent<HTMLInputElement>) => {\n  e.preventDefault();\n  const userInput = e.target.va
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:37:22.880Z
+Question Type: function-variant
+Function: createEmptyPortfolioItem
+Function Size: 266 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createEmptyPortfolioItem (TypeScript)\n// Creates an empty portfolio item with default values.\n\nfunction createEmptyPortfolioItem(): PortfolioProjectData {\n  return {\n    id: nanoid(),\n    title: '',\n    description: '',\n    url: '',\n    image: ''\n  };\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:37:26.153Z
+Question Type: function-variant
+Function: viewExamResults
+Function Size: 355 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: viewExamResults (TypeScript)\n// Sets the completed challenge and opens the exam results modal.\n\nfunction viewExamResults(completedChallenge: CompletedChallenge): void {\n    setCompletedChallenge(completedChallenge);\n    setProjectTitle(\n      idToNameMap.get(completedChallenge.id)?.chal
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:37:30.355Z
+Question Type: order-sequence
+Function: updateItem
+Function Size: 391 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateItem (TypeScript)\n// Updates the portfolio item and triggers a save action.\n\nconst updateItem = (id: string, updatedPortfolio?: PortfolioProjectData[]) => {\n    if (unsavedItemId === id) {\n      setUnsavedItemId(null);\n    }\n    const portfolioToUpdate = updatedPortfolio || portfo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:37:37.023Z
+Question Type: function-variant
+Function: formCorrect
+Function Size: 1157 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: formCorrect (TypeScript)\n// Validates the form fields of a portfolio item.\n\nconst formCorrect = (portfolioItem: PortfolioProjectData) => {\n    const { id, title, description, url, image } = portfolioItem;\n    const { state: titleState, message: titleMessage } = getTitleValidation(title)
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760254472397
+Repository: Unknown
+Total Questions Generated: 14
+Total Chunks Processed: 22
+Ended: 2025-10-12T07:37:37.024Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-12T07:48:38.147Z
+File: TODO: Convert to DELETE
+Functions Extracted: 10
+
+
+Function 1: putUpdateMyAbout
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyAbout(
+  values: MyAbout
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-about', { ...values });
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: putUpdateMyUsername
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyUsername(
+  username: string
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-username', { username });
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: putUpdateMyProfileUI
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyProfileUI(
+  profileUI: User['profileUI']
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-profileui', { profileUI });
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: putUpdateMySocials
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMySocials(
+  update: Record<string, string>
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-socials', update);
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: putUpdateMyKeyboardShortcuts
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyKeyboardShortcuts(
+  update: Record<string, string>
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-keyboard-shortcuts', update);
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: putUpdateMyHonesty
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyHonesty(
+  update: Record<string, string>
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-honesty', update);
+}
+--------------------------------------------------------------------------------
+
+
+Function 7: putUpdateMyQuincyEmail
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyQuincyEmail(update: {
+  sendQuincyEmail: boolean;
+}): Promise<ResponseWithData<void>> {
+  return put('/update-my-quincy-email', update);
+}
+--------------------------------------------------------------------------------
+
+
+Function 8: putUpdateMyPortfolio
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyPortfolio(
+  update: Record<string, string>
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-portfolio', update);
+}
+--------------------------------------------------------------------------------
+
+
+Function 9: putUserUpdateEmail
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUserUpdateEmail(
+  email: string
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-email', { email });
+}
+--------------------------------------------------------------------------------
+
+
+Function 10: putVerifyCert
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putVerifyCert(
+  certSlug: string
+): Promise<ResponseWithData<void>> {
+  return put('/certificate/verify', { certSlug });
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-12T07:49:19.800Z
+File: freeCodeCamp-freeCodeCamp-7709d3d/client/src/components/profile/components/portfolio.tsx
+Functions Extracted: 6
+
+
+Function 1: checkIfValidImage
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+const checkIfValidImage = (url: string): Promise<ProfileValidation> => {
+    const img = new Image();
+
+    return new Promise(resolve => {
+      img.onerror = () =>
+        resolve({ state: 'error', message: t('validation.url-not-image') });
+      img.onload = () => resolve({ state: 'success', message: '' });
+      img.src = url;
+    });
+  };
+--------------------------------------------------------------------------------
+
+
+Function 2: createOnChangeHandler
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const createOnChangeHandler = (id: string, key: 'description' | 'image' | 'title' | 'url') => (e: React.ChangeEvent<HTMLInputElement>) => {
+      e.preventDefault();
+      const userInput = e.target.value.slice();
+      setPortfolio(prevPortfolio => {
+        const mutablePortfolio = [...prevPortfolio];
+        const index = findIndex(prevPortfolio, p => p.id === id);
+        mutablePortfolio[index] = {
+          ...mutablePortfolio[index],
+          [key]: userInput
+        };
+        if (key === 'image' && userInput) {
+          void checkIfValidImage(userInput).then(imageValidation => {
+            setImageValid(imageValidation);
+          });
+        } else if (key === 'image' && !userInput) {
+          setImageValid({ state: 'success', message: '' });
+        }
+        return mutablePortfolio;
+      });
+    };
+--------------------------------------------------------------------------------
+
+
+Function 3: updateItem
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+const updateItem = (id: string, updatedPortfolio?: PortfolioProjectData[]) => {
+    if (unsavedItemId === id) {
+      setUnsavedItemId(null);
+    }
+    const portfolioToUpdate = updatedPortfolio || portfolio;
+    updateMyPortfolio({ portfolio: portfolioToUpdate });
+    setIsEditing(false);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 4: handleRemoveItem
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+const handleRemoveItem = (id: string) => {
+    const newPortfolio = portfolio.filter(p => p.id !== id);
+    setPortfolio(newPortfolio);
+    updateItem(id, newPortfolio);
+    setIsEditing(false);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 5: formCorrect
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+const formCorrect = (portfolioItem: PortfolioProjectData) => {
+    const { id, title, description, url, image } = portfolioItem;
+    const { state: titleState, message: titleMessage } = getTitleValidation(title);
+    const { state: urlState, message: urlMessage } = getUrlValidation(url);
+    const { state: descriptionState, message: descriptionMessage } = getDescriptionValidation(description);
+    const { state: imageState, message: imageMessage } = getUrlValidation(image);
+    const pristine = isFormPristine(id);
+    const urlIsValid = !isURL(url, {
+      protocols: ['http', 'https'],
+      require_tld: true,
+      require_protocol: true
+    });
+    const isButtonDisabled = [
+      titleState,
+      urlState,
+      descriptionState,
+      imageState,
+      urlIsValid
+    ].some(state => state === 'error' || false);
+    return {
+      isButtonDisabled,
+      title: { titleState, titleMessage },
+      url: { urlState, urlMessage },
+      image: { imageState, imageMessage },
+      desc: { descriptionState, descriptionMessage },
+      pristine
+    };
+  };
+--------------------------------------------------------------------------------
+
+
+Function 6: renderPortfolio
+Language: TypeScript
+Lines: 65
+Full Code:
+--------------------------------------------------------------------------------
+const renderPortfolio = (portfolioItem: PortfolioProjectData, index: number, arr: PortfolioProjectData[]) => {
+    const { id, title, description, url, image } = portfolioItem;
+    const {
+      isButtonDisabled,
+      title: { titleState, titleMessage },
+      url: { urlState, urlMessage },
+      image: { imageState, imageMessage },
+      desc: { descriptionState, descriptionMessage },
+      pristine
+    } = formCorrect(portfolioItem);
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>, id: string) => {
+      e.preventDefault();
+      if (isButtonDisabled) return null;
+      setIsEditing(false);
+      return updateItem(id);
+    };
+    const combineImageStatus =
+      imageState === 'success' && imageValidation.state === 'success'
+        ? null
+        : 'error';
+    const combineImageMessage = imageMessage || imageValidation.message;
+    return (
+      <FullWidthRow key={id}>
+        <form
+          onSubmit={e => handleSubmit(e, id)}
+          id='portfolio-items'
+          data-playwright-test-label='portfolio-items'
+        >
+          <FormGroup
+            controlId={`${id}-title`}
+            validationState={
+              pristine || (!pristine && !title) ? null : titleState
+            }
+          >
+            <ControlLabel htmlFor={`${id}-title-input`}>
+              {t('settings.labels.title')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'title')}
+              required
+              type='text'
+              value={title}
+              name='portfolio-title'
+              id={`${id}-title-input`}
+            />
+            {titleMessage ? (
+              <HelpBlock data-playwright-test-label='title-validation'>
+                {titleMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-url`}
+            validationState={pristine || (!pristine && !url) ? null : urlState}
+          >
+            <ControlLabel htmlFor={`${id}-url-input`}>
+              {t('settings.labels.url')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'url')}
+              required
+              type='url'
+              value={url}
+              name='portfolio-url'
+              id={`${id}-url-input`}
+            />
+            {urlMessage ? (
+              <HelpBlock data-playwright-test-label='url-validation'>
+                {urlMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-image`}
+            validationState={pristine ? null : combineImageStatus}
+          >
+            <ControlLabel htmlFor={`${id}-image-input`}>
+              {t('settings.labels.image')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'image')}
+              type='url'
+              value={image}
+              name='portfolio-image'
+              id={`${id}-image-input`}
+            />
+            {combineImageMessage ? (
+              <HelpBlock data-playwright-test-label='image-validation'>
+                {combineImageMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-description`}
+            validationState={pristine ? null : descriptionState}
+          >
+            <ControlLabel htmlFor={`${id}-description-input`}>
+              {t('settings.labels.description')}
+            </ControlLabel>
+            <FormControl
+              componentClass='textarea'
+              onChange={createOnChangeHandler(id, 'description')}
+              value={description}
+              name='portfolio-description'
+              id={`${id}-description-input`}
+            />
+            {descriptionMessage ? (
+              <HelpBlock data-playwright-test-label='description-validation'>
+                {descriptionMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <BlockSaveButton
+            disabled={isButtonDisabled}
+            bgSize='large'
+            data-playwright-test-label='save-portfolio'
+            {...(isButtonDisabled && { tabIndex: -1 })}
+          >
+            {t('buttons.save-portfolio')}
+          </BlockSaveButton>
+          <Spacer size='xs' />
+          <Button
+            block
+            size='large'
+            variant='danger'
+            onClick={() => handleRemoveItem(id)}
+            type='button'
+          >
+            {t('buttons.remove-portfolio')}
+          </Button>
+        </form>
+        {index + 1 !== arr.length && (
+          <>
+            <Spacer size='m' />
+            <hr />
+            <Spacer size='m' />
+          </>
+        )}
+      </FullWidthRow>
+    );
+  };
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-12T07:49:40.667Z
+File: freeCodeCamp-freeCodeCamp-7709d3d/client/src/components/Donation/donation-modal-body.tsx
+Functions Extracted: 3
+
+
+Function 1: DonationModalBody
+Language: TypeScript
+Lines: 42
+Full Code:
+--------------------------------------------------------------------------------
+function DonationModalBody({
+  closeDonationModal,
+  donatableSectionRecentlyCompleted,
+  setCanClose
+}: DonationModalBodyProps): JSX.Element {
+  const [donationAttempted, setDonationAttempted] = useState(false);
+  const [showHeaderAndFooter, setShowHeaderAndFooter] = useState(true);
+  const [isAnimationVisible, setIsAnimationVisible] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [secondsRemaining, setSecondsRemaining] = useState(20);
+  const useShortDonationBlocks = useFeature('short-donation-blocks').on;
+
+  const handleProcessing = () => {
+    setDonationAttempted(true);
+  };
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    if (useShortDonationBlocks && donatableSectionRecentlyCompleted) {
+      setIsAnimationVisible(false);
+      setCanClose(true);
+    } else {
+      intervalId = setInterval(() => {
+        setSecondsRemaining(prevSeconds => prevSeconds - 1);
+      }, 1000);
+      if (secondsRemaining <= 0) {
+        setIsAnimationVisible(false);
+        setCanClose(true);
+        clearInterval(intervalId);
+      }
+    }
+    return () => clearInterval(intervalId);
+  }, [
+    secondsRemaining,
+    setCanClose,
+    donatableSectionRecentlyCompleted,
+    useShortDonationBlocks
+  ]);
+
+  return (
+    <Modal.Body borderless alignment='start'>
+      <div aria-live='polite' className='donation-modal'>
+        {isAnimationVisible ? (
+          <AnimationContainer secondsRemaining={secondsRemaining} />
+        ) : (
+          <BecomeASupporterConfirmation
+            donatableSectionRecentlyCompleted={
+              donatableSectionRecentlyCompleted
+            }
+            showHeaderAndFooter={showHeaderAndFooter}
+            closeDonationModal={closeDonationModal}
+            donationAttempted={donationAttempted}
+            showForm={showForm}
+            setShowHeaderAndFooter={setShowHeaderAndFooter}
+            handleProcessing={handleProcessing}
+            setShowForm={setShowForm}
+            useShortDonationBlocks={useShortDonationBlocks}
+          />
+        )}
+      </div>
+    </Modal.Body>
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: handleBecomeSupporterClick
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+const handleBecomeSupporterClick = () => {
+    callGA({
+      event: 'donation_related',
+      action: `Modal Become Supporter Click`
+    });
+    setShowForm(true);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 3: useEffect
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    if (useShortDonationBlocks && donatableSectionRecentlyCompleted) {
+      setIsAnimationVisible(false);
+      setCanClose(true);
+    } else {
+      intervalId = setInterval(() => {
+        setSecondsRemaining(prevSeconds => prevSeconds - 1);
+      }, 1000);
+      if (secondsRemaining <= 0) {
+        setIsAnimationVisible(false);
+        setCanClose(true);
+        clearInterval(intervalId);
+      }
+    }
+    return () => clearInterval(intervalId);
+  }, [
+    secondsRemaining,
+    setCanClose,
+    donatableSectionRecentlyCompleted,
+    useShortDonationBlocks
+  ]);
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-12T07:49:59.469Z
+File: Items per page in timeline.
+Functions Extracted: 4
+
+
+Function 1: viewProject
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function viewProject(completedChallenge: CompletedChallenge): void {
+    setCompletedChallenge(completedChallenge);
+    setProjectTitle(
+      idToNameMap.get(completedChallenge.id)?.challengeTitle ?? ''
+    );
+    openModal('projectPreview');
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: viewExamResults
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function viewExamResults(completedChallenge: CompletedChallenge): void {
+    setCompletedChallenge(completedChallenge);
+    setProjectTitle(
+      idToNameMap.get(completedChallenge.id)?.challengeTitle ?? ''
+    );
+    openModal('examResults');
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: renderViewButton
+Language: TypeScript
+Lines: 13
+Full Code:
+--------------------------------------------------------------------------------
+function renderViewButton(
+    completedChallenge: CompletedChallenge
+  ): React.ReactNode {
+    const { id } = completedChallenge;
+    const projectTitle = idToNameMap.get(id)?.challengeTitle || '';
+    return (
+      <SolutionDisplayWidget
+        completedChallenge={completedChallenge}
+        projectTitle={projectTitle}
+        showUserCode={() => viewSolution(completedChallenge)}
+        showProjectPreview={() => viewProject(completedChallenge)}
+        showExamResults={() => viewExamResults(completedChallenge)}
+        displayContext='timeline'
+      ></SolutionDisplayWidget>
+    );
+  }
+--------------------------------------------------------------------------------
+
+
+Function 4: renderCompletion
+Language: TypeScript
+Lines: 21
+Full Code:
+--------------------------------------------------------------------------------
+function renderCompletion(completed: CompletedChallenge) {
+    const { id } = completed;
+    const challenge = idToNameMap.get(id);
+    if (!challenge) return;
+    const { challengeTitle, challengePath, certPath } = challenge;
+    const completedDate = new Date(completed.completedDate);
+    return (
+      <tr className='timeline-row' key={id}>
+        <td>
+          {certPath ? (
+            <Link
+              className='timeline-cert-link'
+              to={`/certification/${username}/${certPath}`}
+            >
+              {challengeTitle}
+              <CertificationIcon />
+            </Link>
+          ) : (
+            <Link to={challengePath}>{challengeTitle}</Link>
+          )}
+        </td>
+        <td>{renderViewButton(completed)}</td>
+        <td className='text-center'>
+          <time dateTime={completedDate.toISOString()}>
+            {completedDate.toLocaleString([localeCode, 'en-US'], {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            })}
+          </time>
+        </td>
+      </tr>
+    );
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-12T07:50:36.532Z
+File: freeCodeCamp-freeCodeCamp-7709d3d/client/src/components/settings/email.tsx
+Functions Extracted: 1
+
+
+Function 1: EmailSettings
+Language: TypeScript
+Lines: 65
+Full Code:
+--------------------------------------------------------------------------------
+function EmailSettings({
+  email,
+  isEmailVerified,
+  sendQuincyEmail,
+  t,
+  updateMyEmail,
+  updateQuincyEmail
+}: EmailProps): JSX.Element {
+  const [emailForm, setEmailForm] = useState<EmailForm>({
+    currentEmail: email,
+    newEmail: '',
+    confirmNewEmail: '',
+    isPristine: true
+  });
+
+  function handleSubmit(e: React.FormEvent): void {
+    e.preventDefault();
+    updateMyEmail(emailForm.newEmail);
+  }
+
+  function createHandleEmailFormChange(
+    key: 'newEmail' | 'confirmNewEmail'
+  ): (e: React.ChangeEvent<HTMLInputElement>) => void {
+    return e => {
+      e.preventDefault();
+      const userInput = e.target.value.slice();
+      setEmailForm(prev => ({
+        ...prev,
+        [key]: userInput,
+        isPristine: userInput === prev.currentEmail
+      }));
+    };
+  }
+
+  function getValidationForNewEmail(): EmailValidation {
+    const { newEmail, currentEmail } = emailForm;
+    if (!maybeEmailRE.test(newEmail)) {
+      return {
+        state: null,
+        message: ''
+      };
+    }
+    if (newEmail === currentEmail) {
+      return {
+        state: 'error',
+        message: t('validation.same-email')
+      };
+    }
+    if (isEmail(newEmail)) {
+      return { state: 'success', message: '' };
+    } else {
+      return {
+        state: 'error',
+        message: t('validation.invalid-email')
+      };
+    }
+  }
+
+  function getValidationForConfirmEmail(): EmailValidation {
+    const { confirmNewEmail, newEmail } = emailForm;
+    if (!maybeEmailRE.test(newEmail)) {
+      return {
+        state: null,
+        message: ''
+      };
+    }
+    const isMatch = newEmail === confirmNewEmail;
+    if (maybeEmailRE.test(confirmNewEmail)) {
+      return {
+        state: isMatch ? 'success' : 'error',
+        message: isMatch ? '' : t('validation.email-mismatch')
+      };
+    } else {
+      return {
+        state: null,
+        message: ''
+      };
+    }
+  }
+
+  const { newEmail, confirmNewEmail, currentEmail, isPristine } = emailForm;
+
+  const { state: newEmailValidation, message: newEmailValidationMessage } =
+    getValidationForNewEmail();
+
+  const {
+    state: confirmEmailValidation,
+    message: confirmEmailValidationMessage
+  } = getValidationForConfirmEmail();
+  const isDisabled =
+    newEmailValidation !== 'success' ||
+    confirmEmailValidation !== 'success' ||
+    isPristine;
+  if (!currentEmail) {
+    return (
+      <div>
+        <FullWidthRow>
+          <p className='large-p text-center'>{t('settings.email.missing')}</p>
+        </FullWidthRow>
+        <FullWidthRow>
+          <Button
+            block={true}
+            size='large'
+            variant='primary'
+            href='/update-email'
+          >
+            {t('buttons.edit')}
+          </Button>
+        </FullWidthRow>
+      </div>
+    );
+  }
+  return (
+    <div className='email-settings'>
+      <SectionHeader>{t('settings.email.heading')}</SectionHeader>
+      {isEmailVerified ? null : (
+        <FullWidthRow>
+          <HelpBlock>
+            <Callout
+              variant='info'
+              className='text-center'
+              data-playwright-test-label='email-verification-alert'
+            >
+              {t('settings.email.not-verified')}
+              <br />
+              <Trans i18nKey='settings.email.check'>
+                <Link
+                  data-playwright-test-label='email-verification-link'
+                  to='/update-email'
+                />
+              </Trans>
+            </Callout>
+          </HelpBlock>
+        </FullWidthRow>
+      )}
+      <FullWidthRow>
+        <form
+          id='form-update-email'
+          {...(!isDisabled
+            ? { onSubmit: handleSubmit }
+            : { onSubmit: e => e.preventDefault() })}
+        >
+          <FormGroup controlId='current-email'>
+            <ControlLabel>{t('settings.email.current')}</ControlLabel>
+            <FormControl.Static>{currentEmail}</FormControl.Static>
+          </FormGroup>
+          <div role='group' aria-label={t('settings.email.heading')}>
+            <FormGroup
+              controlId='new-email'
+              validationState={newEmailValidation}
+            >
+              <ControlLabel htmlFor='new-email-input'>
+                {t('settings.email.new')}
+              </ControlLabel>
+              <FormControl
+                onChange={createHandleEmailFormChange('newEmail')}
+                type='email'
+                value={newEmail}
+                id='new-email-input'
+              />
+              {newEmailValidationMessage ? (
+                <HelpBlock data-playwright-test-label='new-email-validation'>
+                  {newEmailValidationMessage}
+                </HelpBlock>
+              ) : null}
+            </FormGroup>
+            <FormGroup
+              controlId='confirm-email'
+              validationState={confirmEmailValidation}
+            >
+              <ControlLabel htmlFor='confirm-email-input'>
+                {t('settings.email.confirm')}
+              </ControlLabel>
+              <FormControl
+                onChange={createHandleEmailFormChange('confirmNewEmail')}
+                type='email'
+                value={confirmNewEmail}
+                id='confirm-email-input'
+              />
+              {confirmEmailValidationMessage ? (
+                <HelpBlock data-playwright-test-label='confirm-email-validation'>
+                  {confirmEmailValidationMessage}
+                </HelpBlock>
+              ) : null}
+            </FormGroup>
+          </div>
+          <BlockSaveButton
+            disabled={isDisabled}
+            bgSize='large'
+            {...(isDisabled && { tabIndex: -1 })}
+          >
+            {t('buttons.save')}{' '}
+            <span className='sr-only'>{t('settings.email.heading')}</span>
+          </BlockSaveButton>
+        </form>
+      </FullWidthRow>
+      <Spacer size='m' />
+      <FullWidthRow>
+        <ToggleButtonSetting
+          action={t('settings.email.weekly')}
+          flag={!!sendQuincyEmail}
+          flagName='sendQuincyEmail'
+          offLabel={t('buttons.no-thanks')}
+          onLabel={t('buttons.yes-please')}
+          toggleFlag={() => updateQuincyEmail(!sendQuincyEmail)}
+        />
+      </FullWidthRow>
+    </div>
+  );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:50:44.796Z
+Question Type: select-all
+Function: putUpdateMyProfileUI
+Function Size: 251 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: putUpdateMyProfileUI (TypeScript)\n// Updates the user's profile UI settings.\n\nexport function putUpdateMyProfileUI(\n  profileUI: User['profileUI']\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-profileui', { profileUI });\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:50:45.403Z
+Question Type: select-all
+Function: putUpdateMyPortfolio
+Function Size: 248 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMyPortfolio (TypeScript)\n// Updates the user's portfolio information.\n\nexport function putUpdateMyPortfolio(\n  update: Record<string, string>\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-portfolio', update);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:50:46.637Z
+Question Type: true-false
+Function: renderCompletion
+Function Size: 1195 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: renderCompletion (TypeScript)\n// Renders a table row for a completed challenge with links and buttons.\n\nfunction renderCompletion(completed: CompletedChallenge) {\n    const { id } = completed;\n    const challenge = idToNameMap.get(id);\n    if (!challenge) return;\n    const { challengeTi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:50:55.351Z
+Question Type: multiple-choice
+Function: handleRemoveItem
+Function Size: 304 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: handleRemoveItem (TypeScript)\n// Removes an item from the portfolio and updates the state.\n\nconst handleRemoveItem = (id: string) => {\n    const newPortfolio = portfolio.filter(p => p.id !== id);\n    setPortfolio(newPortfolio);\n    updateItem(id, newPortfolio);\n    setIsEditing(false);\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:50:58.303Z
+Question Type: function-variant
+Function: renderViewButton
+Function Size: 714 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: renderViewButton (TypeScript)\n// Renders a button for viewing solutions, projects, and exam results.\n\nfunction renderViewButton(\n    completedChallenge: CompletedChallenge\n  ): React.ReactNode {\n    const { id } = completedChallenge;\n    const projectTitle = idToNameMap.get(id)?.challen
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:50:59.642Z
+Question Type: true-false
+Function: DonationModalBody
+Function Size: 2185 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: DonationModalBody (TypeScript)\n// Handles the donation modal's state and rendering logic.\n\nfunction DonationModalBody({\n  closeDonationModal,\n  donatableSectionRecentlyCompleted,\n  setCanClose\n}: DonationModalBodyProps): JSX.Element {\n  const [donationAttempted, setDonationAttempted] = 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:51:00.149Z
+Question Type: function-variant
+Function: putUpdateMyUsername
+Function Size: 224 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMyUsername (TypeScript)\n// Updates the user's username.\n\nexport function putUpdateMyUsername(\n  username: string\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-username', { username });\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:51:06.305Z
+Question Type: select-all
+Function: putUpdateMyHonesty
+Function Size: 237 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMyHonesty (TypeScript)\n// Updates the user's honesty settings.\n\nexport function putUpdateMyHonesty(\n  update: Record<string, string>\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-honesty', update);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:51:08.672Z
+Question Type: select-all
+Function: checkIfValidImage
+Function Size: 447 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: checkIfValidImage (TypeScript)\n// Validates if the provided URL points to a valid image.\n\nconst checkIfValidImage = (url: string): Promise<ProfileValidation> => {\n    const img = new Image();\n\n    return new Promise(resolve => {\n      img.onerror = () =>\n        resolve({ state: 'error'
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:51:09.604Z
+Question Type: function-variant
+Function: putUpdateMyQuincyEmail
+Function Size: 263 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMyQuincyEmail (TypeScript)\n// Updates the user's Quincy email preferences.\n\nexport function putUpdateMyQuincyEmail(update: {\n  sendQuincyEmail: boolean;\n}): Promise<ResponseWithData<void>> {\n  return put('/update-my-quincy-email', update);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:51:12.313Z
+Question Type: function-variant
+Function: putVerifyCert
+Function Size: 214 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putVerifyCert (TypeScript)\n// Verifies a user's certificate.\n\nexport function putVerifyCert(\n  certSlug: string\n): Promise<ResponseWithData<void>> {\n  return put('/certificate/verify', { certSlug });\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:51:18.437Z
+Question Type: order-sequence
+Function: updateItem
+Function Size: 410 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateItem (TypeScript)\n// Updates the portfolio item and triggers the Redux action to save changes.\n\nconst updateItem = (id: string, updatedPortfolio?: PortfolioProjectData[]) => {\n    if (unsavedItemId === id) {\n      setUnsavedItemId(null);\n    }\n    const portfolioToUpdate = updated
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:51:20.382Z
+Question Type: select-all
+Function: createOnChangeHandler
+Function Size: 942 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createOnChangeHandler (TypeScript)\n// Creates an onChange handler for updating portfolio item fields.\n\nconst createOnChangeHandler = (id: string, key: 'description' | 'image' | 'title' | 'url') => (e: React.ChangeEvent<HTMLInputElement>) => {\n      e.preventDefault();\n      const userIn
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-12T07:51:25.386Z
+Question Type: function-variant
+Function: viewExamResults
+Function Size: 355 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: viewExamResults (TypeScript)\n// Sets the completed challenge and opens the exam results modal.\n\nfunction viewExamResults(completedChallenge: CompletedChallenge): void {\n    setCompletedChallenge(completedChallenge);\n    setProjectTitle(\n      idToNameMap.get(completedChallenge.id)?.chal
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760254472397
+Repository: Unknown
+Total Questions Generated: 15
+Total Chunks Processed: 24
+Ended: 2025-10-12T07:51:25.392Z
+================================================================================
+

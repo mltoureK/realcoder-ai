@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { stripe } from '@/lib/stripe';
 import { updateUserPremiumStatus } from '@/lib/user-management';
+import { claimFounderSlot } from '@/lib/founder-tier';
 
 // Disable body parsing for webhooks (we need raw body)
 export const runtime = 'nodejs';
@@ -89,6 +90,27 @@ export async function POST(req: NextRequest) {
         console.log(`   isPremium: true`);
         console.log(`   isFounder: ${isFounder}`);
         console.log(`   subscriptionStatus: active`);
+
+        // Claim founder slot if this is a founder tier purchase
+        if (isFounder) {
+          console.log(`\n🏆 Claiming founder slot for user: ${userId}`);
+          try {
+            const founderResult = await claimFounderSlot(userId);
+            
+            if (founderResult.success) {
+              console.log(`✅ ${founderResult.message}`);
+              console.log(`   Slot Number: ${founderResult.slotNumber}`);
+              console.log(`   Slots Remaining: ${founderResult.slotsRemaining}`);
+            } else {
+              console.error(`❌ Failed to claim founder slot: ${founderResult.message}`);
+              // Note: We don't fail the webhook here because the payment was successful
+              // The user still gets founder status even if slot claiming fails
+            }
+          } catch (error) {
+            console.error(`❌ Error claiming founder slot:`, error);
+            // Continue processing - payment was successful
+          }
+        }
         break;
       }
 
