@@ -75,6 +75,53 @@ export default function Home() {
     }
   }, [user]);
 
+  // Handle payment success (fallback for when webhook doesn't fire in test mode)
+  useEffect(() => {
+    const handlePaymentSuccess = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const paymentStatus = urlParams.get('payment');
+      const sessionId = urlParams.get('session_id');
+
+      if (paymentStatus === 'success' && sessionId && user) {
+        console.log('🎉 Payment success detected, verifying session...');
+        
+        try {
+          const response = await fetch('/api/verify-checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            console.log('✅ Checkout verified and user upgraded!', data);
+            alert(data.message);
+            
+            // Refresh quiz limit to show unlimited access
+            const limit = await checkQuizLimit(user.uid);
+            setQuizLimit(limit);
+            
+            // Clean up URL
+            window.history.replaceState({}, '', '/');
+          } else {
+            console.error('❌ Checkout verification failed:', data);
+          }
+        } catch (error) {
+          console.error('❌ Error verifying checkout:', error);
+        }
+      } else if (paymentStatus === 'cancelled') {
+        console.log('❌ Payment was cancelled');
+        alert('Payment was cancelled. You can try again anytime!');
+        window.history.replaceState({}, '', '/');
+      }
+    };
+
+    if (user) {
+      handlePaymentSuccess();
+    }
+  }, [user]);
+
   // Refresh cached question count when hidePassedQuestions toggle changes
   useEffect(() => {
     if (githubRepo.owner && githubRepo.repo && user) {
