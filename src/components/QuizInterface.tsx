@@ -278,18 +278,20 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         correctOptions
       });
       
-      // For select-all questions, user must select ALL correct options and NO incorrect options
-      const hasAllCorrectSelections = correctOptions.every((option: string) => selectedAnswers.includes(option));
+      // For select-all questions, give partial credit:
+      // - No incorrect selections (all selected must be correct)
+      // - At least one correct selection
+      const hasCorrectSelections = selectedAnswers.some((answer: string) => correctOptions.includes(answer));
       const hasIncorrectSelections = selectedAnswers.some((answer: string) => !correctOptions.includes(answer));
       
-      // Answer is correct if: selected ALL correct options AND no incorrect selections
-      isCorrect = hasAllCorrectSelections && !hasIncorrectSelections;
+      // Answer is correct if: has correct selections AND no incorrect selections
+      isCorrect = hasCorrectSelections && !hasIncorrectSelections;
       correctAnswersResolved = correctOptions.filter(Boolean);
       
       console.log('🔍 Select-All Final Debug:', {
         selectedAnswers,
         correctOptions,
-        hasAllCorrectSelections,
+        hasCorrectSelections,
         hasIncorrectSelections,
         finalResult: isCorrect
       });
