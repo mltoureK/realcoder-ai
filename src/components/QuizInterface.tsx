@@ -143,9 +143,10 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     return `${m}:${r.toString().padStart(2, '0')}`;
   }
 
-  // Reset variant index when question changes
+  // Reset variant index and explanations when question changes
   useEffect(() => {
     setCurrentVariantIndex(0);
+    setShowExplanations(false); // Reset explanations for new question
   }, [currentQuestion]);
 
   // Establish per-question time on question change
