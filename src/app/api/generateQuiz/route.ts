@@ -112,9 +112,13 @@ export async function POST(request: NextRequest) {
     const mapToUi = (q: any, index: number) => {
       console.log('🔍 mapToUi called with:', JSON.stringify(q, null, 2));
       const questionData = q.quiz;
+      
+      // Create deterministic ID based on content hash to ensure consistency
+      const contentHash = btoa(JSON.stringify(q)).slice(0, 8);
+      
       if (questionData.type === 'function-variant') {
         return {
-          id: `q-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
+          id: `q-${contentHash}-${index}`,
           type: questionData.type,
           snippet: q.snippet || '',
           question: questionData.question || 'Missing question text',
@@ -152,7 +156,7 @@ export async function POST(request: NextRequest) {
         console.log(`✅ MCQ Correct Answer: "${correctAnswerValue}" (from ${questionData.correctAnswerText ? 'correctAnswerText' : 'answer index'})`);
         
         return {
-          id: `q-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
+          id: `q-${contentHash}-${index}`,
           type: questionData.type,
           snippet: q.snippet || '',
           question: questionData.question || 'Missing question text',
@@ -170,7 +174,7 @@ export async function POST(request: NextRequest) {
         } as any;
       } else if (questionData.type === 'order-sequence') {
         return {
-          id: `q-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
+          id: `q-${contentHash}-${index}`,
           type: questionData.type,
           snippet: q.snippet || '',
           question: questionData.question || 'Arrange the steps in correct order',
@@ -202,7 +206,7 @@ export async function POST(request: NextRequest) {
         }
         
         return {
-          id: `q-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
+          id: `q-${contentHash}-${index}`,
           type: questionData.type,
           snippet: q.snippet || '',
           question: questionData.question || 'Is this statement true or false?',
@@ -223,7 +227,7 @@ export async function POST(request: NextRequest) {
         const correctAnswers = questionData.correctAnswers || [];
         
         return {
-          id: `q-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
+          id: `q-${contentHash}-${index}`,
           type: questionData.type,
           snippet: q.snippet || '',
           question: questionData.question || 'Select all that apply',
