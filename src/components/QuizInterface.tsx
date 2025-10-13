@@ -279,14 +279,22 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         correctOptions
       });
       
-      // For select-all questions, give partial credit:
+      // For select-all questions, give partial credit for UI:
       // - No incorrect selections (all selected must be correct)
       // - At least one correct selection
       const hasCorrectSelections = selectedAnswers.some((answer: string) => correctOptions.includes(answer));
       const hasIncorrectSelections = selectedAnswers.some((answer: string) => !correctOptions.includes(answer));
       
-      // Answer is correct if: has correct selections AND no incorrect selections
+      // Check if ALL correct answers were selected (for community stats)
+      const hasAllCorrectSelections = correctOptions.every((answer: string) => selectedAnswers.includes(answer));
+      const isPerfectScore = hasAllCorrectSelections && !hasIncorrectSelections;
+      
+      // Answer is correct (partial credit) if: has correct selections AND no incorrect selections
       isCorrect = hasCorrectSelections && !hasIncorrectSelections;
+      
+      // Store whether this was a perfect score for community stats
+      (currentQuestion as any).__isPerfectScore = isPerfectScore;
+      
       correctAnswersResolved = correctOptions.filter(Boolean);
       
       console.log('🔍 Select-All Final Debug:', {
@@ -294,7 +302,9 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         correctOptions,
         hasCorrectSelections,
         hasIncorrectSelections,
-        finalResult: isCorrect
+        hasAllCorrectSelections,
+        partialCreditPass: isCorrect,
+        perfectScore: isPerfectScore
       });
     } else {
       // For other question types
@@ -1757,7 +1767,17 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             isCorrect={(() => {
               // Find the result for THIS specific question, not the last result
               const questionResult = results.find(r => r.questionId === currentQuestion.id);
-              return questionResult?.isCorrect || false;
+              const wasCorrect = questionResult?.isCorrect || false;
+              
+              // For select-all questions, use perfect score for community stats
+              // (partial credit counts as "pass" for UI, but not for community stats)
+              if (currentQuestion.type === 'select-all') {
+                const isPerfectScore = (currentQuestion as any).__isPerfectScore;
+                console.log(`🔍 [QuizInterface] Select-all community stats: wasCorrect=${wasCorrect}, isPerfectScore=${isPerfectScore}`);
+                return isPerfectScore || false;
+              }
+              
+              return wasCorrect;
             })()}
             shouldUpdate={(() => {
               const shouldUpdate = !pollUpdatedQuestions.has(currentQuestion.id);

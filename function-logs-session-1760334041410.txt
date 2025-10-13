@@ -1,0 +1,3269 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1760334041410
+Started: 2025-10-13T05:40:41.411Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-13T05:40:41.412Z
+File: [8 files: initAction.ts, tsup.config.ts, @ts-expect-error type doesn't match on purpose, epic.ts, StateObservable-spec.ts, combineEpics-spec.ts, createEpicMiddleware.ts, console.ts]
+Functions Extracted: 2
+
+
+Function 1: combineEpics
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+export const combineEpics = <Input, Output extends Input, State, Dependencies>(...epics: Array<Epic<Input, Output, State, Dependencies>>): Epic<Input, Output, State, Dependencies> => {
+  return (action$, state$, dependencies) => {
+    const merged$ = merge(...epics.map(epic => epic(action$, state$, dependencies)));
+    return merged$;
+  };
+};
+--------------------------------------------------------------------------------
+
+
+Function 2: StateObservable
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+export class StateObservable extends Observable {
+  constructor(source: Observable<any>, initialState: any) {
+    super();
+    this.value = initialState;
+    source.subscribe(value => {
+      this.value = value;
+    });
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T05:40:45.939Z
+Question Type: select-all
+Function: combineEpics
+Function Size: 431 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: combineEpics (TypeScript)\n// Combines multiple epics into a single epic.\n\nexport const combineEpics = <Input, Output extends Input, State, Dependencies>(...epics: Array<Epic<Input, Output, State, Dependencies>>): Epic<Input, Output, State, Dependencies> => {\n  return (action$, state$, d
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T05:40:46.267Z
+Question Type: true-false
+Function: StateObservable
+Function Size: 339 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: StateObservable (TypeScript)\n// A class that extends Observable to maintain the last emitted state.\n\nexport class StateObservable extends Observable {\n  constructor(source: Observable<any>, initialState: any) {\n    super();\n    this.value = initialState;\n    source.subscribe(value => {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T05:40:51.565Z
+Question Type: select-all
+Function: StateObservable
+Function Size: 339 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: StateObservable (TypeScript)\n// A class that extends Observable to maintain the last emitted state.\n\nexport class StateObservable extends Observable {\n  constructor(source: Observable<any>, initialState: any) {\n    super();\n    this.value = initialState;\n    source.subscribe(value => {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T05:41:01.308Z
+Question Type: order-sequence
+Function: combineEpics
+Function Size: 431 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: combineEpics (TypeScript)\n// Combines multiple epics into a single epic.\n\nexport const combineEpics = <Input, Output extends Input, State, Dependencies>(...epics: Array<Epic<Input, Output, State, Dependencies>>): Epic<Input, Output, State, Dependencies> => {\n  return (action$, state$, d
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T05:41:02.080Z
+Question Type: multiple-choice
+Function: StateObservable
+Function Size: 339 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: StateObservable (TypeScript)\n// A class that extends Observable to maintain the last emitted state.\n\nexport class StateObservable extends Observable {\n  constructor(source: Observable<any>, initialState: any) {\n    super();\n    this.value = initialState;\n    source.subscribe(value => {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T05:41:03.128Z
+Question Type: function-variant
+Function: combineEpics
+Function Size: 431 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: combineEpics (TypeScript)\n// Combines multiple epics into a single epic.\n\nexport const combineEpics = <Input, Output extends Input, State, Dependencies>(...epics: Array<Epic<Input, Output, State, Dependencies>>): Epic<Input, Output, State, Dependencies> => {\n  return (action$, state$, d
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760334041410
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 2
+Ended: 2025-10-13T05:41:03.185Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T05:41:07.576Z
+Question Type: true-false
+Function: StateObservable
+Function Size: 339 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: StateObservable (TypeScript)\n// A class that extends Observable to maintain the last emitted state.\n\nexport class StateObservable extends Observable {\n  constructor(source: Observable<any>, initialState: any) {\n    super();\n    this.value = initialState;\n    source.subscribe(value => {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T05:41:08.234Z
+Question Type: select-all
+Function: StateObservable
+Function Size: 339 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: StateObservable (TypeScript)\n// A class that extends Observable to maintain the last emitted state.\n\nexport class StateObservable extends Observable {\n  constructor(source: Observable<any>, initialState: any) {\n    super();\n    this.value = initialState;\n    source.subscribe(value => {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T05:41:08.245Z
+Question Type: true-false
+Function: combineEpics
+Function Size: 431 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: combineEpics (TypeScript)\n// Combines multiple epics into a single epic.\n\nexport const combineEpics = <Input, Output extends Input, State, Dependencies>(...epics: Array<Epic<Input, Output, State, Dependencies>>): Epic<Input, Output, State, Dependencies> => {\n  return (action$, state$, d
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T05:41:13.076Z
+Question Type: select-all
+Function: combineEpics
+Function Size: 431 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: combineEpics (TypeScript)\n// Combines multiple epics into a single epic.\n\nexport const combineEpics = <Input, Output extends Input, State, Dependencies>(...epics: Array<Epic<Input, Output, State, Dependencies>>): Epic<Input, Output, State, Dependencies> => {\n  return (action$, state$, d
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T05:41:13.113Z
+Question Type: select-all
+Function: StateObservable
+Function Size: 339 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: StateObservable (TypeScript)\n// A class that extends Observable to maintain the last emitted state.\n\nexport class StateObservable extends Observable {\n  constructor(source: Observable<any>, initialState: any) {\n    super();\n    this.value = initialState;\n    source.subscribe(value => {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T05:41:21.379Z
+Question Type: function-variant
+Function: StateObservable
+Function Size: 339 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: StateObservable (TypeScript)\n// A class that extends Observable to maintain the last emitted state.\n\nexport class StateObservable extends Observable {\n  constructor(source: Observable<any>, initialState: any) {\n    super();\n    this.value = initialState;\n    source.subscribe(value => {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T05:41:23.295Z
+Question Type: function-variant
+Function: StateObservable
+Function Size: 339 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: StateObservable (TypeScript)\n// A class that extends Observable to maintain the last emitted state.\n\nexport class StateObservable extends Observable {\n  constructor(source: Observable<any>, initialState: any) {\n    super();\n    this.value = initialState;\n    source.subscribe(value => {\n
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760334041410
+Repository: Unknown
+Total Questions Generated: 7
+Total Chunks Processed: 2
+Ended: 2025-10-13T05:41:23.311Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-13T06:07:17.615Z
+File: TanStack-query-787a734/packages/query-devtools/src/icons/index.tsx
+Functions Extracted: 1
+
+
+Function 1: TanstackLogo
+Language: TypeScript
+Lines: 63
+Full Code:
+--------------------------------------------------------------------------------
+export function TanstackLogo() {
+  const id = createUniqueId();
+  return (
+    <svg version="1.0" viewBox="0 0 633 633">
+      <linearGradient
+        id={`a-${id}`}
+        x1="-666.45"
+        x2="-666.45"
+        y1="163.28"
+        y2="163.99"
+        gradientTransform="matrix(633 0 0 633 422177 -103358)"
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop stop-color="#6BDAFF" offset="0" />
+        <stop stop-color="#F9FFB5" offset=".32" />
+        <stop stop-color="#FFA770" offset=".71" />
+        <stop stop-color="#FF7373" offset="1" />
+      </linearGradient>
+      <circle cx="316.5" cy="316.5" r="316.5" fill={`url(#a-${id})`} />
+
+      <defs>
+        <filter
+          id={`am-${id}`}
+          x="-137.5"
+          y="412"
+          width="454"
+          height="396.9"
+          filterUnits="userSpaceOnUse"
+        >
+          <feColorMatrix values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" />
+        </filter>
+      </defs>
+
+      <mask
+        id={`b-${id}`}
+        x="-137.5"
+        y="412"
+        width="454"
+        height="396.9"
+        maskUnits="userSpaceOnUse"
+      >
+        <g filter={`url(#am-${id})`}>  
+          <circle cx="316.5" cy="316.5" r="316.5" fill="#fff" />
+        </g>
+      </mask>
+      <g mask={`url(#b-${id})`}>  
+        <ellipse
+          cx="89.5"
+          cy="610.5"
+          rx="214.5"
+          ry="186"
+          fill="#015064"
+          stroke="#00CFE2"
+          stroke-width="25"
+        />
+      </g>
+      <defs>
+        <filter
+          id={`ah-${id}`}
+          x="316.5"
+          y="412"
+          width="454"
+          height="396.9"
+          filterUnits="userSpaceOnUse"
+        >
+          <feColorMatrix values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" />
+        </filter>
+      </defs>
+
+      <mask
+        id={`k-${id}`}
+        x="316.5"
+        y="412"
+        width="454"
+        height="396.9"
+        maskUnits="userSpaceOnUse"
+      >
+        <g filter={`url(#ah-${id})`}>  
+          <circle cx="316.5" cy="316.5" r="316.5" fill="#fff" />
+        </g>
+      </mask>
+      <g mask={`url(#k-${id})`}>  
+        <ellipse
+          cx="543.5"
+          cy="610.5"
+          rx="214.5"
+          ry="186"
+          fill="#015064"
+          stroke="#00CFE2"
+          stroke-width="25"
+        />
+      </g>
+      <defs>
+        <filter
+          id={`ae-${id}`}
+          x="-137.5"
+          y="450"
+          width="454"
+          height="396.9"
+          filterUnits="userSpaceOnUse"
+        >
+          <feColorMatrix values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" />
+        </filter>
+      </defs>
+
+      <mask
+        id={`j-${id}`}
+        x="-137.5"
+        y="450"
+        width="454"
+        height="396.9"
+        maskUnits="userSpaceOnUse"
+      >
+        <g filter={`url(#ae-${id})`}>  
+          <circle cx="316.5" cy="316.5" r="316.5" fill="#fff" />
+        </g>
+      </mask>
+      <g mask={`url(#j-${id})`}>  
+        <ellipse
+          cx="89.5"
+          cy="648.5"
+          rx="214.5"
+          ry="186"
+          fill="#015064"
+          stroke="#00A8B8"
+          stroke-width="25"
+        />
+      </g>
+      <defs>
+        <filter
+          id={`ai-${id}`}
+          x="316.5"
+          y="450"
+          width="454"
+          height="396.9"
+          filterUnits="userSpaceOnUse"
+        >
+          <feColorMatrix values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" />
+        </filter>
+      </defs>
+
+      <mask
+        id={`i-${id}`}
+        x="316.5"
+        y="450"
+        width="454"
+        height="396.9"
+        maskUnits="userSpaceOnUse"
+      >
+        <g filter={`url(#ai-${id})`}>  
+          <circle cx="316.5" cy="316.5" r="316.5" fill="#fff" />
+        </g>
+      </mask>
+      <g mask={`url(#i-${id})`}>  
+        <ellipse
+          cx="543.5"
+          cy="648.5"
+          rx="214.5"
+          ry="186"
+          fill="#015064"
+          stroke="#00A8B8"
+          stroke-width="25"
+        />
+      </g>
+      <defs>
+        <filter
+          id={`aj-${id}`}
+          x="-137.5"
+          y="486"
+          width="454"
+          height="396.9"
+          filterUnits="userSpaceOnUse"
+        >
+          <feColorMatrix values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" />
+        </filter>
+      </defs>
+
+      <mask
+        id={`h-${id}`}
+        x="-137.5"
+        y="486"
+        width="454"
+        height="396.9"
+        maskUnits="userSpaceOnUse"
+      >
+        <g filter={`url(#aj-${id})`}>  
+          <circle cx="316.5" cy="316.5" r="316.5" fill="#fff" />
+        </g>
+      </mask>
+      <g mask={`url(#h-${id})`}>  
+        <ellipse
+          cx="89.5"
+          cy="684.5"
+          rx="214.5"
+          ry="186"
+          fill="#015064"
+          stroke="#007782"
+          stroke-width="25"
+        />
+      </g>
+      <defs>
+        <filter
+          id={`ag-${id}`}
+          x="316.5"
+          y="486"
+          width="454"
+          height="396.9"
+          filterUnits="userSpaceOnUse"
+        >
+          <feColorMatrix values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" />
+        </filter>
+      </defs>
+
+      <mask
+        id={`g-${id}`}
+        x="316.5"
+        y="486"
+        width="454"
+        height="396.9"
+        maskUnits="userSpaceOnUse"
+      >
+        <g filter={`url(#ag-${id})`}>  
+          <circle cx="316.5" cy="316.5" r="316.5" fill="#fff" />
+        </g>
+      </mask>
+      <g mask={`url(#g-${id})`}>  
+        <ellipse
+          cx="543.5"
+          cy="684.5"
+          rx="214.5"
+          ry="186"
+          fill="#015064"
+          stroke="#007782"
+          stroke-width="25"
+        />
+      </g>
+      <defs>
+        <filter
+          id={`af-${id}`}
+          x="272.2"
+          y="308"
+          width="176.9"
+          height="129.3"
+          filterUnits="userSpaceOnUse"
+        >
+          <feColorMatrix values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" />
+        </filter>
+      </defs>
+
+      <mask
+        id={`f-${id}`}
+        x="272.2"
+        y="308"
+        width="176.9"
+        height="129.3"
+        maskUnits="userSpaceOnUse"
+      >
+        <g filter={`url(#af-${id})`}>  
+          <circle cx="316.5" cy="316.5" r="316.5" fill="#fff" />
+        </g>
+      </mask>
+      <g mask={`url(#f-${id})`}>  
+        <line
+          x1="436"
+          x2="431"
+          y1="403.2"
+          y2="431.8"
+          fill="none"
+          stroke="#000"
+          stroke-linecap="round"
+          stroke-linejoin="bevel"
+          stroke-width="11"
+        />
+
+        <line
+          x1="291"
+          x2="280"
+          y1="341.5"
+          y2="403.5"
+          fill="none"
+          stroke="#000"
+          stroke-linecap="round"
+          stroke-linejoin="bevel"
+          stroke-width="11"
+        />
+
+        <line
+          x1="332.9"
+          x2="328.6"
+          y1="384.1"
+          y2="411.2"
+          fill="none"
+          stroke="#000"
+          stroke-linecap="round"
+          stroke-linejoin="bevel"
+          stroke-width="11"
+        />
+
+        <linearGradient
+          id={`m-${id}`}
+          x1="-670.75"
+          x2="-671.59"
+          y1="164.4"
+          y2="164.49"
+          gradientTransform="matrix(-184.16 -32.472 -11.461 64.997 -121359 -32126)"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stop-color="#EE2700" offset="0" />
+          <stop stop-color="#FF008E" offset="1" />
+        </linearGradient>
+
+        <path
+          d="m344.1 363 97.7 17.2c5.8 2.1 8.2 6.1 7.1 12.1s-4.7 9.2-11 9.9l-106-18.7-57.5-59.2c-3.2-4.8-2.9-9.1 0.8-12.8s8.3-4.4 13.7-2.1l55.2 53.6z"
+          clip-rule="evenodd"
+          fill={`url(#m-${id})`}
+          fill-rule="evenodd"
+        />
+
+        <line
+          x1="428.2"
+          x2="429.1"
+          y1="384.5"
+          y2="378"
+          fill="none"
+          stroke="#fff"
+          stroke-linecap="round"
+          stroke-linejoin="bevel"
+          stroke-width="7"
+        />
+
+        <line
+          x1="395.2"
+          x2="396.1"
+          y1="379.5"
+          y2="373"
+          fill="none"
+          stroke="#fff"
+          stroke-linecap="round"
+          stroke-linejoin="bevel"
+          stroke-width="7"
+        />
+
+        <line
+          x1="362.2"
+          x2="363.1"
+          y1="373.5"
+          y2="367.4"
+          fill="none"
+          stroke="#fff"
+          stroke-linecap="round"
+          stroke-linejoin="bevel"
+          stroke-width="7"
+        />
+
+        <line
+          x1="324.2"
+          x2="328.4"
+          y1="351.3"
+          y2="347.4"
+          fill="none"
+          stroke="#fff"
+          stroke-linecap="round"
+          stroke-linejoin="bevel"
+          stroke-width="7"
+        />
+
+        <line
+          x1="303.2"
+          x2="307.4"
+          y1="331.3"
+          y2="327.4"
+          fill="none"
+          stroke="#fff"
+          stroke-linecap="round"
+          stroke-linejoin="bevel"
+          stroke-width="7"
+        />
+      </g>
+    </svg>
+  );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:07:27.470Z
+Question Type: multiple-choice
+Function: TanstackLogo
+Function Size: 9035 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: TanstackLogo (TypeScript)\n// Renders the Tanstack logo with various SVG elements and gradients.\n\nexport function TanstackLogo() {\n  const id = createUniqueId();\n  return (\n    <svg version="1.0" viewBox="0 0 633 633">\n      <linearGradient\n        id={`a-${id}`}\n        x1="-666.45"\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:07:34.135Z
+Question Type: true-false
+Function: TanstackLogo
+Function Size: 9035 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: TanstackLogo (TypeScript)\n// Renders the Tanstack logo with various SVG elements and gradients.\n\nexport function TanstackLogo() {\n  const id = createUniqueId();\n  return (\n    <svg version="1.0" viewBox="0 0 633 633">\n      <linearGradient\n        id={`a-${id}`}\n        x1="-666.45"\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:07:35.331Z
+Question Type: order-sequence
+Function: TanstackLogo
+Function Size: 9035 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: TanstackLogo (TypeScript)\n// Renders the Tanstack logo with various SVG elements and gradients.\n\nexport function TanstackLogo() {\n  const id = createUniqueId();\n  return (\n    <svg version="1.0" viewBox="0 0 633 633">\n      <linearGradient\n        id={`a-${id}`}\n        x1="-666.45"\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:07:44.264Z
+Question Type: order-sequence
+Function: TanstackLogo
+Function Size: 9035 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: TanstackLogo (TypeScript)\n// Renders the Tanstack logo with various SVG elements and gradients.\n\nexport function TanstackLogo() {\n  const id = createUniqueId();\n  return (\n    <svg version="1.0" viewBox="0 0 633 633">\n      <linearGradient\n        id={`a-${id}`}\n        x1="-666.45"\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:07:47.666Z
+Question Type: function-variant
+Function: TanstackLogo
+Function Size: 9035 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: TanstackLogo (TypeScript)\n// Renders the Tanstack logo with various SVG elements and gradients.\n\nexport function TanstackLogo() {\n  const id = createUniqueId();\n  return (\n    <svg version="1.0" viewBox="0 0 633 633">\n      <linearGradient\n        id={`a-${id}`}\n        x1="-666.45"\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:08:34.159Z
+Question Type: select-all
+Function: TanstackLogo
+Function Size: 9035 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: TanstackLogo (TypeScript)\n// Renders the Tanstack logo with various SVG elements and gradients.\n\nexport function TanstackLogo() {\n  const id = createUniqueId();\n  return (\n    <svg version="1.0" viewBox="0 0 633 633">\n      <linearGradient\n        id={`a-${id}`}\n        x1="-666.45"\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:08:35.344Z
+Question Type: select-all
+Function: TanstackLogo
+Function Size: 9035 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: TanstackLogo (TypeScript)\n// Renders the Tanstack logo with various SVG elements and gradients.\n\nexport function TanstackLogo() {\n  const id = createUniqueId();\n  return (\n    <svg version="1.0" viewBox="0 0 633 633">\n      <linearGradient\n        id={`a-${id}`}\n        x1="-666.45"\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:08:44.278Z
+Question Type: select-all
+Function: TanstackLogo
+Function Size: 9035 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: TanstackLogo (TypeScript)\n// Renders the Tanstack logo with various SVG elements and gradients.\n\nexport function TanstackLogo() {\n  const id = createUniqueId();\n  return (\n    <svg version="1.0" viewBox="0 0 633 633">\n      <linearGradient\n        id={`a-${id}`}\n        x1="-666.45"\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:08:47.682Z
+Question Type: select-all
+Function: TanstackLogo
+Function Size: 9035 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: TanstackLogo (TypeScript)\n// Renders the Tanstack logo with various SVG elements and gradients.\n\nexport function TanstackLogo() {\n  const id = createUniqueId();\n  return (\n    <svg version="1.0" viewBox="0 0 633 633">\n      <linearGradient\n        id={`a-${id}`}\n        x1="-666.45"\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:09:03.622Z
+Question Type: true-false
+Function: TanstackLogo
+Function Size: 9035 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: TanstackLogo (TypeScript)\n// Renders the Tanstack logo with various SVG elements and gradients.\n\nexport function TanstackLogo() {\n  const id = createUniqueId();\n  return (\n    <svg version="1.0" viewBox="0 0 633 633">\n      <linearGradient\n        id={`a-${id}`}\n        x1="-666.45"\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:09:04.176Z
+Question Type: function-variant
+Function: TanstackLogo
+Function Size: 9035 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: TanstackLogo (TypeScript)\n// Renders the Tanstack logo with various SVG elements and gradients.\n\nexport function TanstackLogo() {\n  const id = createUniqueId();\n  return (\n    <svg version="1.0" viewBox="0 0 633 633">\n      <linearGradient\n        id={`a-${id}`}\n        x1="-666.45"\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:09:05.354Z
+Question Type: function-variant
+Function: TanstackLogo
+Function Size: 9035 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: TanstackLogo (TypeScript)\n// Renders the Tanstack logo with various SVG elements and gradients.\n\nexport function TanstackLogo() {\n  const id = createUniqueId();\n  return (\n    <svg version="1.0" viewBox="0 0 633 633">\n      <linearGradient\n        id={`a-${id}`}\n        x1="-666.45"\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:09:09.866Z
+Question Type: function-variant
+Function: TanstackLogo
+Function Size: 9035 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: TanstackLogo (TypeScript)\n// Renders the Tanstack logo with various SVG elements and gradients.\n\nexport function TanstackLogo() {\n  const id = createUniqueId();\n  return (\n    <svg version="1.0" viewBox="0 0 633 633">\n      <linearGradient\n        id={`a-${id}`}\n        x1="-666.45"\n   
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760334041410
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 1
+Ended: 2025-10-13T06:10:03.646Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-13T06:10:23.339Z
+File: Update `todos` and the individual todo queries when this mutation succeeds
+Functions Extracted: 4
+
+
+Function 1: fetchTodos
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function fetchTodos({ signal, queryKey: [, { filter }] }): Promise<Todos> {
+  console.info('fetchTodos', { filter })
+
+  if (signal) {
+    signal.addEventListener('abort', () => {
+      console.info('cancelled', filter)
+    })
+  }
+
+  return new Promise((resolve, reject) => {
+    setTimeout(
+      () => {
+        if (Math.random() < errorRate) {
+          return reject(
+            new Error(JSON.stringify({ fetchTodos: { filter } }, null, 2)),
+          )
+        }
+        resolve(list.filter((d) => d.name.includes(filter)))
+      },
+      queryTimeMin + Math.random() * (queryTimeMax - queryTimeMin),
+    )
+  })
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: fetchTodoById
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function fetchTodoById({ id }: { id: number }): Promise<Todo> {
+  console.info('fetchTodoById', { id })
+  return new Promise((resolve, reject) => {
+    setTimeout(
+      () => {
+        if (Math.random() < errorRate) {
+          return reject(
+            new Error(JSON.stringify({ fetchTodoById: { id } }, null, 2)),
+          )
+        }
+        resolve(list.find((d) => d.id === id))
+      },
+      queryTimeMin + Math.random() * (queryTimeMax - queryTimeMin),
+    )
+  })
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: postTodo
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function postTodo({ name, notes }: Omit<Todo, 'id'>) {
+  console.info('postTodo', { name, notes })
+  return new Promise((resolve, reject) => {
+    setTimeout(
+      () => {
+        if (Math.random() < errorRate) {
+          return reject(
+            new Error(JSON.stringify({ postTodo: { name, notes } }, null, 2)),
+          )
+        }
+        const todo = { name, notes, id: id++ }
+        list = [...list, todo]
+        resolve(todo)
+      },
+      queryTimeMin + Math.random() * (queryTimeMax - queryTimeMin),
+    )
+  })
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: patchTodo
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function patchTodo(todo?: Todo): Promise<Todo> {
+  console.info('patchTodo', todo)
+  return new Promise((resolve, reject) => {
+    setTimeout(
+      () => {
+        if (Math.random() < errorRate) {
+          return reject(new Error(JSON.stringify({ patchTodo: todo }, null, 2)))
+        }
+        list = list.map((d) => {
+          if (d.id === todo.id) {
+            return todo
+          }
+          return d
+        })
+        resolve(todo)
+      },
+      queryTimeMin + Math.random() * (queryTimeMax - queryTimeMin),
+    )
+  })
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:10:31.567Z
+Question Type: true-false
+Function: postTodo
+Function Size: 610 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: postTodo (TypeScript)\n// Posts a new todo and adds it to the list.\n\nfunction postTodo({ name, notes }: Omit<Todo, 'id'>) {\n  console.info('postTodo', { name, notes })\n  return new Promise((resolve, reject) => {\n    setTimeout(\n      () => {\n        if (Math.random() < errorRate) {\n     
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:10:32.428Z
+Question Type: select-all
+Function: postTodo
+Function Size: 610 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: postTodo (TypeScript)\n// Posts a new todo and adds it to the list.\n\nfunction postTodo({ name, notes }: Omit<Todo, 'id'>) {\n  console.info('postTodo', { name, notes })\n  return new Promise((resolve, reject) => {\n    setTimeout(\n      () => {\n        if (Math.random() < errorRate) {\n     
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:10:43.557Z
+Question Type: select-all
+Function: fetchTodos
+Function Size: 718 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: fetchTodos (TypeScript)\n// Fetches todos based on a filter and handles cancellation.\n\nfunction fetchTodos({ signal, queryKey: [, { filter }] }): Promise<Todos> {\n  console.info('fetchTodos', { filter })\n\n  if (signal) {\n    signal.addEventListener('abort', () => {\n      console.info('ca
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:10:44.775Z
+Question Type: select-all
+Function: fetchTodoById
+Function Size: 567 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: fetchTodoById (TypeScript)\n// Fetches a todo by its ID with error handling.\n\nfunction fetchTodoById({ id }: { id: number }): Promise<Todo> {\n  console.info('fetchTodoById', { id })\n  return new Promise((resolve, reject) => {\n    setTimeout(\n      () => {\n        if (Math.random() < erro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:10:45.434Z
+Question Type: order-sequence
+Function: fetchTodos
+Function Size: 718 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: fetchTodos (TypeScript)\n// Fetches todos based on a filter and handles cancellation.\n\nfunction fetchTodos({ signal, queryKey: [, { filter }] }): Promise<Todos> {\n  console.info('fetchTodos', { filter })\n\n  if (signal) {\n    signal.addEventListener('abort', () => {\n      console.info('ca
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:10:51.529Z
+Question Type: select-all
+Function: fetchTodoById
+Function Size: 567 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: fetchTodoById (TypeScript)\n// Fetches a todo by its ID with error handling.\n\nfunction fetchTodoById({ id }: { id: number }): Promise<Todo> {\n  console.info('fetchTodoById', { id })\n  return new Promise((resolve, reject) => {\n    setTimeout(\n      () => {\n        if (Math.random() < erro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:10:57.446Z
+Question Type: order-sequence
+Function: patchTodo
+Function Size: 611 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: patchTodo (TypeScript)\n// Updates an existing todo in the list.\n\nfunction patchTodo(todo?: Todo): Promise<Todo> {\n  console.info('patchTodo', todo)\n  return new Promise((resolve, reject) => {\n    setTimeout(\n      () => {\n        if (Math.random() < errorRate) {\n          return reject(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:10:59.175Z
+Question Type: select-all
+Function: patchTodo
+Function Size: 611 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: patchTodo (TypeScript)\n// Updates an existing todo in the list.\n\nfunction patchTodo(todo?: Todo): Promise<Todo> {\n  console.info('patchTodo', todo)\n  return new Promise((resolve, reject) => {\n    setTimeout(\n      () => {\n        if (Math.random() < errorRate) {\n          return reject(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:11:02.700Z
+Question Type: true-false
+Function: fetchTodoById
+Function Size: 567 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: fetchTodoById (TypeScript)\n// Fetches a todo by its ID with error handling.\n\nfunction fetchTodoById({ id }: { id: number }): Promise<Todo> {\n  console.info('fetchTodoById', { id })\n  return new Promise((resolve, reject) => {\n    setTimeout(\n      () => {\n        if (Math.random() < erro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:11:03.491Z
+Question Type: function-variant
+Function: fetchTodoById
+Function Size: 567 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: fetchTodoById (TypeScript)\n// Fetches a todo by its ID with error handling.\n\nfunction fetchTodoById({ id }: { id: number }): Promise<Todo> {\n  console.info('fetchTodoById', { id })\n  return new Promise((resolve, reject) => {\n    setTimeout(\n      () => {\n        if (Math.random() < erro
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760334041410
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 4
+Ended: 2025-10-13T06:11:03.515Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-13T06:20:18.050Z
+File: [2 files: help-modal.tsx, show.tsx]
+Functions Extracted: 3
+
+
+Function 1: generateSearchLink
+Language: TypeScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+export const generateSearchLink = (
+  title: string,
+  block: string,
+  superBlock: string
+) => {
+  const titleText = t(`intro:${superBlock}.blocks.${block}.title`);
+  const selector = 'in:title';
+  const query = encodeURIComponent(`${titleText} - ${title} ${selector}`);
+
+  const search = `${forumLocation}/search?q=${query}`;
+  return search;
+};
+--------------------------------------------------------------------------------
+
+
+Function 2: handleDownloadLink
+Language: TypeScript
+Lines: 29
+Full Code:
+--------------------------------------------------------------------------------
+function handleDownloadLink(downloadLinks: string[]) {
+    const win = downloadLinks.find(link => link.match(/\.exe/));
+    const macARM = downloadLinks.find(
+      link => link.match(/aarch64/) && link.match(/\.dmg/)
+    );
+    const macX64 = downloadLinks.find(
+      link => link.match(/x64/) && link.match(/\.dmg/)
+    );
+
+    const linuxARM = downloadLinks.find(
+      link => link.match(/aarch64/) && link.match(/tar\.gz/)
+    );
+
+    const linuxX64 = downloadLinks.find(
+      link => link.match(/amd64/) && link.match(/AppImage/)
+    );
+
+    if (os.os === 'WIN') {
+      if (isEmpty(win)) return '';
+
+      return win;
+    }
+
+    if (os.os === 'MAC') {
+      if (os.architecture.toLowerCase() === 'arm') {
+        if (isEmpty(macARM)) return '';
+
+        return macARM;
+      } else {
+        if (isEmpty(macX64)) return '';
+
+        return macX64;
+      }
+    }
+
+    if (os.os === 'LINUX') {
+      if (os.architecture.toLowerCase() === 'arm') {
+        if (isEmpty(linuxARM)) return '';
+
+        return linuxARM;
+      } else {
+        if (isEmpty(linuxX64)) return '';
+
+        return linuxX64;
+      }
+    }
+
+    return '';
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: checkLatestVersion
+Language: TypeScript
+Lines: 16
+Full Code:
+--------------------------------------------------------------------------------
+async function checkLatestVersion() {
+      try {
+        const response = await fetch(
+          'https://api.github.com/repos/freeCodeCamp/exam-env/releases/latest'
+        );
+        if (response.ok) {
+          const data = (await response.json()) as GitProps;
+          const { tag_name, assets } = data;
+          setLatestVersion(tag_name);
+          const urls = assets.map(link => link.browser_download_url);
+          setDownloadLink(handleDownloadLink(urls));
+          setDownloadLinks(urls);
+        }
+      } catch {
+        setLatestVersion('...');
+      }
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:20:30.978Z
+Question Type: select-all
+Function: generateSearchLink
+Function Size: 471 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: generateSearchLink (TypeScript)\n// Generates a search link for a forum based on title, block, and superBlock.\n\nexport const generateSearchLink = (\n  title: string,\n  block: string,\n  superBlock: string\n) => {\n  const titleText = t(`intro:${superBlock}.blocks.${block}.title`);\n  const se
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:20:31.352Z
+Question Type: select-all
+Function: checkLatestVersion
+Function Size: 736 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: checkLatestVersion (TypeScript)\n// Fetches the latest version of the exam environment from GitHub and updates the state with the download links.\n\nasync function checkLatestVersion() {\n      try {\n        const response = await fetch(\n          'https://api.github.com/repos/freeCodeCamp/
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:20:35.429Z
+Question Type: select-all
+Function: handleDownloadLink
+Function Size: 1276 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleDownloadLink (TypeScript)\n// Determines the appropriate download link based on the operating system and architecture.\n\nfunction handleDownloadLink(downloadLinks: string[]) {\n    const win = downloadLinks.find(link => link.match(/\.exe/));\n    const macARM = downloadLinks.find(\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:20:44.705Z
+Question Type: true-false
+Function: handleDownloadLink
+Function Size: 1276 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleDownloadLink (TypeScript)\n// Determines the appropriate download link based on the operating system and architecture.\n\nfunction handleDownloadLink(downloadLinks: string[]) {\n    const win = downloadLinks.find(link => link.match(/\.exe/));\n    const macARM = downloadLinks.find(\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:20:47.589Z
+Question Type: order-sequence
+Function: generateSearchLink
+Function Size: 471 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: generateSearchLink (TypeScript)\n// Generates a search link for a forum based on title, block, and superBlock.\n\nexport const generateSearchLink = (\n  title: string,\n  block: string,\n  superBlock: string\n) => {\n  const titleText = t(`intro:${superBlock}.blocks.${block}.title`);\n  const se
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:20:48.098Z
+Question Type: function-variant
+Function: handleDownloadLink
+Function Size: 1276 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: handleDownloadLink (TypeScript)\n// Determines the appropriate download link based on the operating system and architecture.\n\nfunction handleDownloadLink(downloadLinks: string[]) {\n    const win = downloadLinks.find(link => link.match(/\.exe/));\n    const macARM = downloadLinks.find(\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:20:49.784Z
+Question Type: true-false
+Function: checkLatestVersion
+Function Size: 736 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: checkLatestVersion (TypeScript)\n// Fetches the latest version of the exam environment from GitHub and updates the state with the download links.\n\nasync function checkLatestVersion() {\n      try {\n        const response = await fetch(\n          'https://api.github.com/repos/freeCodeCamp/
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:20:50.450Z
+Question Type: function-variant
+Function: generateSearchLink
+Function Size: 471 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: generateSearchLink (TypeScript)\n// Generates a search link for a forum based on title, block, and superBlock.\n\nexport const generateSearchLink = (\n  title: string,\n  block: string,\n  superBlock: string\n) => {\n  const titleText = t(`intro:${superBlock}.blocks.${block}.title`);\n  const se
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760334041410
+Repository: Unknown
+Total Questions Generated: 7
+Total Chunks Processed: 3
+Ended: 2025-10-13T06:20:50.476Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-13T06:22:14.747Z
+File: freeCodeCamp-freeCodeCamp-7cbd1d7/client/src/components/profile/components/portfolio.tsx
+Functions Extracted: 6
+
+
+Function 1: checkIfValidImage
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+const checkIfValidImage = (url: string): Promise<ProfileValidation> => {
+    const img = new Image();
+
+    return new Promise(resolve => {
+      img.onerror = () =>
+        resolve({ state: 'error', message: t('validation.url-not-image') });
+      img.onload = () => resolve({ state: 'success', message: '' });
+      img.src = url;
+    });
+  };
+--------------------------------------------------------------------------------
+
+
+Function 2: createOnChangeHandler
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const createOnChangeHandler = (id: string, key: 'description' | 'image' | 'title' | 'url') => (e: React.ChangeEvent<HTMLInputElement>) => {
+      e.preventDefault();
+      const userInput = e.target.value.slice();
+      setPortfolio(prevPortfolio => {
+        const mutablePortfolio = [...prevPortfolio];
+        const index = findIndex(prevPortfolio, p => p.id === id);
+        mutablePortfolio[index] = {
+          ...mutablePortfolio[index],
+          [key]: userInput
+        };
+        if (key === 'image' && userInput) {
+          void checkIfValidImage(userInput).then(imageValidation => {
+            setImageValid(imageValidation);
+          });
+        } else if (key === 'image' && !userInput) {
+          setImageValid({ state: 'success', message: '' });
+        }
+        return mutablePortfolio;
+      });
+    };
+--------------------------------------------------------------------------------
+
+
+Function 3: updateItem
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+const updateItem = (id: string, updatedPortfolio?: PortfolioProjectData[]) => {
+    if (unsavedItemId === id) {
+      setUnsavedItemId(null);
+    }
+    const portfolioToUpdate = updatedPortfolio || portfolio;
+    updateMyPortfolio({ portfolio: portfolioToUpdate });
+    setIsEditing(false);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 4: handleRemoveItem
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+const handleRemoveItem = (id: string) => {
+    const newPortfolio = portfolio.filter(p => p.id !== id);
+    setPortfolio(newPortfolio);
+    updateItem(id, newPortfolio);
+    setIsEditing(false);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 5: formCorrect
+Language: TypeScript
+Lines: 19
+Full Code:
+--------------------------------------------------------------------------------
+const formCorrect = (portfolioItem: PortfolioProjectData) => {
+    const { id, title, description, url, image } = portfolioItem;
+    const { state: titleState, message: titleMessage } = getTitleValidation(title);
+    const { state: urlState, message: urlMessage } = getUrlValidation(url);
+    const { state: descriptionState, message: descriptionMessage } = getDescriptionValidation(description);
+    const { state: imageState, message: imageMessage } = getUrlValidation(image);
+    const pristine = isFormPristine(id);
+    const urlIsValid = !isURL(url, {
+      protocols: ['http', 'https'],
+      require_tld: true,
+      require_protocol: true
+    });
+    const isButtonDisabled = [
+      titleState,
+      urlState,
+      descriptionState,
+      imageState,
+      urlIsValid
+    ].some(state => state === 'error' || false);
+    return {
+      isButtonDisabled,
+      title: { titleState, titleMessage },
+      url: { urlState, urlMessage },
+      image: { imageState, imageMessage },
+      desc: { descriptionState, descriptionMessage },
+      pristine
+    };
+  };
+--------------------------------------------------------------------------------
+
+
+Function 6: renderPortfolio
+Language: TypeScript
+Lines: 63
+Full Code:
+--------------------------------------------------------------------------------
+const renderPortfolio = (portfolioItem: PortfolioProjectData, index: number, arr: PortfolioProjectData[]) => {
+    const { id, title, description, url, image } = portfolioItem;
+    const {
+      isButtonDisabled,
+      title: { titleState, titleMessage },
+      url: { urlState, urlMessage },
+      image: { imageState, imageMessage },
+      desc: { descriptionState, descriptionMessage },
+      pristine
+    } = formCorrect(portfolioItem);
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>, id: string) => {
+      e.preventDefault();
+      if (isButtonDisabled) return null;
+      setIsEditing(false);
+      return updateItem(id);
+    };
+    const combineImageStatus =
+      imageState === 'success' && imageValidation.state === 'success'
+        ? null
+        : 'error';
+    const combineImageMessage = imageMessage || imageValidation.message;
+    return (
+      <FullWidthRow key={id}>
+        <form
+          onSubmit={e => handleSubmit(e, id)}
+          id='portfolio-items'
+          data-playwright-test-label='portfolio-items'
+        >
+          <FormGroup
+            controlId={`${id}-title`}
+            validationState={
+              pristine || (!pristine && !title) ? null : titleState
+            }
+          >
+            <ControlLabel htmlFor={`${id}-title-input`}>
+              {t('settings.labels.title')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'title')}
+              required
+              type='text'
+              value={title}
+              name='portfolio-title'
+              id={`${id}-title-input`}
+            />
+            {titleMessage ? (
+              <HelpBlock data-playwright-test-label='title-validation'>
+                {titleMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-url`}
+            validationState={pristine || (!pristine && !url) ? null : urlState}
+          >
+            <ControlLabel htmlFor={`${id}-url-input`}>
+              {t('settings.labels.url')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'url')}
+              required
+              type='url'
+              value={url}
+              name='portfolio-url'
+              id={`${id}-url-input`}
+            />
+            {urlMessage ? (
+              <HelpBlock data-playwright-test-label='url-validation'>
+                {urlMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-image`}
+            validationState={pristine ? null : combineImageStatus}
+          >
+            <ControlLabel htmlFor={`${id}-image-input`}>
+              {t('settings.labels.image')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'image')}
+              type='url'
+              value={image}
+              name='portfolio-image'
+              id={`${id}-image-input`}
+            />
+            {combineImageMessage ? (
+              <HelpBlock data-playwright-test-label='image-validation'>
+                {combineImageMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-description`}
+            validationState={pristine ? null : descriptionState}
+          >
+            <ControlLabel htmlFor={`${id}-description-input`}>
+              {t('settings.labels.description')}
+            </ControlLabel>
+            <FormControl
+              componentClass='textarea'
+              onChange={createOnChangeHandler(id, 'description')}
+              value={description}
+              name='portfolio-description'
+              id={`${id}-description-input`}
+            />
+            {descriptionMessage ? (
+              <HelpBlock data-playwright-test-label='description-validation'>
+                {descriptionMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <BlockSaveButton
+            disabled={isButtonDisabled}
+            bgSize='large'
+            data-playwright-test-label='save-portfolio'
+            {...(isButtonDisabled && { tabIndex: -1 })}
+          >
+            {t('buttons.save-portfolio')}
+          </BlockSaveButton>
+          <Spacer size='xs' />
+          <Button
+            block
+            size='large'
+            variant='danger'
+            onClick={() => handleRemoveItem(id)}
+            type='button'
+          >
+            {t('buttons.remove-portfolio')}
+          </Button>
+        </form>
+        {index + 1 !== arr.length && (
+          <>
+            <Spacer size='m' />
+            <hr />
+            <Spacer size='m' />
+          </>
+        )}
+      </FullWidthRow>
+    );
+  };
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:22:26.737Z
+Question Type: select-all
+Function: formCorrect
+Function Size: 1157 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: formCorrect (TypeScript)\n// Validates the form fields of a portfolio item.\n\nconst formCorrect = (portfolioItem: PortfolioProjectData) => {\n    const { id, title, description, url, image } = portfolioItem;\n    const { state: titleState, message: titleMessage } = getTitleValidation(title)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:22:29.693Z
+Question Type: function-variant
+Function: updateItem
+Function Size: 389 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateItem (TypeScript)\n// Updates the portfolio item and resets editing state.\n\nconst updateItem = (id: string, updatedPortfolio?: PortfolioProjectData[]) => {\n    if (unsavedItemId === id) {\n      setUnsavedItemId(null);\n    }\n    const portfolioToUpdate = updatedPortfolio || portfoli
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:22:34.526Z
+Question Type: multiple-choice
+Function: updateItem
+Function Size: 389 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: updateItem (TypeScript)\n// Updates the portfolio item and resets editing state.\n\nconst updateItem = (id: string, updatedPortfolio?: PortfolioProjectData[]) => {\n    if (unsavedItemId === id) {\n      setUnsavedItemId(null);\n    }\n    const portfolioToUpdate = updatedPortfolio || portfoli
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:22:39.714Z
+Question Type: function-variant
+Function: createOnChangeHandler
+Function Size: 930 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createOnChangeHandler (TypeScript)\n// Creates a change handler for portfolio item fields.\n\nconst createOnChangeHandler = (id: string, key: 'description' | 'image' | 'title' | 'url') => (e: React.ChangeEvent<HTMLInputElement>) => {\n      e.preventDefault();\n      const userInput = e.targ
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:22:47.320Z
+Question Type: select-all
+Function: renderPortfolio
+Function Size: 4908 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: renderPortfolio (TypeScript)\n// Renders a portfolio item form with validation and submission.\n\nconst renderPortfolio = (portfolioItem: PortfolioProjectData, index: number, arr: PortfolioProjectData[]) => {\n    const { id, title, description, url, image } = portfolioItem;\n    const {\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:22:50.318Z
+Question Type: function-variant
+Function: checkIfValidImage
+Function Size: 451 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: checkIfValidImage (TypeScript)\n// Checks if the provided URL is a valid image by loading it.\n\nconst checkIfValidImage = (url: string): Promise<ProfileValidation> => {\n    const img = new Image();\n\n    return new Promise(resolve => {\n      img.onerror = () =>\n        resolve({ state: 'er
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:22:54.749Z
+Question Type: true-false
+Function: renderPortfolio
+Function Size: 4908 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: renderPortfolio (TypeScript)\n// Renders a portfolio item form with validation and submission.\n\nconst renderPortfolio = (portfolioItem: PortfolioProjectData, index: number, arr: PortfolioProjectData[]) => {\n    const { id, title, description, url, image } = portfolioItem;\n    const {\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:23:00.524Z
+Question Type: select-all
+Function: createOnChangeHandler
+Function Size: 930 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createOnChangeHandler (TypeScript)\n// Creates a change handler for portfolio item fields.\n\nconst createOnChangeHandler = (id: string, key: 'description' | 'image' | 'title' | 'url') => (e: React.ChangeEvent<HTMLInputElement>) => {\n      e.preventDefault();\n      const userInput = e.targ
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:23:01.286Z
+Question Type: order-sequence
+Function: checkIfValidImage
+Function Size: 451 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: checkIfValidImage (TypeScript)\n// Checks if the provided URL is a valid image by loading it.\n\nconst checkIfValidImage = (url: string): Promise<ProfileValidation> => {\n    const img = new Image();\n\n    return new Promise(resolve => {\n      img.onerror = () =>\n        resolve({ state: 'er
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:23:05.609Z
+Question Type: select-all
+Function: handleRemoveItem
+Function Size: 304 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleRemoveItem (TypeScript)\n// Removes an item from the portfolio and updates the state.\n\nconst handleRemoveItem = (id: string) => {\n    const newPortfolio = portfolio.filter(p => p.id !== id);\n    setPortfolio(newPortfolio);\n    updateItem(id, newPortfolio);\n    setIsEditing(false);\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:23:09.430Z
+Question Type: function-variant
+Function: formCorrect
+Function Size: 1157 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: formCorrect (TypeScript)\n// Validates the form fields of a portfolio item.\n\nconst formCorrect = (portfolioItem: PortfolioProjectData) => {\n    const { id, title, description, url, image } = portfolioItem;\n    const { state: titleState, message: titleMessage } = getTitleValidation(title)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:23:10.255Z
+Question Type: select-all
+Function: updateItem
+Function Size: 389 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateItem (TypeScript)\n// Updates the portfolio item and resets editing state.\n\nconst updateItem = (id: string, updatedPortfolio?: PortfolioProjectData[]) => {\n    if (unsavedItemId === id) {\n      setUnsavedItemId(null);\n    }\n    const portfolioToUpdate = updatedPortfolio || portfoli
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:23:16.400Z
+Question Type: order-sequence
+Function: handleRemoveItem
+Function Size: 304 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleRemoveItem (TypeScript)\n// Removes an item from the portfolio and updates the state.\n\nconst handleRemoveItem = (id: string) => {\n    const newPortfolio = portfolio.filter(p => p.id !== id);\n    setPortfolio(newPortfolio);\n    updateItem(id, newPortfolio);\n    setIsEditing(false);\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:23:17.345Z
+Question Type: function-variant
+Function: renderPortfolio
+Function Size: 4908 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: renderPortfolio (TypeScript)\n// Renders a portfolio item form with validation and submission.\n\nconst renderPortfolio = (portfolioItem: PortfolioProjectData, index: number, arr: PortfolioProjectData[]) => {\n    const { id, title, description, url, image } = portfolioItem;\n    const {\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:23:17.948Z
+Question Type: true-false
+Function: formCorrect
+Function Size: 1157 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: formCorrect (TypeScript)\n// Validates the form fields of a portfolio item.\n\nconst formCorrect = (portfolioItem: PortfolioProjectData) => {\n    const { id, title, description, url, image } = portfolioItem;\n    const { state: titleState, message: titleMessage } = getTitleValidation(title)
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760334041410
+Repository: Unknown
+Total Questions Generated: 15
+Total Chunks Processed: 6
+Ended: 2025-10-13T06:23:17.950Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-13T06:27:42.927Z
+File: freeCodeCamp-freeCodeCamp-7cbd1d7/client/src/components/profile/components/portfolio.tsx
+Functions Extracted: 11
+
+
+Function 1: checkIfValidImage
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+const checkIfValidImage = (url: string): Promise<ProfileValidation> => {
+    const img = new Image();
+
+    return new Promise(resolve => {
+      img.onerror = () =>
+        resolve({ state: 'error', message: t('validation.url-not-image') });
+      img.onload = () => resolve({ state: 'success', message: '' });
+      img.src = url;
+    });
+  };
+--------------------------------------------------------------------------------
+
+
+Function 2: createOnChangeHandler
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const createOnChangeHandler =
+    (id: string, key: 'description' | 'image' | 'title' | 'url') =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      e.preventDefault();
+      const userInput = e.target.value.slice();
+      setPortfolio(prevPortfolio => {
+        const mutablePortfolio = [...prevPortfolio];
+        const index = findIndex(prevPortfolio, p => p.id === id);
+        mutablePortfolio[index] = {
+          ...mutablePortfolio[index],
+          [key]: userInput
+        };
+        if (key === 'image' && userInput) {
+          void checkIfValidImage(userInput).then(imageValidation => {
+            setImageValid(imageValidation);
+          });
+        } else if (key === 'image' && !userInput) {
+          setImageValid({ state: 'success', message: '' });
+        }
+        return mutablePortfolio;
+      });
+    };
+--------------------------------------------------------------------------------
+
+
+Function 3: updateItem
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+const updateItem = (
+    id: string,
+    updatedPortfolio?: PortfolioProjectData[]
+  ) => {
+    if (unsavedItemId === id) {
+      setUnsavedItemId(null);
+    }
+    const portfolioToUpdate = updatedPortfolio || portfolio;
+    updateMyPortfolio({ portfolio: portfolioToUpdate });
+    setIsEditing(false);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 4: handleAdd
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+const handleAdd = () => {
+    const item = createEmptyPortfolioItem();
+    setPortfolio(prev => [item, ...prev]);
+    setUnsavedItemId(item.id);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 5: handleRemoveItem
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+const handleRemoveItem = (id: string) => {
+    const newPortfolio = portfolio.filter(p => p.id !== id);
+    setPortfolio(newPortfolio);
+    updateItem(id, newPortfolio);
+    setIsEditing(false);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 6: isFormPristine
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+const isFormPristine = (id: string) => {
+    const original = find(props.portfolio, createFindById(id));
+    if (!original) {
+      return false;
+    }
+    const edited = find(portfolio, createFindById(id));
+    return isEqual(original, edited);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 7: getDescriptionValidation
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const getDescriptionValidation = (description: string): ProfileValidation => {
+    const len = description.length;
+    const charsLeft = 288 - len;
+    if (charsLeft < 0) {
+      return {
+        state: 'error',
+        message: t('validation.max-characters', { charsLeft: 0 })
+      };
+    }
+    if (charsLeft < 41 && charsLeft > 0) {
+      return {
+        state: 'warning',
+        message: t('validation.max-characters', { charsLeft })
+      };
+    }
+    if (charsLeft === 288) {
+      return { state: null, message: '' };
+    }
+    return { state: 'success', message: '' };
+  };
+--------------------------------------------------------------------------------
+
+
+Function 8: getTitleValidation
+Language: TypeScript
+Lines: 11
+Full Code:
+--------------------------------------------------------------------------------
+const getTitleValidation = (title: string): ProfileValidation => {
+    if (!title) {
+      return { state: 'error', message: t('validation.title-required') };
+    }
+    const len = title.length;
+    if (len < 2) {
+      return { state: 'error', message: t('validation.title-short') };
+    }
+    if (len > 144) {
+      return { state: 'error', message: t('validation.title-long') };
+    }
+    return { state: 'success', message: '' };
+  };
+--------------------------------------------------------------------------------
+
+
+Function 9: getUrlValidation
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const getUrlValidation = (
+    url: string
+  ): { state: 'success' | 'warning' | 'error'; message: string } => {
+    const len = url.length;
+    if (!url) {
+      return { state: 'success', message: '' };
+    }
+    if (len >= 4 && !hasProtocolRE.test(url)) {
+      return { state: 'error', message: t('validation.invalid-protocol') };
+    }
+    return isURL(url)
+      ? { state: 'success', message: '' }
+      : { state: 'warning', message: t('validation.use-valid-url') };
+  };
+--------------------------------------------------------------------------------
+
+
+Function 10: formCorrect
+Language: TypeScript
+Lines: 23
+Full Code:
+--------------------------------------------------------------------------------
+const formCorrect = (portfolioItem: PortfolioProjectData) => {
+    const { id, title, description, url, image } = portfolioItem;
+    const { state: titleState, message: titleMessage } =
+      getTitleValidation(title);
+    const { state: urlState, message: urlMessage } = getUrlValidation(url);
+    const { state: descriptionState, message: descriptionMessage } =
+      getDescriptionValidation(description);
+    const { state: imageState, message: imageMessage } =
+      getUrlValidation(image);
+    const pristine = isFormPristine(id);
+    const urlIsValid = !isURL(url, {
+      protocols: ['http', 'https'],
+      require_tld: true,
+      require_protocol: true
+    });
+    const isButtonDisabled = [
+      titleState,
+      urlState,
+      descriptionState,
+      imageState,
+      urlIsValid
+    ].some(state => state === 'error' || false);
+    return {
+      isButtonDisabled,
+      title: { titleState, titleMessage },
+      url: { urlState, urlMessage },
+      image: { imageState, imageMessage },
+      desc: { descriptionState, descriptionMessage },
+      pristine
+    };
+  };
+--------------------------------------------------------------------------------
+
+
+Function 11: renderPortfolio
+Language: TypeScript
+Lines: 78
+Full Code:
+--------------------------------------------------------------------------------
+const renderPortfolio = (
+    portfolioItem: PortfolioProjectData,
+    index: number,
+    arr: PortfolioProjectData[]
+  ) => {
+    const { id, title, description, url, image } = portfolioItem;
+    const {
+      isButtonDisabled,
+      title: { titleState, titleMessage },
+      url: { urlState, urlMessage },
+      image: { imageState, imageMessage },
+      desc: { descriptionState, descriptionMessage },
+      pristine
+    } = formCorrect(portfolioItem);
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>, id: string) => {
+      e.preventDefault();
+      if (isButtonDisabled) return null;
+      setIsEditing(false);
+      return updateItem(id);
+    };
+    const combineImageStatus =
+      imageState === 'success' && imageValidation.state === 'success'
+        ? null
+        : 'error';
+    const combineImageMessage = imageMessage || imageValidation.message;
+    return (
+      <FullWidthRow key={id}>
+        <form
+          onSubmit={e => handleSubmit(e, id)}
+          id='portfolio-items'
+          data-playwright-test-label='portfolio-items'
+        >
+          <FormGroup
+            controlId={`${id}-title`}
+            validationState={
+              pristine || (!pristine && !title) ? null : titleState
+            }
+          >
+            <ControlLabel htmlFor={`${id}-title-input`}>
+              {t('settings.labels.title')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'title')}
+              required
+              type='text'
+              value={title}
+              name='portfolio-title'
+              id={`${id}-title-input`}
+            />
+            {titleMessage ? (
+              <HelpBlock data-playwright-test-label='title-validation'>
+                {titleMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-url`}
+            validationState={pristine || (!pristine && !url) ? null : urlState}
+          >
+            <ControlLabel htmlFor={`${id}-url-input`}>
+              {t('settings.labels.url')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'url')}
+              required
+              type='url'
+              value={url}
+              name='portfolio-url'
+              id={`${id}-url-input`}
+            />
+            {urlMessage ? (
+              <HelpBlock data-playwright-test-label='url-validation'>
+                {urlMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-image`}
+            validationState={pristine ? null : combineImageStatus}
+          >
+            <ControlLabel htmlFor={`${id}-image-input`}>
+              {t('settings.labels.image')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'image')}
+              type='url'
+              value={image}
+              name='portfolio-image'
+              id={`${id}-image-input`}
+            />
+            {combineImageMessage ? (
+              <HelpBlock data-playwright-test-label='image-validation'>
+                {combineImageMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-description`}
+            validationState={pristine ? null : descriptionState}
+          >
+            <ControlLabel htmlFor={`${id}-description-input`}>
+              {t('settings.labels.description')}
+            </ControlLabel>
+            <FormControl
+              componentClass='textarea'
+              onChange={createOnChangeHandler(id, 'description')}
+              value={description}
+              name='portfolio-description'
+              id={`${id}-description-input`}
+            />
+            {descriptionMessage ? (
+              <HelpBlock data-playwright-test-label='description-validation'>
+                {descriptionMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <BlockSaveButton
+            disabled={isButtonDisabled}
+            bgSize='large'
+            data-playwright-test-label='save-portfolio'
+            {...(isButtonDisabled && { tabIndex: -1 })}
+          >
+            {t('buttons.save-portfolio')}
+          </BlockSaveButton>
+          <Spacer size='xs' />
+          <Button
+            block
+            size='large'
+            variant='danger'
+            onClick={() => handleRemoveItem(id)}
+            type='button'
+          >
+            {t('buttons.remove-portfolio')}
+          </Button>
+        </form>
+        {index + 1 !== arr.length && (
+          <>
+            <Spacer size='m' />
+            <hr />
+            <Spacer size='m' />
+          </>
+        )}
+      </FullWidthRow>
+    );
+  };
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:27:49.968Z
+Question Type: multiple-choice
+Function: getTitleValidation
+Function Size: 549 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: getTitleValidation (TypeScript)\n// Validates the title length and presence for a portfolio item.\n\nconst getTitleValidation = (title: string): ProfileValidation => {\n    if (!title) {\n      return { state: 'error', message: t('validation.title-required') };\n    }\n    const len = title.le
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:27:52.478Z
+Question Type: select-all
+Function: isFormPristine
+Function Size: 358 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isFormPristine (TypeScript)\n// Checks if the form for a specific portfolio item is unchanged.\n\nconst isFormPristine = (id: string) => {\n    const original = find(props.portfolio, createFindById(id));\n    if (!original) {\n      return false;\n    }\n    const edited = find(portfolio, creat
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:27:53.852Z
+Question Type: select-all
+Function: updateItem
+Function Size: 405 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateItem (TypeScript)\n// Updates the portfolio item and triggers the save action.\n\nconst updateItem = (\n    id: string,\n    updatedPortfolio?: PortfolioProjectData[]\n  ) => {\n    if (unsavedItemId === id) {\n      setUnsavedItemId(null);\n    }\n    const portfolioToUpdate = updatedPortf
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:27:54.422Z
+Question Type: order-sequence
+Function: isFormPristine
+Function Size: 358 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isFormPristine (TypeScript)\n// Checks if the form for a specific portfolio item is unchanged.\n\nconst isFormPristine = (id: string) => {\n    const original = find(props.portfolio, createFindById(id));\n    if (!original) {\n      return false;\n    }\n    const edited = find(portfolio, creat
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:27:59.471Z
+Question Type: true-false
+Function: getUrlValidation
+Function Size: 573 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getUrlValidation (TypeScript)\n// Validates the URL format for a portfolio item.\n\nconst getUrlValidation = (\n    url: string\n  ): { state: 'success' | 'warning' | 'error'; message: string } => {\n    const len = url.length;\n    if (!url) {\n      return { state: 'success', message: '' };\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:28:02.131Z
+Question Type: select-all
+Function: getUrlValidation
+Function Size: 573 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getUrlValidation (TypeScript)\n// Validates the URL format for a portfolio item.\n\nconst getUrlValidation = (\n    url: string\n  ): { state: 'success' | 'warning' | 'error'; message: string } => {\n    const len = url.length;\n    if (!url) {\n      return { state: 'success', message: '' };\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:28:05.835Z
+Question Type: true-false
+Function: updateItem
+Function Size: 405 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateItem (TypeScript)\n// Updates the portfolio item and triggers the save action.\n\nconst updateItem = (\n    id: string,\n    updatedPortfolio?: PortfolioProjectData[]\n  ) => {\n    if (unsavedItemId === id) {\n      setUnsavedItemId(null);\n    }\n    const portfolioToUpdate = updatedPortf
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:28:08.899Z
+Question Type: function-variant
+Function: handleAdd
+Function Size: 223 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleAdd (TypeScript)\n// Adds a new item to the portfolio.\n\nconst handleAdd = () => {\n    const item = createEmptyPortfolioItem();\n    setPortfolio(prev => [item, ...prev]);\n    setUnsavedItemId(item.id);\n  };
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:28:13.654Z
+Question Type: select-all
+Function: getTitleValidation
+Function Size: 549 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getTitleValidation (TypeScript)\n// Validates the title length and presence for a portfolio item.\n\nconst getTitleValidation = (title: string): ProfileValidation => {\n    if (!title) {\n      return { state: 'error', message: t('validation.title-required') };\n    }\n    const len = title.le
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:28:20.426Z
+Question Type: function-variant
+Function: checkIfValidImage
+Function Size: 447 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: checkIfValidImage (TypeScript)\n// Validates if the provided URL points to a valid image.\n\nconst checkIfValidImage = (url: string): Promise<ProfileValidation> => {\n    const img = new Image();\n\n    return new Promise(resolve => {\n      img.onerror = () =>\n        resolve({ state: 'error'
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:28:21.689Z
+Question Type: order-sequence
+Function: handleRemoveItem
+Function Size: 304 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleRemoveItem (TypeScript)\n// Removes an item from the portfolio and updates the state.\n\nconst handleRemoveItem = (id: string) => {\n    const newPortfolio = portfolio.filter(p => p.id !== id);\n    setPortfolio(newPortfolio);\n    updateItem(id, newPortfolio);\n    setIsEditing(false);\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:28:24.485Z
+Question Type: function-variant
+Function: formCorrect
+Function Size: 1227 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: formCorrect (TypeScript)\n// Validates the entire form for a portfolio item and checks if the submit button should be disabled.\n\nconst formCorrect = (portfolioItem: PortfolioProjectData) => {\n    const { id, title, description, url, image } = portfolioItem;\n    const { state: titleState,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:28:25.887Z
+Question Type: function-variant
+Function: getDescriptionValidation
+Function Size: 693 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getDescriptionValidation (TypeScript)\n// Validates the description length for a portfolio item.\n\nconst getDescriptionValidation = (description: string): ProfileValidation => {\n    const len = description.length;\n    const charsLeft = 288 - len;\n    if (charsLeft < 0) {\n      return {\n  
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T06:28:33.964Z
+Question Type: select-all
+Function: createOnChangeHandler
+Function Size: 938 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createOnChangeHandler (TypeScript)\n// Creates a change handler for portfolio item fields.\n\nconst createOnChangeHandler =\n    (id: string, key: 'description' | 'image' | 'title' | 'url') =>\n    (e: React.ChangeEvent<HTMLInputElement>) => {\n      e.preventDefault();\n      const userInput 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760334041410
+Repository: Unknown
+Total Questions Generated: 15
+Total Chunks Processed: 11
+Ended: 2025-10-13T06:28:50.445Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-13T07:30:10.952Z
+File: [3 files: Items per page in timeline., awaitable-messenger.ts, codespaces-instructions.tsx]
+Functions Extracted: 4
+
+
+Function 1: viewProject
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function viewProject(completedChallenge: CompletedChallenge): void {
+    setCompletedChallenge(completedChallenge);
+    setProjectTitle(
+      idToNameMap.get(completedChallenge.id)?.challengeTitle ?? ''
+    );
+    openModal('projectPreview');
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: viewExamResults
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function viewExamResults(completedChallenge: CompletedChallenge): void {
+    setCompletedChallenge(completedChallenge);
+    setProjectTitle(
+      idToNameMap.get(completedChallenge.id)?.challengeTitle ?? ''
+    );
+    openModal('examResults');
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: renderViewButton
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function renderViewButton(
+    completedChallenge: CompletedChallenge
+  ): React.ReactNode {
+    const { id } = completedChallenge;
+    const projectTitle = idToNameMap.get(id)?.challengeTitle || '';
+    return (
+      <SolutionDisplayWidget
+        completedChallenge={completedChallenge}
+        projectTitle={projectTitle}
+        showUserCode={() => viewSolution(completedChallenge)}
+        showProjectPreview={() => viewProject(completedChallenge)}
+        showExamResults={() => viewExamResults(completedChallenge)}
+        displayContext='timeline'
+      ></SolutionDisplayWidget>
+    );
+  }
+--------------------------------------------------------------------------------
+
+
+Function 4: awaitResponse
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function awaitResponse<
+  MessageOut,
+  MessageIn extends { type: string; value: Value; error: string },
+  Value
+>({
+  messenger,
+  message,
+  onMessage
+}: {
+  messenger: Messenger<MessageOut>;
+  message: MessageOut;
+  onMessage: (
+    response: MessageIn,
+    onSuccess: (res: Value) => void,
+    onFailure: (err: Error) => void
+  ) => void;
+}): Promise<Value> {
+  return new Promise(
+    (resolve: (res: Value) => void, reject: (err: Error) => void) => {
+      const channel = new MessageChannel();
+      // Additional logic omitted for brevity
+    }
+  );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:30:19.378Z
+Question Type: select-all
+Function: viewExamResults
+Function Size: 375 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: viewExamResults (TypeScript)\n// Sets the completed challenge and project title, then opens the exam results modal.\n\nfunction viewExamResults(completedChallenge: CompletedChallenge): void {\n    setCompletedChallenge(completedChallenge);\n    setProjectTitle(\n      idToNameMap.get(complete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:30:21.998Z
+Question Type: select-all
+Function: renderViewButton
+Function Size: 753 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: renderViewButton (TypeScript)\n// Renders the view button for a completed challenge with options to view solution, project, or exam results.\n\nfunction renderViewButton(\n    completedChallenge: CompletedChallenge\n  ): React.ReactNode {\n    const { id } = completedChallenge;\n    const proj
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:30:23.635Z
+Question Type: select-all
+Function: viewProject
+Function Size: 373 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: viewProject (TypeScript)\n// Sets the completed challenge and project title, then opens the project preview modal.\n\nfunction viewProject(completedChallenge: CompletedChallenge): void {\n    setCompletedChallenge(completedChallenge);\n    setProjectTitle(\n      idToNameMap.get(completedChal
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:30:23.641Z
+Question Type: order-sequence
+Function: awaitResponse
+Function Size: 701 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: awaitResponse (TypeScript)\n// Sends a message via a messenger and awaits a response, handling success and failure cases.\n\nexport function awaitResponse<\n  MessageOut,\n  MessageIn extends { type: string; value: Value; error: string },\n  Value\n>({\n  messenger,\n  message,\n  onMessage\n}: {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:30:33.458Z
+Question Type: select-all
+Function: viewProject
+Function Size: 373 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: viewProject (TypeScript)\n// Sets the completed challenge and project title, then opens the project preview modal.\n\nfunction viewProject(completedChallenge: CompletedChallenge): void {\n    setCompletedChallenge(completedChallenge);\n    setProjectTitle(\n      idToNameMap.get(completedChal
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:30:33.771Z
+Question Type: function-variant
+Function: viewExamResults
+Function Size: 375 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: viewExamResults (TypeScript)\n// Sets the completed challenge and project title, then opens the exam results modal.\n\nfunction viewExamResults(completedChallenge: CompletedChallenge): void {\n    setCompletedChallenge(completedChallenge);\n    setProjectTitle(\n      idToNameMap.get(complete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:30:38.014Z
+Question Type: order-sequence
+Function: renderViewButton
+Function Size: 753 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: renderViewButton (TypeScript)\n// Renders the view button for a completed challenge with options to view solution, project, or exam results.\n\nfunction renderViewButton(\n    completedChallenge: CompletedChallenge\n  ): React.ReactNode {\n    const { id } = completedChallenge;\n    const proj
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:30:40.216Z
+Question Type: function-variant
+Function: renderViewButton
+Function Size: 753 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: renderViewButton (TypeScript)\n// Renders the view button for a completed challenge with options to view solution, project, or exam results.\n\nfunction renderViewButton(\n    completedChallenge: CompletedChallenge\n  ): React.ReactNode {\n    const { id } = completedChallenge;\n    const proj
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:30:43.292Z
+Question Type: function-variant
+Function: viewProject
+Function Size: 373 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: viewProject (TypeScript)\n// Sets the completed challenge and project title, then opens the project preview modal.\n\nfunction viewProject(completedChallenge: CompletedChallenge): void {\n    setCompletedChallenge(completedChallenge);\n    setProjectTitle(\n      idToNameMap.get(completedChal
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:30:43.450Z
+Question Type: true-false
+Function: viewExamResults
+Function Size: 375 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: viewExamResults (TypeScript)\n// Sets the completed challenge and project title, then opens the exam results modal.\n\nfunction viewExamResults(completedChallenge: CompletedChallenge): void {\n    setCompletedChallenge(completedChallenge);\n    setProjectTitle(\n      idToNameMap.get(complete
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760334041410
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 4
+Ended: 2025-10-13T07:30:43.524Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-13T07:31:12.387Z
+File: [2 files: help-modal.tsx, completion-epic.js]
+Functions Extracted: 4
+
+
+Function 1: postChallenge
+Language: JavaScript
+Lines: 28
+Full Code:
+--------------------------------------------------------------------------------
+function postChallenge(update) {
+  const {
+    payload: { challengeType }
+  } = update;
+  const saveChallenge = postUpdate$(update).pipe(
+    retry(3),
+    switchMap(({ data }) => {
+      const {
+        type,
+        completedDailyCodingChallenges,
+        savedChallenges,
+        message,
+        examResults
+      } = data;
+      const payloadWithClientProperties = {
+        ...omit(update.payload, ['files'])
+      };
+      if (update.payload.files) {
+        payloadWithClientProperties.challengeFiles = update.payload.files.map(
+          ({ key, ...rest }) => ({
+            ...rest,
+            fileKey: key
+          })
+        );
+      }
+
+      let actions = [
+        submitComplete({
+          submittedChallenge: payloadWithClientProperties,
+          completedDailyCodingChallenges,
+          savedChallenges: mapFilesToChallengeFiles(savedChallenges),
+          examResults
+        }),
+        updateComplete(),
+        submitChallengeComplete()
+      ];
+
+      if (
+        type === 'error' ||
+        (message && challengeType === challengeTypes.msTrophy)
+      ) {
+        actions = [];
+        if (message) {
+          actions.push(createFlashMessage(data));
+        }
+        actions.push(submitChallengeError());
+      } else if (challengeType === challengeTypes.msTrophy) {
+        actions.push(createFlashMessage(msTrophyVerified));
+      }
+
+      return of(...actions);
+    }),
+    catchError(() => of(updateFailed(update), submitChallengeError()))
+  );
+  return saveChallenge;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: submitModern
+Language: JavaScript
+Lines: 32
+Full Code:
+--------------------------------------------------------------------------------
+function submitModern(type, state) {
+  const tests = challengeTestsSelector(state);
+  if (tests.length === 0 || tests.every(test => test.pass && !test.err)) {
+    if (type === actionTypes.checkChallenge) {
+      return of({ type: 'this was a check challenge' });
+    }
+
+    if (type === actionTypes.submitChallenge) {
+      const { id, block, challengeType } = challengeMetaSelector(state);
+
+      let update;
+
+      if (getIsDailyCodingChallenge(challengeType)) {
+        const language = getDailyCodingChallengeLanguage(challengeType);
+
+        const body = {
+          id,
+          challengeType,
+          language
+        };
+
+        update = {
+          endpoint: '/daily-coding-challenge-completed',
+          payload: body
+        };
+      } else {
+        const challengeFiles = challengeFilesSelector(state);
+
+        let body;
+        if (
+          block === 'javascript-algorithms-and-data-structures-projects' ||
+          canSaveToDB(challengeType)
+        ) {
+          body = standardizeRequestBody({ id, challengeType, challengeFiles });
+        } else {
+          body = {
+            id,
+            challengeType
+          };
+        }
+
+        update = {
+          endpoint: '/encoded/modern-challenge-completed',
+          payload: body
+        };
+      }
+      return postChallenge(update);
+    }
+  }
+  return empty();
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: submitProject
+Language: JavaScript
+Lines: 24
+Full Code:
+--------------------------------------------------------------------------------
+function submitProject(type, state) {
+  if (type === actionTypes.checkChallenge) {
+    return empty();
+  }
+
+  const { solution, githubLink } = projectFormValuesSelector(state);
+  const { id, challengeType } = challengeMetaSelector(state);
+  const { username } = userSelector(state);
+  const challengeInfo = { id, challengeType, solution };
+  if (challengeType === challengeTypes.backEndProject) {
+    challengeInfo.githubLink = githubLink;
+  }
+
+  const update = {
+    endpoint: '/project-completed',
+    payload: challengeInfo
+  };
+  return postChallenge(update, username).pipe(
+    concat(of(updateSolutionFormValues({})))
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: submitBackendChallenge
+Language: JavaScript
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+function submitBackendChallenge(type, state) {
+  const tests = challengeTestsSelector(state);
+  if (tests.length > 0 && tests.every(test => test.pass && !test.err)) {
+    if (type === actionTypes.submitChallenge) {
+      const { id } = challengeMetaSelector(state);
+      const {
+        solution: { value: solution }
+      } = projectFormValuesSelector(state);
+      const challengeInfo = { id, solution };
+
+      const update = {
+        endpoint: '/backend-challenge-completed',
+        payload: challengeInfo
+      };
+      return postChallenge(update);
+    }
+  }
+  return empty();
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:31:21.310Z
+Question Type: select-all
+Function: submitProject
+Function Size: 770 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: submitProject (JavaScript)\n// Handles the submission of a project challenge, including the solution and optional GitHub link.\n\nfunction submitProject(type, state) {\n  if (type === actionTypes.checkChallenge) {\n    return empty();\n  }\n\n  const { solution, githubLink } = projectFormValues
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:31:24.259Z
+Question Type: select-all
+Function: submitModern
+Function Size: 1498 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: submitModern (JavaScript)\n// Submits a modern challenge based on the type and state, handling different cases for daily coding challenges.\n\nfunction submitModern(type, state) {\n  const tests = challengeTestsSelector(state);\n  if (tests.length === 0 || tests.every(test => test.pass && !t
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:31:27.606Z
+Question Type: order-sequence
+Function: submitProject
+Function Size: 770 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: submitProject (JavaScript)\n// Handles the submission of a project challenge, including the solution and optional GitHub link.\n\nfunction submitProject(type, state) {\n  if (type === actionTypes.checkChallenge) {\n    return empty();\n  }\n\n  const { solution, githubLink } = projectFormValues
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:31:42.416Z
+Question Type: function-variant
+Function: postChallenge
+Function Size: 1629 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: postChallenge (JavaScript)\n// Handles posting a challenge update and returning actions based on the response.\n\nfunction postChallenge(update) {\n  const {\n    payload: { challengeType }\n  } = update;\n  const saveChallenge = postUpdate$(update).pipe(\n    retry(3),\n    switchMap(({ data })
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:31:50.164Z
+Question Type: function-variant
+Function: submitProject
+Function Size: 770 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: submitProject (JavaScript)\n// Handles the submission of a project challenge, including the solution and optional GitHub link.\n\nfunction submitProject(type, state) {\n  if (type === actionTypes.checkChallenge) {\n    return empty();\n  }\n\n  const { solution, githubLink } = projectFormValues
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:31:51.385Z
+Question Type: function-variant
+Function: postChallenge
+Function Size: 1629 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: postChallenge (JavaScript)\n// Handles posting a challenge update and returning actions based on the response.\n\nfunction postChallenge(update) {\n  const {\n    payload: { challengeType }\n  } = update;\n  const saveChallenge = postUpdate$(update).pipe(\n    retry(3),\n    switchMap(({ data })
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:31:51.622Z
+Question Type: select-all
+Function: submitBackendChallenge
+Function Size: 726 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: submitBackendChallenge (JavaScript)\n// Submits a backend challenge if all tests pass, sending the solution and challenge ID.\n\nfunction submitBackendChallenge(type, state) {\n  const tests = challengeTestsSelector(state);\n  if (tests.length > 0 && tests.every(test => test.pass && !test.er
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:31:54.334Z
+Question Type: function-variant
+Function: submitModern
+Function Size: 1498 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: submitModern (JavaScript)\n// Submits a modern challenge based on the type and state, handling different cases for daily coding challenges.\n\nfunction submitModern(type, state) {\n  const tests = challengeTestsSelector(state);\n  if (tests.length === 0 || tests.every(test => test.pass && !t
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:31:59.888Z
+Question Type: true-false
+Function: postChallenge
+Function Size: 1629 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: postChallenge (JavaScript)\n// Handles posting a challenge update and returning actions based on the response.\n\nfunction postChallenge(update) {\n  const {\n    payload: { challengeType }\n  } = update;\n  const saveChallenge = postUpdate$(update).pipe(\n    retry(3),\n    switchMap(({ data })
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760334041410
+Repository: Unknown
+Total Questions Generated: 5
+Total Chunks Processed: 4
+Ended: 2025-10-13T07:31:59.924Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-13T07:38:12.860Z
+File: [3 files: link-ms-user.tsx, social-icons.tsx, Items per page in timeline.]
+Functions Extracted: 2
+
+
+Function 1: LinkMsUser
+Language: TypeScript
+Lines: 77
+Full Code:
+--------------------------------------------------------------------------------
+function LinkMsUser({
+  isSignedIn,
+  msUsername,
+  linkMsUsername,
+  unlinkMsUsername,
+  isProcessing,
+  setIsProcessing
+}: Props): JSX.Element {
+  const { t } = useTranslation();
+  const [msTranscriptUrl, setMsTranscriptUrl] = useState('');
+
+  function handleLinkUsername(e: React.FormEvent) {
+    e.preventDefault();
+    setIsProcessing(true);
+    linkMsUsername({ msTranscriptUrl });
+  }
+
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    e.preventDefault();
+    setMsTranscriptUrl(e.target.value);
+  }
+
+  const isValid = isMicrosoftTranscriptLink(msTranscriptUrl);
+  const isPristine = msTranscriptUrl === '';
+  const isDisabled = isProcessing || !isValid;
+  const showWarning = !isPristine && !isValid;
+
+  return !isSignedIn ? (
+    <>
+      <ChallengeHeading heading={t('learn.ms.link-header')} />
+      <Spacer size='xs' />
+
+      <p>{t('learn.ms.link-signin')}</p>
+      <Login />
+    </>
+  ) : msUsername ? (
+    <>
+      <p>{t('learn.ms.linked', { msUsername })}</p>
+      <Button
+        block={true}
+        variant='primary'
+        disabled={isProcessing}
+        onClick={unlinkMsUsername}
+      >
+        {t('buttons.unlink-account')}
+      </Button>
+    </>
+  ) : (
+    <div>
+      <ChallengeHeading heading={'learn.ms.link-header'} />
+      <Spacer size='xs' />
+
+      <p>{t('learn.ms.unlinked')}</p>
+      <ol className='link-ms-user-ol'>
+        <li>
+          <Trans i18nKey='learn.ms.link-li-1'>
+            <a
+              href='https://learn.microsoft.com/users/me/transcript'
+              rel='noreferrer'
+              target='_blank'
+            >
+              placeholder
+            </a>
+          </Trans>
+        </li>
+        <li>{t('learn.ms.link-li-2')}</li>
+        <li>{t('learn.ms.link-li-3')}</li>
+        <li>{t('learn.ms.link-li-4')}</li>
+        <li>
+          <Trans i18nKey='learn.ms.link-li-5'>
+            <pre className='language-html'>placeholder</pre>
+          </Trans>
+        </li>
+        <li>{t('learn.ms.link-li-6')}</li>
+      </ol>
+
+      <Spacer size='m' />
+      <form onSubmit={handleLinkUsername}>
+        <FormGroup validationState={isValid ? 'success' : 'error'}>
+          <ControlLabel htmlFor='transcript-link'>
+            <strong>{t('learn.ms.transcript-label')}</strong>
+          </ControlLabel>
+          <FormControl
+            id='transcript-link'
+            type='url'
+            onChange={handleInputChange}
+            placeholder='https://learn.microsoft.com/en-us/users/username/transcript/transcriptId'
+          />
+        </FormGroup>
+        <Button
+          disabled={isDisabled}
+          block={true}
+          variant='primary'
+          onClick={handleLinkUsername}
+        >
+          {t('buttons.link-account')}
+        </Button>
+        {showWarning && (
+          <HelpBlock>
+            <Trans i18nKey='learn.ms.invalid-transcript'>
+              placeholder <code>placeholder</code> placeholder
+            </Trans>
+          </HelpBlock>
+        )}
+      </form>
+    </div>
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: TimelineInner
+Language: TypeScript
+Lines: 78
+Full Code:
+--------------------------------------------------------------------------------
+function TimelineInner({
+  completedMap,
+  idToNameMap,
+  openModal,
+  sortedTimeline,
+  totalPages,
+  t,
+  username
+}: TimelineInnerProps) {
+  const [projectTitle, setProjectTitle] = useState('');
+  const [solutionOpen, setSolutionOpen] = useState(false);
+  const [pageNo, setPageNo] = useState(1);
+  const [completedChallenge, setCompletedChallenge] =
+    useState<CompletedChallenge | null>(null);
+
+  function viewSolution(completedChallenge: CompletedChallenge): void {
+    setCompletedChallenge(completedChallenge);
+    setSolutionOpen(true);
+  }
+
+  function viewProject(completedChallenge: CompletedChallenge): void {
+    setCompletedChallenge(completedChallenge);
+    setProjectTitle(
+      idToNameMap.get(completedChallenge.id)?.challengeTitle ?? ''
+    );
+    openModal('projectPreview');
+  }
+
+  function viewExamResults(completedChallenge: CompletedChallenge): void {
+    setCompletedChallenge(completedChallenge);
+    setProjectTitle(
+      idToNameMap.get(completedChallenge.id)?.challengeTitle ?? ''
+    );
+    openModal('examResults');
+  }
+
+  function closeSolution(): void {
+    setSolutionOpen(false);
+    setCompletedChallenge(null);
+  }
+
+  function firstPage(): void {
+    setPageNo(1);
+  }
+  function nextPage(): void {
+    setPageNo(prev => prev + 1);
+  }
+  function prevPage(): void {
+    setPageNo(prev => prev - 1);
+  }
+  function lastPage(): void {
+    setPageNo(totalPages);
+  }
+
+  function renderViewButton(
+    completedChallenge: CompletedChallenge
+  ): React.ReactNode {
+    const { id } = completedChallenge;
+    const projectTitle = idToNameMap.get(id)?.challengeTitle || '';
+    return (
+      <SolutionDisplayWidget
+        completedChallenge={completedChallenge}
+        projectTitle={projectTitle}
+        showUserCode={() => viewSolution(completedChallenge)}
+        showProjectPreview={() => viewProject(completedChallenge)}
+        showExamResults={() => viewExamResults(completedChallenge)}
+        displayContext='timeline'
+      ></SolutionDisplayWidget>
+    );
+  }
+
+  function renderCompletion(completed: CompletedChallenge) {
+    const { id } = completed;
+    const challenge = idToNameMap.get(id);
+    if (!challenge) return;
+    const { challengeTitle, challengePath, certPath } = challenge;
+    const completedDate = new Date(completed.completedDate);
+    return (
+      <tr className='timeline-row' key={id}>
+        <td>
+          {certPath ? (
+            <Link
+              className='timeline-cert-link'
+              to={`/certification/${username}/${certPath}`}
+            >
+              {challengeTitle}
+              <CertificationIcon />
+            </Link>
+          ) : (
+            <Link to={challengePath}>{challengeTitle}</Link>
+          )}
+        </td>
+        <td>{renderViewButton(completed)}</td>
+        <td className='text-center'>
+          <time dateTime={completedDate.toISOString()}>
+            {completedDate.toLocaleString([localeCode, 'en-US'], {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            })}
+          </time>
+        </td>
+      </tr>
+    );
+  }
+
+  const challengeData: ChallengeData | null = completedChallenge
+    ? {
+        ...completedChallenge,
+        // additional properties can be added here
+      }
+    : null;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:38:17.463Z
+Question Type: select-all
+Function: TimelineInner
+Function Size: 3388 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: TimelineInner (TypeScript)\n// Handles the inner workings of the timeline display for completed challenges.\n\nfunction TimelineInner({\n  completedMap,\n  idToNameMap,\n  openModal,\n  sortedTimeline,\n  totalPages,\n  t,\n  username\n}: TimelineInnerProps) {\n  const [projectTitle, setProjectTitl
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:38:17.754Z
+Question Type: select-all
+Function: TimelineInner
+Function Size: 3388 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: TimelineInner (TypeScript)\n// Handles the inner workings of the timeline display for completed challenges.\n\nfunction TimelineInner({\n  completedMap,\n  idToNameMap,\n  openModal,\n  sortedTimeline,\n  totalPages,\n  t,\n  username\n}: TimelineInnerProps) {\n  const [projectTitle, setProjectTitl
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:38:20.447Z
+Question Type: order-sequence
+Function: LinkMsUser
+Function Size: 3103 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: LinkMsUser (TypeScript)\n// Handles linking a Microsoft username to a user account.\n\nfunction LinkMsUser({\n  isSignedIn,\n  msUsername,\n  linkMsUsername,\n  unlinkMsUsername,\n  isProcessing,\n  setIsProcessing\n}: Props): JSX.Element {\n  const { t } = useTranslation();\n  const [msTranscriptU
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:38:22.545Z
+Question Type: function-variant
+Function: TimelineInner
+Function Size: 3388 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: TimelineInner (TypeScript)\n// Handles the inner workings of the timeline display for completed challenges.\n\nfunction TimelineInner({\n  completedMap,\n  idToNameMap,\n  openModal,\n  sortedTimeline,\n  totalPages,\n  t,\n  username\n}: TimelineInnerProps) {\n  const [projectTitle, setProjectTitl
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:38:26.047Z
+Question Type: select-all
+Function: TimelineInner
+Function Size: 3388 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: TimelineInner (TypeScript)\n// Handles the inner workings of the timeline display for completed challenges.\n\nfunction TimelineInner({\n  completedMap,\n  idToNameMap,\n  openModal,\n  sortedTimeline,\n  totalPages,\n  t,\n  username\n}: TimelineInnerProps) {\n  const [projectTitle, setProjectTitl
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:38:27.615Z
+Question Type: function-variant
+Function: TimelineInner
+Function Size: 3388 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: TimelineInner (TypeScript)\n// Handles the inner workings of the timeline display for completed challenges.\n\nfunction TimelineInner({\n  completedMap,\n  idToNameMap,\n  openModal,\n  sortedTimeline,\n  totalPages,\n  t,\n  username\n}: TimelineInnerProps) {\n  const [projectTitle, setProjectTitl
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:38:36.593Z
+Question Type: select-all
+Function: LinkMsUser
+Function Size: 3103 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: LinkMsUser (TypeScript)\n// Handles linking a Microsoft username to a user account.\n\nfunction LinkMsUser({\n  isSignedIn,\n  msUsername,\n  linkMsUsername,\n  unlinkMsUsername,\n  isProcessing,\n  setIsProcessing\n}: Props): JSX.Element {\n  const { t } = useTranslation();\n  const [msTranscriptU
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:38:39.871Z
+Question Type: select-all
+Function: LinkMsUser
+Function Size: 3103 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: LinkMsUser (TypeScript)\n// Handles linking a Microsoft username to a user account.\n\nfunction LinkMsUser({\n  isSignedIn,\n  msUsername,\n  linkMsUsername,\n  unlinkMsUsername,\n  isProcessing,\n  setIsProcessing\n}: Props): JSX.Element {\n  const { t } = useTranslation();\n  const [msTranscriptU
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:38:41.327Z
+Question Type: multiple-choice
+Function: TimelineInner
+Function Size: 3388 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: TimelineInner (TypeScript)\n// Handles the inner workings of the timeline display for completed challenges.\n\nfunction TimelineInner({\n  completedMap,\n  idToNameMap,\n  openModal,\n  sortedTimeline,\n  totalPages,\n  t,\n  username\n}: TimelineInnerProps) {\n  const [projectTitle, setProjectTitl
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:38:46.922Z
+Question Type: true-false
+Function: TimelineInner
+Function Size: 3388 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: TimelineInner (TypeScript)\n// Handles the inner workings of the timeline display for completed challenges.\n\nfunction TimelineInner({\n  completedMap,\n  idToNameMap,\n  openModal,\n  sortedTimeline,\n  totalPages,\n  t,\n  username\n}: TimelineInnerProps) {\n  const [projectTitle, setProjectTitl
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760334041410
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 2
+Ended: 2025-10-13T07:38:46.949Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-13T07:39:24.273Z
+File: freeCodeCamp-freeCodeCamp-7cbd1d7/client/src/components/settings/email.tsx
+Functions Extracted: 1
+
+
+Function 1: EmailSettings
+Language: TypeScript
+Lines: 103
+Full Code:
+--------------------------------------------------------------------------------
+function EmailSettings({
+  email,
+  isEmailVerified,
+  sendQuincyEmail,
+  t,
+  updateMyEmail,
+  updateQuincyEmail
+}: EmailProps): JSX.Element {
+  const [emailForm, setEmailForm] = useState<EmailForm>({
+    currentEmail: email,
+    newEmail: '',
+    confirmNewEmail: '',
+    isPristine: true
+  });
+
+  function handleSubmit(e: React.FormEvent): void {
+    e.preventDefault();
+    updateMyEmail(emailForm.newEmail);
+  }
+
+  function createHandleEmailFormChange(
+    key: 'newEmail' | 'confirmNewEmail'
+  ): (e: React.ChangeEvent<HTMLInputElement>) => void {
+    return e => {
+      e.preventDefault();
+      const userInput = e.target.value.slice();
+      setEmailForm(prev => ({
+        ...prev,
+        [key]: userInput,
+        isPristine: userInput === prev.currentEmail
+      }));
+    };
+  }
+
+  function getValidationForNewEmail(): EmailValidation {
+    const { newEmail, currentEmail } = emailForm;
+    if (!maybeEmailRE.test(newEmail)) {
+      return {
+        state: null,
+        message: ''
+      };
+    }
+    if (newEmail === currentEmail) {
+      return {
+        state: 'error',
+        message: t('validation.same-email')
+      };
+    }
+    if (isEmail(newEmail)) {
+      return { state: 'success', message: '' };
+    } else {
+      return {
+        state: 'error',
+        message: t('validation.invalid-email')
+      };
+    }
+  }
+
+  function getValidationForConfirmEmail(): EmailValidation {
+    const { confirmNewEmail, newEmail } = emailForm;
+    if (!maybeEmailRE.test(newEmail)) {
+      return {
+        state: null,
+        message: ''
+      };
+    }
+    const isMatch = newEmail === confirmNewEmail;
+    if (maybeEmailRE.test(confirmNewEmail)) {
+      return {
+        state: isMatch ? 'success' : 'error',
+        message: isMatch ? '' : t('validation.email-mismatch')
+      };
+    } else {
+      return {
+        state: null,
+        message: ''
+      };
+    }
+  }
+
+  const { newEmail, confirmNewEmail, currentEmail, isPristine } = emailForm;
+
+  const { state: newEmailValidation, message: newEmailValidationMessage } =
+    getValidationForNewEmail();
+
+  const {
+    state: confirmEmailValidation,
+    message: confirmEmailValidationMessage
+  } = getValidationForConfirmEmail();
+  const isDisabled =
+    newEmailValidation !== 'success' ||
+    confirmEmailValidation !== 'success' ||
+    isPristine;
+  if (!currentEmail) {
+    return (
+      <div>
+        <FullWidthRow>
+          <p className='large-p text-center'>{t('settings.email.missing')}</p>
+        </FullWidthRow>
+        <FullWidthRow>
+          <Button
+            block={true}
+            size='large'
+            variant='primary'
+            href='/update-email'
+          >
+            {t('buttons.edit')}
+          </Button>
+        </FullWidthRow>
+      </div>
+    );
+  }
+  return (
+    <div className='email-settings'>
+      <SectionHeader>{t('settings.email.heading')}</SectionHeader>
+      {isEmailVerified ? null : (
+        <FullWidthRow>
+          <HelpBlock>
+            <Callout
+              variant='info'
+              className='text-center'
+              data-playwright-test-label='email-verification-alert'
+            >
+              {t('settings.email.not-verified')}
+              <br />
+              <Trans i18nKey='settings.email.check'>
+                <Link
+                  data-playwright-test-label='email-verification-link'
+                  to='/update-email'
+                />
+              </Trans>
+            </Callout>
+          </HelpBlock>
+        </FullWidthRow>
+      )}
+      <FullWidthRow>
+        <form
+          id='form-update-email'
+          {...(!isDisabled
+            ? { onSubmit: handleSubmit }
+            : { onSubmit: e => e.preventDefault() })}
+        >
+          <FormGroup controlId='current-email'>
+            <ControlLabel>{t('settings.email.current')}</ControlLabel>
+            <FormControl.Static>{currentEmail}</FormControl.Static>
+          </FormGroup>
+          <div role='group' aria-label={t('settings.email.heading')}>
+            <FormGroup
+              controlId='new-email'
+              validationState={newEmailValidation}
+            >
+              <ControlLabel htmlFor='new-email-input'>
+                {t('settings.email.new')}
+              </ControlLabel>
+              <FormControl
+                onChange={createHandleEmailFormChange('newEmail')}
+                type='email'
+                value={newEmail}
+                id='new-email-input'
+              />
+              {newEmailValidationMessage ? (
+                <HelpBlock data-playwright-test-label='new-email-validation'>
+                  {newEmailValidationMessage}
+                </HelpBlock>
+              ) : null}
+            </FormGroup>
+            <FormGroup
+              controlId='confirm-email'
+              validationState={confirmEmailValidation}
+            >
+              <ControlLabel htmlFor='confirm-email-input'>
+                {t('settings.email.confirm')}
+              </ControlLabel>
+              <FormControl
+                onChange={createHandleEmailFormChange('confirmNewEmail')}
+                type='email'
+                value={confirmNewEmail}
+                id='confirm-email-input'
+              />
+              {confirmEmailValidationMessage ? (
+                <HelpBlock data-playwright-test-label='confirm-email-validation'>
+                  {confirmEmailValidationMessage}
+                </HelpBlock>
+              ) : null}
+            </FormGroup>
+          </div>
+          <BlockSaveButton
+            disabled={isDisabled}
+            bgSize='large'
+            {...(isDisabled && { tabIndex: -1 })}
+          >
+            {t('buttons.save')}{' '}
+            <span className='sr-only'>{t('settings.email.heading')}</span>
+          </BlockSaveButton>
+        </form>
+      </FullWidthRow>
+      <Spacer size='m' />
+      <FullWidthRow>
+        <ToggleButtonSetting
+          action={t('settings.email.weekly')}
+          flag={!!sendQuincyEmail}
+          flagName='sendQuincyEmail'
+          offLabel={t('buttons.no-thanks')}
+          onLabel={t('buttons.yes-please')}
+          toggleFlag={() => updateQuincyEmail(!sendQuincyEmail)}
+        />
+      </FullWidthRow>
+    </div>
+  );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:39:29.920Z
+Question Type: true-false
+Function: EmailSettings
+Function Size: 6290 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: EmailSettings (TypeScript)\n// Handles email settings, validation, and updates for user email\n\nfunction EmailSettings({\n  email,\n  isEmailVerified,\n  sendQuincyEmail,\n  t,\n  updateMyEmail,\n  updateQuincyEmail\n}: EmailProps): JSX.Element {\n  const [emailForm, setEmailForm] = useState<Emai
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:39:47.839Z
+Question Type: function-variant
+Function: EmailSettings
+Function Size: 6290 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: EmailSettings (TypeScript)\n// Handles email settings, validation, and updates for user email\n\nfunction EmailSettings({\n  email,\n  isEmailVerified,\n  sendQuincyEmail,\n  t,\n  updateMyEmail,\n  updateQuincyEmail\n}: EmailProps): JSX.Element {\n  const [emailForm, setEmailForm] = useState<Emai
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:39:47.871Z
+Question Type: function-variant
+Function: EmailSettings
+Function Size: 6290 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: EmailSettings (TypeScript)\n// Handles email settings, validation, and updates for user email\n\nfunction EmailSettings({\n  email,\n  isEmailVerified,\n  sendQuincyEmail,\n  t,\n  updateMyEmail,\n  updateQuincyEmail\n}: EmailProps): JSX.Element {\n  const [emailForm, setEmailForm] = useState<Emai
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:39:54.660Z
+Question Type: function-variant
+Function: EmailSettings
+Function Size: 6290 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: EmailSettings (TypeScript)\n// Handles email settings, validation, and updates for user email\n\nfunction EmailSettings({\n  email,\n  isEmailVerified,\n  sendQuincyEmail,\n  t,\n  updateMyEmail,\n  updateQuincyEmail\n}: EmailProps): JSX.Element {\n  const [emailForm, setEmailForm] = useState<Emai
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:39:57.079Z
+Question Type: multiple-choice
+Function: EmailSettings
+Function Size: 6290 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: EmailSettings (TypeScript)\n// Handles email settings, validation, and updates for user email\n\nfunction EmailSettings({\n  email,\n  isEmailVerified,\n  sendQuincyEmail,\n  t,\n  updateMyEmail,\n  updateQuincyEmail\n}: EmailProps): JSX.Element {\n  const [emailForm, setEmailForm] = useState<Emai
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:40:06.568Z
+Question Type: order-sequence
+Function: EmailSettings
+Function Size: 6290 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: EmailSettings (TypeScript)\n// Handles email settings, validation, and updates for user email\n\nfunction EmailSettings({\n  email,\n  isEmailVerified,\n  sendQuincyEmail,\n  t,\n  updateMyEmail,\n  updateQuincyEmail\n}: EmailProps): JSX.Element {\n  const [emailForm, setEmailForm] = useState<Emai
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:40:06.683Z
+Question Type: select-all
+Function: EmailSettings
+Function Size: 6290 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: EmailSettings (TypeScript)\n// Handles email settings, validation, and updates for user email\n\nfunction EmailSettings({\n  email,\n  isEmailVerified,\n  sendQuincyEmail,\n  t,\n  updateMyEmail,\n  updateQuincyEmail\n}: EmailProps): JSX.Element {\n  const [emailForm, setEmailForm] = useState<Emai
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T07:40:10.195Z
+Question Type: function-variant
+Function: EmailSettings
+Function Size: 6290 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: EmailSettings (TypeScript)\n// Handles email settings, validation, and updates for user email\n\nfunction EmailSettings({\n  email,\n  isEmailVerified,\n  sendQuincyEmail,\n  t,\n  updateMyEmail,\n  updateQuincyEmail\n}: EmailProps): JSX.Element {\n  const [emailForm, setEmailForm] = useState<Emai
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760334041410
+Repository: Unknown
+Total Questions Generated: 7
+Total Chunks Processed: 1
+Ended: 2025-10-13T07:40:10.239Z
+================================================================================
+
