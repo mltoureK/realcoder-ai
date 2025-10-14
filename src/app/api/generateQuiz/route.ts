@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
     // Helper to map raw -> UI
     const mapToUi = (q: unknown, index: number) => {
       console.log('🔍 mapToUi called with:', JSON.stringify(q, null, 2));
-      const questionData = (q as Record<string, unknown>)?.quiz;
+      const questionData = (q as Record<string, unknown>)?.quiz as Record<string, unknown>;
       
       // Create deterministic ID based on content hash to ensure consistency
       const contentHash = btoa(JSON.stringify(q)).slice(0, 8);
@@ -436,7 +436,7 @@ export async function POST(request: NextRequest) {
           };
         }
         
-        const questionData = (q as Record<string, unknown>)?.quiz;
+        const questionData = (q as Record<string, unknown>)?.quiz as Record<string, unknown>;
         
         if (questionData.type === 'function-variant') {
           return {
