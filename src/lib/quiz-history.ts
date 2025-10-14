@@ -332,7 +332,7 @@ export async function rateQuestion(
 export async function updateQuestionQualityScore(questionId: string, newRating: 'up' | 'down'): Promise<void> {
   try {
     // Get current question data
-    const questionRef = doc(db, COLLECTIONS.QUESTIONS, questionId);
+    doc(db, COLLECTIONS.QUESTIONS, questionId);
     
     // For now, we'll implement a simple quality score calculation
     // In a real app, you'd fetch current ratings and recalculate
@@ -391,7 +391,7 @@ export async function getUserQuestionRating(questionId: string, userId: string):
 export const updateQuestionPoll = async (
   questionId: string,
   isCorrect: boolean,
-  questionData?: any // Optional: full question data to save on first poll
+  questionData?: unknown // Optional: full question data to save on first poll
 ): Promise<void> => {
   try {
     const questionRef = doc(db, 'questions', questionId);
@@ -402,7 +402,7 @@ export const updateQuestionPoll = async (
       const currentPassed = currentData.passedCount || 0;
       const currentFailed = currentData.failedCount || 0;
       
-      const updates: any = {
+      const updates: Record<string, unknown> = {
         lastUpdated: serverTimestamp()
       };
       
@@ -418,7 +418,7 @@ export const updateQuestionPoll = async (
       await updateDoc(questionRef, updates);
     } else {
       // Create new question document with FULL data if provided
-      let initialData: any = {
+      let initialData: Record<string, unknown> = {
         questionId: questionId,
         upvotes: 0,
         downvotes: 0,
@@ -485,7 +485,7 @@ export const getQuestionPollData = async (questionId: string): Promise<{
 export const addQuestionToBank = async (
   repoUrl: string,
   question: Question,
-  initialQualityScore: number = 85
+  _initialQualityScore: number = 85
 ): Promise<void> => {
   try {
     console.log(`🔍 [addQuestionToBank] Starting with question:`, question);
@@ -493,13 +493,13 @@ export const addQuestionToBank = async (
     console.log(`🔍 [addQuestionToBank] Question keys:`, Object.keys(question));
     console.log(`🔍 [addQuestionToBank] Question type:`, question.type);
     console.log(`🔍 [addQuestionToBank] Question text:`, question.question);
-    console.log(`🔍 [addQuestionToBank] Question snippet:`, (question as unknown as any).snippet);
-    console.log(`🔍 [addQuestionToBank] Question codeContext:`, (question as unknown as any).codeContext?.substring(0, 100));
-    console.log(`🔍 [addQuestionToBank] Question options:`, (question as unknown as any).options);
-    console.log(`🔍 [addQuestionToBank] Question correctAnswers:`, (question as unknown as any).correctAnswers);
-    console.log(`🔍 [addQuestionToBank] Question variants:`, (question as unknown as any).variants);
-    console.log(`🔍 [addQuestionToBank] Question steps:`, (question as unknown as any).steps);
-    console.log(`🔍 [addQuestionToBank] Question explanation:`, (question as unknown as any).explanation?.substring(0, 100));
+    console.log(`🔍 [addQuestionToBank] Question snippet:`, (question as Record<string, unknown>).snippet);
+    console.log(`🔍 [addQuestionToBank] Question codeContext:`, (question as Record<string, unknown>).codeContext);
+    console.log(`🔍 [addQuestionToBank] Question options:`, (question as Record<string, unknown>).options);
+    console.log(`🔍 [addQuestionToBank] Question correctAnswers:`, (question as Record<string, unknown>).correctAnswers);
+    console.log(`🔍 [addQuestionToBank] Question variants:`, (question as Record<string, unknown>).variants);
+    console.log(`🔍 [addQuestionToBank] Question steps:`, (question as Record<string, unknown>).steps);
+    console.log(`🔍 [addQuestionToBank] Question explanation:`, (question as Record<string, unknown>).explanation);
     
     if (!validateQuestionData(question)) {
       console.error(`❌ [addQuestionToBank] Validation failed for question:`, question);
@@ -769,12 +769,12 @@ export const getCachedQuestions = async (
     console.error('❌ Error getting cached questions:', error);
     console.error('❌ Error details:', {
       message: (error as Error).message,
-      code: (error as any).code,
+      code: (error as Record<string, unknown>).code,
       stack: (error as Error).stack
     });
     
     // If composite index doesn't exist, try simpler query
-    const needsIndex = (error as any).code === 'failed-precondition' || 
+    const needsIndex = (error as Record<string, unknown>).code === 'failed-precondition' || 
                        (error as Error).message?.includes('index') ||
                        (error as Error).message?.includes('requires an index');
     
@@ -782,7 +782,7 @@ export const getCachedQuestions = async (
       console.warn('⚠️ Composite index not found, trying simpler query');
       console.log('📝 Create index here:', (error as Error).message);
       console.log('🔍 Debug - needsIndex check passed:', { 
-        code: (error as any).code, 
+        code: (error as Record<string, unknown>).code, 
         hasIndexInMessage: (error as Error).message?.includes('index'),
         hasRequiresInMessage: (error as Error).message?.includes('requires an index')
       });
@@ -818,8 +818,8 @@ export const getCachedQuestions = async (
         
         // Sort in memory by upvotes (descending)
         questions.sort((a, b) => {
-          const aUpvotes = (a as unknown as any).upvotes || 0;
-          const bUpvotes = (b as unknown as any).upvotes || 0;
+          const aUpvotes = (a as Record<string, unknown>).upvotes || 0;
+          const bUpvotes = (b as Record<string, unknown>).upvotes || 0;
           return bUpvotes - aUpvotes;
         });
         
