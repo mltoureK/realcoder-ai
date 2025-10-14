@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
         // Check if OpenAI API key is available
     const openaiApiKey = process.env.OPENAI_API_KEY;
-    let questions: any[] = [];
+    let questions: unknown[] = [];
     
     if (!openaiApiKey || openaiApiKey === 'your_openai_api_key_here') {
       console.log('⚠️ OpenAI API key not configured, returning error');
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
     // Helper to map raw -> UI
     const mapToUi = (q: unknown, index: number) => {
       console.log('🔍 mapToUi called with:', JSON.stringify(q, null, 2));
-      const questionData = (q as any)?.quiz;
+      const questionData = (q as Record<string, unknown>)?.quiz;
       
       // Create deterministic ID based on content hash to ensure consistency
       const contentHash = btoa(JSON.stringify(q)).slice(0, 8);
@@ -389,7 +389,7 @@ export async function POST(request: NextRequest) {
 
     // Fallback: attempt direct select-all generation if none were generated
     if (Array.isArray(requestedTypes) && requestedTypes.includes('select-all')) {
-      const hasSelectAll = rawGenerated.some((q: unknown) => (q as any)?.quiz?.type === 'select-all');
+      const hasSelectAll = rawGenerated.some((q: unknown) => (q as Record<string, unknown>)?.quiz?.type === 'select-all');
       if (!hasSelectAll && chunks && chunks.length > 0) {
         try {
           console.log('🛟 Fallback: attempting direct select-all generation on first chunk');
@@ -415,14 +415,14 @@ export async function POST(request: NextRequest) {
 
     const shuffledGeneratedQuestions = shuffleVariants(rawGenerated);
     console.log(`🎲 Randomized ${shuffledGeneratedQuestions.length} questions for variety`);
-    console.log(`📝 Selected functions:`, shuffledGeneratedQuestions.map((q: unknown) => (q as any).snippet).slice(0, 5));
+    console.log(`📝 Selected functions:`, shuffledGeneratedQuestions.map((q: unknown) => (q as Record<string, unknown>).snippet).slice(0, 5));
     
     // Convert to UI format
       questions = shuffledGeneratedQuestions.map((q: unknown, index: number) => {
         // Add debugging and safety checks
         console.log(`🔍 Processing question ${index + 1}:`, JSON.stringify(q, null, 2));
         
-        if (!q || !(q as any)?.quiz) {
+        if (!q || !(q as Record<string, unknown>)?.quiz) {
           console.warn(`⚠️ Question ${index + 1} has invalid structure:`, q);
           return {
             id: (index + 1).toString(),
@@ -436,7 +436,7 @@ export async function POST(request: NextRequest) {
           };
         }
         
-        const questionData = (q as any)?.quiz;
+        const questionData = (q as Record<string, unknown>)?.quiz;
         
         if (questionData.type === 'function-variant') {
           return {
@@ -550,9 +550,9 @@ export async function POST(request: NextRequest) {
       
       // Shuffle variants for all questions to randomize correct answer position and balance verbosity
       questions.forEach((question: unknown) => {
-        if ((question as any)?.variants && (question as any).variants.length > 0) {
-          (question as any).variants = shuffleVariants((question as any).variants);
-          (question as any).variants = balanceVariantVerbosity((question as any).variants);
+        if ((question as Record<string, unknown>)?.variants && (question as Record<string, unknown>).variants.length > 0) {
+          (question as Record<string, unknown>).variants = shuffleVariants((question as Record<string, unknown>).variants);
+          (question as Record<string, unknown>).variants = balanceVariantVerbosity((question as Record<string, unknown>).variants);
         }
       });
     

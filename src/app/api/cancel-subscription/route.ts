@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
-import { getUser, updateUserPremiumStatus } from '@/lib/user-management';
+import { getUser } from '@/lib/user-management';
 
 export async function POST(req: NextRequest) {
   try {
