@@ -10,12 +10,9 @@ import { orderSequencePlugin } from '@/lib/question-plugins/orderSequence';
 import { trueFalsePlugin } from '@/lib/question-plugins/trueFalse';
 import { selectAllPlugin } from '@/lib/question-plugins/selectAll';
 import { 
-  cleanCodeForChunking,
-  createSmartCodeChunks,
   shuffleVariants,
   removeComments,
-  balanceVariantVerbosity,
-  validateQuestionStructure
+  balanceVariantVerbosity
 } from '@/lib/question-plugins/utils';
 import { extractFunctionsFromFiles, extractFunctionsFromFilesStreaming, functionsToChunks } from '@/lib/function-extractor';
 
@@ -38,7 +35,7 @@ export async function POST(request: NextRequest) {
 
         // Check if OpenAI API key is available
     const openaiApiKey = process.env.OPENAI_API_KEY;
-    let questions = [] as any[];
+    let questions: any[] = [];
     
     if (!openaiApiKey || openaiApiKey === 'your_openai_api_key_here') {
       console.log('⚠️ OpenAI API key not configured, returning error');
@@ -76,7 +73,7 @@ export async function POST(request: NextRequest) {
     console.log(`📊 Parsed ${parsedFiles.length} files from repository`);
 
     // Select plugins per requested types
-    const availablePlugins: Record<string, any> = {
+    const availablePlugins: Record<string, unknown> = {
       'function-variant': functionVariantPlugin,
       'multiple-choice': multipleChoicePlugin,
       'order-sequence': orderSequencePlugin,
@@ -109,9 +106,9 @@ export async function POST(request: NextRequest) {
     };
 
     // Helper to map raw -> UI
-    const mapToUi = (q: any, index: number) => {
+    const mapToUi = (q: unknown, index: number) => {
       console.log('🔍 mapToUi called with:', JSON.stringify(q, null, 2));
-      const questionData = q.quiz;
+      const questionData = (q as any)?.quiz;
       
       // Create deterministic ID based on content hash to ensure consistency
       const contentHash = btoa(JSON.stringify(q)).slice(0, 8);
@@ -131,7 +128,7 @@ export async function POST(request: NextRequest) {
           languageColor: questionData.languageColor,
           languageBgColor: questionData.languageBgColor,
           codeContext: questionData.codeContext || q.codeContext || '',
-          variants: (questionData.variants || []).map((v: any) => ({
+          variants: (questionData.variants || []).map((v: unknown) => ({
             ...v,
             code: typeof v.code === 'string' ? removeComments(v.code) : v.code
           }))
@@ -171,7 +168,7 @@ export async function POST(request: NextRequest) {
           languageBgColor: questionData.languageBgColor,
           codeContext: questionData.codeContext || q.codeContext || '',
           variants: []
-        } as any;
+        };
       } else if (questionData.type === 'order-sequence') {
         return {
           id: `q-${contentHash}-${index}`,
@@ -221,7 +218,7 @@ export async function POST(request: NextRequest) {
           languageBgColor: questionData.languageBgColor,
           codeContext: questionData.codeContext || q.codeContext || '',
           variants: []
-        } as any;
+        };
       } else if (questionData.type === 'select-all') {
         const opts = questionData.options || [];
         const correctAnswers = questionData.correctAnswers || [];
@@ -242,7 +239,7 @@ export async function POST(request: NextRequest) {
           languageBgColor: questionData.languageBgColor,
           codeContext: questionData.codeContext || q.codeContext || '',
           variants: []
-        } as any;
+        };
       } else {
         return {
           id: (index + 1).toString(),
@@ -253,7 +250,7 @@ export async function POST(request: NextRequest) {
           explanation: questionData.explanation || '',
           difficulty: 'medium',
           variants: questionData.variants || []
-        } as any;
+        };
       }
     };
 
@@ -274,7 +271,7 @@ export async function POST(request: NextRequest) {
             // Create async generator for function extraction
             const functionGenerator = extractFunctionsFromFilesStreaming(parsedFiles, openaiApiKey, 8);
             
-            let allChunks: string[] = [];
+            const allChunks: string[] = [];
             let batchCount = 0;
             let questionsGenerated = 0;
             
@@ -307,7 +304,7 @@ export async function POST(request: NextRequest) {
                   apiKey: openaiApiKey,
                   options: { difficulty: difficulty || 'medium' },
                   onQuestion: async (q) => {
-                    const ui = mapToUi(q as any, counter);
+                    const ui = mapToUi(q, counter);
                     // Shuffle variants if present and balance
                     if (ui.variants && ui.variants.length > 0) {
                       ui.variants = shuffleVariants(ui.variants);
@@ -339,7 +336,7 @@ export async function POST(request: NextRequest) {
                 apiKey: openaiApiKey,
                 options: { difficulty: difficulty || 'medium' },
                 onQuestion: async (q) => {
-                  const ui = mapToUi(q as any, counter);
+                  const ui = mapToUi(q, counter);
                   if (ui.variants && ui.variants.length > 0) {
                     ui.variants = shuffleVariants(ui.variants);
                     ui.variants = balanceVariantVerbosity(ui.variants);
@@ -392,7 +389,7 @@ export async function POST(request: NextRequest) {
 
     // Fallback: attempt direct select-all generation if none were generated
     if (Array.isArray(requestedTypes) && requestedTypes.includes('select-all')) {
-      const hasSelectAll = rawGenerated.some((q: any) => q?.quiz?.type === 'select-all');
+      const hasSelectAll = rawGenerated.some((q: unknown) => (q as any)?.quiz?.type === 'select-all');
       if (!hasSelectAll && chunks && chunks.length > 0) {
         try {
           console.log('🛟 Fallback: attempting direct select-all generation on first chunk');
@@ -402,7 +399,7 @@ export async function POST(request: NextRequest) {
             apiKey: openaiApiKey,
             timeoutMs: Number(process.env.OPENAI_TIMEOUT_SELECT_ALL_MS ?? 45000),
             retry: { attempts: 2, backoffBaseMs: 600 }
-          } as any);
+          });
           if (Array.isArray(sa) && sa.length > 0) {
             rawGenerated = [...rawGenerated, sa[0]];
             console.log('✅ Fallback select-all produced 1 question');
@@ -418,14 +415,14 @@ export async function POST(request: NextRequest) {
 
     const shuffledGeneratedQuestions = shuffleVariants(rawGenerated);
     console.log(`🎲 Randomized ${shuffledGeneratedQuestions.length} questions for variety`);
-    console.log(`📝 Selected functions:`, shuffledGeneratedQuestions.map((q: any) => q.snippet).slice(0, 5));
+    console.log(`📝 Selected functions:`, shuffledGeneratedQuestions.map((q: unknown) => (q as any).snippet).slice(0, 5));
     
     // Convert to UI format
-      questions = shuffledGeneratedQuestions.map((q: any, index: number) => {
+      questions = shuffledGeneratedQuestions.map((q: unknown, index: number) => {
         // Add debugging and safety checks
         console.log(`🔍 Processing question ${index + 1}:`, JSON.stringify(q, null, 2));
         
-        if (!q || !q.quiz) {
+        if (!q || !(q as any)?.quiz) {
           console.warn(`⚠️ Question ${index + 1} has invalid structure:`, q);
           return {
             id: (index + 1).toString(),
@@ -439,7 +436,7 @@ export async function POST(request: NextRequest) {
           };
         }
         
-        const questionData = q.quiz;
+        const questionData = (q as any)?.quiz;
         
         if (questionData.type === 'function-variant') {
           return {
@@ -450,7 +447,7 @@ export async function POST(request: NextRequest) {
             correctAnswer: null,
             explanation: '',
             difficulty: 'medium',
-            variants: (questionData.variants || []).map((v: any) => ({
+            variants: (questionData.variants || []).map((v: unknown) => ({
               ...v,
               code: typeof v.code === 'string' ? removeComments(v.code) : v.code
             }))
@@ -518,7 +515,7 @@ export async function POST(request: NextRequest) {
             difficulty: 'medium',
             codeContext: questionData.codeContext || q.codeContext,
             variants: []
-          } as any;
+          };
         } else if (questionData.type === 'select-all') {
           const opts = questionData.options || [];
           const correctAnswers = questionData.correctAnswers || [];
@@ -534,7 +531,7 @@ export async function POST(request: NextRequest) {
             difficulty: 'medium',
             codeContext: questionData.codeContext || q.codeContext,
             variants: []
-          } as any;
+          };
         } else {
           // Fallback for unknown question types
           console.warn(`⚠️ Question ${index + 1} has unknown type: ${questionData.type}`);
@@ -552,10 +549,10 @@ export async function POST(request: NextRequest) {
       });
       
       // Shuffle variants for all questions to randomize correct answer position and balance verbosity
-      questions.forEach((question: any) => {
-        if (question.variants && question.variants.length > 0) {
-          question.variants = shuffleVariants(question.variants);
-          question.variants = balanceVariantVerbosity(question.variants);
+      questions.forEach((question: unknown) => {
+        if ((question as any)?.variants && (question as any).variants.length > 0) {
+          (question as any).variants = shuffleVariants((question as any).variants);
+          (question as any).variants = balanceVariantVerbosity((question as any).variants);
         }
       });
     
