@@ -114,6 +114,21 @@ export async function POST(request: NextRequest) {
       const contentHash = btoa(JSON.stringify(q)).slice(0, 8);
       
       if (questionData.type === 'function-variant') {
+        const variantsValue = (questionData as { variants?: unknown }).variants;
+        const variantArray = Array.isArray(variantsValue) ? variantsValue : [];
+        const sanitizedVariants = variantArray
+          .filter(
+            (variant): variant is Record<string, unknown> & { code?: unknown } =>
+              typeof variant === 'object' && variant !== null
+          )
+          .map((variant) => ({
+            ...variant,
+            code:
+              typeof variant.code === 'string'
+                ? removeComments(variant.code)
+                : variant.code
+          }));
+
         return {
           id: `q-${contentHash}-${index}`,
           type: questionData.type,
@@ -128,10 +143,7 @@ export async function POST(request: NextRequest) {
           languageColor: questionData.languageColor,
           languageBgColor: questionData.languageBgColor,
           codeContext: questionData.codeContext || (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext) || '',
-          variants: (questionData.variants || []).map((v: unknown) => ({
-            ...v,
-            code: typeof v.code === 'string' ? removeComments(v.code) : v.code
-          }))
+          variants: sanitizedVariants
         };
       } else if (questionData.type === 'multiple-choice') {
         const opts = questionData.options || [];
@@ -583,4 +595,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
