@@ -462,8 +462,8 @@ export async function POST(request: NextRequest) {
           }
           // Debug: Check what codeContext we have
           console.log('🔍 MCQ Processing - questionData.codeContext:', questionData.codeContext);
-          console.log('🔍 MCQ Processing - (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext):', (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext));
-          const finalCodeContext = questionData.codeContext || (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext);
+          console.log("🔍 MCQ Processing - (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext):", (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext));
+          const finalCodeContext = questionData.codeContext ?? (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext) ?? '';
           console.log('🔍 MCQ Processing - final codeContext:', finalCodeContext);
           
           return {
