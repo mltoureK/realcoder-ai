@@ -493,13 +493,13 @@ export const addQuestionToBank = async (
     console.log(`🔍 [addQuestionToBank] Question keys:`, Object.keys(question));
     console.log(`🔍 [addQuestionToBank] Question type:`, question.type);
     console.log(`🔍 [addQuestionToBank] Question text:`, question.question);
-    console.log(`🔍 [addQuestionToBank] Question snippet:`, (question as any).snippet);
-    console.log(`🔍 [addQuestionToBank] Question codeContext:`, (question as any).codeContext?.substring(0, 100));
-    console.log(`🔍 [addQuestionToBank] Question options:`, (question as any).options);
-    console.log(`🔍 [addQuestionToBank] Question correctAnswers:`, (question as any).correctAnswers);
-    console.log(`🔍 [addQuestionToBank] Question variants:`, (question as any).variants);
-    console.log(`🔍 [addQuestionToBank] Question steps:`, (question as any).steps);
-    console.log(`🔍 [addQuestionToBank] Question explanation:`, (question as any).explanation?.substring(0, 100));
+    console.log(`🔍 [addQuestionToBank] Question snippet:`, (question as unknown as any).snippet);
+    console.log(`🔍 [addQuestionToBank] Question codeContext:`, (question as unknown as any).codeContext?.substring(0, 100));
+    console.log(`🔍 [addQuestionToBank] Question options:`, (question as unknown as any).options);
+    console.log(`🔍 [addQuestionToBank] Question correctAnswers:`, (question as unknown as any).correctAnswers);
+    console.log(`🔍 [addQuestionToBank] Question variants:`, (question as unknown as any).variants);
+    console.log(`🔍 [addQuestionToBank] Question steps:`, (question as unknown as any).steps);
+    console.log(`🔍 [addQuestionToBank] Question explanation:`, (question as unknown as any).explanation?.substring(0, 100));
     
     if (!validateQuestionData(question)) {
       console.error(`❌ [addQuestionToBank] Validation failed for question:`, question);
@@ -621,10 +621,8 @@ export const updateQuestionInBank = async (
     };
     
     // Check if question should be removed (≥10 votes AND <30% approval)
-    let shouldRemove = false;
     if (totalVotes >= 10 && approvalRate < 30) {
       questions[questionIndex].status = 'removed';
-      shouldRemove = true;
       console.log(`🗑️ Question ${questionId} removed from bank (${approvalRate.toFixed(1)}% approval)`);
     }
     
@@ -767,30 +765,30 @@ export const getCachedQuestions = async (
     }
     
     return questions;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('❌ Error getting cached questions:', error);
     console.error('❌ Error details:', {
-      message: error.message,
-      code: error.code,
-      stack: error.stack
+      message: (error as Error).message,
+      code: (error as any).code,
+      stack: (error as Error).stack
     });
     
     // If composite index doesn't exist, try simpler query
-    const needsIndex = error.code === 'failed-precondition' || 
-                       error.message?.includes('index') ||
-                       error.message?.includes('requires an index');
+    const needsIndex = (error as any).code === 'failed-precondition' || 
+                       (error as Error).message?.includes('index') ||
+                       (error as Error).message?.includes('requires an index');
     
     if (needsIndex) {
       console.warn('⚠️ Composite index not found, trying simpler query');
-      console.log('📝 Create index here:', error.message);
+      console.log('📝 Create index here:', (error as Error).message);
       console.log('🔍 Debug - needsIndex check passed:', { 
-        code: error.code, 
-        hasIndexInMessage: error.message?.includes('index'),
-        hasRequiresInMessage: error.message?.includes('requires an index')
+        code: (error as any).code, 
+        hasIndexInMessage: (error as Error).message?.includes('index'),
+        hasRequiresInMessage: (error as Error).message?.includes('requires an index')
       });
       
       // Extract the index creation URL if available
-      const urlMatch = error.message?.match(/(https:\/\/console\.firebase\.google\.com[^\s]+)/);
+      const urlMatch = (error as Error).message?.match(/(https:\/\/console\.firebase\.google\.com[^\s]+)/);
       if (urlMatch) {
         console.log('🔗 Quick link to create index:', urlMatch[1]);
       }
@@ -820,8 +818,8 @@ export const getCachedQuestions = async (
         
         // Sort in memory by upvotes (descending)
         questions.sort((a, b) => {
-          const aUpvotes = (a as any).upvotes || 0;
-          const bUpvotes = (b as any).upvotes || 0;
+          const aUpvotes = (a as unknown as any).upvotes || 0;
+          const bUpvotes = (b as unknown as any).upvotes || 0;
           return bUpvotes - aUpvotes;
         });
         

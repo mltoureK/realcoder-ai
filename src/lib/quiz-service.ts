@@ -34,7 +34,7 @@ export interface QuizSession {
 }
 
 // Step 1: Analyze code patterns and extract concepts
-export function analyzeCodePatterns(files: GitHubFile[]): any {
+export function analyzeCodePatterns(files: GitHubFile[]): unknown {
   console.log('🧠 Step 1: Analyzing code patterns and extracting concepts');
   
   const analysis = {
@@ -94,7 +94,7 @@ export async function generateQuizQuestions(repositoryInfo: RepositoryInfo, opti
   console.log('📋 Options:', options);
   
   // Analyze the code first
-  const analysis = analyzeCodePatterns(repositoryInfo.files);
+  analyzeCodePatterns(repositoryInfo.files);
   
   const questions: QuizQuestion[] = [];
   const questionId = Date.now().toString();
@@ -208,7 +208,7 @@ export async function generateQuizFromRepository(
   console.log('🌐 Languages:', repositoryInfo.languages);
   
   // Step 1: Analyze code patterns
-  const analysis = analyzeCodePatterns(repositoryInfo.files);
+  analyzeCodePatterns(repositoryInfo.files);
   
   // Step 2: Generate questions
   const questions = await generateQuizQuestions(repositoryInfo, options);

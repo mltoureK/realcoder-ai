@@ -81,7 +81,7 @@ export async function initializeUser(
       // User exists, update last seen and check for resets
       const existingData = userSnap.data() as UserDoc;
       
-      const updates: any = {
+      const updates: Record<string, unknown> = {
         lastSeen: serverTimestamp()
       };
       
@@ -312,7 +312,7 @@ export async function incrementQuizCount(userId: string): Promise<void> {
     // Check for resets before incrementing
     let quizzesThisWeek = userData.quizzesThisWeek || 0;
     let quizzesThisMonth = userData.quizzesThisMonth || 0;
-    const updates: any = {};
+    const updates: Record<string, unknown> = {};
     
     if (needsWeekReset(userData.weekResetDate)) {
       quizzesThisWeek = 0;
@@ -362,7 +362,7 @@ export async function updateUserPremiumStatus(
     if (!userSnap.exists()) {
       console.log(`⚠️ User ${userId} doesn't exist, creating with premium status`);
       // Create user with premium status
-      const newUserData: any = {
+      const newUserData: Record<string, unknown> = {
         email: '',
         name: 'Premium User',
         provider: 'anonymous',
@@ -385,7 +385,7 @@ export async function updateUserPremiumStatus(
     }
 
     // Update existing user
-    const updates: any = {
+    const updates: Record<string, unknown> = {
       ...premiumData,
       updatedAt: new Date().toISOString()
     };
