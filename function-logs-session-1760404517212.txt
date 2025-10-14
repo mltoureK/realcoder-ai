@@ -1,0 +1,523 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1760404517212
+Started: 2025-10-14T01:15:17.212Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-14T01:15:17.213Z
+File: [8 files: ViewEmployeeComponent.jsx, UpdateEmployeeComponent.jsx, App.js, setupTests.js, Service worker found. Proceed as normal., Execute callback, serviceWorker.js, ResourceNotFoundException.java]
+Functions Extracted: 5
+
+
+Function 1: componentDidMount
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+componentDidMount(){
+        EmployeeService.getEmployeeById(this.state.id).then( res => {
+            this.setState({employee: res.data});
+        })
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: componentDidMount
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+componentDidMount(){
+        EmployeeService.getEmployeeById(this.state.id).then( (res) =>{
+            let employee = res.data;
+            this.setState({firstName: employee.firstName,
+                lastName: employee.lastName,
+                emailId : employee.emailId
+            });
+        });
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: updateEmployee
+Language: JavaScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+updateEmployee = (e) => {
+        e.preventDefault();
+        let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};
+        console.log('employee => ' + JSON.stringify(employee));
+        console.log('id => ' + JSON.stringify(this.state.id));
+        EmployeeService.updateEmployee(employee, this.state.id).then( res => {
+            this.props.history.push('/employees');
+        });
+    }
+--------------------------------------------------------------------------------
+
+
+Function 4: render
+Language: JavaScript
+Lines: 28
+Full Code:
+--------------------------------------------------------------------------------
+render() {
+        return (
+            <div>
+                <br></br>
+                   <div className = "container">
+                        <div className = "row">
+                            <div className = "card col-md-6 offset-md-3 offset-md-3">
+                                <h3 className="text-center">Update Employee</h3>
+                                <div className = "card-body">
+                                    <form>
+                                        <div className = "form-group">
+                                            <label> First Name: </label>
+                                            <input placeholder="First Name" name="firstName" className="form-control" 
+                                                value={this.state.firstName} onChange={this.changeFirstNameHandler}/>
+                                        </div>
+                                        <div className = "form-group">
+                                            <label> Last Name: </label>
+                                            <input placeholder="Last Name" name="lastName" className="form-control" 
+                                                value={this.state.lastName} onChange={this.changeLastNameHandler}/>
+                                        </div>
+                                        <div className = "form-group">
+                                            <label> Email Id: </label>
+                                            <input placeholder="Email Address" name="emailId" className="form-control" 
+                                                value={this.state.emailId} onChange={this.changeEmailHandler}/>
+                                        </div>
+
+                                        <button className="btn btn-success" onClick={this.updateEmployee}>Save</button>
+                                        <button className="btn btn-danger" onClick={this.cancel.bind(this)} style={{marginLeft: "10px"}}>Cancel</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                   </div>
+            </div>
+        )
+    }
+--------------------------------------------------------------------------------
+
+
+Function 5: App
+Language: JavaScript
+Lines: 17
+Full Code:
+--------------------------------------------------------------------------------
+function App() {
+  return (
+    <div>
+        <Router>
+              <HeaderComponent />
+                <div className="container">
+                    <Switch> 
+                          <Route path = "/" exact component = {ListEmployeeComponent}></Route>
+                          <Route path = "/employees" component = {ListEmployeeComponent}></Route>
+                          <Route path = "/add-employee/:id" component = {CreateEmployeeComponent}></Route>
+                          <Route path = "/view-employee/:id" component = {ViewEmployeeComponent}></Route>
+                          {/* <Route path = "/update-employee/:id" component = {UpdateEmployeeComponent}></Route> */}
+                    </Switch>
+                </div>
+              <FooterComponent />
+        </Router>
+    </div>
+  );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:15:24.105Z
+Question Type: true-false
+Function: App
+Function Size: 924 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing for the employee management app.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:15:24.623Z
+Question Type: true-false
+Function: updateEmployee
+Function Size: 563 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateEmployee (JavaScript)\n// Handles the employee update process and redirects to the employee list.\n\nupdateEmployee = (e) => {\n        e.preventDefault();\n        let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};\n        con
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:15:25.609Z
+Question Type: select-all
+Function: componentDidMount
+Function Size: 259 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID when the component mounts.\n\ncomponentDidMount(){\n        EmployeeService.getEmployeeById(this.state.id).then( res => {\n            this.setState({employee: res.data});\n        })\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:15:29.561Z
+Question Type: function-variant
+Function: componentDidMount
+Function Size: 416 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID and sets state for update form.\n\ncomponentDidMount(){\n        EmployeeService.getEmployeeById(this.state.id).then( (res) =>{\n            let employee = res.data;\n            this.setState({firstName: employee.firstName,\n     
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:15:31.943Z
+Question Type: multiple-choice
+Function: componentDidMount
+Function Size: 259 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID when the component mounts.\n\ncomponentDidMount(){\n        EmployeeService.getEmployeeById(this.state.id).then( res => {\n            this.setState({employee: res.data});\n        })\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:15:35.114Z
+Question Type: select-all
+Function: updateEmployee
+Function Size: 563 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateEmployee (JavaScript)\n// Handles the employee update process and redirects to the employee list.\n\nupdateEmployee = (e) => {\n        e.preventDefault();\n        let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};\n        con
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:15:36.574Z
+Question Type: select-all
+Function: componentDidMount
+Function Size: 416 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID and sets state for update form.\n\ncomponentDidMount(){\n        EmployeeService.getEmployeeById(this.state.id).then( (res) =>{\n            let employee = res.data;\n            this.setState({firstName: employee.firstName,\n     
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:15:45.557Z
+Question Type: order-sequence
+Function: componentDidMount
+Function Size: 416 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID and sets state for update form.\n\ncomponentDidMount(){\n        EmployeeService.getEmployeeById(this.state.id).then( (res) =>{\n            let employee = res.data;\n            this.setState({firstName: employee.firstName,\n     
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760404517212
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 5
+Ended: 2025-10-14T01:15:45.601Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:15:52.743Z
+Question Type: true-false
+Function: App
+Function Size: 924 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing for the employee management app.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:15:52.838Z
+Question Type: select-all
+Function: updateEmployee
+Function Size: 563 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateEmployee (JavaScript)\n// Handles the employee update process and redirects to the employee list.\n\nupdateEmployee = (e) => {\n        e.preventDefault();\n        let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};\n        con
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:15:57.746Z
+Question Type: function-variant
+Function: componentDidMount
+Function Size: 259 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID when the component mounts.\n\ncomponentDidMount(){\n        EmployeeService.getEmployeeById(this.state.id).then( res => {\n            this.setState({employee: res.data});\n        })\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:16:03.491Z
+Question Type: select-all
+Function: App
+Function Size: 924 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing for the employee management app.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:16:08.287Z
+Question Type: select-all
+Function: componentDidMount
+Function Size: 259 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID when the component mounts.\n\ncomponentDidMount(){\n        EmployeeService.getEmployeeById(this.state.id).then( res => {\n            this.setState({employee: res.data});\n        })\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:16:08.293Z
+Question Type: function-variant
+Function: updateEmployee
+Function Size: 563 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateEmployee (JavaScript)\n// Handles the employee update process and redirects to the employee list.\n\nupdateEmployee = (e) => {\n        e.preventDefault();\n        let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};\n        con
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:16:15.553Z
+Question Type: true-false
+Function: componentDidMount
+Function Size: 416 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID and sets state for update form.\n\ncomponentDidMount(){\n        EmployeeService.getEmployeeById(this.state.id).then( (res) =>{\n            let employee = res.data;\n            this.setState({firstName: employee.firstName,\n     
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760404517212
+Repository: Unknown
+Total Questions Generated: 7
+Total Chunks Processed: 5
+Ended: 2025-10-14T01:16:15.582Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-14T01:36:19.758Z
+File: [8 files: ResourceNotFoundException.java, setupTests.js, serviceWorker.js, CreateEmployeeComponent.jsx, ListEmployeeComponent.jsx, SpringbootBackendApplicationTests.java, Is not localhost. Just register service worker, FooterComponent.jsx]
+Functions Extracted: 2
+
+
+Function 1: deleteEmployee
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+deleteEmployee(id){
+        EmployeeService.deleteEmployee(id).then( res => {
+            this.setState({employees: this.state.employees.filter(employee => employee.id !== id)});
+        });
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: componentDidMount
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+componentDidMount(){
+        EmployeeService.getEmployees().then((res) => {
+            this.setState({ employees: res.data});
+        });
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:36:23.776Z
+Question Type: true-false
+Function: deleteEmployee
+Function Size: 290 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deleteEmployee (JavaScript)\n// Deletes an employee by id and updates the state.\n\ndeleteEmployee(id){\n        EmployeeService.deleteEmployee(id).then( res => {\n            this.setState({employees: this.state.employees.filter(employee => employee.id !== id)});\n        });\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:36:24.146Z
+Question Type: true-false
+Function: componentDidMount
+Function Size: 249 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches the list of employees when the component mounts.\n\ncomponentDidMount(){\n        EmployeeService.getEmployees().then((res) => {\n            this.setState({ employees: res.data});\n        });\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:36:29.049Z
+Question Type: select-all
+Function: deleteEmployee
+Function Size: 290 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deleteEmployee (JavaScript)\n// Deletes an employee by id and updates the state.\n\ndeleteEmployee(id){\n        EmployeeService.deleteEmployee(id).then( res => {\n            this.setState({employees: this.state.employees.filter(employee => employee.id !== id)});\n        });\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:36:31.544Z
+Question Type: order-sequence
+Function: deleteEmployee
+Function Size: 290 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deleteEmployee (JavaScript)\n// Deletes an employee by id and updates the state.\n\ndeleteEmployee(id){\n        EmployeeService.deleteEmployee(id).then( res => {\n            this.setState({employees: this.state.employees.filter(employee => employee.id !== id)});\n        });\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:36:32.537Z
+Question Type: select-all
+Function: deleteEmployee
+Function Size: 290 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deleteEmployee (JavaScript)\n// Deletes an employee by id and updates the state.\n\ndeleteEmployee(id){\n        EmployeeService.deleteEmployee(id).then( res => {\n            this.setState({employees: this.state.employees.filter(employee => employee.id !== id)});\n        });\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:36:32.862Z
+Question Type: select-all
+Function: componentDidMount
+Function Size: 249 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches the list of employees when the component mounts.\n\ncomponentDidMount(){\n        EmployeeService.getEmployees().then((res) => {\n            this.setState({ employees: res.data});\n        });\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:36:40.013Z
+Question Type: function-variant
+Function: componentDidMount
+Function Size: 249 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches the list of employees when the component mounts.\n\ncomponentDidMount(){\n        EmployeeService.getEmployees().then((res) => {\n            this.setState({ employees: res.data});\n        });\n    }
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760404517212
+Repository: Unknown
+Total Questions Generated: 7
+Total Chunks Processed: 2
+Ended: 2025-10-14T01:36:40.052Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:36:45.518Z
+Question Type: true-false
+Function: deleteEmployee
+Function Size: 290 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deleteEmployee (JavaScript)\n// Deletes an employee by id and updates the state.\n\ndeleteEmployee(id){\n        EmployeeService.deleteEmployee(id).then( res => {\n            this.setState({employees: this.state.employees.filter(employee => employee.id !== id)});\n        });\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:36:49.176Z
+Question Type: select-all
+Function: deleteEmployee
+Function Size: 290 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deleteEmployee (JavaScript)\n// Deletes an employee by id and updates the state.\n\ndeleteEmployee(id){\n        EmployeeService.deleteEmployee(id).then( res => {\n            this.setState({employees: this.state.employees.filter(employee => employee.id !== id)});\n        });\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:36:50.441Z
+Question Type: function-variant
+Function: deleteEmployee
+Function Size: 290 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deleteEmployee (JavaScript)\n// Deletes an employee by id and updates the state.\n\ndeleteEmployee(id){\n        EmployeeService.deleteEmployee(id).then( res => {\n            this.setState({employees: this.state.employees.filter(employee => employee.id !== id)});\n        });\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:36:52.983Z
+Question Type: order-sequence
+Function: componentDidMount
+Function Size: 249 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches the list of employees when the component mounts.\n\ncomponentDidMount(){\n        EmployeeService.getEmployees().then((res) => {\n            this.setState({ employees: res.data});\n        });\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:36:56.520Z
+Question Type: select-all
+Function: componentDidMount
+Function Size: 249 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches the list of employees when the component mounts.\n\ncomponentDidMount(){\n        EmployeeService.getEmployees().then((res) => {\n            this.setState({ employees: res.data});\n        });\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:36:57.644Z
+Question Type: function-variant
+Function: componentDidMount
+Function Size: 249 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches the list of employees when the component mounts.\n\ncomponentDidMount(){\n        EmployeeService.getEmployees().then((res) => {\n            this.setState({ employees: res.data});\n        });\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:37:00.501Z
+Question Type: multiple-choice
+Function: componentDidMount
+Function Size: 249 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches the list of employees when the component mounts.\n\ncomponentDidMount(){\n        EmployeeService.getEmployees().then((res) => {\n            this.setState({ employees: res.data});\n        });\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:37:00.697Z
+Question Type: function-variant
+Function: deleteEmployee
+Function Size: 290 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deleteEmployee (JavaScript)\n// Deletes an employee by id and updates the state.\n\ndeleteEmployee(id){\n        EmployeeService.deleteEmployee(id).then( res => {\n            this.setState({employees: this.state.employees.filter(employee => employee.id !== id)});\n        });\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:37:05.823Z
+Question Type: select-all
+Function: componentDidMount
+Function Size: 249 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches the list of employees when the component mounts.\n\ncomponentDidMount(){\n        EmployeeService.getEmployees().then((res) => {\n            this.setState({ employees: res.data});\n        });\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T01:37:09.176Z
+Question Type: select-all
+Function: deleteEmployee
+Function Size: 290 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deleteEmployee (JavaScript)\n// Deletes an employee by id and updates the state.\n\ndeleteEmployee(id){\n        EmployeeService.deleteEmployee(id).then( res => {\n            this.setState({employees: this.state.employees.filter(employee => employee.id !== id)});\n        });\n    }
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760404517212
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 2
+Ended: 2025-10-14T01:37:09.189Z
+================================================================================
+

@@ -42,6 +42,53 @@ function getHighlighterLanguage(lang: string): string {
   return langMap[lang] || 'javascript';
 }
 
+// Format code for better mobile display - compact and no horizontal scroll
+function formatCodeForMobile(code: string): string {
+  if (!code) return '';
+  
+  // For mobile, we want to ensure code doesn't have extremely long lines
+  // that cause horizontal scrolling issues
+  let formattedCode = code;
+  
+  // First, add line breaks after semicolons that are followed by code (not already on new line)
+  formattedCode = formattedCode.replace(/;\s*([a-zA-Z_$][a-zA-Z0-9_$]*\s*\([^)]*\))/g, ';\n$1');
+  formattedCode = formattedCode.replace(/;\s*(this\.)/g, ';\n$1');
+  formattedCode = formattedCode.replace(/;\s*(const|let|var|function|if|for|while|switch|try|catch)/g, ';\n$1');
+  
+  // Break long object/array chains
+  formattedCode = formattedCode.replace(/\.([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\.([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\./g, '.\n  $1.\n  $2.');
+  formattedCode = formattedCode.replace(/(\w+)\s*:\s*([^,}]+),\s*(\w+)\s*:/g, '$1: $2,\n  $3:');
+  
+  const lines = formattedCode.split('\n');
+  const processedLines = lines.map(line => {
+    // Much more aggressive line breaking for mobile
+    if (line.length > 40) {
+      // Try to break at common delimiters, prioritizing semicolons
+      const breakPoints = [';', ',', ' ', '(', ')', '{', '}', '[', ']', '.', ':', '=', '+', '-', '*', '/', '&&', '||'];
+      let bestBreak = -1;
+      let bestDistance = Infinity;
+      
+      for (const point of breakPoints) {
+        const index = line.lastIndexOf(point, 40);
+        if (index > 15 && index < 40) {
+          const distance = Math.abs(index - 40);
+          if (distance < bestDistance) {
+            bestDistance = distance;
+            bestBreak = index;
+          }
+        }
+      }
+      
+      if (bestBreak > 15) {
+        return line.substring(0, bestBreak + 1) + '\n  ' + line.substring(bestBreak + 1).trim();
+      }
+    }
+    return line;
+  });
+  
+  return processedLines.join('\n');
+}
+
 export default function QuizInterface({ quizSession, onClose }: QuizInterfaceProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
@@ -74,6 +121,20 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   const [failedQuestions, setFailedQuestions] = useState<FailedQuestion[]>([]);
   const [questionRatings, setQuestionRatings] = useState<Record<string, 'up' | 'down'>>({});
   const [pollUpdatedQuestions, setPollUpdatedQuestions] = useState<Set<string>>(new Set());
+  const [fullscreenCode, setFullscreenCode] = useState<{isOpen: boolean, code: string, language: string} | null>(null);
+  const [dragState, setDragState] = useState<{
+    isDragging: boolean;
+    draggedStepId: string | null;
+    dragX: number;
+    dragY: number;
+    draggedStep: any | null;
+  }>({
+    isDragging: false,
+    draggedStepId: null,
+    dragX: 0,
+    dragY: 0,
+    draggedStep: null
+  });
 
   // Timers: per-question and overall (increase as questions stream in)
   const [questionTimeTotal, setQuestionTimeTotal] = useState(0);
@@ -81,6 +142,25 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   const [overallTimeTotal, setOverallTimeTotal] = useState(0);
   const [overallTimeLeft, setOverallTimeLeft] = useState(0);
   const lastAccumulatedCountRef = useRef(0);
+
+  // Global touch end handler to clear drag state if something goes wrong
+  useEffect(() => {
+    const handleGlobalTouchEnd = () => {
+      if (dragState.isDragging) {
+        console.log('🛑 Global touch end - clearing drag state');
+        setDragState({
+          isDragging: false,
+          draggedStepId: null,
+          dragX: 0,
+          dragY: 0,
+          draggedStep: null
+        });
+      }
+    };
+
+    document.addEventListener('touchend', handleGlobalTouchEnd, { passive: true });
+    return () => document.removeEventListener('touchend', handleGlobalTouchEnd);
+  }, [dragState.isDragging]);
 
   // Drive the loading bar and fetch when generating (must be before any early returns)
   useEffect(() => {
@@ -279,22 +359,14 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         correctOptions
       });
       
-      // For select-all questions, give partial credit for UI:
+      // For select-all questions, give partial credit:
       // - No incorrect selections (all selected must be correct)
       // - At least one correct selection
       const hasCorrectSelections = selectedAnswers.some((answer: string) => correctOptions.includes(answer));
       const hasIncorrectSelections = selectedAnswers.some((answer: string) => !correctOptions.includes(answer));
       
-      // Check if ALL correct answers were selected (for community stats)
-      const hasAllCorrectSelections = correctOptions.every((answer: string) => selectedAnswers.includes(answer));
-      const isPerfectScore = hasAllCorrectSelections && !hasIncorrectSelections;
-      
-      // Answer is correct (partial credit) if: has correct selections AND no incorrect selections
+      // Answer is correct if: has correct selections AND no incorrect selections
       isCorrect = hasCorrectSelections && !hasIncorrectSelections;
-      
-      // Store whether this was a perfect score for community stats
-      (currentQuestion as any).__isPerfectScore = isPerfectScore;
-      
       correctAnswersResolved = correctOptions.filter(Boolean);
       
       console.log('🔍 Select-All Final Debug:', {
@@ -302,9 +374,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         correctOptions,
         hasCorrectSelections,
         hasIncorrectSelections,
-        hasAllCorrectSelections,
-        partialCreditPass: isCorrect,
-        perfectScore: isPerfectScore
+        finalResult: isCorrect
       });
     } else {
       // For other question types
@@ -467,7 +537,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             hasOptions: !!questionWithRepo.options,
             hasCorrectAnswer: !!questionWithRepo.correctAnswer,
             hasVariants: !!questionWithRepo.variants,
-            hasSteps: !!questionWithRepo.steps
+            hasSteps: !!(questionWithRepo as any).steps
           });
           
           await addQuestionToBank(repoUrl, questionWithRepo as any, 85); // Start with high quality score
@@ -477,8 +547,8 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         }
       } catch (error) {
         console.error('❌ Error adding question to bank:', error);
-        console.error('❌ Error details:', error.message);
-        console.error('❌ Error stack:', error.stack);
+        console.error('❌ Error details:', error instanceof Error ? error.message : String(error));
+        console.error('❌ Error stack:', error instanceof Error ? error.stack : 'No stack trace');
       }
     } else {
       console.log(`❌ [QuizInterface] Not saving to question bank:`, { 
@@ -612,20 +682,20 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         return (
           <div className="space-y-8">
             {/* Navigation Header */}
-            <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-6 rounded-xl">
+            <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-4 sm:p-6 rounded-xl">
               <button
                 onClick={() => handleVariantNavigation('prev')}
                 disabled={isFirstVariant}
-                className={`flex items-center space-x-3 px-5 py-3 rounded-lg transition-all font-medium ${
+                className={`flex items-center space-x-2 sm:space-x-3 px-3 sm:px-5 py-2 sm:py-3 rounded-lg transition-all font-medium ${
                   isFirstVariant
                     ? 'text-gray-400 cursor-not-allowed'
                     : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20'
                 }`}
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                <span className="hidden sm:inline text-base">Previous</span>
+                <span className="hidden sm:inline text-sm sm:text-base">Previous</span>
               </button>
 
               <div className="text-center">
@@ -640,14 +710,14 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               <button
                 onClick={() => handleVariantNavigation('next')}
                 disabled={isLastVariant}
-                className={`flex items-center space-x-3 px-5 py-3 rounded-lg transition-all font-medium ${
+                className={`flex items-center space-x-2 sm:space-x-3 px-3 sm:px-5 py-2 sm:py-3 rounded-lg transition-all font-medium ${
                   isLastVariant
                     ? 'text-gray-400 cursor-not-allowed'
                     : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20'
                 }`}
               >
-                <span className="hidden sm:inline text-base">Next</span>
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <span className="hidden sm:inline text-sm sm:text-base">Next</span>
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
@@ -659,25 +729,53 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 <p className="text-sm text-gray-300 font-medium">
                   Analyze this code variant and determine if it&apos;s correct
                 </p>
-                <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${fvLang.bgColor} ${fvLang.color}`}>
-                  {fvLang.name}
-                </span>
+                <div className="flex items-center space-x-2">
+                  <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${fvLang.bgColor} ${fvLang.color}`}>
+                    {fvLang.name}
+                  </span>
+                  <button
+                    onClick={() => setFullscreenCode({
+                      isOpen: true,
+                      code: currentVariant.code,
+                      language: fvLang.name
+                    })}
+                    className="text-gray-400 hover:text-white p-1"
+                    title="View full code"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                    </svg>
+                  </button>
+                </div>
               </div>
               
-              <SyntaxHighlighter
-                language={getHighlighterLanguage(fvLang.name)}
-                style={vscDarkPlus}
-                customStyle={{
-                  margin: 0,
-                  padding: '1.5rem',
-                  fontSize: '0.9375rem',
-                  lineHeight: '1.6',
-                  borderRadius: 0
-                }}
-                showLineNumbers={true}
-              >
-                {currentVariant.code}
-              </SyntaxHighlighter>
+              <div className="max-h-[60vh] overflow-auto">
+                <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x' }}>
+                  <SyntaxHighlighter
+                    language={getHighlighterLanguage(fvLang.name)}
+                    style={vscDarkPlus}
+                    customStyle={{
+                      margin: 0,
+                      padding: '0.75rem',
+                      fontSize: '0.6875rem',
+                      lineHeight: '1.3',
+                      borderRadius: 0,
+                      minHeight: '100px',
+                      minWidth: 'max-content'
+                    }}
+                    showLineNumbers={true}
+                    wrapLines={false}
+                    wrapLongLines={false}
+                    PreTag={({ children, ...props }) => (
+                      <pre {...props} className="!overflow-x-auto !whitespace-pre" style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x' }}>
+                        {children}
+                      </pre>
+                    )}
+                  >
+                    {currentVariant.code}
+                  </SyntaxHighlighter>
+                </div>
+              </div>
             </div>
 
             {/* Action Buttons */}
@@ -751,10 +849,10 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-blue-800 dark:text-blue-200 text-sm font-medium">
-                    💡 Drag and drop the steps below to arrange them in the correct execution order for this function
+                    💡 Tap to select or drag and drop the steps below to arrange them in the correct execution order
                   </p>
                   <p className="text-blue-700 dark:text-blue-300 text-xs mt-1">
-                    Pay attention to dependencies, async operations, and error handling patterns
+                    <strong>Mobile & Desktop:</strong> Tap to add/remove • Drag and release to drop • Pay attention to dependencies and async operations
                   </p>
                 </div>
                 <div className="ml-4 text-right">
@@ -772,6 +870,9 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             <div className="space-y-3">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Available Steps:
+                <span className="ml-2 text-sm text-gray-600 dark:text-gray-400 font-normal">
+                  (Tap to select • Drag and drop to reorder)
+                </span>
                 {isAtLimit && (
                   <span className="ml-3 text-sm text-orange-600 dark:text-orange-400 font-normal">
                     ⚠️ Step limit reached - remove a step from your answer to add a different one
@@ -787,8 +888,8 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                     <div
                       key={step.id}
                       draggable={!isDisabled}
-                      className={`p-4 bg-white dark:bg-gray-800 border-2 rounded-lg transition-all ${
-                        isDisabled ? 'opacity-30 cursor-not-allowed' : 'cursor-move hover:border-blue-300 dark:hover:border-blue-500'
+                      className={`p-4 bg-white dark:bg-gray-800 border-2 rounded-lg transition-all relative group ${
+                        isDisabled ? 'opacity-30 cursor-not-allowed' : 'cursor-grab hover:border-blue-300 dark:hover:border-blue-500 active:border-blue-400 active:cursor-grabbing'
                       } ${
                         isAlreadySelected ? 'opacity-50' : ''
                       } ${
@@ -803,19 +904,264 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                         }
                         e.dataTransfer.setData('text/plain', step.id);
                       }}
+                      onTouchStart={(e) => {
+                        if (isDisabled) return;
+                        
+                        const touch = e.touches[0];
+                        const startX = touch.clientX;
+                        const startY = touch.clientY;
+                        
+                        // Add visual feedback
+                        e.currentTarget.classList.add('shadow-lg', 'scale-105', 'cursor-grabbing');
+                        
+                        // Set up touch move and end handlers
+                        let isDragStarted = false;
+                        
+                        const handleTouchMove = (moveEvent: TouchEvent) => {
+                          const moveTouch = moveEvent.touches[0];
+                          const deltaX = Math.abs(moveTouch.clientX - startX);
+                          const deltaY = Math.abs(moveTouch.clientY - startY);
+                          
+                          // If moved more than 10px, start drag
+                          if ((deltaX > 10 || deltaY > 10) && !isDragStarted) {
+                            moveEvent.preventDefault(); // Prevent scrolling during drag
+                            isDragStarted = true;
+                            
+                            console.log('🚀 Starting drag for step:', step.id);
+                            
+                            // Start drag
+                            setDragState({
+                              isDragging: true,
+                              draggedStepId: step.id,
+                              dragX: moveTouch.clientX,
+                              dragY: moveTouch.clientY,
+                              draggedStep: step
+                            });
+                            
+                            // Make original element semi-transparent
+                            e.currentTarget.style.opacity = '0.5';
+                          }
+                          
+                          // Update drag position
+                          if (isDragStarted) {
+                            moveEvent.preventDefault();
+                            setDragState(prev => ({
+                              ...prev,
+                              dragX: moveTouch.clientX,
+                              dragY: moveTouch.clientY
+                            }));
+                          }
+                        };
+                        
+                        const handleTouchEnd = (endEvent: TouchEvent) => {
+                          console.log('🛑 Touch end event:', { isDragStarted, touches: endEvent.touches.length, changedTouches: endEvent.changedTouches.length });
+                          
+                          // Remove visual feedback
+                          e.currentTarget.classList.remove('shadow-lg', 'scale-105', 'cursor-grabbing');
+                          e.currentTarget.style.opacity = '';
+                          
+                          // If dragging, handle drop
+                          if (isDragStarted) {
+                            console.log('🎯 Processing drop for step:', step.id);
+                            
+                            // Get the final touch position - try multiple sources
+                            let finalTouch = endEvent.changedTouches[0] || endEvent.touches[0];
+                            if (!finalTouch && dragState.isDragging) {
+                              // Use the last known position from drag state
+                              finalTouch = {
+                                clientX: dragState.dragX,
+                                clientY: dragState.dragY
+                              } as Touch;
+                            }
+                            
+                            if (!finalTouch) {
+                              console.log('❌ No touch data available');
+                              setDragState({
+                                isDragging: false,
+                                draggedStepId: null,
+                                dragX: 0,
+                                dragY: 0,
+                                draggedStep: null
+                              });
+                              return;
+                            }
+                            
+                            const finalX = finalTouch.clientX;
+                            const finalY = finalTouch.clientY;
+                            
+                            console.log('🎯 Final touch position:', { finalX, finalY });
+                            
+                            // Find drop zone based on touch position - try multiple methods
+                            let dropZone = document.elementFromPoint(finalX, finalY);
+                            
+                            console.log('🎯 elementFromPoint result:', { finalX, finalY, dropZone: dropZone?.tagName, className: dropZone?.className });
+                            
+                            // Fallback: if elementFromPoint fails, try to find the drop zone by checking if we're over it
+                            if (!dropZone?.closest('[data-drop-zone="correct-order"]')) {
+                              const dropZoneElement = document.querySelector('[data-drop-zone="correct-order"]') as HTMLElement;
+                              if (dropZoneElement) {
+                                const rect = dropZoneElement.getBoundingClientRect();
+                                const isOverDropZone = finalX >= rect.left && finalX <= rect.right && 
+                                                     finalY >= rect.top && finalY <= rect.bottom;
+                                
+                                console.log('🎯 Fallback check:', { 
+                                  rect: { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom },
+                                  finalX, finalY, isOverDropZone 
+                                });
+                                
+                                if (isOverDropZone) {
+                                  dropZone = dropZoneElement;
+                                  console.log('✅ Found drop zone via fallback method');
+                                }
+                              } else {
+                                console.log('❌ Drop zone element not found');
+                              }
+                            }
+                            
+                            // Always drop when dragging ends (like normal drag and drop)
+                            console.log('✅ Drop successful! Adding step to order');
+                            // Add to correct order
+                            setSelectedAnswers(prev => {
+                              const next = [...prev];
+                              const existingIdx = next.indexOf(step.id);
+                              
+                              if (existingIdx >= 0) {
+                                // Already selected - just reorder to end
+                                next.splice(existingIdx, 1);
+                                next.push(step.id);
+                                return next;
+                              }
+                              
+                              // Not selected yet - check limit
+                              if (next.length >= correctStepCount) {
+                                console.log('⚠️ Cannot add more steps - limit reached');
+                                return prev;
+                              }
+                              
+                              // Add to end
+                              next.push(step.id);
+                              return next;
+                            });
+                            
+                            // End drag
+                            setDragState({
+                              isDragging: false,
+                              draggedStepId: null,
+                              dragX: 0,
+                              dragY: 0,
+                              draggedStep: null
+                            });
+                          } else {
+                            // No significant movement - treat as tap
+                            const deltaX = Math.abs(startX - dragState.dragX);
+                            const deltaY = Math.abs(startY - dragState.dragY);
+                            
+                            if (deltaX < 10 && deltaY < 10) {
+                              // Tap to add/remove
+                              setSelectedAnswers(prev => {
+                                const next = [...prev];
+                                const existingIdx = next.indexOf(step.id);
+                                
+                                if (existingIdx >= 0) {
+                                  // Already selected - remove it
+                                  next.splice(existingIdx, 1);
+                                  return next;
+                                }
+                                
+                                // Not selected yet - check limit
+                                if (next.length >= correctStepCount) {
+                                  console.log('⚠️ Cannot add more steps - limit reached');
+                                  return prev;
+                                }
+                                
+                                // Add to end
+                                next.push(step.id);
+                                return next;
+                              });
+                            }
+                            
+                            // Clear drag state for tap case too
+                            setDragState({
+                              isDragging: false,
+                              draggedStepId: null,
+                              dragX: 0,
+                              dragY: 0,
+                              draggedStep: null
+                            });
+                          }
+                          
+                          // Clean up
+                          document.removeEventListener('touchmove', handleTouchMove as EventListener);
+                          document.removeEventListener('touchend', handleTouchEnd);
+                        };
+                        
+                        // Add event listeners
+                        document.addEventListener('touchmove', handleTouchMove as EventListener, { passive: false });
+                        document.addEventListener('touchend', handleTouchEnd);
+                      }}
+                      onClick={(e) => {
+                        // Desktop click fallback
+                        if (isDisabled) return;
+                        
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        setSelectedAnswers(prev => {
+                          const next = [...prev];
+                          const existingIdx = next.indexOf(step.id);
+                          
+                          if (existingIdx >= 0) {
+                            // Already selected - remove it
+                            next.splice(existingIdx, 1);
+                            return next;
+                          }
+                          
+                          // Not selected yet - check limit
+                          if (next.length >= correctStepCount) {
+                            console.log('⚠️ Cannot add more steps - limit reached');
+                            return prev; // Don't add, return unchanged
+                          }
+                          
+                          // Add to end
+                          next.push(step.id);
+                          return next;
+                        });
+                      }}
                     >
                       <div className="flex items-start space-x-3">
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium ${
-                          showExplanations && step.isDistractor 
-                            ? 'bg-orange-200 dark:bg-orange-800 text-orange-700 dark:text-orange-300' 
-                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-200 ${
+                          isAlreadySelected 
+                            ? 'bg-blue-500 text-white' 
+                            : showExplanations && step.isDistractor 
+                              ? 'bg-orange-200 dark:bg-orange-800 text-orange-700 dark:text-orange-300' 
+                              : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30'
                         }`}>
-                          {showExplanations && step.isDistractor ? '⚠️' : '⋮⋮'}
+                          {isAlreadySelected ? (
+                            '✓'
+                          ) : showExplanations && step.isDistractor ? (
+                            '⚠️'
+                          ) : (
+                            <svg 
+                              className="w-4 h-4 transition-transform duration-200 group-hover:scale-110 group-active:scale-95" 
+                              fill="none" 
+                              stroke="currentColor" 
+                              viewBox="0 0 24 24"
+                            >
+                              <path 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round" 
+                                strokeWidth={2} 
+                                d="M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01" 
+                              />
+                            </svg>
+                          )}
                         </div>
                         <div className="flex-1">
-                          <pre className="text-sm font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
-                            {step.code}
-                          </pre>
+                          <div className="max-h-[25vh] overflow-auto">
+                            <pre className="text-xs font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap leading-tight">
+                              {formatCodeForMobile(step.code)}
+                            </pre>
+                          </div>
                         {showExplanations && (
                           <p className={`text-xs mt-1 ${
                             step.isDistractor 
@@ -847,7 +1193,12 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 </span>
               </h3>
               <div
-                className="min-h-[200px] border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700"
+                data-drop-zone="correct-order"
+                className={`min-h-[200px] border-2 border-dashed rounded-lg p-4 touch-manipulation transition-all duration-200 ${
+                  dragState.isDragging 
+                    ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20 scale-105' 
+                    : 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700'
+                }`}
                 onDragOver={(e) => {
                   e.preventDefault();
                   e.currentTarget.classList.add('border-blue-400', 'bg-blue-50', 'dark:bg-blue-900/20');
@@ -886,7 +1237,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               >
                 {selectedAnswers.length === 0 ? (
                   <div className="text-center text-gray-500 dark:text-gray-400 py-8">
-                    <p>Drag {correctStepCount} step{correctStepCount === 1 ? '' : 's'} here to build the correct order</p>
+                    <p>Tap to select or drag and drop {correctStepCount} step{correctStepCount === 1 ? '' : 's'} here to build the correct order</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -897,7 +1248,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                         <div
                           key={stepId}
                           draggable
-                          className={`flex items-center space-x-3 p-3 border rounded-lg transition-shadow duration-150 ${
+                          className={`flex items-center space-x-3 p-3 border rounded-lg transition-shadow duration-150 touch-manipulation ${
                             showExplanations && step.isDistractor 
                               ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' 
                               : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600'
@@ -905,6 +1256,14 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                           onDragStart={(e) => {
                             e.dataTransfer.setData('text/plain', stepId);
                             e.dataTransfer.effectAllowed = 'move';
+                          }}
+                          onTouchStart={(e) => {
+                            // Add visual feedback for touch
+                            e.currentTarget.classList.add('shadow-lg', 'scale-105');
+                          }}
+                          onTouchEnd={(e) => {
+                            // Remove visual feedback
+                            e.currentTarget.classList.remove('shadow-lg', 'scale-105');
                           }}
                           onDragOver={(e) => {
                             e.preventDefault();
@@ -970,9 +1329,11 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                             {index + 1}
                           </div>
                           <div className="flex-1">
-                            <pre className="text-sm font-mono text-gray-800 dark:text-gray-200">
-                              {step.code}
-                            </pre>
+                            <div className="max-h-[20vh] overflow-auto">
+                              <pre className="text-xs font-mono text-gray-800 dark:text-gray-200 leading-tight">
+                                {formatCodeForMobile(step.code)}
+                              </pre>
+                            </div>
                             {showExplanations && step.isDistractor && (
                               <p className="text-xs text-red-600 dark:text-red-400 mt-1">
                                 ⚠️ This is a distractor step - not part of the correct sequence
@@ -1012,7 +1373,11 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                           <div className="flex items-start space-x-3">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${userMatchedPosition ? 'bg-green-600 text-white' : 'bg-blue-600 text-white'}`}>{idx + 1}</div>
                             <div className="flex-1">
-                              <pre className="text-sm font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap">{step.code}</pre>
+                              <div className="max-h-[20vh] overflow-auto">
+                                <pre className="text-xs font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap leading-tight">
+                                  {formatCodeForMobile(step.code)}
+                                </pre>
+                              </div>
                               {step.explanation && (
                                 <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">{step.explanation}</p>
                               )}
@@ -1212,52 +1577,116 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 z-50 overflow-y-auto">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+    <>
+      {/* Fullscreen Code Modal */}
+      {fullscreenCode && (
+        <div className="fixed inset-0 z-60 bg-black bg-opacity-90 flex items-center justify-center p-2 sm:p-4">
+          <div className="w-full h-full max-w-7xl max-h-screen bg-gray-900 rounded-lg overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-3 bg-gray-800 border-b border-gray-700">
+              <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+                <span className="text-white font-medium text-sm sm:text-base">Code Viewer</span>
+                <span className="px-2 py-1 bg-gray-700 text-gray-300 text-xs rounded">
+                  {fullscreenCode.language}
+                </span>
+              </div>
               <button
-                onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                onClick={() => setFullscreenCode(null)}
+                className="text-gray-400 hover:text-white p-1 sm:p-2 flex-shrink-0"
+                aria-label="Close fullscreen"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                {quizSession.title}
-              </h1>
+            </div>
+            <div className="flex-1 overflow-auto">
+              <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x' }}>
+                <SyntaxHighlighter
+                  language={getHighlighterLanguage(fullscreenCode.language)}
+                  style={vscDarkPlus}
+                  customStyle={{
+                    margin: 0,
+                    padding: '0.75rem sm:2rem',
+                    fontSize: '12px sm:1rem',
+                    lineHeight: '1.4 sm:1.6',
+                    minHeight: '100%',
+                    minWidth: 'max-content'
+                  }}
+                  showLineNumbers={true}
+                  wrapLines={false}
+                  wrapLongLines={false}
+                  PreTag={({ children, ...props }) => (
+                    <pre {...props} className="!overflow-x-auto !whitespace-pre" style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x' }}>
+                      {children}
+                    </pre>
+                  )}
+                >
+                  {fullscreenCode.code}
+                </SyntaxHighlighter>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Touch Drag Preview */}
+      {dragState.isDragging && dragState.draggedStep && (
+        <div
+          className="fixed z-70 pointer-events-none"
+          style={{
+            left: dragState.dragX - 20,
+            top: dragState.dragY - 20,
+            transform: 'translate(-50%, -50%)'
+          }}
+        >
+          <div className="bg-white dark:bg-gray-800 border-2 border-blue-500 rounded-lg p-3 shadow-2xl max-w-xs">
+            <div className="flex items-start space-x-2">
+              <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-medium flex-shrink-0">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01" />
+                </svg>
+              </div>
+              <pre className="text-xs font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
+                {dragState.draggedStep.code}
+              </pre>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="fixed inset-0 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 z-50 overflow-y-auto overflow-x-hidden">
+      {/* Header */}
+      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 w-full overflow-hidden">
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 py-3 sm:py-4 w-full">
+          <div className="flex items-center justify-between w-full overflow-hidden">
+            <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 flex-shrink-0"
+              >
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <div className="min-w-0 flex-1">
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">
+                  {hasQuestion ? (
+                    <>Q{currentQuestionIndex + 1}/{totalQuestions}</>
+                  ) : (
+                    <>Loading questions…</>
+                  )}
+                </div>
+              </div>
             </div>
             
-            <div className="flex items-center space-x-6">
-              {/* Progress */}
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                {hasQuestion ? (
-                  <>
-                    Question {currentQuestionIndex + 1} of {totalQuestions}
-                    {currentQuestion.isCached && (
-                      <span className="ml-3 px-2 py-1 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full flex items-center gap-1">
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                        Community Reviewed
-                      </span>
-                    )}
-                  </>
-                ) : (
-                  <>Loading questions…</>
-                )}
-              </div>
-              
+            <div className="flex items-center space-x-3 sm:space-x-6 flex-shrink-0">
               {/* Score */}
-              <div className="text-sm font-medium text-gray-900 dark:text-white">
-                Score: {score}
+              <div className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white">
+                <span className="hidden sm:inline">Score: </span>{score}
               </div>
               
             {/* Timers */}
-            <div className="hidden sm:flex items-center space-x-4">
+            <div className="hidden lg:flex items-center space-x-4 flex-shrink-0">
               {/* Per-question timer */}
               <div className="w-40">
                 <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
@@ -1313,22 +1742,6 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 </div>
               </div>
 
-              {/* Settings Toggle */}
-              <div className="flex items-center space-x-2">
-                <span className="text-xs text-gray-600 dark:text-gray-400">Wait for complete stream:</span>
-                <button
-                  onClick={() => setWaitForCompleteStream(!waitForCompleteStream)}
-                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                    waitForCompleteStream ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
-                      waitForCompleteStream ? 'translate-x-5' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-              </div>
             </div>
           </div>
           
@@ -1375,8 +1788,8 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
       </AnimatePresence>
 
       {/* Question Card */}
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-8 w-full">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-3 sm:p-6 lg:p-8 w-full max-w-full overflow-hidden">
           {!hasQuestion ? (
             <div className="space-y-6 animate-pulse">
               <div className="h-7 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
@@ -1416,29 +1829,59 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             </h2>
             
             {currentQuestion.codeContext && (currentQuestion.type === 'function-variant' || currentQuestion.type === 'multiple-choice' || currentQuestion.type === 'true-false' || currentQuestion.type === 'select-all') && (
-              <div className="rounded-lg mb-4 overflow-hidden border border-gray-200 dark:border-gray-700">
+              <div className="rounded-lg mb-4 overflow-hidden border border-gray-200 dark:border-gray-700 w-full max-w-full">
                 <div className="flex items-center justify-between px-4 py-2 bg-[#1e1e1e] border-b border-gray-700">
                   <p className="text-sm text-gray-300 font-medium">Code Context</p>
-                  {currentQuestion.language && (
-                    <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${currentQuestion.languageBgColor || 'bg-gray-700'} ${currentQuestion.languageColor || 'text-gray-300'}`}>
-                      {currentQuestion.language}
-                    </span>
-                  )}
+                  <div className="flex items-center space-x-2">
+                    {currentQuestion.language && (
+                      <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${currentQuestion.languageBgColor || 'bg-gray-700'} ${currentQuestion.languageColor || 'text-gray-300'}`}>
+                        {currentQuestion.language}
+                      </span>
+                    )}
+                    <button
+                      onClick={() => setFullscreenCode({
+                        isOpen: true,
+                        code: currentQuestion.codeContext,
+                        language: currentQuestion.language || 'JavaScript'
+                      })}
+                      className="p-1 text-gray-400 hover:text-white transition-colors"
+                      aria-label="View code in fullscreen"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
-                <SyntaxHighlighter
-                  language={getHighlighterLanguage(currentQuestion.language || 'JavaScript')}
-                  style={vscDarkPlus}
-                  customStyle={{
-                    margin: 0,
-                    padding: '1rem',
-                    fontSize: '0.875rem',
-                    lineHeight: '1.5',
-                    borderRadius: 0
-                  }}
-                  showLineNumbers={true}
-                >
-                  {currentQuestion.codeContext}
-                </SyntaxHighlighter>
+                <div className="max-h-[70vh] overflow-auto w-full">
+                  <SyntaxHighlighter
+                    language={getHighlighterLanguage(currentQuestion.language || 'JavaScript')}
+                    style={vscDarkPlus}
+                    customStyle={{
+                      margin: 0,
+                      padding: '0.75rem',
+                      fontSize: '0.6875rem',
+                      lineHeight: '1.3',
+                      borderRadius: 0,
+                      width: '100%',
+                      maxWidth: '100%',
+                      overflow: 'hidden',
+                      wordWrap: 'break-word',
+                      whiteSpace: 'pre-wrap',
+                      minHeight: '120px'
+                    }}
+                    showLineNumbers={true}
+                    wrapLines={true}
+                    wrapLongLines={true}
+                    PreTag={({ children, ...props }) => (
+                      <pre {...props} className="!overflow-hidden !whitespace-pre-wrap">
+                        {children}
+                      </pre>
+                    )}
+                  >
+                    {formatCodeForMobile(currentQuestion.codeContext)}
+                  </SyntaxHighlighter>
+                </div>
               </div>
             )}
           </div>
@@ -1503,20 +1946,31 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                                 </span>
                               )}
                             </div>
-                            <SyntaxHighlighter
-                              language={getHighlighterLanguage(currentQuestion.language || 'JavaScript')}
-                              style={vscDarkPlus}
-                              customStyle={{
-                                margin: 0,
-                                padding: '1rem',
-                                fontSize: '0.875rem',
-                                lineHeight: '1.5',
-                                borderRadius: 0
-                              }}
-                              showLineNumbers={true}
-                            >
-                              {variant.code}
-                            </SyntaxHighlighter>
+                            <div className="max-h-[50vh] overflow-auto">
+                              <SyntaxHighlighter
+                                language={getHighlighterLanguage(currentQuestion.language || 'JavaScript')}
+                                style={vscDarkPlus}
+                                customStyle={{
+                                  margin: 0,
+                                  padding: '0.5rem',
+                                  fontSize: '0.625rem',
+                                  lineHeight: '1.2',
+                                  borderRadius: 0,
+                                  minHeight: '80px',
+                                  overflow: 'hidden'
+                                }}
+                                showLineNumbers={true}
+                                wrapLines={true}
+                                wrapLongLines={true}
+                                PreTag={({ children, ...props }) => (
+                                  <pre {...props} className="!overflow-hidden !whitespace-pre-wrap">
+                                    {children}
+                                  </pre>
+                                )}
+                              >
+                                {formatCodeForMobile(variant.code)}
+                              </SyntaxHighlighter>
+                            </div>
                           </div>
                           <p className={`text-sm ${
                             isCorrect
@@ -1767,17 +2221,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             isCorrect={(() => {
               // Find the result for THIS specific question, not the last result
               const questionResult = results.find(r => r.questionId === currentQuestion.id);
-              const wasCorrect = questionResult?.isCorrect || false;
-              
-              // For select-all questions, use perfect score for community stats
-              // (partial credit counts as "pass" for UI, but not for community stats)
-              if (currentQuestion.type === 'select-all') {
-                const isPerfectScore = (currentQuestion as any).__isPerfectScore;
-                console.log(`🔍 [QuizInterface] Select-all community stats: wasCorrect=${wasCorrect}, isPerfectScore=${isPerfectScore}`);
-                return isPerfectScore || false;
-              }
-              
-              return wasCorrect;
+              return questionResult?.isCorrect || false;
             })()}
             shouldUpdate={(() => {
               const shouldUpdate = !pollUpdatedQuestions.has(currentQuestion.id);
@@ -1793,14 +2237,14 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               <button
                 onClick={handleSubmitAnswer}
                 disabled={selectedAnswers.length === 0}
-                className="bg-blue-600 text-white py-3 px-8 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="bg-blue-600 text-white py-2.5 sm:py-3 px-6 sm:px-8 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
               >
                 Submit Answer
               </button>
             ) : (
               <button
                 onClick={handleNextQuestion}
-                className={`bg-green-600 text-white py-3 px-8 rounded-lg font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors ${shakingNext ? 'animate-shake' : ''}`}
+                className={`bg-green-600 text-white py-2.5 sm:py-3 px-6 sm:px-8 rounded-lg font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors text-sm sm:text-base ${shakingNext ? 'animate-shake' : ''}`}
               >
                 {currentQuestionIndex === quizSession.questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
               </button>
@@ -1810,6 +2254,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
           )}
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 } 

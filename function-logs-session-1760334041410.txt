@@ -3267,3 +3267,2477 @@ Total Chunks Processed: 1
 Ended: 2025-10-13T07:40:10.239Z
 ================================================================================
 
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-13T19:07:25.179Z
+File: [8 files: 8 are considered localhost for IPv4., FooterComponent.jsx, App.js, setupTests.js, Employee.java, index.js, HeaderComponent.js, EmployeeService.js]
+Functions Extracted: 1
+
+
+Function 1: App
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function App() {
+  return (
+    <div>
+        <Router>
+              <HeaderComponent />
+                <div className="container">
+                    <Switch> 
+                          <Route path = "/" exact component = {ListEmployeeComponent}></Route>
+                          <Route path = "/employees" component = {ListEmployeeComponent}></Route>
+                          <Route path = "/add-employee/:id" component = {CreateEmployeeComponent}></Route>
+                          <Route path = "/view-employee/:id" component = {ViewEmployeeComponent}></Route>
+                          {/* <Route path = "/update-employee/:id" component = {UpdateEmployeeComponent}></Route> */}
+                    </Switch>
+                </div>
+              <FooterComponent />
+        </Router>
+    </div>
+  );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T19:07:34.620Z
+Question Type: true-false
+Function: App
+Function Size: 903 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing and layout.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                          <Route path = "/"
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T19:07:35.198Z
+Question Type: true-false
+Function: App
+Function Size: 903 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing and layout.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                          <Route path = "/"
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T19:07:39.267Z
+Question Type: select-all
+Function: App
+Function Size: 903 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing and layout.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                          <Route path = "/"
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T19:07:46.305Z
+Question Type: order-sequence
+Function: App
+Function Size: 903 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing and layout.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                          <Route path = "/"
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T19:07:46.543Z
+Question Type: select-all
+Function: App
+Function Size: 903 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing and layout.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                          <Route path = "/"
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T19:07:50.793Z
+Question Type: order-sequence
+Function: App
+Function Size: 903 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing and layout.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                          <Route path = "/"
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T19:07:51.974Z
+Question Type: function-variant
+Function: App
+Function Size: 903 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing and layout.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                          <Route path = "/"
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760334041410
+Repository: Unknown
+Total Questions Generated: 7
+Total Chunks Processed: 1
+Ended: 2025-10-13T19:07:52.075Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T19:08:03.385Z
+Question Type: select-all
+Function: App
+Function Size: 903 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing and layout.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                          <Route path = "/"
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T19:08:04.359Z
+Question Type: select-all
+Function: App
+Function Size: 903 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing and layout.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                          <Route path = "/"
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T19:08:05.703Z
+Question Type: order-sequence
+Function: App
+Function Size: 903 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing and layout.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                          <Route path = "/"
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T19:08:12.239Z
+Question Type: multiple-choice
+Function: App
+Function Size: 903 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing and layout.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                          <Route path = "/"
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T19:08:16.061Z
+Question Type: select-all
+Function: App
+Function Size: 903 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing and layout.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                          <Route path = "/"
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T19:08:17.959Z
+Question Type: function-variant
+Function: App
+Function Size: 903 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing and layout.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                          <Route path = "/"
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T19:08:28.114Z
+Question Type: order-sequence
+Function: App
+Function Size: 903 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing and layout.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                          <Route path = "/"
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T19:08:31.057Z
+Question Type: function-variant
+Function: App
+Function Size: 903 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing and layout.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                          <Route path = "/"
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T19:08:35.795Z
+Question Type: true-false
+Function: App
+Function Size: 903 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing and layout.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                          <Route path = "/"
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760334041410
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 1
+Ended: 2025-10-13T19:08:35.937Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-13T21:13:29.829Z
+File: TODO: Convert to DELETE
+Functions Extracted: 10
+
+
+Function 1: putUpdateMyAbout
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyAbout(
+  values: MyAbout
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-about', { ...values });
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: putUpdateMyUsername
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyUsername(
+  username: string
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-username', { username });
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: putUpdateMyProfileUI
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyProfileUI(
+  profileUI: User['profileUI']
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-profileui', { profileUI });
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: putUpdateMySocials
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMySocials(
+  update: Record<string, string>
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-socials', update);
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: putUpdateMyKeyboardShortcuts
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyKeyboardShortcuts(
+  update: Record<string, string>
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-keyboard-shortcuts', update);
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: putUpdateMyHonesty
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyHonesty(
+  update: Record<string, string>
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-honesty', update);
+}
+--------------------------------------------------------------------------------
+
+
+Function 7: putUpdateMyQuincyEmail
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyQuincyEmail(update: {
+  sendQuincyEmail: boolean;
+}): Promise<ResponseWithData<void>> {
+  return put('/update-my-quincy-email', update);
+}
+--------------------------------------------------------------------------------
+
+
+Function 8: putUpdateMyPortfolio
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyPortfolio(
+  update: Record<string, string>
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-portfolio', update);
+}
+--------------------------------------------------------------------------------
+
+
+Function 9: putUserUpdateEmail
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putUserUpdateEmail(
+  email: string
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-email', { email });
+}
+--------------------------------------------------------------------------------
+
+
+Function 10: putVerifyCert
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function putVerifyCert(
+  certSlug: string
+): Promise<ResponseWithData<void>> {
+  return put('/certificate/verify', { certSlug });
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:13:34.946Z
+Question Type: true-false
+Function: putUpdateMySocials
+Function Size: 239 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMySocials (TypeScript)\n// Updates the user's social media links.\n\nexport function putUpdateMySocials(\n  update: Record<string, string>\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-socials', update);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:13:38.520Z
+Question Type: select-all
+Function: putUpdateMyProfileUI
+Function Size: 251 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMyProfileUI (TypeScript)\n// Updates the user's profile UI settings.\n\nexport function putUpdateMyProfileUI(\n  profileUI: User['profileUI']\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-profileui', { profileUI });\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:13:41.235Z
+Question Type: function-variant
+Function: putUpdateMyHonesty
+Function Size: 237 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMyHonesty (TypeScript)\n// Updates the user's honesty settings.\n\nexport function putUpdateMyHonesty(\n  update: Record<string, string>\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-honesty', update);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:13:43.369Z
+Question Type: order-sequence
+Function: putUpdateMyKeyboardShortcuts
+Function Size: 270 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMyKeyboardShortcuts (TypeScript)\n// Updates the user's keyboard shortcuts.\n\nexport function putUpdateMyKeyboardShortcuts(\n  update: Record<string, string>\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-keyboard-shortcuts', update);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:13:46.703Z
+Question Type: select-all
+Function: putUpdateMyAbout
+Function Size: 224 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMyAbout (TypeScript)\n// Updates the user's about information.\n\nexport function putUpdateMyAbout(\n  values: MyAbout\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-about', { ...values });\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:13:48.906Z
+Question Type: function-variant
+Function: putUserUpdateEmail
+Function Size: 218 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUserUpdateEmail (TypeScript)\n// Updates the user's email address.\n\nexport function putUserUpdateEmail(\n  email: string\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-email', { email });\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:13:49.174Z
+Question Type: select-all
+Function: putUpdateMyQuincyEmail
+Function Size: 263 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMyQuincyEmail (TypeScript)\n// Updates the user's Quincy email preferences.\n\nexport function putUpdateMyQuincyEmail(update: {\n  sendQuincyEmail: boolean;\n}): Promise<ResponseWithData<void>> {\n  return put('/update-my-quincy-email', update);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:13:49.771Z
+Question Type: multiple-choice
+Function: putUpdateMyProfileUI
+Function Size: 251 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: putUpdateMyProfileUI (TypeScript)\n// Updates the user's profile UI settings.\n\nexport function putUpdateMyProfileUI(\n  profileUI: User['profileUI']\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-profileui', { profileUI });\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:13:54.765Z
+Question Type: true-false
+Function: putUpdateMyAbout
+Function Size: 224 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMyAbout (TypeScript)\n// Updates the user's about information.\n\nexport function putUpdateMyAbout(\n  values: MyAbout\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-about', { ...values });\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:13:56.372Z
+Question Type: function-variant
+Function: putUpdateMyUsername
+Function Size: 224 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMyUsername (TypeScript)\n// Updates the user's username.\n\nexport function putUpdateMyUsername(\n  username: string\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-username', { username });\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:13:59.562Z
+Question Type: function-variant
+Function: putUpdateMyPortfolio
+Function Size: 248 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMyPortfolio (TypeScript)\n// Updates the user's portfolio information.\n\nexport function putUpdateMyPortfolio(\n  update: Record<string, string>\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-portfolio', update);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:14:01.519Z
+Question Type: select-all
+Function: putUpdateMySocials
+Function Size: 239 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMySocials (TypeScript)\n// Updates the user's social media links.\n\nexport function putUpdateMySocials(\n  update: Record<string, string>\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-socials', update);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:14:02.791Z
+Question Type: order-sequence
+Function: putUpdateMyQuincyEmail
+Function Size: 263 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMyQuincyEmail (TypeScript)\n// Updates the user's Quincy email preferences.\n\nexport function putUpdateMyQuincyEmail(update: {\n  sendQuincyEmail: boolean;\n}): Promise<ResponseWithData<void>> {\n  return put('/update-my-quincy-email', update);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:14:04.880Z
+Question Type: function-variant
+Function: putVerifyCert
+Function Size: 225 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putVerifyCert (TypeScript)\n// Verifies a certificate based on its slug.\n\nexport function putVerifyCert(\n  certSlug: string\n): Promise<ResponseWithData<void>> {\n  return put('/certificate/verify', { certSlug });\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:14:07.882Z
+Question Type: select-all
+Function: putUpdateMyKeyboardShortcuts
+Function Size: 270 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMyKeyboardShortcuts (TypeScript)\n// Updates the user's keyboard shortcuts.\n\nexport function putUpdateMyKeyboardShortcuts(\n  update: Record<string, string>\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-keyboard-shortcuts', update);\n}
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760334041410
+Repository: Unknown
+Total Questions Generated: 14
+Total Chunks Processed: 10
+Ended: 2025-10-13T21:14:07.884Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-13T21:14:41.597Z
+File: freeCodeCamp-freeCodeCamp-f5a932c/client/src/components/profile/components/portfolio.tsx
+Functions Extracted: 7
+
+
+Function 1: createEmptyPortfolioItem
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function createEmptyPortfolioItem(): PortfolioProjectData {
+  return {
+    id: nanoid(),
+    title: '',
+    description: '',
+    url: '',
+    image: ''
+  };
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: checkIfValidImage
+Language: TypeScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+const checkIfValidImage = (url: string): Promise<ProfileValidation> => {
+  const img = new Image();
+
+  return new Promise(resolve => {
+    img.onerror = () =>
+      resolve({ state: 'error', message: t('validation.url-not-image') });
+    img.onload = () => resolve({ state: 'success', message: '' });
+    img.src = url;
+  });
+};
+--------------------------------------------------------------------------------
+
+
+Function 3: createOnChangeHandler
+Language: TypeScript
+Lines: 16
+Full Code:
+--------------------------------------------------------------------------------
+const createOnChangeHandler = (id: string, key: 'description' | 'image' | 'title' | 'url') => (e: React.ChangeEvent<HTMLInputElement>) => {
+  e.preventDefault();
+  const userInput = e.target.value.slice();
+  setPortfolio(prevPortfolio => {
+    const mutablePortfolio = [...prevPortfolio];
+    const index = findIndex(prevPortfolio, p => p.id === id);
+    mutablePortfolio[index] = {
+      ...mutablePortfolio[index],
+      [key]: userInput
+    };
+    if (key === 'image' && userInput) {
+      void checkIfValidImage(userInput).then(imageValidation => {
+        setImageValid(imageValidation);
+      });
+    } else if (key === 'image' && !userInput) {
+      setImageValid({ state: 'success', message: '' });
+    }
+    return mutablePortfolio;
+  });
+};
+--------------------------------------------------------------------------------
+
+
+Function 4: updateItem
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+const updateItem = (id: string, updatedPortfolio?: PortfolioProjectData[]) => {
+    if (unsavedItemId === id) {
+      setUnsavedItemId(null);
+    }
+    const portfolioToUpdate = updatedPortfolio || portfolio;
+    updateMyPortfolio({ portfolio: portfolioToUpdate });
+    setIsEditing(false);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 5: handleRemoveItem
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+const handleRemoveItem = (id: string) => {
+    const newPortfolio = portfolio.filter(p => p.id !== id);
+    setPortfolio(newPortfolio);
+    updateItem(id, newPortfolio);
+    setIsEditing(false);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 6: formCorrect
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+const formCorrect = (portfolioItem: PortfolioProjectData) => {
+    const { id, title, description, url, image } = portfolioItem;
+    const { state: titleState, message: titleMessage } = getTitleValidation(title);
+    const { state: urlState, message: urlMessage } = getUrlValidation(url);
+    const { state: descriptionState, message: descriptionMessage } = getDescriptionValidation(description);
+    const { state: imageState, message: imageMessage } = getUrlValidation(image);
+    const pristine = isFormPristine(id);
+    const urlIsValid = !isURL(url, {
+      protocols: ['http', 'https'],
+      require_tld: true,
+      require_protocol: true
+    });
+    const isButtonDisabled = [
+      titleState,
+      urlState,
+      descriptionState,
+      imageState,
+      urlIsValid
+    ].some(state => state === 'error' || false);
+    return {
+      isButtonDisabled,
+      title: { titleState, titleMessage },
+      url: { urlState, urlMessage },
+      image: { imageState, imageMessage },
+      desc: { descriptionState, descriptionMessage },
+      pristine
+    };
+  };
+--------------------------------------------------------------------------------
+
+
+Function 7: renderPortfolio
+Language: TypeScript
+Lines: 64
+Full Code:
+--------------------------------------------------------------------------------
+const renderPortfolio = (portfolioItem: PortfolioProjectData, index: number, arr: PortfolioProjectData[]) => {
+    const { id, title, description, url, image } = portfolioItem;
+    const {
+      isButtonDisabled,
+      title: { titleState, titleMessage },
+      url: { urlState, urlMessage },
+      image: { imageState, imageMessage },
+      desc: { descriptionState, descriptionMessage },
+      pristine
+    } = formCorrect(portfolioItem);
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>, id: string) => {
+      e.preventDefault();
+      if (isButtonDisabled) return null;
+      setIsEditing(false);
+      return updateItem(id);
+    };
+    const combineImageStatus =
+      imageState === 'success' && imageValidation.state === 'success'
+        ? null
+        : 'error';
+    const combineImageMessage = imageMessage || imageValidation.message;
+    return (
+      <FullWidthRow key={id}>
+        <form
+          onSubmit={e => handleSubmit(e, id)}
+          id='portfolio-items'
+          data-playwright-test-label='portfolio-items'
+        >
+          <FormGroup
+            controlId={`${id}-title`}
+            validationState={
+              pristine || (!pristine && !title) ? null : titleState
+            }
+          >
+            <ControlLabel htmlFor={`${id}-title-input`}>
+              {t('settings.labels.title')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'title')}
+              required
+              type='text'
+              value={title}
+              name='portfolio-title'
+              id={`${id}-title-input`}
+            />
+            {titleMessage ? (
+              <HelpBlock data-playwright-test-label='title-validation'>
+                {titleMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-url`}
+            validationState={pristine || (!pristine && !url) ? null : urlState}
+          >
+            <ControlLabel htmlFor={`${id}-url-input`}>
+              {t('settings.labels.url')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'url')}
+              required
+              type='url'
+              value={url}
+              name='portfolio-url'
+              id={`${id}-url-input`}
+            />
+            {urlMessage ? (
+              <HelpBlock data-playwright-test-label='url-validation'>
+                {urlMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-image`}
+            validationState={pristine ? null : combineImageStatus}
+          >
+            <ControlLabel htmlFor={`${id}-image-input`}>
+              {t('settings.labels.image')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'image')}
+              type='url'
+              value={image}
+              name='portfolio-image'
+              id={`${id}-image-input`}
+            />
+            {combineImageMessage ? (
+              <HelpBlock data-playwright-test-label='image-validation'>
+                {combineImageMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-description`}
+            validationState={pristine ? null : descriptionState}
+          >
+            <ControlLabel htmlFor={`${id}-description-input`}>
+              {t('settings.labels.description')}
+            </ControlLabel>
+            <FormControl
+              componentClass='textarea'
+              onChange={createOnChangeHandler(id, 'description')}
+              value={description}
+              name='portfolio-description'
+              id={`${id}-description-input`}
+            />
+            {descriptionMessage ? (
+              <HelpBlock data-playwright-test-label='description-validation'>
+                {descriptionMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <BlockSaveButton
+            disabled={isButtonDisabled}
+            bgSize='large'
+            data-playwright-test-label='save-portfolio'
+            {...(isButtonDisabled && { tabIndex: -1 })}
+          >
+            {t('buttons.save-portfolio')}
+          </BlockSaveButton>
+          <Spacer size='xs' />
+          <Button
+            block
+            size='large'
+            variant='danger'
+            onClick={() => handleRemoveItem(id)}
+            type='button'
+          >
+            {t('buttons.remove-portfolio')}
+          </Button>
+        </form>
+        {index + 1 !== arr.length && (
+          <>
+            <Spacer size='m' />
+            <hr />
+            <Spacer size='m' />
+          </>
+        )}
+      </FullWidthRow>
+    );
+  };
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:14:47.903Z
+Question Type: multiple-choice
+Function: checkIfValidImage
+Function Size: 421 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: checkIfValidImage (TypeScript)\n// Checks if the provided URL is a valid image.\n\nconst checkIfValidImage = (url: string): Promise<ProfileValidation> => {\n  const img = new Image();\n\n  return new Promise(resolve => {\n    img.onerror = () =>\n      resolve({ state: 'error', message: t('vali
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:14:50.261Z
+Question Type: true-false
+Function: createOnChangeHandler
+Function Size: 857 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createOnChangeHandler (TypeScript)\n// Creates an onChange handler for portfolio item fields.\n\nconst createOnChangeHandler = (id: string, key: 'description' | 'image' | 'title' | 'url') => (e: React.ChangeEvent<HTMLInputElement>) => {\n  e.preventDefault();\n  const userInput = e.target.va
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:14:52.285Z
+Question Type: select-all
+Function: handleRemoveItem
+Function Size: 304 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleRemoveItem (TypeScript)\n// Removes an item from the portfolio and updates the state.\n\nconst handleRemoveItem = (id: string) => {\n    const newPortfolio = portfolio.filter(p => p.id !== id);\n    setPortfolio(newPortfolio);\n    updateItem(id, newPortfolio);\n    setIsEditing(false);\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:14:53.032Z
+Question Type: true-false
+Function: formCorrect
+Function Size: 1157 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: formCorrect (TypeScript)\n// Validates the form fields of a portfolio item.\n\nconst formCorrect = (portfolioItem: PortfolioProjectData) => {\n    const { id, title, description, url, image } = portfolioItem;\n    const { state: titleState, message: titleMessage } = getTitleValidation(title)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:14:53.684Z
+Question Type: order-sequence
+Function: createEmptyPortfolioItem
+Function Size: 266 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createEmptyPortfolioItem (TypeScript)\n// Creates an empty portfolio item with default values.\n\nfunction createEmptyPortfolioItem(): PortfolioProjectData {\n  return {\n    id: nanoid(),\n    title: '',\n    description: '',\n    url: '',\n    image: ''\n  };\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:14:59.254Z
+Question Type: function-variant
+Function: handleRemoveItem
+Function Size: 304 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleRemoveItem (TypeScript)\n// Removes an item from the portfolio and updates the state.\n\nconst handleRemoveItem = (id: string) => {\n    const newPortfolio = portfolio.filter(p => p.id !== id);\n    setPortfolio(newPortfolio);\n    updateItem(id, newPortfolio);\n    setIsEditing(false);\n
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760334041410
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 7
+Ended: 2025-10-13T21:14:59.430Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-13T21:16:35.145Z
+File: freeCodeCamp-freeCodeCamp-f5a932c/client/src/components/profile/components/portfolio.tsx
+Functions Extracted: 6
+
+
+Function 1: checkIfValidImage
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+const checkIfValidImage = (url: string): Promise<ProfileValidation> => {
+    const img = new Image();
+
+    return new Promise(resolve => {
+      img.onerror = () =>
+        resolve({ state: 'error', message: t('validation.url-not-image') });
+      img.onload = () => resolve({ state: 'success', message: '' });
+      img.src = url;
+    });
+  };
+--------------------------------------------------------------------------------
+
+
+Function 2: createOnChangeHandler
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const createOnChangeHandler = (id: string, key: 'description' | 'image' | 'title' | 'url') => (e: React.ChangeEvent<HTMLInputElement>) => {
+      e.preventDefault();
+      const userInput = e.target.value.slice();
+      setPortfolio(prevPortfolio => {
+        const mutablePortfolio = [...prevPortfolio];
+        const index = findIndex(prevPortfolio, p => p.id === id);
+        mutablePortfolio[index] = {
+          ...mutablePortfolio[index],
+          [key]: userInput
+        };
+        if (key === 'image' && userInput) {
+          void checkIfValidImage(userInput).then(imageValidation => {
+            setImageValid(imageValidation);
+          });
+        } else if (key === 'image' && !userInput) {
+          setImageValid({ state: 'success', message: '' });
+        }
+        return mutablePortfolio;
+      });
+    };
+--------------------------------------------------------------------------------
+
+
+Function 3: updateItem
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+const updateItem = (id: string, updatedPortfolio?: PortfolioProjectData[]) => {
+    if (unsavedItemId === id) {
+      setUnsavedItemId(null);
+    }
+    const portfolioToUpdate = updatedPortfolio || portfolio;
+    updateMyPortfolio({ portfolio: portfolioToUpdate });
+    setIsEditing(false);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 4: handleRemoveItem
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+const handleRemoveItem = (id: string) => {
+    const newPortfolio = portfolio.filter(p => p.id !== id);
+    setPortfolio(newPortfolio);
+    updateItem(id, newPortfolio);
+    setIsEditing(false);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 5: formCorrect
+Language: TypeScript
+Lines: 21
+Full Code:
+--------------------------------------------------------------------------------
+const formCorrect = (portfolioItem: PortfolioProjectData) => {
+    const { id, title, description, url, image } = portfolioItem;
+    const { state: titleState, message: titleMessage } = getTitleValidation(title);
+    const { state: urlState, message: urlMessage } = getUrlValidation(url);
+    const { state: descriptionState, message: descriptionMessage } = getDescriptionValidation(description);
+    const { state: imageState, message: imageMessage } = getUrlValidation(image);
+    const pristine = isFormPristine(id);
+    const urlIsValid = !isURL(url, {
+      protocols: ['http', 'https'],
+      require_tld: true,
+      require_protocol: true
+    });
+    const isButtonDisabled = [
+      titleState,
+      urlState,
+      descriptionState,
+      imageState,
+      urlIsValid
+    ].some(state => state === 'error' || false);
+    return {
+      isButtonDisabled,
+      title: { titleState, titleMessage },
+      url: { urlState, urlMessage },
+      image: { imageState, imageMessage },
+      desc: { descriptionState, descriptionMessage },
+      pristine
+    };
+  };
+--------------------------------------------------------------------------------
+
+
+Function 6: renderPortfolio
+Language: TypeScript
+Lines: 66
+Full Code:
+--------------------------------------------------------------------------------
+const renderPortfolio = (portfolioItem: PortfolioProjectData, index: number, arr: PortfolioProjectData[]) => {
+    const { id, title, description, url, image } = portfolioItem;
+    const {
+      isButtonDisabled,
+      title: { titleState, titleMessage },
+      url: { urlState, urlMessage },
+      image: { imageState, imageMessage },
+      desc: { descriptionState, descriptionMessage },
+      pristine
+    } = formCorrect(portfolioItem);
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>, id: string) => {
+      e.preventDefault();
+      if (isButtonDisabled) return null;
+      setIsEditing(false);
+      return updateItem(id);
+    };
+    const combineImageStatus =
+      imageState === 'success' && imageValidation.state === 'success'
+        ? null
+        : 'error';
+    const combineImageMessage = imageMessage || imageValidation.message;
+    return (
+      <FullWidthRow key={id}>
+        <form
+          onSubmit={e => handleSubmit(e, id)}
+          id='portfolio-items'
+          data-playwright-test-label='portfolio-items'
+        >
+          <FormGroup
+            controlId={`${id}-title`}
+            validationState={
+              pristine || (!pristine && !title) ? null : titleState
+            }
+          >
+            <ControlLabel htmlFor={`${id}-title-input`}>
+              {t('settings.labels.title')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'title')}
+              required
+              type='text'
+              value={title}
+              name='portfolio-title'
+              id={`${id}-title-input`}
+            />
+            {titleMessage ? (
+              <HelpBlock data-playwright-test-label='title-validation'>
+                {titleMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-url`}
+            validationState={pristine || (!pristine && !url) ? null : urlState}
+          >
+            <ControlLabel htmlFor={`${id}-url-input`}>
+              {t('settings.labels.url')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'url')}
+              required
+              type='url'
+              value={url}
+              name='portfolio-url'
+              id={`${id}-url-input`}
+            />
+            {urlMessage ? (
+              <HelpBlock data-playwright-test-label='url-validation'>
+                {urlMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-image`}
+            validationState={pristine ? null : combineImageStatus}
+          >
+            <ControlLabel htmlFor={`${id}-image-input`}>
+              {t('settings.labels.image')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'image')}
+              type='url'
+              value={image}
+              name='portfolio-image'
+              id={`${id}-image-input`}
+            />
+            {combineImageMessage ? (
+              <HelpBlock data-playwright-test-label='image-validation'>
+                {combineImageMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-description`}
+            validationState={pristine ? null : descriptionState}
+          >
+            <ControlLabel htmlFor={`${id}-description-input`}>
+              {t('settings.labels.description')}
+            </ControlLabel>
+            <FormControl
+              componentClass='textarea'
+              onChange={createOnChangeHandler(id, 'description')}
+              value={description}
+              name='portfolio-description'
+              id={`${id}-description-input`}
+            />
+            {descriptionMessage ? (
+              <HelpBlock data-playwright-test-label='description-validation'>
+                {descriptionMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <BlockSaveButton
+            disabled={isButtonDisabled}
+            bgSize='large'
+            data-playwright-test-label='save-portfolio'
+            {...(isButtonDisabled && { tabIndex: -1 })}
+          >
+            {t('buttons.save-portfolio')}
+          </BlockSaveButton>
+          <Spacer size='xs' />
+          <Button
+            block
+            size='large'
+            variant='danger'
+            onClick={() => handleRemoveItem(id)}
+            type='button'
+          >
+            {t('buttons.remove-portfolio')}
+          </Button>
+        </form>
+        {index + 1 !== arr.length && (
+          <>
+            <Spacer size='m' />
+            <hr />
+            <Spacer size='m' />
+          </>
+        )}
+      </FullWidthRow>
+    );
+  };
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:16:48.437Z
+Question Type: order-sequence
+Function: formCorrect
+Function Size: 1157 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: formCorrect (TypeScript)\n// Validates the form fields of a portfolio item.\n\nconst formCorrect = (portfolioItem: PortfolioProjectData) => {\n    const { id, title, description, url, image } = portfolioItem;\n    const { state: titleState, message: titleMessage } = getTitleValidation(title)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:16:48.775Z
+Question Type: select-all
+Function: formCorrect
+Function Size: 1157 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: formCorrect (TypeScript)\n// Validates the form fields of a portfolio item.\n\nconst formCorrect = (portfolioItem: PortfolioProjectData) => {\n    const { id, title, description, url, image } = portfolioItem;\n    const { state: titleState, message: titleMessage } = getTitleValidation(title)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:16:56.027Z
+Question Type: select-all
+Function: updateItem
+Function Size: 391 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateItem (TypeScript)\n// Updates the portfolio item and triggers a save action.\n\nconst updateItem = (id: string, updatedPortfolio?: PortfolioProjectData[]) => {\n    if (unsavedItemId === id) {\n      setUnsavedItemId(null);\n    }\n    const portfolioToUpdate = updatedPortfolio || portfo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:16:56.152Z
+Question Type: true-false
+Function: renderPortfolio
+Function Size: 4917 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: renderPortfolio (TypeScript)\n// Renders a portfolio item form with validation and submission handling.\n\nconst renderPortfolio = (portfolioItem: PortfolioProjectData, index: number, arr: PortfolioProjectData[]) => {\n    const { id, title, description, url, image } = portfolioItem;\n    co
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:17:00.106Z
+Question Type: function-variant
+Function: createOnChangeHandler
+Function Size: 933 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createOnChangeHandler (TypeScript)\n// Creates an onChange handler for portfolio item fields.\n\nconst createOnChangeHandler = (id: string, key: 'description' | 'image' | 'title' | 'url') => (e: React.ChangeEvent<HTMLInputElement>) => {\n      e.preventDefault();\n      const userInput = e.t
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:17:04.151Z
+Question Type: multiple-choice
+Function: createOnChangeHandler
+Function Size: 933 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: createOnChangeHandler (TypeScript)\n// Creates an onChange handler for portfolio item fields.\n\nconst createOnChangeHandler = (id: string, key: 'description' | 'image' | 'title' | 'url') => (e: React.ChangeEvent<HTMLInputElement>) => {\n      e.preventDefault();\n      const userInput = e.t
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:17:05.198Z
+Question Type: function-variant
+Function: renderPortfolio
+Function Size: 4917 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: renderPortfolio (TypeScript)\n// Renders a portfolio item form with validation and submission handling.\n\nconst renderPortfolio = (portfolioItem: PortfolioProjectData, index: number, arr: PortfolioProjectData[]) => {\n    const { id, title, description, url, image } = portfolioItem;\n    co
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:17:07.865Z
+Question Type: order-sequence
+Function: checkIfValidImage
+Function Size: 454 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: checkIfValidImage (TypeScript)\n// Validates if the provided URL is a valid image by loading it.\n\nconst checkIfValidImage = (url: string): Promise<ProfileValidation> => {\n    const img = new Image();\n\n    return new Promise(resolve => {\n      img.onerror = () =>\n        resolve({ state: 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:17:15.303Z
+Question Type: select-all
+Function: handleRemoveItem
+Function Size: 287 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: handleRemoveItem (TypeScript)\n// Handles the removal of a portfolio item.\n\nconst handleRemoveItem = (id: string) => {\n    const newPortfolio = portfolio.filter(p => p.id !== id);\n    setPortfolio(newPortfolio);\n    updateItem(id, newPortfolio);\n    setIsEditing(false);\n  };
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:17:16.584Z
+Question Type: select-all
+Function: createOnChangeHandler
+Function Size: 933 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createOnChangeHandler (TypeScript)\n// Creates an onChange handler for portfolio item fields.\n\nconst createOnChangeHandler = (id: string, key: 'description' | 'image' | 'title' | 'url') => (e: React.ChangeEvent<HTMLInputElement>) => {\n      e.preventDefault();\n      const userInput = e.t
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:17:17.765Z
+Question Type: function-variant
+Function: handleRemoveItem
+Function Size: 287 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleRemoveItem (TypeScript)\n// Handles the removal of a portfolio item.\n\nconst handleRemoveItem = (id: string) => {\n    const newPortfolio = portfolio.filter(p => p.id !== id);\n    setPortfolio(newPortfolio);\n    updateItem(id, newPortfolio);\n    setIsEditing(false);\n  };
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:17:21.115Z
+Question Type: function-variant
+Function: checkIfValidImage
+Function Size: 454 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: checkIfValidImage (TypeScript)\n// Validates if the provided URL is a valid image by loading it.\n\nconst checkIfValidImage = (url: string): Promise<ProfileValidation> => {\n    const img = new Image();\n\n    return new Promise(resolve => {\n      img.onerror = () =>\n        resolve({ state: 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760334041410
+Repository: Unknown
+Total Questions Generated: 12
+Total Chunks Processed: 6
+Ended: 2025-10-13T21:17:21.263Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-13T21:18:01.489Z
+File: [4 files: to make use of the Response object (message, status, etc), completion-epic.js, help-modal.tsx, just need the body to exist, but doesn't seem to use the properties.]
+Functions Extracted: 10
+
+
+Function 1: get
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+async function get<T>(
+  path: string,
+  signal?: AbortSignal
+): Promise<ResponseWithData<T>> {
+  const response = await fetch(`${base}${path}`, {
+    ...defaultOptions,
+    headers: { 'CSRF-Token': getCSRFToken() },
+    signal
+  });
+
+  return combineDataWithResponse(response);
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: combineDataWithResponse
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+async function combineDataWithResponse<T>(response: Response) {
+  const data = (await response.json()) as T;
+  return { response, data };
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: postChallenge
+Language: JavaScript
+Lines: 34
+Full Code:
+--------------------------------------------------------------------------------
+function postChallenge(update) {
+  const {
+    payload: { challengeType }
+  } = update;
+  const saveChallenge = postUpdate$(update).pipe(
+    retry(3),
+    switchMap(({ data }) => {
+      const {
+        type,
+        completedDailyCodingChallenges,
+        savedChallenges,
+        message,
+        examResults
+      } = data;
+      const payloadWithClientProperties = {
+        ...omit(update.payload, ['files'])
+      };
+      if (update.payload.files) {
+        payloadWithClientProperties.challengeFiles = update.payload.files.map(
+          ({ key, ...rest }) => ({
+            ...rest,
+            fileKey: key
+          })
+        );
+      }
+
+      let actions = [
+        submitComplete({
+          submittedChallenge: payloadWithClientProperties,
+          completedDailyCodingChallenges,
+          savedChallenges: mapFilesToChallengeFiles(savedChallenges),
+          examResults
+        }),
+        updateComplete(),
+        submitChallengeComplete()
+      ];
+
+      if (
+        type === 'error' ||
+        (message && challengeType === challengeTypes.msTrophy)
+      ) {
+        actions = [];
+        if (message) {
+          actions.push(createFlashMessage(data));
+        }
+        actions.push(submitChallengeError());
+      } else if (challengeType === challengeTypes.msTrophy) {
+        actions.push(createFlashMessage(msTrophyVerified));
+      }
+
+      return of(...actions);
+    }),
+    catchError(() => of(updateFailed(update), submitChallengeError()))
+  );
+  return saveChallenge;
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: submitModern
+Language: JavaScript
+Lines: 31
+Full Code:
+--------------------------------------------------------------------------------
+function submitModern(type, state) {
+  const tests = challengeTestsSelector(state);
+  if (tests.length === 0 || tests.every(test => test.pass && !test.err)) {
+    if (type === actionTypes.checkChallenge) {
+      return of({ type: 'this was a check challenge' });
+    }
+
+    if (type === actionTypes.submitChallenge) {
+      const { id, block, challengeType } = challengeMetaSelector(state);
+
+      let update;
+
+      if (getIsDailyCodingChallenge(challengeType)) {
+        const language = getDailyCodingChallengeLanguage(challengeType);
+
+        const body = {
+          id,
+          challengeType,
+          language
+        };
+
+        update = {
+          endpoint: '/daily-coding-challenge-completed',
+          payload: body
+        };
+      } else {
+        const challengeFiles = challengeFilesSelector(state);
+
+        let body;
+        if (
+          block === 'javascript-algorithms-and-data-structures-projects' ||
+          canSaveToDB(challengeType)
+        ) {
+          body = standardizeRequestBody({ id, challengeType, challengeFiles });
+        } else {
+          body = {
+            id,
+            challengeType
+          };
+        }
+
+        update = {
+          endpoint: '/encoded/modern-challenge-completed',
+          payload: body
+        };
+      }
+      return postChallenge(update);
+    }
+  }
+  return empty();
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: submitProject
+Language: JavaScript
+Lines: 24
+Full Code:
+--------------------------------------------------------------------------------
+function submitProject(type, state) {
+  if (type === actionTypes.checkChallenge) {
+    return empty();
+  }
+
+  const { solution, githubLink } = projectFormValuesSelector(state);
+  const { id, challengeType } = challengeMetaSelector(state);
+  const { username } = userSelector(state);
+  const challengeInfo = { id, challengeType, solution };
+  if (challengeType === challengeTypes.backEndProject) {
+    challengeInfo.githubLink = githubLink;
+  }
+
+  const update = {
+    endpoint: '/project-completed',
+    payload: challengeInfo
+  };
+  return postChallenge(update, username).pipe(
+    concat(of(updateSolutionFormValues({})))
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: submitBackendChallenge
+Language: JavaScript
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+function submitBackendChallenge(type, state) {
+  const tests = challengeTestsSelector(state);
+  if (tests.length > 0 && tests.every(test => test.pass && !test.err)) {
+    if (type === actionTypes.submitChallenge) {
+      const { id } = challengeMetaSelector(state);
+      const {
+        solution: { value: solution }
+      } = projectFormValuesSelector(state);
+      const challengeInfo = { id, solution };
+
+      const update = {
+        endpoint: '/backend-challenge-completed',
+        payload: challengeInfo
+      };
+      return postChallenge(update);
+    }
+  }
+  return empty();
+}
+--------------------------------------------------------------------------------
+
+
+Function 7: postChargeStripe
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function postChargeStripe(
+  body: Donation
+): Promise<ResponseWithData<void>> {
+  return post('/donate/charge-stripe', body);
+}
+--------------------------------------------------------------------------------
+
+
+Function 8: postChargeStripeCard
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function postChargeStripeCard(
+  body: Donation
+): Promise<ResponseWithData<void>> {
+  return post('/donate/charge-stripe-card', body);
+}
+--------------------------------------------------------------------------------
+
+
+Function 9: generateExamToken
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function generateExamToken(): Promise<
+  ResponseWithData<ExamTokenResponse>
+> {
+  return post('/user/exam-environment/token', {});
+}
+--------------------------------------------------------------------------------
+
+
+Function 10: createStripePaymentIntent
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+export function createStripePaymentIntent(body: {
+  email: string | undefined;
+  name: string | undefined;
+  amount: number;
+  duration: DonationDuration;
+}): PaymentIntentResponse {
+  return post('/donate/create-stripe-payment-intent', body);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:18:09.607Z
+Question Type: select-all
+Function: combineDataWithResponse
+Function Size: 245 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: combineDataWithResponse (TypeScript)\n// Combines the response object with parsed JSON data.\n\nasync function combineDataWithResponse<T>(response: Response) {\n  const data = (await response.json()) as T;\n  return { response, data };\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:18:11.106Z
+Question Type: order-sequence
+Function: combineDataWithResponse
+Function Size: 245 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: combineDataWithResponse (TypeScript)\n// Combines the response object with parsed JSON data.\n\nasync function combineDataWithResponse<T>(response: Response) {\n  const data = (await response.json()) as T;\n  return { response, data };\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:18:14.014Z
+Question Type: select-all
+Function: postChargeStripe
+Function Size: 239 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: postChargeStripe (TypeScript)\n// Charges the Stripe account with the given donation body.\n\nexport function postChargeStripe(\n  body: Donation\n): Promise<ResponseWithData<void>> {\n  return post('/donate/charge-stripe', body);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:18:15.081Z
+Question Type: multiple-choice
+Function: postChargeStripe
+Function Size: 239 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: postChargeStripe (TypeScript)\n// Charges the Stripe account with the given donation body.\n\nexport function postChargeStripe(\n  body: Donation\n): Promise<ResponseWithData<void>> {\n  return post('/donate/charge-stripe', body);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:18:15.415Z
+Question Type: true-false
+Function: generateExamToken
+Function Size: 226 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: generateExamToken (TypeScript)\n// Generates an exam token for the user.\n\nexport function generateExamToken(): Promise<\n  ResponseWithData<ExamTokenResponse>\n> {\n  return post('/user/exam-environment/token', {});\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:18:24.061Z
+Question Type: function-variant
+Function: submitBackendChallenge
+Function Size: 687 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: submitBackendChallenge (JavaScript)\n// Submits a backend challenge if all tests pass.\n\nfunction submitBackendChallenge(type, state) {\n  const tests = challengeTestsSelector(state);\n  if (tests.length > 0 && tests.every(test => test.pass && !test.err)) {\n    if (type === actionTypes.subm
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760334041410
+Repository: Unknown
+Total Questions Generated: 5
+Total Chunks Processed: 10
+Ended: 2025-10-13T21:18:24.240Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-13T21:20:31.699Z
+File: [3 files: completion-epic.js, awaitable-messenger.ts, TODO: Convert to DELETE]
+Functions Extracted: 7
+
+
+Function 1: postChallenge
+Language: JavaScript
+Lines: 38
+Full Code:
+--------------------------------------------------------------------------------
+function postChallenge(update) {
+  const {
+    payload: { challengeType }
+  } = update;
+  const saveChallenge = postUpdate$(update).pipe(
+    retry(3),
+    switchMap(({ data }) => {
+      const {
+        type,
+        completedDailyCodingChallenges,
+        savedChallenges,
+        message,
+        examResults
+      } = data;
+      const payloadWithClientProperties = {
+        ...omit(update.payload, ['files'])
+      };
+      if (update.payload.files) {
+        payloadWithClientProperties.challengeFiles = update.payload.files.map(
+          ({ key, ...rest }) => ({
+            ...rest,
+            fileKey: key
+          })
+        );
+      }
+
+      let actions = [
+        submitComplete({
+          submittedChallenge: payloadWithClientProperties,
+          completedDailyCodingChallenges,
+          savedChallenges: mapFilesToChallengeFiles(savedChallenges),
+          examResults
+        }),
+        updateComplete(),
+        submitChallengeComplete()
+      ];
+
+      if (
+        type === 'error' ||
+        (message && challengeType === challengeTypes.msTrophy)
+      ) {
+        actions = [];
+        if (message) {
+          actions.push(createFlashMessage(data));
+        }
+        actions.push(submitChallengeError());
+      } else if (challengeType === challengeTypes.msTrophy) {
+        actions.push(createFlashMessage(msTrophyVerified));
+      }
+
+      return of(...actions);
+    }),
+    catchError(() => of(updateFailed(update), submitChallengeError()))
+  );
+  return saveChallenge;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: submitModern
+Language: JavaScript
+Lines: 36
+Full Code:
+--------------------------------------------------------------------------------
+function submitModern(type, state) {
+  const tests = challengeTestsSelector(state);
+  if (tests.length === 0 || tests.every(test => test.pass && !test.err)) {
+    if (type === actionTypes.checkChallenge) {
+      return of({ type: 'this was a check challenge' });
+    }
+
+    if (type === actionTypes.submitChallenge) {
+      const { id, block, challengeType } = challengeMetaSelector(state);
+
+      let update;
+
+      if (getIsDailyCodingChallenge(challengeType)) {
+        const language = getDailyCodingChallengeLanguage(challengeType);
+
+        const body = {
+          id,
+          challengeType,
+          language
+        };
+
+        update = {
+          endpoint: '/daily-coding-challenge-completed',
+          payload: body
+        };
+      } else {
+        const challengeFiles = challengeFilesSelector(state);
+
+        let body;
+        if (
+          block === 'javascript-algorithms-and-data-structures-projects' ||
+          canSaveToDB(challengeType)
+        ) {
+          body = standardizeRequestBody({ id, challengeType, challengeFiles });
+        } else {
+          body = {
+            id,
+            challengeType
+          };
+        }
+
+        update = {
+          endpoint: '/encoded/modern-challenge-completed',
+          payload: body
+        };
+      }
+      return postChallenge(update);
+    }
+  }
+  return empty();
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: submitProject
+Language: JavaScript
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+function submitProject(type, state) {
+  if (type === actionTypes.checkChallenge) {
+    return empty();
+  }
+
+  const { solution, githubLink } = projectFormValuesSelector(state);
+  const { id, challengeType } = challengeMetaSelector(state);
+  const { username } = userSelector(state);
+  const challengeInfo = { id, challengeType, solution };
+  if (challengeType === challengeTypes.backEndProject) {
+    challengeInfo.githubLink = githubLink;
+  }
+
+  const update = {
+    endpoint: '/project-completed',
+    payload: challengeInfo
+  };
+  return postChallenge(update, username).pipe(
+    concat(of(updateSolutionFormValues({})))
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: submitBackendChallenge
+Language: JavaScript
+Lines: 27
+Full Code:
+--------------------------------------------------------------------------------
+function submitBackendChallenge(type, state) {
+  const tests = challengeTestsSelector(state);
+  if (tests.length > 0 && tests.every(test => test.pass && !test.err)) {
+    if (type === actionTypes.submitChallenge) {
+      const { id } = challengeMetaSelector(state);
+      const {
+        solution: { value: solution }
+      } = projectFormValuesSelector(state);
+      const challengeInfo = { id, solution };
+
+      const update = {
+        endpoint: '/backend-challenge-completed',
+        payload: challengeInfo
+      };
+      return postChallenge(update);
+    }
+  }
+  return empty();
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: awaitResponse
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+export function awaitResponse<
+  MessageOut,
+  MessageIn extends { type: string; value: Value; error: string },
+  Value
+>({
+  messenger,
+  message,
+  onMessage
+}: {
+  messenger: Messenger<MessageOut>;
+  message: MessageOut;
+  onMessage: (
+    response: MessageIn,
+    onSuccess: (res: Value) => void,
+    onFailure: (err: Error) => void
+  ) => void;
+}): Promise<Value> {
+  return new Promise(
+    (resolve: (res: Value) => void, reject: (err: Error) => void) => {
+      const channel = new MessageChannel();
+      // logic goes here
+    }
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: putUpdateMyAbout
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyAbout(
+  values: MyAbout
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-about', { ...values });
+}
+--------------------------------------------------------------------------------
+
+
+Function 7: putUpdateMyUsername
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+export function putUpdateMyUsername(
+  username: string
+): Promise<ResponseWithData<void>> {
+  return put('/update-my-username', { username });
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:20:37.032Z
+Question Type: select-all
+Function: submitBackendChallenge
+Function Size: 687 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: submitBackendChallenge (JavaScript)\n// Submits a backend challenge if all tests pass.\n\nfunction submitBackendChallenge(type, state) {\n  const tests = challengeTestsSelector(state);\n  if (tests.length > 0 && tests.every(test => test.pass && !test.err)) {\n    if (type === actionTypes.subm
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:20:37.732Z
+Question Type: true-false
+Function: putUpdateMyAbout
+Function Size: 224 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMyAbout (TypeScript)\n// Updates the user's about information.\n\nexport function putUpdateMyAbout(\n  values: MyAbout\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-about', { ...values });\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:20:42.057Z
+Question Type: select-all
+Function: awaitResponse
+Function Size: 646 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: awaitResponse (TypeScript)\n// Sends a message and awaits a response using a messenger.\n\nexport function awaitResponse<\n  MessageOut,\n  MessageIn extends { type: string; value: Value; error: string },\n  Value\n>({\n  messenger,\n  message,\n  onMessage\n}: {\n  messenger: Messenger<MessageOut>
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:20:44.495Z
+Question Type: select-all
+Function: submitModern
+Function Size: 1453 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: submitModern (JavaScript)\n// Submits a modern challenge based on the type and state provided.\n\nfunction submitModern(type, state) {\n  const tests = challengeTestsSelector(state);\n  if (tests.length === 0 || tests.every(test => test.pass && !test.err)) {\n    if (type === actionTypes.chec
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:20:44.830Z
+Question Type: true-false
+Function: submitProject
+Function Size: 721 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: submitProject (JavaScript)\n// Handles the submission of a project challenge.\n\nfunction submitProject(type, state) {\n  if (type === actionTypes.checkChallenge) {\n    return empty();\n  }\n\n  const { solution, githubLink } = projectFormValuesSelector(state);\n  const { id, challengeType } = 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:20:52.090Z
+Question Type: order-sequence
+Function: postChallenge
+Function Size: 1619 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: postChallenge (JavaScript)\n// Handles posting a challenge update and managing the response actions.\n\nfunction postChallenge(update) {\n  const {\n    payload: { challengeType }\n  } = update;\n  const saveChallenge = postUpdate$(update).pipe(\n    retry(3),\n    switchMap(({ data }) => {\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:20:54.019Z
+Question Type: select-all
+Function: putUpdateMyUsername
+Function Size: 224 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMyUsername (TypeScript)\n// Updates the user's username.\n\nexport function putUpdateMyUsername(\n  username: string\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-username', { username });\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:21:04.805Z
+Question Type: function-variant
+Function: submitBackendChallenge
+Function Size: 687 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: submitBackendChallenge (JavaScript)\n// Submits a backend challenge if all tests pass.\n\nfunction submitBackendChallenge(type, state) {\n  const tests = challengeTestsSelector(state);\n  if (tests.length > 0 && tests.every(test => test.pass && !test.err)) {\n    if (type === actionTypes.subm
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:21:06.285Z
+Question Type: function-variant
+Function: putUpdateMyAbout
+Function Size: 224 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: putUpdateMyAbout (TypeScript)\n// Updates the user's about information.\n\nexport function putUpdateMyAbout(\n  values: MyAbout\n): Promise<ResponseWithData<void>> {\n  return put('/update-my-about', { ...values });\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:21:06.834Z
+Question Type: function-variant
+Function: awaitResponse
+Function Size: 646 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: awaitResponse (TypeScript)\n// Sends a message and awaits a response using a messenger.\n\nexport function awaitResponse<\n  MessageOut,\n  MessageIn extends { type: string; value: Value; error: string },\n  Value\n>({\n  messenger,\n  message,\n  onMessage\n}: {\n  messenger: Messenger<MessageOut>
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:21:16.522Z
+Question Type: multiple-choice
+Function: submitModern
+Function Size: 1453 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: submitModern (JavaScript)\n// Submits a modern challenge based on the type and state provided.\n\nfunction submitModern(type, state) {\n  const tests = challengeTestsSelector(state);\n  if (tests.length === 0 || tests.every(test => test.pass && !test.err)) {\n    if (type === actionTypes.chec
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:21:22.202Z
+Question Type: function-variant
+Function: submitModern
+Function Size: 1453 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: submitModern (JavaScript)\n// Submits a modern challenge based on the type and state provided.\n\nfunction submitModern(type, state) {\n  const tests = challengeTestsSelector(state);\n  if (tests.length === 0 || tests.every(test => test.pass && !test.err)) {\n    if (type === actionTypes.chec
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:21:31.554Z
+Question Type: select-all
+Function: postChallenge
+Function Size: 1619 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: postChallenge (JavaScript)\n// Handles posting a challenge update and managing the response actions.\n\nfunction postChallenge(update) {\n  const {\n    payload: { challengeType }\n  } = update;\n  const saveChallenge = postUpdate$(update).pipe(\n    retry(3),\n    switchMap(({ data }) => {\n    
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760334041410
+Repository: Unknown
+Total Questions Generated: 14
+Total Chunks Processed: 7
+Ended: 2025-10-13T21:21:35.589Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-13T21:22:38.058Z
+File: freeCodeCamp-freeCodeCamp-f5a932c/client/src/components/profile/components/portfolio.tsx
+Functions Extracted: 12
+
+
+Function 1: createEmptyPortfolioItem
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function createEmptyPortfolioItem(): PortfolioProjectData {
+  return {
+    id: nanoid(),
+    title: '',
+    description: '',
+    url: '',
+    image: ''
+  };
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: checkIfValidImage
+Language: TypeScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+const checkIfValidImage = (url: string): Promise<ProfileValidation> => {
+  const img = new Image();
+
+  return new Promise(resolve => {
+    img.onerror = () =>
+      resolve({ state: 'error', message: t('validation.url-not-image') });
+    img.onload = () => resolve({ state: 'success', message: '' });
+    img.src = url;
+  });
+};
+--------------------------------------------------------------------------------
+
+
+Function 3: createOnChangeHandler
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const createOnChangeHandler = (id: string, key: 'description' | 'image' | 'title' | 'url') => (e: React.ChangeEvent<HTMLInputElement>) => {
+  e.preventDefault();
+  const userInput = e.target.value.slice();
+  setPortfolio(prevPortfolio => {
+    const mutablePortfolio = [...prevPortfolio];
+    const index = findIndex(prevPortfolio, p => p.id === id);
+    mutablePortfolio[index] = {
+      ...mutablePortfolio[index],
+      [key]: userInput
+    };
+    if (key === 'image' && userInput) {
+      void checkIfValidImage(userInput).then(imageValidation => {
+        setImageValid(imageValidation);
+      });
+    } else if (key === 'image' && !userInput) {
+      setImageValid({ state: 'success', message: '' });
+    }
+    return mutablePortfolio;
+  });
+};
+--------------------------------------------------------------------------------
+
+
+Function 4: updateItem
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+const updateItem = (id: string, updatedPortfolio?: PortfolioProjectData[]) => {
+    if (unsavedItemId === id) {
+      setUnsavedItemId(null);
+    }
+    const portfolioToUpdate = updatedPortfolio || portfolio;
+    updateMyPortfolio({ portfolio: portfolioToUpdate });
+    setIsEditing(false);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 5: handleAdd
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+const handleAdd = () => {
+    const item = createEmptyPortfolioItem();
+    setPortfolio(prev => [item, ...prev]);
+    setUnsavedItemId(item.id);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 6: handleRemoveItem
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+const handleRemoveItem = (id: string) => {
+    const newPortfolio = portfolio.filter(p => p.id !== id);
+    setPortfolio(newPortfolio);
+    updateItem(id, newPortfolio);
+    setIsEditing(false);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 7: isFormPristine
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+const isFormPristine = (id: string) => {
+    const original = find(props.portfolio, createFindById(id));
+    if (!original) {
+      return false;
+    }
+    const edited = find(portfolio, createFindById(id));
+    return isEqual(original, edited);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 8: getDescriptionValidation
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const getDescriptionValidation = (description: string): ProfileValidation => {
+    const len = description.length;
+    const charsLeft = 288 - len;
+    if (charsLeft < 0) {
+      return {
+        state: 'error',
+        message: t('validation.max-characters', { charsLeft: 0 })
+      };
+    }
+    if (charsLeft < 41 && charsLeft > 0) {
+      return {
+        state: 'warning',
+        message: t('validation.max-characters', { charsLeft })
+      };
+    }
+    if (charsLeft === 288) {
+      return { state: null, message: '' };
+    }
+    return { state: 'success', message: '' };
+  };
+--------------------------------------------------------------------------------
+
+
+Function 9: getTitleValidation
+Language: TypeScript
+Lines: 11
+Full Code:
+--------------------------------------------------------------------------------
+const getTitleValidation = (title: string): ProfileValidation => {
+    if (!title) {
+      return { state: 'error', message: t('validation.title-required') };
+    }
+    const len = title.length;
+    if (len < 2) {
+      return { state: 'error', message: t('validation.title-short') };
+    }
+    if (len > 144) {
+      return { state: 'error', message: t('validation.title-long') };
+    }
+    return { state: 'success', message: '' };
+  };
+--------------------------------------------------------------------------------
+
+
+Function 10: getUrlValidation
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const getUrlValidation = (url: string): { state: 'success' | 'warning' | 'error'; message: string } => {
+    const len = url.length;
+    if (!url) {
+      return { state: 'success', message: '' };
+    }
+    if (len >= 4 && !hasProtocolRE.test(url)) {
+      return { state: 'error', message: t('validation.invalid-protocol') };
+    }
+    return isURL(url)
+      ? { state: 'success', message: '' }
+      : { state: 'warning', message: t('validation.use-valid-url') };
+  };
+--------------------------------------------------------------------------------
+
+
+Function 11: formCorrect
+Language: TypeScript
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+const formCorrect = (portfolioItem: PortfolioProjectData) => {
+    const { id, title, description, url, image } = portfolioItem;
+    const { state: titleState, message: titleMessage } = getTitleValidation(title);
+    const { state: urlState, message: urlMessage } = getUrlValidation(url);
+    const { state: descriptionState, message: descriptionMessage } = getDescriptionValidation(description);
+    const { state: imageState, message: imageMessage } = getUrlValidation(image);
+    const pristine = isFormPristine(id);
+    const urlIsValid = !isURL(url, {
+      protocols: ['http', 'https'],
+      require_tld: true,
+      require_protocol: true
+    });
+    const isButtonDisabled = [
+      titleState,
+      urlState,
+      descriptionState,
+      imageState,
+      urlIsValid
+    ].some(state => state === 'error' || false);
+    return {
+      isButtonDisabled,
+      title: { titleState, titleMessage },
+      url: { urlState, urlMessage },
+      image: { imageState, imageMessage },
+      desc: { descriptionState, descriptionMessage },
+      pristine
+    };
+  };
+--------------------------------------------------------------------------------
+
+
+Function 12: renderPortfolio
+Language: TypeScript
+Lines: 75
+Full Code:
+--------------------------------------------------------------------------------
+const renderPortfolio = (portfolioItem: PortfolioProjectData, index: number, arr: PortfolioProjectData[]) => {
+    const { id, title, description, url, image } = portfolioItem;
+    const {
+      isButtonDisabled,
+      title: { titleState, titleMessage },
+      url: { urlState, urlMessage },
+      image: { imageState, imageMessage },
+      desc: { descriptionState, descriptionMessage },
+      pristine
+    } = formCorrect(portfolioItem);
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>, id: string) => {
+      e.preventDefault();
+      if (isButtonDisabled) return null;
+      setIsEditing(false);
+      return updateItem(id);
+    };
+    const combineImageStatus =
+      imageState === 'success' && imageValidation.state === 'success'
+        ? null
+        : 'error';
+    const combineImageMessage = imageMessage || imageValidation.message;
+    return (
+      <FullWidthRow key={id}>
+        <form
+          onSubmit={e => handleSubmit(e, id)}
+          id='portfolio-items'
+          data-playwright-test-label='portfolio-items'
+        >
+          <FormGroup
+            controlId={`${id}-title`}
+            validationState={
+              pristine || (!pristine && !title) ? null : titleState
+            }
+          >
+            <ControlLabel htmlFor={`${id}-title-input`}>
+              {t('settings.labels.title')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'title')}
+              required
+              type='text'
+              value={title}
+              name='portfolio-title'
+              id={`${id}-title-input`}
+            />
+            {titleMessage ? (
+              <HelpBlock data-playwright-test-label='title-validation'>
+                {titleMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-url`}
+            validationState={pristine || (!pristine && !url) ? null : urlState}
+          >
+            <ControlLabel htmlFor={`${id}-url-input`}>
+              {t('settings.labels.url')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'url')}
+              required
+              type='url'
+              value={url}
+              name='portfolio-url'
+              id={`${id}-url-input`}
+            />
+            {urlMessage ? (
+              <HelpBlock data-playwright-test-label='url-validation'>
+                {urlMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-image`}
+            validationState={pristine ? null : combineImageStatus}
+          >
+            <ControlLabel htmlFor={`${id}-image-input`}>
+              {t('settings.labels.image')}
+            </ControlLabel>
+            <FormControl
+              onChange={createOnChangeHandler(id, 'image')}
+              type='url'
+              value={image}
+              name='portfolio-image'
+              id={`${id}-image-input`}
+            />
+            {combineImageMessage ? (
+              <HelpBlock data-playwright-test-label='image-validation'>
+                {combineImageMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <FormGroup
+            controlId={`${id}-description`}
+            validationState={pristine ? null : descriptionState}
+          >
+            <ControlLabel htmlFor={`${id}-description-input`}>
+              {t('settings.labels.description')}
+            </ControlLabel>
+            <FormControl
+              componentClass='textarea'
+              onChange={createOnChangeHandler(id, 'description')}
+              value={description}
+              name='portfolio-description'
+              id={`${id}-description-input`}
+            />
+            {descriptionMessage ? (
+              <HelpBlock data-playwright-test-label='description-validation'>
+                {descriptionMessage}
+              </HelpBlock>
+            ) : null}
+          </FormGroup>
+          <BlockSaveButton
+            disabled={isButtonDisabled}
+            bgSize='large'
+            data-playwright-test-label='save-portfolio'
+            {...(isButtonDisabled && { tabIndex: -1 })}
+          >
+            {t('buttons.save-portfolio')}
+          </BlockSaveButton>
+          <Spacer size='xs' />
+          <Button
+            block
+            size='large'
+            variant='danger'
+            onClick={() => handleRemoveItem(id)}
+            type='button'
+          >
+            {t('buttons.remove-portfolio')}
+          </Button>
+        </form>
+        {index + 1 !== arr.length && (
+          <>
+            <Spacer size='m' />
+            <hr />
+            <Spacer size='m' />
+          </>
+        )}
+      </FullWidthRow>
+    );
+  };
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:22:47.943Z
+Question Type: order-sequence
+Function: handleRemoveItem
+Function Size: 282 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleRemoveItem (TypeScript)\n// Removes a portfolio item by its ID.\n\nconst handleRemoveItem = (id: string) => {\n    const newPortfolio = portfolio.filter(p => p.id !== id);\n    setPortfolio(newPortfolio);\n    updateItem(id, newPortfolio);\n    setIsEditing(false);\n  };
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:22:49.502Z
+Question Type: select-all
+Function: checkIfValidImage
+Function Size: 435 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: checkIfValidImage (TypeScript)\n// Checks if the provided URL is a valid image by loading it.\n\nconst checkIfValidImage = (url: string): Promise<ProfileValidation> => {\n  const img = new Image();\n\n  return new Promise(resolve => {\n    img.onerror = () =>\n      resolve({ state: 'error', me
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:22:53.776Z
+Question Type: order-sequence
+Function: createEmptyPortfolioItem
+Function Size: 266 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createEmptyPortfolioItem (TypeScript)\n// Creates an empty portfolio item with default values.\n\nfunction createEmptyPortfolioItem(): PortfolioProjectData {\n  return {\n    id: nanoid(),\n    title: '',\n    description: '',\n    url: '',\n    image: ''\n  };\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:22:57.771Z
+Question Type: function-variant
+Function: handleAdd
+Function Size: 234 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleAdd (TypeScript)\n// Adds a new empty portfolio item to the list.\n\nconst handleAdd = () => {\n    const item = createEmptyPortfolioItem();\n    setPortfolio(prev => [item, ...prev]);\n    setUnsavedItemId(item.id);\n  };
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:23:05.877Z
+Question Type: select-all
+Function: formCorrect
+Function Size: 1180 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: formCorrect (TypeScript)\n// Validates all fields of a portfolio item and determines button state.\n\nconst formCorrect = (portfolioItem: PortfolioProjectData) => {\n    const { id, title, description, url, image } = portfolioItem;\n    const { state: titleState, message: titleMessage } = ge
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:23:08.173Z
+Question Type: select-all
+Function: getUrlValidation
+Function Size: 565 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getUrlValidation (TypeScript)\n// Validates the URL format for a portfolio item.\n\nconst getUrlValidation = (url: string): { state: 'success' | 'warning' | 'error'; message: string } => {\n    const len = url.length;\n    if (!url) {\n      return { state: 'success', message: '' };\n    }\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:23:17.436Z
+Question Type: function-variant
+Function: isFormPristine
+Function Size: 367 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isFormPristine (TypeScript)\n// Checks if the form for a portfolio item is unchanged from the original.\n\nconst isFormPristine = (id: string) => {\n    const original = find(props.portfolio, createFindById(id));\n    if (!original) {\n      return false;\n    }\n    const edited = find(portfol
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:23:19.576Z
+Question Type: function-variant
+Function: renderPortfolio
+Function Size: 4914 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: renderPortfolio (TypeScript)\n// Renders a portfolio item form with validation and submission logic.\n\nconst renderPortfolio = (portfolioItem: PortfolioProjectData, index: number, arr: PortfolioProjectData[]) => {\n    const { id, title, description, url, image } = portfolioItem;\n    const
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-13T21:23:19.766Z
+Question Type: true-false
+Function: formCorrect
+Function Size: 1180 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: formCorrect (TypeScript)\n// Validates all fields of a portfolio item and determines button state.\n\nconst formCorrect = (portfolioItem: PortfolioProjectData) => {\n    const { id, title, description, url, image } = portfolioItem;\n    const { state: titleState, message: titleMessage } = ge
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760334041410
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 12
+Ended: 2025-10-13T21:23:19.789Z
+================================================================================
+
