@@ -117,17 +117,17 @@ export async function POST(request: NextRequest) {
         return {
           id: `q-${contentHash}-${index}`,
           type: questionData.type,
-          snippet: q.snippet || '',
+          snippet: (typeof q === 'object' && q !== null && (q as { snippet?: string }).snippet) ?? '',
           question: questionData.question || 'Missing question text',
           options: [],
           correctAnswer: null,
           explanation: '',
           difficulty: 'medium',
-          qualityRating: q.qualityRating || null,
+          qualityRating: (typeof q === 'object' && q !== null && (q as { qualityRating?: unknown }).qualityRating) ?? null,
           language: questionData.language,
           languageColor: questionData.languageColor,
           languageBgColor: questionData.languageBgColor,
-          codeContext: questionData.codeContext || q.codeContext || '',
+          codeContext: questionData.codeContext || (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext) || '',
           variants: (questionData.variants || []).map((v: unknown) => ({
             ...v,
             code: typeof v.code === 'string' ? removeComments(v.code) : v.code
@@ -155,35 +155,35 @@ export async function POST(request: NextRequest) {
         return {
           id: `q-${contentHash}-${index}`,
           type: questionData.type,
-          snippet: q.snippet || '',
+          snippet: (typeof q === 'object' && q !== null && (q as { snippet?: string }).snippet) ?? '',
           question: questionData.question || 'Missing question text',
           options: opts,
           correctAnswer: correctAnswerValue,
           answer: questionData.answer || '',
           explanation: questionData.explanation || '',
           difficulty: 'medium',
-          qualityRating: q.qualityRating || null,
+          qualityRating: (typeof q === 'object' && q !== null && (q as { qualityRating?: unknown }).qualityRating) ?? null,
           language: questionData.language,
           languageColor: questionData.languageColor,
           languageBgColor: questionData.languageBgColor,
-          codeContext: questionData.codeContext || q.codeContext || '',
+          codeContext: questionData.codeContext || (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext) || '',
           variants: []
         };
       } else if (questionData.type === 'order-sequence') {
         return {
           id: `q-${contentHash}-${index}`,
           type: questionData.type,
-          snippet: q.snippet || '',
+          snippet: (typeof q === 'object' && q !== null && (q as { snippet?: string }).snippet) ?? '',
           question: questionData.question || 'Arrange the steps in correct order',
           options: questionData.steps || [],
           correctAnswer: questionData.correctOrder || [],
           explanation: questionData.explanation || '',
           difficulty: 'medium',
-          qualityRating: q.qualityRating || null,
+          qualityRating: (typeof q === 'object' && q !== null && (q as { qualityRating?: unknown }).qualityRating) ?? null,
           language: questionData.language,
           languageColor: questionData.languageColor,
           languageBgColor: questionData.languageBgColor,
-          codeContext: questionData.codeContext || q.codeContext || '',
+          codeContext: questionData.codeContext || (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext) || '',
           steps: questionData.steps || [],
           correctOrder: questionData.correctOrder || [],
           acceptableOrders: questionData.acceptableOrders || [],
@@ -205,18 +205,18 @@ export async function POST(request: NextRequest) {
         return {
           id: `q-${contentHash}-${index}`,
           type: questionData.type,
-          snippet: q.snippet || '',
+          snippet: (typeof q === 'object' && q !== null && (q as { snippet?: string }).snippet) ?? '',
           question: questionData.question || 'Is this statement true or false?',
           options: opts,
           correctAnswer: idx >= 0 ? opts[idx] : null,
           answer: questionData.answer || '',
           explanation: questionData.explanation || '',
           difficulty: 'medium',
-          qualityRating: q.qualityRating || null,
+          qualityRating: (typeof q === 'object' && q !== null && (q as { qualityRating?: unknown }).qualityRating) ?? null,
           language: questionData.language,
           languageColor: questionData.languageColor,
           languageBgColor: questionData.languageBgColor,
-          codeContext: questionData.codeContext || q.codeContext || '',
+          codeContext: questionData.codeContext || (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext) || '',
           variants: []
         };
       } else if (questionData.type === 'select-all') {
@@ -226,18 +226,18 @@ export async function POST(request: NextRequest) {
         return {
           id: `q-${contentHash}-${index}`,
           type: questionData.type,
-          snippet: q.snippet || '',
+          snippet: (typeof q === 'object' && q !== null && (q as { snippet?: string }).snippet) ?? '',
           question: questionData.question || 'Select all that apply',
           options: opts,
           correctAnswers: correctAnswers, // Array of indices
           correctAnswer: null, // Not used for select-all
           explanation: questionData.explanation || '',
           difficulty: 'medium',
-          qualityRating: q.qualityRating || null,
+          qualityRating: (typeof q === 'object' && q !== null && (q as { qualityRating?: unknown }).qualityRating) ?? null,
           language: questionData.language,
           languageColor: questionData.languageColor,
           languageBgColor: questionData.languageBgColor,
-          codeContext: questionData.codeContext || q.codeContext || '',
+          codeContext: questionData.codeContext || (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext) || '',
           variants: []
         };
       } else {
@@ -462,8 +462,8 @@ export async function POST(request: NextRequest) {
           }
           // Debug: Check what codeContext we have
           console.log('🔍 MCQ Processing - questionData.codeContext:', questionData.codeContext);
-          console.log('🔍 MCQ Processing - q.codeContext:', q.codeContext);
-          const finalCodeContext = questionData.codeContext || q.codeContext;
+          console.log('🔍 MCQ Processing - (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext):', (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext));
+          const finalCodeContext = questionData.codeContext || (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext);
           console.log('🔍 MCQ Processing - final codeContext:', finalCodeContext);
           
           return {
@@ -513,7 +513,7 @@ export async function POST(request: NextRequest) {
             correctAnswer: idx >= 0 ? opts[idx] : null,
             explanation: questionData.explanation || '',
             difficulty: 'medium',
-            codeContext: questionData.codeContext || q.codeContext,
+            codeContext: questionData.codeContext || (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext),
             variants: []
           };
         } else if (questionData.type === 'select-all') {
@@ -529,7 +529,7 @@ export async function POST(request: NextRequest) {
             correctAnswer: null, // Not used for select-all
             explanation: questionData.explanation || '',
             difficulty: 'medium',
-            codeContext: questionData.codeContext || q.codeContext,
+            codeContext: questionData.codeContext || (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext),
             variants: []
           };
         } else {
