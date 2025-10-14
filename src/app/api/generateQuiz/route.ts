@@ -146,23 +146,37 @@ export async function POST(request: NextRequest) {
           variants: sanitizedVariants
         };
       } else if (questionData.type === 'multiple-choice') {
-        const opts = questionData.options || [];
+        const optionsValue = (questionData as { options?: unknown }).options;
+        const opts = Array.isArray(optionsValue) ? optionsValue : [];
         
         // CRITICAL FIX: Use correctAnswerText if available (set by randomization)
         // Otherwise fall back to calculating from answer index
-        let correctAnswerValue = questionData.correctAnswerText;
+        let correctAnswerValue =
+          typeof (questionData as { correctAnswerText?: unknown }).correctAnswerText === 'string'
+            ? (questionData as { correctAnswerText?: string }).correctAnswerText
+            : null;
         
         if (!correctAnswerValue) {
-          const ansNum = parseInt(questionData.answer);
+          const answerValue = (questionData as { answer?: unknown }).answer;
+          const ansNum =
+            typeof answerValue === 'number'
+              ? Math.trunc(answerValue)
+              : typeof answerValue === 'string'
+                ? parseInt(answerValue, 10)
+                : Number.NaN;
           let idx = -1;
-          if (!isNaN(ansNum)) {
+          if (!Number.isNaN(ansNum)) {
             if (ansNum >= 1 && ansNum <= opts.length) idx = ansNum - 1;
             else if (ansNum >= 0 && ansNum < opts.length) idx = ansNum;
           }
-          correctAnswerValue = idx >= 0 ? opts[idx] : null;
+          correctAnswerValue = idx >= 0 ? (opts[idx] as unknown) : null;
         }
         
-        console.log(`✅ MCQ Correct Answer: "${correctAnswerValue}" (from ${questionData.correctAnswerText ? 'correctAnswerText' : 'answer index'})`);
+        const correctAnswerLog =
+          typeof correctAnswerValue === 'string'
+            ? correctAnswerValue
+            : JSON.stringify(correctAnswerValue ?? null);
+        console.log(`✅ MCQ Correct Answer: "${correctAnswerLog}" (from ${typeof (questionData as { correctAnswerText?: unknown }).correctAnswerText === 'string' ? 'correctAnswerText' : 'answer index'})`);
         
         return {
           id: `q-${contentHash}-${index}`,
