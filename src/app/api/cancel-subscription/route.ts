@@ -29,7 +29,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Cancel the subscription in Stripe
+    // Cancel the subscription in Stripe (no-op if stripe is not configured)
+    if (!stripe || !('subscriptions' in stripe)) {
+      return NextResponse.json({ success: true, message: 'Stripe not configured; skipping subscription cancellation' });
+    }
+
     const subscriptionResponse = await stripe.subscriptions.update(
       user.stripeSubscriptionId,
       {

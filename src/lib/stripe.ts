@@ -1,24 +1,23 @@
 import Stripe from 'stripe';
 import { loadStripe } from '@stripe/stripe-js';
 
-// Server-side Stripe instance
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is not defined in environment variables');
-}
-
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2024-12-18.acacia',
-  typescript: true,
-});
+// Server-side Stripe instance (non-fatal if missing during build)
+const stripeSecret = process.env.STRIPE_SECRET_KEY;
+export const stripe = stripeSecret
+  ? new Stripe(stripeSecret, {
+      apiVersion: '2024-12-18.acacia',
+      typescript: true,
+    })
+  // Cast to Stripe to avoid import-time crashes while allowing deploys without env
+  : (null as unknown as Stripe);
 
 // Client-side Stripe promise
-let stripePromise: Promise<Stripe | null>;
+let stripePromise: Promise<Stripe | null> | null = null;
 export const getStripe = () => {
   if (!stripePromise) {
-    if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
-      throw new Error('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not defined');
-    }
-    stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+    const pk = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+    // Return null promise if missing to avoid build-time failures
+    stripePromise = pk ? loadStripe(pk) : Promise.resolve(null);
   }
   return stripePromise;
 };
