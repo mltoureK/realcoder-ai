@@ -1,12 +1,10 @@
 import { 
   collection, 
   doc, 
-  getDoc, 
   getDocs, 
   query, 
   where, 
-  updateDoc,
-  Timestamp 
+  updateDoc
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { QuestionDoc, QuestionRatingDoc } from './quiz-history';

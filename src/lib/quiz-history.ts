@@ -263,7 +263,7 @@ export async function updateUserQuizUsage(userId: string): Promise<void> {
 /**
  * Save questions to Firestore for caching and quality tracking
  */
-export async function saveQuestions(questions: any[], repoUrl: string): Promise<string[]> {
+export async function saveQuestions(questions: unknown[], repoUrl: string): Promise<string[]> {
   try {
     const questionIds: string[] = [];
     
@@ -485,7 +485,7 @@ export const getQuestionPollData = async (questionId: string): Promise<{
 export const addQuestionToBank = async (
   repoUrl: string,
   question: Question,
-  _initialQualityScore: number = 85
+  _initialQualityScore = 85
 ): Promise<void> => {
   try {
     console.log(`🔍 [addQuestionToBank] Starting with question:`, question);

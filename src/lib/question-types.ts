@@ -58,7 +58,7 @@ export interface OrderSequenceQuestion extends BaseQuestion {
   }>;
   correctOrder: string[]; // Array of step IDs in correct order
   acceptableOrders?: string[][]; // Multiple valid orders
-  constraints?: any[]; // Precedence constraints
+  constraints?: unknown[]; // Precedence constraints
   explanation: string;
 }
 
@@ -113,7 +113,7 @@ export interface StoredQuestion {
   }>;
   correctOrder?: string[];
   acceptableOrders?: string[][];
-  constraints?: any[];
+  constraints?: unknown[];
   
   // Metrics
   upvotes: number;
@@ -127,33 +127,34 @@ export interface StoredQuestion {
   
   // Status
   status: 'active' | 'removed' | 'flagged';
-  createdAt: any; // Firestore timestamp
-  lastUpdated: any; // Firestore timestamp
+  createdAt: unknown; // Firestore timestamp
+  lastUpdated: unknown; // Firestore timestamp
 }
 
 /**
  * Normalize a question for storage in Firebase
  * FLATTENED: All fields at root level, no nested 'data' object
  */
-export const normalizeQuestionForStorage = (question: any): Partial<StoredQuestion> => {
+export const normalizeQuestionForStorage = (question: unknown): Partial<StoredQuestion> => {
+  const q = question as Record<string, unknown>;
   // Ensure we have a valid repoUrl
-  const repoUrl = question.repoUrl || '';
+  const repoUrl = q.repoUrl || '';
   const repoKey = repoUrl 
     ? repoUrl.replace('https://github.com/', '').replace('/', '-')
     : 'unknown-repo';
 
   // Base fields (ALWAYS included)
   const stored: Partial<StoredQuestion> = {
-    questionId: question.id || '',
+    questionId: q.id || '',
     repoUrl: repoUrl,
     repoKey,
-    type: question.type || '',
-    snippet: question.snippet || '',
-    question: question.question || '',
-    language: question.language || 'JavaScript',
-    difficulty: question.difficulty || 'medium',
-    codeContext: question.codeContext || '',
-    explanation: question.explanation || '',
+    type: q.type || '',
+    snippet: q.snippet || '',
+    question: q.question || '',
+    language: q.language || 'JavaScript',
+    difficulty: q.difficulty || 'medium',
+    codeContext: q.codeContext || '',
+    explanation: q.explanation || '',
     upvotes: 0,
     downvotes: 0,
     totalVotes: 0,
@@ -166,47 +167,47 @@ export const normalizeQuestionForStorage = (question: any): Partial<StoredQuesti
   };
 
   // Add type-specific fields (ALL at root level)
-  switch (question.type) {
+  switch (q.type) {
     case 'multiple-choice':
-      stored.options = question.options || [];
-      stored.correctAnswer = question.correctAnswer || '';
-      stored.answer = question.answer || '';
+      stored.options = q.options || [];
+      stored.correctAnswer = q.correctAnswer || '';
+      stored.answer = q.answer || '';
       break;
       
     case 'function-variant':
-      stored.variants = (question.variants || []).map((v: any) => ({
-        id: v.id || '',
-        code: v.code || '',
-        isCorrect: v.isCorrect || false,
-        explanation: v.explanation || ''
+      stored.variants = (q.variants || []).map((v: unknown) => ({
+        id: (v as Record<string, unknown>).id || '',
+        code: (v as Record<string, unknown>).code || '',
+        isCorrect: (v as Record<string, unknown>).isCorrect || false,
+        explanation: (v as Record<string, unknown>).explanation || ''
       }));
       break;
       
     case 'select-all':
-      stored.options = question.options || [];
-      stored.correctAnswers = question.correctAnswers || [];
+      stored.options = q.options || [];
+      stored.correctAnswers = q.correctAnswers || [];
       break;
       
     case 'true-false':
-      stored.options = question.options || ['True', 'False'];
-      stored.correctAnswer = question.correctAnswer || '';
-      stored.answer = question.answer || '';
+      stored.options = q.options || ['True', 'False'];
+      stored.correctAnswer = q.correctAnswer || '';
+      stored.answer = q.answer || '';
       break;
       
     case 'order-sequence':
-      stored.steps = (question.steps || []).map((s: any) => ({
-        id: s.id || '',
-        code: s.code || '',
-        isDistractor: s.isDistractor || false,
-        explanation: s.explanation || ''
+      stored.steps = (q.steps || []).map((s: unknown) => ({
+        id: (s as Record<string, unknown>).id || '',
+        code: (s as Record<string, unknown>).code || '',
+        isDistractor: (s as Record<string, unknown>).isDistractor || false,
+        explanation: (s as Record<string, unknown>).explanation || ''
       }));
-      stored.correctOrder = question.correctOrder || [];
-      stored.acceptableOrders = question.acceptableOrders || [];
-      stored.constraints = question.constraints || [];
+      stored.correctOrder = q.correctOrder || [];
+      stored.acceptableOrders = q.acceptableOrders || [];
+      stored.constraints = q.constraints || [];
       break;
       
     default:
-      console.warn(`Unknown question type: ${question.type}`);
+      console.warn(`Unknown question type: ${q.type}`);
   }
 
   return stored;
@@ -299,30 +300,31 @@ export const extractRepoInfo = (repoUrl: string) => {
 /**
  * Validate question data based on type
  */
-export const validateQuestionData = (question: any): boolean => {
-  if (!question.id || !question.type) {
-    console.warn('[validateQuestionData] Missing id or type:', {id: question.id, type: question.type});
+export const validateQuestionData = (question: unknown): boolean => {
+  const q = question as Record<string, unknown>;
+  if (!q.id || !q.type) {
+    console.warn('[validateQuestionData] Missing id or type:', {id: q.id, type: q.type});
     return false;
   }
 
-  switch (question.type) {
+  switch (q.type) {
     case 'multiple-choice':
-      return !!(question.options && question.correctAnswer);
+      return !!(q.options && q.correctAnswer);
       
     case 'function-variant':
-      return !!(question.variants && Array.isArray(question.variants) && question.variants.length > 0);
+      return !!(q.variants && Array.isArray(q.variants) && q.variants.length > 0);
       
     case 'select-all':
-      return !!(question.options && question.correctAnswers);
+      return !!(q.options && q.correctAnswers);
       
     case 'true-false':
-      return !!(question.options && question.correctAnswer);
+      return !!(q.options && q.correctAnswer);
       
     case 'order-sequence':
-      return !!(question.steps && question.correctOrder);
+      return !!(q.steps && q.correctOrder);
       
     default:
-      console.warn('[validateQuestionData] Unknown question type:', question.type);
+      console.warn('[validateQuestionData] Unknown question type:', q.type);
       return false;
   }
 };
