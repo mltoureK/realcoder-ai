@@ -25,12 +25,16 @@ export async function extractFunctionsFromFile(
   console.log(`🔍 Extracting functions from ${fileName}...`);
 
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json'
       },
+      signal: controller.signal,
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
@@ -162,9 +166,11 @@ CRITICAL:
       logger.logFunctionExtraction(fileName, functionSummary);
     }
 
+    clearTimeout(timeoutId);
     return validFunctions;
 
   } catch (error) {
+    clearTimeout(timeoutId);
     console.error(`❌ Error extracting functions from ${fileName}:`, error);
     return [];
   }

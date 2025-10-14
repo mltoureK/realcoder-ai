@@ -1,0 +1,1026 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1760466663427
+Started: 2025-10-14T18:31:03.427Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-14T18:31:03.428Z
+File: [8 files: SpringbootBackendApplicationTests.java, get employee by id rest api, Ignore ..., SpringbootBackendApplication.java, EmployeeRepository.java, Employee.java, If the maven-wrapper.properties exists, read it and check if it contains a custom, create employee rest api]
+Functions Extracted: 2
+
+
+Function 1: getEmployeeById
+Language: Java
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+@GetMapping("/employees/{id}")
+	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
+		Employee employee = employeeRepository.findById(id)
+			.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id :" + id));
+		return ResponseEntity.ok(employee);
+	}
+--------------------------------------------------------------------------------
+
+
+Function 2: downloadFileFromURL
+Language: Java
+Lines: 17
+Full Code:
+--------------------------------------------------------------------------------
+private static void downloadFileFromURL(String urlString, File destination) throws Exception {
+	if (System.getenv("MVNW_USERNAME") != null && System.getenv("MVNW_PASSWORD") != null) {
+		String username = System.getenv("MVNW_USERNAME");
+		char[] password = System.getenv("MVNW_PASSWORD").toCharArray();
+		Authenticator.setDefault(new Authenticator() {
+			@Override
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(username, password);
+			}
+		});
+	}
+	URL website = new URL(urlString);
+	ReadableByteChannel rbc;
+	rbc = Channels.newChannel(website.openStream());
+	FileOutputStream fos = new FileOutputStream(destination);
+	fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+	fos.close();
+	rbc.close();
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:31:12.117Z
+Question Type: multiple-choice
+Function: getEmployeeById
+Function Size: 365 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: getEmployeeById (Java)\n// Retrieves an employee by their ID.\n\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n			.orElseThrow(() -> new ResourceNotFoundException("Employee not 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:31:13.003Z
+Question Type: select-all
+Function: getEmployeeById
+Function Size: 365 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getEmployeeById (Java)\n// Retrieves an employee by their ID.\n\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n			.orElseThrow(() -> new ResourceNotFoundException("Employee not 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:31:18.339Z
+Question Type: order-sequence
+Function: downloadFileFromURL
+Function Size: 858 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: downloadFileFromURL (Java)\n// Downloads a file from a specified URL to a destination.\n\nprivate static void downloadFileFromURL(String urlString, File destination) throws Exception {\n	if (System.getenv("MVNW_USERNAME") != null && System.getenv("MVNW_PASSWORD") != null) {\n		String usernam
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:31:24.441Z
+Question Type: true-false
+Function: getEmployeeById
+Function Size: 365 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: getEmployeeById (Java)\n// Retrieves an employee by their ID.\n\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n			.orElseThrow(() -> new ResourceNotFoundException("Employee not 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:31:27.587Z
+Question Type: select-all
+Function: getEmployeeById
+Function Size: 365 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getEmployeeById (Java)\n// Retrieves an employee by their ID.\n\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n			.orElseThrow(() -> new ResourceNotFoundException("Employee not 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:31:28.899Z
+Question Type: function-variant
+Function: downloadFileFromURL
+Function Size: 858 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: downloadFileFromURL (Java)\n// Downloads a file from a specified URL to a destination.\n\nprivate static void downloadFileFromURL(String urlString, File destination) throws Exception {\n	if (System.getenv("MVNW_USERNAME") != null && System.getenv("MVNW_PASSWORD") != null) {\n		String usernam
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:31:29.320Z
+Question Type: order-sequence
+Function: getEmployeeById
+Function Size: 365 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getEmployeeById (Java)\n// Retrieves an employee by their ID.\n\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n			.orElseThrow(() -> new ResourceNotFoundException("Employee not 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:31:35.542Z
+Question Type: select-all
+Function: downloadFileFromURL
+Function Size: 858 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: downloadFileFromURL (Java)\n// Downloads a file from a specified URL to a destination.\n\nprivate static void downloadFileFromURL(String urlString, File destination) throws Exception {\n	if (System.getenv("MVNW_USERNAME") != null && System.getenv("MVNW_PASSWORD") != null) {\n		String usernam
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:31:38.678Z
+Question Type: select-all
+Function: getEmployeeById
+Function Size: 365 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getEmployeeById (Java)\n// Retrieves an employee by their ID.\n\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n			.orElseThrow(() -> new ResourceNotFoundException("Employee not 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:31:44.267Z
+Question Type: function-variant
+Function: getEmployeeById
+Function Size: 365 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getEmployeeById (Java)\n// Retrieves an employee by their ID.\n\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n			.orElseThrow(() -> new ResourceNotFoundException("Employee not 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:31:53.234Z
+Question Type: function-variant
+Function: getEmployeeById
+Function Size: 365 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: getEmployeeById (Java)\n// Retrieves an employee by their ID.\n\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n			.orElseThrow(() -> new ResourceNotFoundException("Employee not 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:31:56.258Z
+Question Type: select-all
+Function: downloadFileFromURL
+Function Size: 858 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: downloadFileFromURL (Java)\n// Downloads a file from a specified URL to a destination.\n\nprivate static void downloadFileFromURL(String urlString, File destination) throws Exception {\n	if (System.getenv("MVNW_USERNAME") != null && System.getenv("MVNW_PASSWORD") != null) {\n		String usernam
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:31:57.609Z
+Question Type: function-variant
+Function: downloadFileFromURL
+Function Size: 858 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: downloadFileFromURL (Java)\n// Downloads a file from a specified URL to a destination.\n\nprivate static void downloadFileFromURL(String urlString, File destination) throws Exception {\n	if (System.getenv("MVNW_USERNAME") != null && System.getenv("MVNW_PASSWORD") != null) {\n		String usernam
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:32:02.693Z
+Question Type: true-false
+Function: downloadFileFromURL
+Function Size: 858 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: downloadFileFromURL (Java)\n// Downloads a file from a specified URL to a destination.\n\nprivate static void downloadFileFromURL(String urlString, File destination) throws Exception {\n	if (System.getenv("MVNW_USERNAME") != null && System.getenv("MVNW_PASSWORD") != null) {\n		String usernam
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760466663427
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 2
+Ended: 2025-10-14T18:32:05.566Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:32:12.433Z
+Question Type: true-false
+Function: getEmployeeById
+Function Size: 365 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: getEmployeeById (Java)\n// Retrieves an employee by their ID.\n\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n			.orElseThrow(() -> new ResourceNotFoundException("Employee not 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:32:16.527Z
+Question Type: select-all
+Function: downloadFileFromURL
+Function Size: 858 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: downloadFileFromURL (Java)\n// Downloads a file from a specified URL to a destination.\n\nprivate static void downloadFileFromURL(String urlString, File destination) throws Exception {\n	if (System.getenv("MVNW_USERNAME") != null && System.getenv("MVNW_PASSWORD") != null) {\n		String usernam
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:32:24.210Z
+Question Type: function-variant
+Function: getEmployeeById
+Function Size: 365 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getEmployeeById (Java)\n// Retrieves an employee by their ID.\n\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n			.orElseThrow(() -> new ResourceNotFoundException("Employee not 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:32:24.307Z
+Question Type: true-false
+Function: downloadFileFromURL
+Function Size: 858 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: downloadFileFromURL (Java)\n// Downloads a file from a specified URL to a destination.\n\nprivate static void downloadFileFromURL(String urlString, File destination) throws Exception {\n	if (System.getenv("MVNW_USERNAME") != null && System.getenv("MVNW_PASSWORD") != null) {\n		String usernam
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:32:31.286Z
+Question Type: function-variant
+Function: downloadFileFromURL
+Function Size: 858 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: downloadFileFromURL (Java)\n// Downloads a file from a specified URL to a destination.\n\nprivate static void downloadFileFromURL(String urlString, File destination) throws Exception {\n	if (System.getenv("MVNW_USERNAME") != null && System.getenv("MVNW_PASSWORD") != null) {\n		String usernam
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:32:31.790Z
+Question Type: function-variant
+Function: getEmployeeById
+Function Size: 365 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getEmployeeById (Java)\n// Retrieves an employee by their ID.\n\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n			.orElseThrow(() -> new ResourceNotFoundException("Employee not 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:32:38.339Z
+Question Type: order-sequence
+Function: downloadFileFromURL
+Function Size: 858 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: downloadFileFromURL (Java)\n// Downloads a file from a specified URL to a destination.\n\nprivate static void downloadFileFromURL(String urlString, File destination) throws Exception {\n	if (System.getenv("MVNW_USERNAME") != null && System.getenv("MVNW_PASSWORD") != null) {\n		String usernam
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:32:42.395Z
+Question Type: order-sequence
+Function: getEmployeeById
+Function Size: 365 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getEmployeeById (Java)\n// Retrieves an employee by their ID.\n\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n			.orElseThrow(() -> new ResourceNotFoundException("Employee not 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T18:32:44.286Z
+Question Type: select-all
+Function: downloadFileFromURL
+Function Size: 858 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: downloadFileFromURL (Java)\n// Downloads a file from a specified URL to a destination.\n\nprivate static void downloadFileFromURL(String urlString, File destination) throws Exception {\n	if (System.getenv("MVNW_USERNAME") != null && System.getenv("MVNW_PASSWORD") != null) {\n		String usernam
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760466663427
+Repository: Unknown
+Total Questions Generated: 7
+Total Chunks Processed: 2
+Ended: 2025-10-14T18:32:44.323Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-14T20:08:09.931Z
+File: [3 files: Passed an ad unit, DEPS, json2.js]
+Functions Extracted: 1
+
+
+Function 1: aggregate
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+aggregate: function() {
+		var points = $();
+		$.each(contexts, function(i, c) {
+			$.each(c.waypoints, function(i, e) {
+				points = points.add(e.element);
+			});
+		});
+		return points;
+	}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:08:16.525Z
+Question Type: true-false
+Function: aggregate
+Function Size: 302 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: aggregate (JavaScript)\n// Aggregates waypoints from different contexts into a single jQuery object.\n\naggregate: function() {\n		var points = $();\n		$.each(contexts, function(i, c) {\n			$.each(c.waypoints, function(i, e) {\n				points = points.add(e.element);\n			});\n		});\n		return points;\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:08:25.592Z
+Question Type: function-variant
+Function: aggregate
+Function Size: 302 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: aggregate (JavaScript)\n// Aggregates waypoints from different contexts into a single jQuery object.\n\naggregate: function() {\n		var points = $();\n		$.each(contexts, function(i, c) {\n			$.each(c.waypoints, function(i, e) {\n				points = points.add(e.element);\n			});\n		});\n		return points;\n
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760466663427
+Repository: Unknown
+Total Questions Generated: 2
+Total Chunks Processed: 1
+Ended: 2025-10-14T20:08:25.639Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:08:34.860Z
+Question Type: select-all
+Function: aggregate
+Function Size: 302 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: aggregate (JavaScript)\n// Aggregates waypoints from different contexts into a single jQuery object.\n\naggregate: function() {\n		var points = $();\n		$.each(contexts, function(i, c) {\n			$.each(c.waypoints, function(i, e) {\n				points = points.add(e.element);\n			});\n		});\n		return points;\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:08:39.707Z
+Question Type: function-variant
+Function: aggregate
+Function Size: 302 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: aggregate (JavaScript)\n// Aggregates waypoints from different contexts into a single jQuery object.\n\naggregate: function() {\n		var points = $();\n		$.each(contexts, function(i, c) {\n			$.each(c.waypoints, function(i, e) {\n				points = points.add(e.element);\n			});\n		});\n		return points;\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:08:40.950Z
+Question Type: function-variant
+Function: aggregate
+Function Size: 302 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: aggregate (JavaScript)\n// Aggregates waypoints from different contexts into a single jQuery object.\n\naggregate: function() {\n		var points = $();\n		$.each(contexts, function(i, c) {\n			$.each(c.waypoints, function(i, e) {\n				points = points.add(e.element);\n			});\n		});\n		return points;\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:08:42.182Z
+Question Type: function-variant
+Function: aggregate
+Function Size: 302 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: aggregate (JavaScript)\n// Aggregates waypoints from different contexts into a single jQuery object.\n\naggregate: function() {\n		var points = $();\n		$.each(contexts, function(i, c) {\n			$.each(c.waypoints, function(i, e) {\n				points = points.add(e.element);\n			});\n		});\n		return points;\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:08:44.796Z
+Question Type: order-sequence
+Function: aggregate
+Function Size: 302 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: aggregate (JavaScript)\n// Aggregates waypoints from different contexts into a single jQuery object.\n\naggregate: function() {\n		var points = $();\n		$.each(contexts, function(i, c) {\n			$.each(c.waypoints, function(i, e) {\n				points = points.add(e.element);\n			});\n		});\n		return points;\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:08:51.396Z
+Question Type: order-sequence
+Function: aggregate
+Function Size: 302 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: aggregate (JavaScript)\n// Aggregates waypoints from different contexts into a single jQuery object.\n\naggregate: function() {\n		var points = $();\n		$.each(contexts, function(i, c) {\n			$.each(c.waypoints, function(i, e) {\n				points = points.add(e.element);\n			});\n		});\n		return points;\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:08:54.086Z
+Question Type: select-all
+Function: aggregate
+Function Size: 302 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: aggregate (JavaScript)\n// Aggregates waypoints from different contexts into a single jQuery object.\n\naggregate: function() {\n		var points = $();\n		$.each(contexts, function(i, c) {\n			$.each(c.waypoints, function(i, e) {\n				points = points.add(e.element);\n			});\n		});\n		return points;\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:08:54.697Z
+Question Type: select-all
+Function: aggregate
+Function Size: 302 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: aggregate (JavaScript)\n// Aggregates waypoints from different contexts into a single jQuery object.\n\naggregate: function() {\n		var points = $();\n		$.each(contexts, function(i, c) {\n			$.each(c.waypoints, function(i, e) {\n				points = points.add(e.element);\n			});\n		});\n		return points;\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:08:56.852Z
+Question Type: true-false
+Function: aggregate
+Function Size: 302 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: aggregate (JavaScript)\n// Aggregates waypoints from different contexts into a single jQuery object.\n\naggregate: function() {\n		var points = $();\n		$.each(contexts, function(i, c) {\n			$.each(c.waypoints, function(i, e) {\n				points = points.add(e.element);\n			});\n		});\n		return points;\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:09:01.908Z
+Question Type: function-variant
+Function: aggregate
+Function Size: 302 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: aggregate (JavaScript)\n// Aggregates waypoints from different contexts into a single jQuery object.\n\naggregate: function() {\n		var points = $();\n		$.each(contexts, function(i, c) {\n			$.each(c.waypoints, function(i, e) {\n				points = points.add(e.element);\n			});\n		});\n		return points;\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:09:02.483Z
+Question Type: true-false
+Function: aggregate
+Function Size: 302 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: aggregate (JavaScript)\n// Aggregates waypoints from different contexts into a single jQuery object.\n\naggregate: function() {\n		var points = $();\n		$.each(contexts, function(i, c) {\n			$.each(c.waypoints, function(i, e) {\n				points = points.add(e.element);\n			});\n		});\n		return points;\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:09:04.636Z
+Question Type: select-all
+Function: aggregate
+Function Size: 302 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: aggregate (JavaScript)\n// Aggregates waypoints from different contexts into a single jQuery object.\n\naggregate: function() {\n		var points = $();\n		$.each(contexts, function(i, c) {\n			$.each(c.waypoints, function(i, e) {\n				points = points.add(e.element);\n			});\n		});\n		return points;\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:09:05.131Z
+Question Type: multiple-choice
+Function: aggregate
+Function Size: 302 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: aggregate (JavaScript)\n// Aggregates waypoints from different contexts into a single jQuery object.\n\naggregate: function() {\n		var points = $();\n		$.each(contexts, function(i, c) {\n			$.each(c.waypoints, function(i, e) {\n				points = points.add(e.element);\n			});\n		});\n		return points;\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:09:12.021Z
+Question Type: select-all
+Function: aggregate
+Function Size: 302 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: aggregate (JavaScript)\n// Aggregates waypoints from different contexts into a single jQuery object.\n\naggregate: function() {\n		var points = $();\n		$.each(contexts, function(i, c) {\n			$.each(c.waypoints, function(i, e) {\n				points = points.add(e.element);\n			});\n		});\n		return points;\n
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760466663427
+Repository: Unknown
+Total Questions Generated: 14
+Total Chunks Processed: 1
+Ended: 2025-10-14T20:09:15.048Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-14T20:20:44.107Z
+File: [3 files: tracker.d.ts, logging.d.ts, WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.]
+Functions Extracted: 7
+
+
+Function 1: Headers
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function Headers(headers) {
+    this.map = {}
+
+    if (headers instanceof Headers) {
+        headers.forEach(function(value, name) {
+            this.append(name, value)
+        }, this)
+
+    } else if (headers) {
+        Object.getOwnPropertyNames(headers).forEach(function(name) {
+            this.append(name, headers[name])
+        }, this)
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: append
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+Headers.prototype.append = function(name, value) {
+    name = normalizeName(name)
+    value = normalizeValue(value)
+    var list = this.map[name]
+    if (!list) {
+        list = []
+        this.map[name] = list
+    }
+    list.push(value)
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: forEach
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+Headers.prototype.forEach = function(callback, thisArg) {
+    Object.getOwnPropertyNames(this.map).forEach(function(name) {
+        this.map[name].forEach(function(value) {
+            callback.call(thisArg, value, name, this)
+        }, this)
+    }, this)
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: fileReaderReady
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+function fileReaderReady(reader) {
+    return new Promise(function(resolve, reject) {
+        reader.onload = function() {
+            resolve(reader.result)
+        }
+        reader.onerror = function() {
+            reject(reader.error)
+        }
+    })
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: readBlobAsArrayBuffer
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function readBlobAsArrayBuffer(blob) {
+    var reader = new FileReader()
+    reader.readAsArrayBuffer(blob)
+    return fileReaderReady(reader)
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: readBlobAsText
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function readBlobAsText(blob) {
+    var reader = new FileReader()
+    reader.readAsText(blob)
+    return fileReaderReady(reader)
+}
+--------------------------------------------------------------------------------
+
+
+Function 7: Body
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function Body() {
+    this.bodyUsed = false
+
+    this._initBody = function(body) {
+        this._bodyInit = body
+        if (typeof body === 'string') {
+            this._bodyText = body
+        } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
+            this._bodyBlob = body
+        } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
+            this._bodyFormData = body
+        } else if (!body) {
+            this._bodyText = ''
+        }
+    }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:20:50.299Z
+Question Type: true-false
+Function: append
+Function Size: 343 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: append (JavaScript)\n// Appends a new value to an existing header or creates a new header.\n\nHeaders.prototype.append = function(name, value) {\n    name = normalizeName(name)\n    value = normalizeValue(value)\n    var list = this.map[name]\n    if (!list) {\n        list = []\n        this.ma
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:20:56.469Z
+Question Type: multiple-choice
+Function: forEach
+Function Size: 356 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: forEach (JavaScript)\n// Iterates over all headers and executes a callback for each.\n\nHeaders.prototype.forEach = function(callback, thisArg) {\n    Object.getOwnPropertyNames(this.map).forEach(function(name) {\n        this.map[name].forEach(function(value) {\n            callback.call(thi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:20:58.623Z
+Question Type: order-sequence
+Function: fileReaderReady
+Function Size: 387 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: fileReaderReady (JavaScript)\n// Returns a promise that resolves when the FileReader has successfully read the data.\n\nfunction fileReaderReady(reader) {\n    return new Promise(function(resolve, reject) {\n        reader.onload = function() {\n            resolve(reader.result)\n        }\n  
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:20:59.995Z
+Question Type: function-variant
+Function: Headers
+Function Size: 460 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: Headers (JavaScript)\n// Constructor for creating a Headers object that manages header fields.\n\nfunction Headers(headers) {\n    this.map = {}\n\n    if (headers instanceof Headers) {\n        headers.forEach(function(value, name) {\n            this.append(name, value)\n        }, this)\n\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:21:04.231Z
+Question Type: select-all
+Function: readBlobAsText
+Function Size: 219 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: readBlobAsText (JavaScript)\n// Reads a Blob as text and returns a promise.\n\nfunction readBlobAsText(blob) {\n    var reader = new FileReader()\n    reader.readAsText(blob)\n    return fileReaderReady(reader)\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:21:04.884Z
+Question Type: true-false
+Function: readBlobAsArrayBuffer
+Function Size: 250 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: readBlobAsArrayBuffer (JavaScript)\n// Reads a Blob as an ArrayBuffer and returns a promise.\n\nfunction readBlobAsArrayBuffer(blob) {\n    var reader = new FileReader()\n    reader.readAsArrayBuffer(blob)\n    return fileReaderReady(reader)\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:21:07.525Z
+Question Type: function-variant
+Function: append
+Function Size: 343 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: append (JavaScript)\n// Appends a new value to an existing header or creates a new header.\n\nHeaders.prototype.append = function(name, value) {\n    name = normalizeName(name)\n    value = normalizeValue(value)\n    var list = this.map[name]\n    if (!list) {\n        list = []\n        this.ma
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:21:10.155Z
+Question Type: order-sequence
+Function: readBlobAsText
+Function Size: 219 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: readBlobAsText (JavaScript)\n// Reads a Blob as text and returns a promise.\n\nfunction readBlobAsText(blob) {\n    var reader = new FileReader()\n    reader.readAsText(blob)\n    return fileReaderReady(reader)\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:21:12.986Z
+Question Type: select-all
+Function: forEach
+Function Size: 356 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: forEach (JavaScript)\n// Iterates over all headers and executes a callback for each.\n\nHeaders.prototype.forEach = function(callback, thisArg) {\n    Object.getOwnPropertyNames(this.map).forEach(function(name) {\n        this.map[name].forEach(function(value) {\n            callback.call(thi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:21:13.951Z
+Question Type: select-all
+Function: fileReaderReady
+Function Size: 387 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: fileReaderReady (JavaScript)\n// Returns a promise that resolves when the FileReader has successfully read the data.\n\nfunction fileReaderReady(reader) {\n    return new Promise(function(resolve, reject) {\n        reader.onload = function() {\n            resolve(reader.result)\n        }\n  
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:21:19.130Z
+Question Type: function-variant
+Function: readBlobAsArrayBuffer
+Function Size: 250 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: readBlobAsArrayBuffer (JavaScript)\n// Reads a Blob as an ArrayBuffer and returns a promise.\n\nfunction readBlobAsArrayBuffer(blob) {\n    var reader = new FileReader()\n    reader.readAsArrayBuffer(blob)\n    return fileReaderReady(reader)\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:21:22.478Z
+Question Type: select-all
+Function: Headers
+Function Size: 460 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: Headers (JavaScript)\n// Constructor for creating a Headers object that manages header fields.\n\nfunction Headers(headers) {\n    this.map = {}\n\n    if (headers instanceof Headers) {\n        headers.forEach(function(value, name) {\n            this.append(name, value)\n        }, this)\n\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:21:24.884Z
+Question Type: select-all
+Function: Body
+Function Size: 605 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: Body (JavaScript)\n// Constructor for Body that initializes the body content based on the input type.\n\nfunction Body() {\n    this.bodyUsed = false\n\n    this._initBody = function(body) {\n        this._bodyInit = body\n        if (typeof body === 'string') {\n            this._bodyText = bod
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760466663427
+Repository: Unknown
+Total Questions Generated: 14
+Total Chunks Processed: 7
+Ended: 2025-10-14T20:21:33.807Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-14T20:22:00.875Z
+File: => `true` if user roles have been loaded
+Functions Extracted: 11
+
+
+Function 1: addUsersToRoles
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function addUsersToRoles(
+    users: string | string[] | Meteor.User | Meteor.User[],
+    roles: string | string[],
+    options?: string | { scope?: string; ifExists?: boolean }
+  ): void {
+    // Logic to add users to roles goes here
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: createRole
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function createRole(
+    roleName: string,
+    options?: { unlessExists: boolean }
+  ): string {
+    // Logic to create a new role goes here
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: addRolesToParent
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function addRolesToParent(
+    rolesNames: string | string[],
+    parentName: string
+  ): void {
+    // Logic to add role parent to roles goes here
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: removeRolesFromParent
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function removeRolesFromParent(
+    rolesNames: string | string[],
+    parentName: string
+  ): void {
+    // Logic to remove role parent from roles goes here
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: getGroupsForUser
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function getGroupsForUser(
+    user: string | Meteor.User,
+    role?: string
+  ): string[] {
+    // Logic to retrieve users groups goes here
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: getScopesForUser
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function getScopesForUser(
+    user: string | Meteor.User,
+    roles?: string | string[]
+  ): string[] {
+    // Logic to retrieve users scopes goes here
+}
+--------------------------------------------------------------------------------
+
+
+Function 7: getRolesForUser
+Language: TypeScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+function getRolesForUser(
+    user: string | Meteor.User,
+    options?: string | {
+        scope?: string;
+        anyScope?: boolean;
+        onlyScoped?: boolean;
+        onlyAssigned?: boolean;
+        fullObjects?: boolean;
+      }
+  ): string[] {
+    // Logic to retrieve user's roles goes here
+}
+--------------------------------------------------------------------------------
+
+
+Function 8: getUserAssignmentsForRole
+Language: TypeScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+function getUserAssignmentsForRole(
+    roles: string | string[],
+    options?: string | {
+        scope?: string;
+        anyScope?: boolean;
+        queryOptions?: QueryOptions;
+      }
+  ): Mongo.Cursor<RoleAssignment> {
+    // Logic to retrieve all assignments of a user for the target role goes here
+}
+--------------------------------------------------------------------------------
+
+
+Function 9: getUsersInRole
+Language: TypeScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+function getUsersInRole(
+    roles: string | string[],
+    options?: string | {
+        scope?: string;
+        anyScope?: boolean;
+        onlyScoped?: boolean;
+        queryOptions?: QueryOptions;
+      },
+    queryOptions?: QueryOptions
+  ): Mongo.Cursor<Meteor.User> {
+    // Logic to retrieve all users who are in target role goes here
+}
+--------------------------------------------------------------------------------
+
+
+Function 10: removeUsersFromRoles
+Language: TypeScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+function removeUsersFromRoles(
+    users: string | string[] | Meteor.User | Meteor.User[],
+    roles?: string | string[],
+    options?: string | { scope?: string; anyScope?: boolean }
+  ): void {
+    // Logic to remove users from assigned roles goes here
+}
+--------------------------------------------------------------------------------
+
+
+Function 11: setUserRoles
+Language: TypeScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+function setUserRoles(
+    users: string | string[] | Meteor.User | Meteor.User[],
+    roles: string | string[],
+    options?: string | { scope?: string; anyScope?: boolean; ifExists?: boolean }
+  ): void {
+    // Logic to set users' roles goes here
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:22:10.516Z
+Question Type: select-all
+Function: getScopesForUser
+Function Size: 225 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getScopesForUser (TypeScript)\n// Retrieves users scopes.\n\nfunction getScopesForUser(\n    user: string | Meteor.User,\n    roles?: string | string[]\n  ): string[] {\n    // Logic to retrieve users scopes goes here\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:22:12.391Z
+Question Type: select-all
+Function: addRolesToParent
+Function Size: 223 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: addRolesToParent (TypeScript)\n// Adds role parent to roles.\n\nfunction addRolesToParent(\n    rolesNames: string | string[],\n    parentName: string\n  ): void {\n    // Logic to add role parent to roles goes here\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:22:14.837Z
+Question Type: true-false
+Function: addRolesToParent
+Function Size: 223 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: addRolesToParent (TypeScript)\n// Adds role parent to roles.\n\nfunction addRolesToParent(\n    rolesNames: string | string[],\n    parentName: string\n  ): void {\n    // Logic to add role parent to roles goes here\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:22:15.189Z
+Question Type: order-sequence
+Function: getScopesForUser
+Function Size: 225 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getScopesForUser (TypeScript)\n// Retrieves users scopes.\n\nfunction getScopesForUser(\n    user: string | Meteor.User,\n    roles?: string | string[]\n  ): string[] {\n    // Logic to retrieve users scopes goes here\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:22:21.343Z
+Question Type: true-false
+Function: setUserRoles
+Function Size: 313 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setUserRoles (TypeScript)\n// Sets users' roles.\n\nfunction setUserRoles(\n    users: string | string[] | Meteor.User | Meteor.User[],\n    roles: string | string[],\n    options?: string | { scope?: string; anyScope?: boolean; ifExists?: boolean }\n  ): void {\n    // Logic to set users' role
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-14T20:22:21.747Z
+Question Type: function-variant
+Function: getUsersInRole
+Function Size: 431 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getUsersInRole (TypeScript)\n// Retrieves all users who are in target role.\n\nfunction getUsersInRole(\n    roles: string | string[],\n    options?: string | {\n        scope?: string;\n        anyScope?: boolean;\n        onlyScoped?: boolean;\n        queryOptions?: QueryOptions;\n      },\n   
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760466663427
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 11
+Ended: 2025-10-14T20:22:21.779Z
+================================================================================
+
