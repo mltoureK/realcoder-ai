@@ -24,6 +24,13 @@ export async function extractFunctionsFromFile(
 ): Promise<ExtractedFunction[]> {
   console.log(`🔍 Extracting functions from ${fileName}...`);
 
+  // Skip extremely large files to prevent timeouts
+  const MAX_FILE_SIZE = 50000; // 50KB limit
+  if (fileContent.length > MAX_FILE_SIZE) {
+    console.log(`⚠️ Skipping ${fileName} - too large (${Math.round(fileContent.length / 1024)}KB > ${Math.round(MAX_FILE_SIZE / 1024)}KB limit)`);
+    return [];
+  }
+
   const controller = new AbortController();
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
   const clearTimer = () => {
@@ -34,7 +41,10 @@ export async function extractFunctionsFromFile(
   };
 
   try {
-    timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    // Increase timeout for larger files but cap it
+    const timeoutMs = Math.min(60000, Math.max(15000, fileContent.length / 10)); // 15-60 seconds based on file size
+    timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    console.log(`⏱️ Using ${timeoutMs/1000}s timeout for ${Math.round(fileContent.length / 1024)}KB file`);
     
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -181,6 +191,12 @@ CRITICAL:
   } catch (error) {
     clearTimer();
     controller.abort();
+    
+    if (error && typeof error === 'object' && 'name' in error && error.name === 'AbortError') {
+      console.warn(`⏰ Timeout extracting functions from ${fileName} - file may be too large or complex`);
+      return [];
+    }
+    
     console.error(`❌ Error extracting functions from ${fileName}:`, error);
     return [];
   }
@@ -197,9 +213,20 @@ export async function* extractFunctionsFromFilesStreaming(
 ): AsyncGenerator<ExtractedFunction[], void, unknown> {
   console.log(`🎯 Starting streaming function extraction from up to ${maxFiles} files...`);
 
+  // CRITICAL: Filter out extremely large files that cause timeouts
+  const MAX_FILE_SIZE = 50000; // 50KB limit
+  const manageableFiles = files.filter(file => file.content.length <= MAX_FILE_SIZE);
+  
+  if (manageableFiles.length === 0) {
+    console.log('⚠️ No manageable files found (all too large)');
+    return;
+  }
+  
+  console.log(`📊 Filtered files: ${manageableFiles.length}/${files.length} are manageable size`);
+
   // CRITICAL: Add randomization to prevent repetitive questions
   // Shuffle files before scoring to add variety
-  const shuffledFiles = [...files].sort(() => Math.random() - 0.5);
+  const shuffledFiles = [...manageableFiles].sort(() => Math.random() - 0.5);
   
   // Sort by score but with some randomness (take top 2x, then shuffle)
   const topCandidates = shuffledFiles
