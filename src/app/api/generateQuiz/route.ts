@@ -357,6 +357,49 @@ export async function POST(request: NextRequest) {
               }
             }
             
+            // Fallback: If no functions were extracted, use raw code chunks
+            if (allChunks.length === 0 && questionsGenerated === 0) {
+              console.log('🔄 No functions extracted, falling back to raw code chunks...');
+              
+              // Create chunks from raw file content
+              const rawChunks = parsedFiles
+                .slice(0, 5) // Take first 5 files
+                .map(file => {
+                  // Truncate very long files
+                  const content = file.content.length > 2000 
+                    ? file.content.substring(0, 2000) + '\n// ... (truncated)'
+                    : file.content;
+                  return `// File: ${file.name}\n${content}`;
+                });
+              
+              if (rawChunks.length > 0) {
+                console.log(`📦 Created ${rawChunks.length} raw code chunks as fallback`);
+                await orchestrateGeneration({
+                  chunks: rawChunks,
+                  plugins: selectedPlugins,
+                  numQuestions: desiredTotal,
+                  settings,
+                  apiKey: openaiApiKey,
+                  options: { difficulty: difficulty || 'medium' },
+                  onQuestion: async (q) => {
+                    const ui = mapToUi(q, counter);
+                    if (ui.variants && ui.variants.length > 0) {
+                      ui.variants = shuffleVariants(ui.variants);
+                      ui.variants = balanceVariantVerbosity(ui.variants);
+                    }
+                    counter += 1;
+                    questionsGenerated += 1;
+                    try {
+                      const jsonString = JSON.stringify({ type: 'question', question: ui });
+                      controller.enqueue(encoder.encode(jsonString + '\n'));
+                    } catch (error) {
+                      console.error('❌ Error in fallback onQuestion callback:', error);
+                    }
+                  }
+                });
+              }
+            }
+            
             // If we still need more questions, generate from all chunks
             if (questionsGenerated < desiredTotal && allChunks.length > 0) {
               console.log(`🔄 Generating remaining ${desiredTotal - questionsGenerated} questions from all ${allChunks.length} chunks`);

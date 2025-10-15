@@ -48,8 +48,8 @@ export async function extractFunctionsFromFile(
   };
 
   try {
-    // Reasonable timeout for OpenAI API calls - 15-45 seconds
-    const timeoutMs = Math.min(45000, Math.max(15000, fileContent.length / 500)); // 15-45 seconds based on file size
+    // More generous timeout for OpenAI API calls - 30-90 seconds
+    const timeoutMs = Math.min(90000, Math.max(30000, fileContent.length / 200)); // 30-90 seconds based on file size
     timeoutId = setTimeout(() => controller.abort(), timeoutMs);
     console.log(`⏱️ Using ${timeoutMs/1000}s timeout for ${Math.round(fileContent.length / 1024)}KB file`);
     
