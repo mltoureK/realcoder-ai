@@ -339,7 +339,13 @@ export async function POST(request: NextRequest) {
                     counter += 1;
                     questionsGenerated += 1;
                     console.log(`📤 Streaming question ${counter} from batch ${batchCount}`);
-                    controller.enqueue(encoder.encode(JSON.stringify({ type: 'question', question: ui }) + '\n'));
+                    try {
+                      const jsonString = JSON.stringify({ type: 'question', question: ui });
+                      controller.enqueue(encoder.encode(jsonString + '\n'));
+                    } catch (error) {
+                      console.error('❌ Error in onQuestion callback:', error);
+                      // Skip this question if JSON encoding fails
+                    }
                   }
                 });
               }
@@ -368,13 +374,23 @@ export async function POST(request: NextRequest) {
                     ui.variants = balanceVariantVerbosity(ui.variants);
                   }
                   counter += 1;
-                  controller.enqueue(encoder.encode(JSON.stringify({ type: 'question', question: ui }) + '\n'));
+                  try {
+                    const jsonString = JSON.stringify({ type: 'question', question: ui });
+                    controller.enqueue(encoder.encode(jsonString + '\n'));
+                  } catch (error) {
+                    console.error('❌ Error in onQuestion callback:', error);
+                    // Skip this question if JSON encoding fails
+                  }
                 }
               });
             }
             
-            controller.enqueue(encoder.encode(JSON.stringify({ type: 'done', count: counter }) + '\n'));
-            console.log(`🎉 Streaming complete! Generated ${counter} questions from ${batchCount} batches`);
+            try {
+              controller.enqueue(encoder.encode(JSON.stringify({ type: 'done', count: counter }) + '\n'));
+              console.log(`🎉 Streaming complete! Generated ${counter} questions from ${batchCount} batches`);
+            } catch (error) {
+              console.error('❌ Error encoding final message:', error);
+            }
           } catch (e) {
             console.error('❌ Streaming error:', e);
             controller.enqueue(encoder.encode(JSON.stringify({ type: 'error', message: 'stream-failed' }) + '\n'));
