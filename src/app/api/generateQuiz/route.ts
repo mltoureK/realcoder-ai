@@ -96,11 +96,11 @@ export async function POST(request: NextRequest) {
       // Reduce overall API calls for faster testing
       maxCalls: Number(process.env.OPENAI_MAX_CALLS_PER_REQUEST ?? 10),
       timeouts: {
-        'function-variant': Number(process.env.OPENAI_TIMEOUT_FUNCTION_VARIANT_MS ?? 30000),
-        'multiple-choice': Number(process.env.OPENAI_TIMEOUT_MCQ_MS ?? 20000),
-        'true-false': Number(process.env.OPENAI_TIMEOUT_TRUE_FALSE_MS ?? 25000),
-        'select-all': Number(process.env.OPENAI_TIMEOUT_SELECT_ALL_MS ?? 60000),
-        'order-sequence': Number(process.env.OPENAI_TIMEOUT_ORDER_SEQUENCE_MS ?? 25000)
+        'function-variant': Number(process.env.OPENAI_TIMEOUT_FUNCTION_VARIANT_MS ?? 15000),
+        'multiple-choice': Number(process.env.OPENAI_TIMEOUT_MCQ_MS ?? 10000),
+        'true-false': Number(process.env.OPENAI_TIMEOUT_TRUE_FALSE_MS ?? 10000),
+        'select-all': Number(process.env.OPENAI_TIMEOUT_SELECT_ALL_MS ?? 15000),
+        'order-sequence': Number(process.env.OPENAI_TIMEOUT_ORDER_SEQUENCE_MS ?? 12000)
       },
       retries: { attempts: 3, backoffBaseMs: 500 }
     };
