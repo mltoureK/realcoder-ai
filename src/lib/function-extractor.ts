@@ -24,8 +24,8 @@ export async function extractFunctionsFromFile(
 ): Promise<ExtractedFunction[]> {
   console.log(`🔍 Extracting functions from ${fileName}...`);
 
-  // Skip large files to prevent timeouts - more aggressive limit
-  const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB limit for faster processing
+  // Skip extremely large files to prevent timeouts
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB limit (much more reasonable)
   if (fileContent.length > MAX_FILE_SIZE) {
     console.log(`⚠️ Skipping ${fileName} - too large (${Math.round(fileContent.length / 1024 / 1024)}MB > ${Math.round(MAX_FILE_SIZE / 1024 / 1024)}MB limit)`);
     return [];
@@ -48,8 +48,8 @@ export async function extractFunctionsFromFile(
   };
 
   try {
-    // Aggressive timeout for faster quiz generation - 10-20 seconds max
-    const timeoutMs = Math.min(20000, Math.max(10000, fileContent.length / 500)); // 10-20 seconds based on file size
+    // More generous timeout for OpenAI API calls - 30-90 seconds
+    const timeoutMs = Math.min(90000, Math.max(30000, fileContent.length / 200)); // 30-90 seconds based on file size
     timeoutId = setTimeout(() => controller.abort(), timeoutMs);
     console.log(`⏱️ Using ${timeoutMs/1000}s timeout for ${Math.round(fileContent.length / 1024)}KB file`);
     
@@ -193,8 +193,8 @@ export async function* extractFunctionsFromFilesStreaming(
 ): AsyncGenerator<ExtractedFunction[], void, unknown> {
   console.log(`🎯 Starting streaming function extraction from up to ${maxFiles} files...`);
 
-  // CRITICAL: Filter out large files and minified files - more aggressive limits
-  const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB limit for faster processing
+  // CRITICAL: Filter out extremely large files and minified files
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB limit (much more reasonable)
   const manageableFiles = files.filter(file => {
     // Skip large files
     if (file.content.length > MAX_FILE_SIZE) return false;
@@ -231,9 +231,9 @@ export async function* extractFunctionsFromFilesStreaming(
 
   console.log(`📊 Selected ${selectedFiles.length} files with randomization for diversity`);
 
-  // Group small files together to maximize API efficiency - smaller batches for speed
-  const MIN_CHARS_PER_CALL = 1000;
-  const MAX_CHARS_PER_CALL = 8000;
+  // Group small files together to maximize API efficiency
+  const MIN_CHARS_PER_CALL = 1500;
+  const MAX_CHARS_PER_CALL = 12000;
   
   const batches: Array<{ files: typeof selectedFiles; totalChars: number }> = [];
   let currentBatch: typeof selectedFiles = [];
