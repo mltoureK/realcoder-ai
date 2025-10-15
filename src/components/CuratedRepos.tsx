@@ -11,7 +11,8 @@ import {
   WEBSOCKET_NETWORKING_PATH,
   CYBERSECURITY_LEARNING_PATH,
   NETWORK_ANALYSIS_PATH,
-  DEVOPS_NETWORKING_PATH
+  DEVOPS_NETWORKING_PATH,
+  STRIPE_LEARNING_PATH
 } from '@/lib/curated-repos';
 
 // Use the imported arrays with the expected names
@@ -2286,6 +2287,136 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       stars: '110k+',
       category: 'Orchestration',
       icon: '☸️',
+      isProduction: true
+    }
+  ],
+  'Payment Processing': [
+    // Stripe Learning Path
+    {
+      name: 'Stripe Payment Mastery',
+      url: 'https://github.com/stripe/stripe-node',
+      description: '💳 Master payment processing - 4k stars, learn Stripe + 24 official projects',
+      language: 'JavaScript',
+      difficulty: 'Intermediate',
+      stars: '4k+',
+      category: 'Payment Processing',
+      icon: '💳',
+      isProduction: true,
+      childRepos: STRIPE_LEARNING_PATH
+    },
+    // Alternative Payment Processors
+    {
+      name: 'PayPal SDK',
+      url: 'https://github.com/paypal/PayPal-node-SDK',
+      description: 'PayPal integration for Node.js - 500+ stars, alternative payment processor',
+      language: 'JavaScript',
+      difficulty: 'Intermediate',
+      stars: '500+',
+      category: 'Alternative Payment',
+      icon: '🟦',
+      isProduction: true
+    },
+    {
+      name: 'Square SDK',
+      url: 'https://github.com/square/connect-nodejs-sdk',
+      description: 'Square payment integration - 200+ stars, point-of-sale and online payments',
+      language: 'JavaScript',
+      difficulty: 'Intermediate',
+      stars: '200+',
+      category: 'Point of Sale',
+      icon: '⬜',
+      isProduction: true
+    },
+    // Payment Security & Compliance
+    {
+      name: 'PCI DSS Compliance',
+      url: 'https://github.com/pcicompliance/pci-dss',
+      description: 'PCI DSS compliance guidelines - learn payment security standards',
+      language: 'Documentation',
+      difficulty: 'Advanced',
+      stars: 'Compliance',
+      category: 'Security',
+      icon: '🔒',
+      isProduction: true
+    },
+    {
+      name: 'Payment Tokenization',
+      url: 'https://github.com/stripe-samples/tokenization',
+      description: 'Secure payment tokenization - learn to protect sensitive payment data',
+      language: 'JavaScript',
+      difficulty: 'Advanced',
+      stars: 'Official',
+      category: 'Security',
+      icon: '🔐',
+      isProduction: true
+    },
+    // Cryptocurrency Payments
+    {
+      name: 'Bitcoin Payment Integration',
+      url: 'https://github.com/bitcoin/bitcoin',
+      description: 'Bitcoin payment processing - 75k+ stars, learn cryptocurrency payments',
+      language: 'C++',
+      difficulty: 'Expert',
+      stars: '75k+',
+      category: 'Cryptocurrency',
+      icon: '₿',
+      isProduction: true
+    },
+    {
+      name: 'Ethereum Payment Gateway',
+      url: 'https://github.com/ethereum/web3.js',
+      description: 'Ethereum payment integration - 20k+ stars, smart contract payments',
+      language: 'JavaScript',
+      difficulty: 'Advanced',
+      stars: '20k+',
+      category: 'Cryptocurrency',
+      icon: 'Ξ',
+      isProduction: true
+    },
+    // Payment Analytics & Reporting
+    {
+      name: 'Payment Analytics Dashboard',
+      url: 'https://github.com/stripe-samples/analytics-dashboard',
+      description: 'Payment analytics and reporting - learn business intelligence for payments',
+      language: 'JavaScript',
+      difficulty: 'Advanced',
+      stars: 'Official',
+      category: 'Analytics',
+      icon: '📊',
+      isProduction: true
+    },
+    {
+      name: 'Revenue Recognition',
+      url: 'https://github.com/stripe-samples/revenue-recognition',
+      description: 'Automated revenue recognition - learn accounting for subscription businesses',
+      language: 'JavaScript',
+      difficulty: 'Expert',
+      stars: 'Official',
+      category: 'Accounting',
+      icon: '💰',
+      isProduction: true
+    },
+    // International Payments
+    {
+      name: 'Multi-Currency E-commerce',
+      url: 'https://github.com/stripe-samples/multi-currency-ecommerce',
+      description: 'Global payment processing - learn international payment patterns',
+      language: 'JavaScript',
+      difficulty: 'Advanced',
+      stars: 'Official',
+      category: 'International',
+      icon: '🌍',
+      isProduction: true
+    },
+    {
+      name: 'Local Payment Methods',
+      url: 'https://github.com/stripe-samples/local-payment-methods',
+      description: 'Regional payment methods - learn Alipay, iDEAL, SEPA, and more',
+      language: 'JavaScript',
+      difficulty: 'Advanced',
+      stars: 'Official',
+      category: 'Local Payments',
+      icon: '🏦',
       isProduction: true
     }
   ]

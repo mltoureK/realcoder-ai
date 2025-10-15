@@ -2878,3 +2878,232 @@ Total Chunks Processed: 5
 Ended: 2025-10-15T01:13:52.652Z
 ================================================================================
 
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T01:27:38.956Z
+File: [8 files: reversibleSetnsFlags maps the unshare(2) flags whose effects can be fully, which should not be catastrophic. Because we control the data that is, ip6tables, Count only server version api, input image provided by the user, Merge ulimits with daemon defaults, Fall back to returning the response as-is for situations where a, NA packets may be dropped.]
+Functions Extracted: 2
+
+
+Function 1: passthrough
+Language: Go
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+func passthrough(ipv IPVersion, args ...string) ([]byte, error) {
+	var output string
+	log.G(context.TODO()).Debugf("Firewalld passthrough: %s, %s", ipv, args)
+	if err := connection.sysObj.Call(dbusInterface+".direct.passthrough", 0, ipv, args).Store(&output); err != nil {
+		return nil, err
+	}
+	return []byte(output), nil
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: waitForBridgePort
+Language: Go
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+func waitForBridgePort(ctx context.Context, nlh nlwrap.Handle, iface netlink.Link) {
+	if iface.Type() != "veth" {
+		return
+	}
+	ctx, span := otel.Tracer("{}").Start(ctx, "libnetwork.osl.waitForBridgePort")
+	defer span.End()
+	ctx = log.WithLogger(ctx, log.G(ctx).WithField("veth", iface.Attrs().Name))
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:27:44.005Z
+Question Type: true-false
+Function: waitForBridgePort
+Function Size: 410 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: waitForBridgePort (Go)\n// Waits for a bridge port to be ready if the interface type is 'veth'.\n\nfunc waitForBridgePort(ctx context.Context, nlh nlwrap.Handle, iface netlink.Link) {\n	if iface.Type() != "veth" {\n		return\n	}\n	ctx, span := otel.Tracer("{}").Start(ctx, "libnetwork.osl.waitFo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:27:48.641Z
+Question Type: select-all
+Function: waitForBridgePort
+Function Size: 410 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: waitForBridgePort (Go)\n// Waits for a bridge port to be ready if the interface type is 'veth'.\n\nfunc waitForBridgePort(ctx context.Context, nlh nlwrap.Handle, iface netlink.Link) {\n	if iface.Type() != "veth" {\n		return\n	}\n	ctx, span := otel.Tracer("{}").Start(ctx, "libnetwork.osl.waitFo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:27:49.439Z
+Question Type: select-all
+Function: passthrough
+Function Size: 428 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: passthrough (Go)\n// Passes arguments through to iptables/ip6tables and returns the output.\n\nfunc passthrough(ipv IPVersion, args ...string) ([]byte, error) {\n	var output string\n	log.G(context.TODO()).Debugf("Firewalld passthrough: %s, %s", ipv, args)\n	if err := connection.sysObj.Call(db
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:27:51.592Z
+Question Type: order-sequence
+Function: waitForBridgePort
+Function Size: 410 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: waitForBridgePort (Go)\n// Waits for a bridge port to be ready if the interface type is 'veth'.\n\nfunc waitForBridgePort(ctx context.Context, nlh nlwrap.Handle, iface netlink.Link) {\n	if iface.Type() != "veth" {\n		return\n	}\n	ctx, span := otel.Tracer("{}").Start(ctx, "libnetwork.osl.waitFo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:27:53.380Z
+Question Type: select-all
+Function: waitForBridgePort
+Function Size: 410 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: waitForBridgePort (Go)\n// Waits for a bridge port to be ready if the interface type is 'veth'.\n\nfunc waitForBridgePort(ctx context.Context, nlh nlwrap.Handle, iface netlink.Link) {\n	if iface.Type() != "veth" {\n		return\n	}\n	ctx, span := otel.Tracer("{}").Start(ctx, "libnetwork.osl.waitFo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:27:53.450Z
+Question Type: true-false
+Function: passthrough
+Function Size: 428 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: passthrough (Go)\n// Passes arguments through to iptables/ip6tables and returns the output.\n\nfunc passthrough(ipv IPVersion, args ...string) ([]byte, error) {\n	var output string\n	log.G(context.TODO()).Debugf("Firewalld passthrough: %s, %s", ipv, args)\n	if err := connection.sysObj.Call(db
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:28:00.882Z
+Question Type: select-all
+Function: passthrough
+Function Size: 428 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: passthrough (Go)\n// Passes arguments through to iptables/ip6tables and returns the output.\n\nfunc passthrough(ipv IPVersion, args ...string) ([]byte, error) {\n	var output string\n	log.G(context.TODO()).Debugf("Firewalld passthrough: %s, %s", ipv, args)\n	if err := connection.sysObj.Call(db
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:28:02.999Z
+Question Type: select-all
+Function: passthrough
+Function Size: 428 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: passthrough (Go)\n// Passes arguments through to iptables/ip6tables and returns the output.\n\nfunc passthrough(ipv IPVersion, args ...string) ([]byte, error) {\n	var output string\n	log.G(context.TODO()).Debugf("Firewalld passthrough: %s, %s", ipv, args)\n	if err := connection.sysObj.Call(db
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:28:05.110Z
+Question Type: order-sequence
+Function: passthrough
+Function Size: 428 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: passthrough (Go)\n// Passes arguments through to iptables/ip6tables and returns the output.\n\nfunc passthrough(ipv IPVersion, args ...string) ([]byte, error) {\n	var output string\n	log.G(context.TODO()).Debugf("Firewalld passthrough: %s, %s", ipv, args)\n	if err := connection.sysObj.Call(db
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:28:08.153Z
+Question Type: function-variant
+Function: waitForBridgePort
+Function Size: 410 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: waitForBridgePort (Go)\n// Waits for a bridge port to be ready if the interface type is 'veth'.\n\nfunc waitForBridgePort(ctx context.Context, nlh nlwrap.Handle, iface netlink.Link) {\n	if iface.Type() != "veth" {\n		return\n	}\n	ctx, span := otel.Tracer("{}").Start(ctx, "libnetwork.osl.waitFo
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760466663427
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 2
+Ended: 2025-10-15T01:28:08.203Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:28:15.956Z
+Question Type: multiple-choice
+Function: waitForBridgePort
+Function Size: 410 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: waitForBridgePort (Go)\n// Waits for a bridge port to be ready if the interface type is 'veth'.\n\nfunc waitForBridgePort(ctx context.Context, nlh nlwrap.Handle, iface netlink.Link) {\n	if iface.Type() != "veth" {\n		return\n	}\n	ctx, span := otel.Tracer("{}").Start(ctx, "libnetwork.osl.waitFo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:28:16.549Z
+Question Type: select-all
+Function: waitForBridgePort
+Function Size: 410 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: waitForBridgePort (Go)\n// Waits for a bridge port to be ready if the interface type is 'veth'.\n\nfunc waitForBridgePort(ctx context.Context, nlh nlwrap.Handle, iface netlink.Link) {\n	if iface.Type() != "veth" {\n		return\n	}\n	ctx, span := otel.Tracer("{}").Start(ctx, "libnetwork.osl.waitFo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:28:23.656Z
+Question Type: function-variant
+Function: waitForBridgePort
+Function Size: 410 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: waitForBridgePort (Go)\n// Waits for a bridge port to be ready if the interface type is 'veth'.\n\nfunc waitForBridgePort(ctx context.Context, nlh nlwrap.Handle, iface netlink.Link) {\n	if iface.Type() != "veth" {\n		return\n	}\n	ctx, span := otel.Tracer("{}").Start(ctx, "libnetwork.osl.waitFo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:28:24.639Z
+Question Type: select-all
+Function: waitForBridgePort
+Function Size: 410 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: waitForBridgePort (Go)\n// Waits for a bridge port to be ready if the interface type is 'veth'.\n\nfunc waitForBridgePort(ctx context.Context, nlh nlwrap.Handle, iface netlink.Link) {\n	if iface.Type() != "veth" {\n		return\n	}\n	ctx, span := otel.Tracer("{}").Start(ctx, "libnetwork.osl.waitFo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:28:26.384Z
+Question Type: function-variant
+Function: passthrough
+Function Size: 428 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: passthrough (Go)\n// Passes arguments through to iptables/ip6tables and returns the output.\n\nfunc passthrough(ipv IPVersion, args ...string) ([]byte, error) {\n	var output string\n	log.G(context.TODO()).Debugf("Firewalld passthrough: %s, %s", ipv, args)\n	if err := connection.sysObj.Call(db
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:28:28.634Z
+Question Type: true-false
+Function: waitForBridgePort
+Function Size: 410 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: waitForBridgePort (Go)\n// Waits for a bridge port to be ready if the interface type is 'veth'.\n\nfunc waitForBridgePort(ctx context.Context, nlh nlwrap.Handle, iface netlink.Link) {\n	if iface.Type() != "veth" {\n		return\n	}\n	ctx, span := otel.Tracer("{}").Start(ctx, "libnetwork.osl.waitFo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:28:32.035Z
+Question Type: true-false
+Function: passthrough
+Function Size: 428 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: passthrough (Go)\n// Passes arguments through to iptables/ip6tables and returns the output.\n\nfunc passthrough(ipv IPVersion, args ...string) ([]byte, error) {\n	var output string\n	log.G(context.TODO()).Debugf("Firewalld passthrough: %s, %s", ipv, args)\n	if err := connection.sysObj.Call(db
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760466663427
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 2
+Ended: 2025-10-15T01:28:32.047Z
+================================================================================
+

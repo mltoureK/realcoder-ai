@@ -8,4 +8,5 @@ export { WEBSOCKET_NETWORKING_PATH } from './websocket-networking';
 export { CYBERSECURITY_LEARNING_PATH } from './cybersecurity-learning';
 export { NETWORK_ANALYSIS_PATH } from './network-analysis';
 export { DEVOPS_NETWORKING_PATH } from './devops-networking';
+export { STRIPE_LEARNING_PATH } from './stripe-learning';
 
