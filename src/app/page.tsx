@@ -796,9 +796,11 @@ export default function Home() {
     if (activeTab === 'upload') {
       return selectedFiles.length > 0;
     } else if (activeTab === 'curated') {
-      return githubRepo.owner && githubRepo.repo && selectedBranch;
+      // For curated (GitHub) path, ensure branch is selected and files are loaded
+      return Boolean(githubRepo.owner && githubRepo.repo && selectedBranch && repositoryFiles.length > 0);
     } else {
-      return githubRepo.owner && githubRepo.repo && selectedBranch;
+      // For raw GitHub input, require branch + files loaded
+      return Boolean(githubRepo.owner && githubRepo.repo && selectedBranch && repositoryFiles.length > 0);
     }
   };
 
@@ -1284,6 +1286,8 @@ export default function Home() {
                 </div>
               ) : cachedQuestionCount >= 15 ? (
                 <span>⚡ Generate Quiz (Instant!)</span>
+              ) : (!repositoryFiles.length && activeTab !== 'upload') ? (
+                'Loading repository files…'
               ) : (
                 'Generate Quiz'
               )}
