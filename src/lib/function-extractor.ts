@@ -48,8 +48,8 @@ export async function extractFunctionsFromFile(
   };
 
   try {
-    // More generous timeout - minimum 30 seconds, up to 90 seconds for larger files
-    const timeoutMs = Math.min(90000, Math.max(30000, fileContent.length / 100)); // 30-90 seconds based on file size
+    // Reasonable timeout for OpenAI API calls - 15-45 seconds
+    const timeoutMs = Math.min(45000, Math.max(15000, fileContent.length / 500)); // 15-45 seconds based on file size
     timeoutId = setTimeout(() => controller.abort(), timeoutMs);
     console.log(`⏱️ Using ${timeoutMs/1000}s timeout for ${Math.round(fileContent.length / 1024)}KB file`);
     
@@ -65,53 +65,26 @@ export async function extractFunctionsFromFile(
         messages: [
           {
             role: 'system',
-            content: 'You are a code parser. Extract complete functions from code files. Return ONLY valid JSON array with no markdown or explanations.'
+            content: 'Extract complete functions from code. Return ONLY JSON array.'
           },
           {
             role: 'user',
-            content: `Extract ALL SUBSTANTIAL, complete functions from this file: ${fileName}
+            content: `Extract substantial functions from: ${fileName}
 
 ${fileContent}
 
-CRITICAL REQUIREMENTS:
-1. Extract ONLY complete, working functions with REAL LOGIC (not stubs!)
-2. Include the ENTIRE function from signature to closing brace
-3. SKIP functions that are just stubs with comments like "// logic goes here"
-4. SKIP functions with empty bodies or trivial logic (just { })
-5. SKIP functions that just return the input parameter unchanged
-6. SKIP functions that are only 3-5 lines with mostly comments
-7. Extract functions with at least 5+ lines of ACTUAL code logic
-8. Minimum 100 characters of actual code per function
-9. Include function name, COMPLETE full code, and language
-
-EXAMPLES OF WHAT TO SKIP:
-❌ function stub() { // TODO: implement }
-❌ function simple(x) { return x; }
-❌ function formatCodeContext(code: string) { if (!code) return code; return code.trim(); }
-❌ function wrapper(x) { return someFunction(x); }
-
-EXAMPLES OF WHAT TO EXTRACT:
-✅ Functions with loops, conditionals, calculations, transformations
-✅ Functions with multiple operations and logic branches
-✅ Functions that do real work (not just pass-through)
-
-Return ONLY this JSON format:
+Return JSON:
 [
   {
     "name": "functionName",
-    "fullCode": "COMPLETE function code with ALL logic - no truncation",
-    "language": "JavaScript|TypeScript|Python|Java|C++|etc",
+    "fullCode": "complete function code",
+    "language": "JavaScript|TypeScript|Python|Java|etc",
     "lineCount": 15,
-    "description": "brief 1-line description of what it does"
+    "description": "what it does"
   }
 ]
 
-CRITICAL: 
-- Return ONLY the JSON array
-- No text before or after
-- No markdown
-- Include COMPLETE functions only
-- Skip all stub functions`
+Skip: stubs, simple returns, empty functions, <5 lines, <100 chars.`
           }
         ],
         temperature: 0.3,
