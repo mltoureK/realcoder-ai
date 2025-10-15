@@ -7,7 +7,11 @@ import {
   REACT_MOBILE_REPOS,
   NEXTJS_REPOS,
   RXJS_REACTIVE_REPOS,
-  RUST_LEARNING_PATH
+  RUST_LEARNING_PATH,
+  WEBSOCKET_NETWORKING_PATH,
+  CYBERSECURITY_LEARNING_PATH,
+  NETWORK_ANALYSIS_PATH,
+  DEVOPS_NETWORKING_PATH
 } from '@/lib/curated-repos';
 
 // Use the imported arrays with the expected names
@@ -2080,6 +2084,208 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       stars: '40k+',
       category: 'Database',
       icon: '🗄️',
+      isProduction: true
+    }
+  ],
+  'Networking & Security': [
+    // WebSocket vs Socket.IO with Learning Path
+    {
+      name: 'WebSocket (Pure)',
+      url: 'https://github.com/websockets/ws',
+      description: '🌐 Master real-time communication - 20k stars, learn pure WebSocket + 8 networking projects',
+      language: 'JavaScript',
+      difficulty: 'Intermediate',
+      stars: '20k+',
+      category: 'Real-time Communication',
+      icon: '🌐',
+      isProduction: true,
+      childRepos: WEBSOCKET_NETWORKING_PATH
+    },
+    // Cybersecurity Learning Path
+    {
+      name: 'Cybersecurity Tools',
+      url: 'https://github.com/wireshark/wireshark',
+      description: '🔒 Master ethical hacking - 5k stars, learn Wireshark + 12 security tools',
+      language: 'C++',
+      difficulty: 'Advanced',
+      stars: '5k+',
+      category: 'Network Security',
+      icon: '🔒',
+      isProduction: true,
+      childRepos: CYBERSECURITY_LEARNING_PATH
+    },
+    // Network Analysis Learning Path
+    {
+      name: 'Network Analysis',
+      url: 'https://github.com/nmap/nmap',
+      description: '🔍 Master network discovery - 8k stars, learn Nmap + 10 analysis tools',
+      language: 'C++',
+      difficulty: 'Advanced',
+      stars: '8k+',
+      category: 'Network Discovery',
+      icon: '🔍',
+      isProduction: true,
+      childRepos: NETWORK_ANALYSIS_PATH
+    },
+    // DevOps Networking Learning Path
+    {
+      name: 'DevOps Networking',
+      url: 'https://github.com/nginx/nginx',
+      description: '⚙️ Master infrastructure networking - 20k stars, learn Nginx + 8 DevOps tools',
+      language: 'C',
+      difficulty: 'Advanced',
+      stars: '20k+',
+      category: 'Infrastructure',
+      icon: '⚙️',
+      isProduction: true,
+      childRepos: DEVOPS_NETWORKING_PATH
+    },
+    // Socket.IO vs WebSocket
+    {
+      name: 'Socket.IO',
+      url: 'https://github.com/socketio/socket.io',
+      description: '🚀 Production-ready real-time communication - 65k stars, battle-tested by major companies',
+      language: 'JavaScript',
+      difficulty: 'Intermediate',
+      stars: '65k+',
+      category: 'Real-time Framework',
+      icon: '🚀',
+      isProduction: true
+    },
+    {
+      name: 'Socket.IO Client',
+      url: 'https://github.com/socketio/socket.io-client',
+      description: '📱 Socket.IO client library - 10k stars, official client implementation',
+      language: 'JavaScript',
+      difficulty: 'Intermediate',
+      stars: '10k+',
+      category: 'Client Library',
+      icon: '📱',
+      isProduction: true
+    },
+    // Pure WebSocket Alternatives
+    {
+      name: 'ws (WebSocket)',
+      url: 'https://github.com/websockets/ws',
+      description: '⚡ Pure WebSocket implementation - 20k stars, faster than Socket.IO',
+      language: 'JavaScript',
+      difficulty: 'Intermediate',
+      stars: '20k+',
+      category: 'Pure WebSocket',
+      icon: '⚡',
+      isProduction: true
+    },
+    {
+      name: 'uWebSockets.js',
+      url: 'https://github.com/uNetworking/uWebSockets.js',
+      description: '🚀 Ultra-fast WebSocket server - 15k stars, C++ performance in JavaScript',
+      language: 'JavaScript',
+      difficulty: 'Advanced',
+      stars: '15k+',
+      category: 'High Performance',
+      icon: '🚀',
+      isProduction: true
+    },
+    // Network Security Tools
+    {
+      name: 'Wireshark',
+      url: 'https://gitlab.com/wireshark/wireshark',
+      description: '🔍 Network protocol analyzer - 2k stars, the gold standard for network analysis',
+      language: 'C++',
+      difficulty: 'Advanced',
+      stars: '2k+',
+      category: 'Protocol Analysis',
+      icon: '🔍',
+      isProduction: true
+    },
+    {
+      name: 'Nmap',
+      url: 'https://github.com/nmap/nmap',
+      description: '🗺️ Network discovery and security auditing - 8k stars, used by security professionals worldwide',
+      language: 'C++',
+      difficulty: 'Advanced',
+      stars: '8k+',
+      category: 'Network Scanner',
+      icon: '🗺️',
+      isProduction: true
+    },
+    {
+      name: 'Hashcat',
+      url: 'https://github.com/hashcat/hashcat',
+      description: '💥 World\'s fastest password recovery tool - 10k stars, GPU-accelerated cracking',
+      language: 'C++',
+      difficulty: 'Expert',
+      stars: '10k+',
+      category: 'Password Security',
+      icon: '💥',
+      isProduction: true
+    },
+    {
+      name: 'Burp Suite Community',
+      url: 'https://portswigger.net/burp/communitydownload',
+      description: '🕷️ Web application security testing - industry standard for web security testing',
+      language: 'Java',
+      difficulty: 'Advanced',
+      stars: 'N/A',
+      category: 'Web Security',
+      icon: '🕷️',
+      isProduction: true
+    },
+    // Infrastructure & Load Balancing
+    {
+      name: 'Nginx',
+      url: 'https://github.com/nginx/nginx',
+      description: '⚡ High-performance web server and reverse proxy - 20k stars, powers 40% of websites',
+      language: 'C',
+      difficulty: 'Advanced',
+      stars: '20k+',
+      category: 'Web Server',
+      icon: '⚡',
+      isProduction: true
+    },
+    {
+      name: 'HAProxy',
+      url: 'https://github.com/haproxy/haproxy',
+      description: '🔄 High availability load balancer - 3k stars, used by major tech companies',
+      language: 'C',
+      difficulty: 'Advanced',
+      stars: '3k+',
+      category: 'Load Balancer',
+      icon: '🔄',
+      isProduction: true
+    },
+    {
+      name: 'Traefik',
+      url: 'https://github.com/traefik/traefik',
+      description: '🐳 Modern reverse proxy and load balancer - 50k stars, cloud-native networking',
+      language: 'Go',
+      difficulty: 'Intermediate',
+      stars: '50k+',
+      category: 'Cloud Native',
+      icon: '🐳',
+      isProduction: true
+    },
+    // Docker & Kubernetes Networking
+    {
+      name: 'Docker',
+      url: 'https://github.com/docker/docker',
+      description: '🐳 Container platform with networking - 70k stars, revolutionized DevOps',
+      language: 'Go',
+      difficulty: 'Intermediate',
+      stars: '70k+',
+      category: 'Container Platform',
+      icon: '🐳',
+      isProduction: true
+    },
+    {
+      name: 'Kubernetes',
+      url: 'https://github.com/kubernetes/kubernetes',
+      description: '☸️ Container orchestration with advanced networking - 110k stars, industry standard',
+      language: 'Go',
+      difficulty: 'Expert',
+      stars: '110k+',
+      category: 'Orchestration',
+      icon: '☸️',
       isProduction: true
     }
   ]

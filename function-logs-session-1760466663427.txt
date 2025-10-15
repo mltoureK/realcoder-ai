@@ -2101,3 +2101,780 @@ Total Chunks Processed: 4
 Ended: 2025-10-15T00:57:41.315Z
 ================================================================================
 
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T01:08:21.853Z
+File: [2 files: store.ts, server.ts]
+Functions Extracted: 1
+
+
+Function 1: parseSessionId
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function parseSessionId(data: string): string | undefined {
+  try {
+    const parsed = JSON.parse(data);
+    if (typeof parsed.sid === "string") {
+      return parsed.sid;
+    }
+  } catch (e) {}
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:08:27.514Z
+Question Type: true-false
+Function: parseSessionId
+Function Size: 283 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: parseSessionId (TypeScript)\n// Parses the session ID from a JSON string.\n\nfunction parseSessionId(data: string): string | undefined {\n  try {\n    const parsed = JSON.parse(data);\n    if (typeof parsed.sid === "string") {\n      return parsed.sid;\n    }\n  } catch (e) {}\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:08:31.565Z
+Question Type: select-all
+Function: parseSessionId
+Function Size: 283 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: parseSessionId (TypeScript)\n// Parses the session ID from a JSON string.\n\nfunction parseSessionId(data: string): string | undefined {\n  try {\n    const parsed = JSON.parse(data);\n    if (typeof parsed.sid === "string") {\n      return parsed.sid;\n    }\n  } catch (e) {}\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:08:33.072Z
+Question Type: true-false
+Function: parseSessionId
+Function Size: 283 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: parseSessionId (TypeScript)\n// Parses the session ID from a JSON string.\n\nfunction parseSessionId(data: string): string | undefined {\n  try {\n    const parsed = JSON.parse(data);\n    if (typeof parsed.sid === "string") {\n      return parsed.sid;\n    }\n  } catch (e) {}\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:08:34.351Z
+Question Type: function-variant
+Function: parseSessionId
+Function Size: 283 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: parseSessionId (TypeScript)\n// Parses the session ID from a JSON string.\n\nfunction parseSessionId(data: string): string | undefined {\n  try {\n    const parsed = JSON.parse(data);\n    if (typeof parsed.sid === "string") {\n      return parsed.sid;\n    }\n  } catch (e) {}\n}
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760466663427
+Repository: Unknown
+Total Questions Generated: 4
+Total Chunks Processed: 1
+Ended: 2025-10-15T01:08:34.395Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T01:08:45.411Z
+File: socketio-socket.io-cf6816a/packages/socket.io/lib/typed-events.ts
+Functions Extracted: 5
+
+
+Function 1: on
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+on<Ev extends ReservedOrUserEventNames<ReservedEvents, ListenEvents>>(
+    ev: Ev,
+    listener: ReservedOrUserListener<ReservedEvents, ListenEvents, Ev>,
+  ): this {
+    return super.on(ev, listener);
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: once
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+once<Ev extends ReservedOrUserEventNames<ReservedEvents, ListenEvents>>(
+    ev: Ev,
+    listener: ReservedOrUserListener<ReservedEvents, ListenEvents, Ev>,
+  ): this {
+    return super.once(ev, listener);
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: emit
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+emit<Ev extends EventNames<EmitEvents>>(
+    ev: Ev,
+    ...args: EventParams<EmitEvents, Ev>
+  ): boolean {
+    return super.emit(ev, ...args);
+  }
+--------------------------------------------------------------------------------
+
+
+Function 4: emitReserved
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+protected emitReserved<Ev extends EventNames<ReservedEvents>>(
+    ev: Ev,
+    ...args: EventParams<ReservedEvents, Ev>
+  ): boolean {
+    return super.emit(ev, ...args);
+  }
+--------------------------------------------------------------------------------
+
+
+Function 5: listeners
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+listeners<Ev extends ReservedOrUserEventNames<ReservedEvents, ListenEvents>>(
+    event: Ev,
+  ): ReservedOrUserListener<ReservedEvents, ListenEvents, Ev>[] {
+    return super.listeners(event) as ReservedOrUserListener<
+      ReservedEvents,
+      ListenEvents,
+      Ev
+    >[];
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:08:52.499Z
+Question Type: true-false
+Function: emit
+Function Size: 224 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: emit (TypeScript)\n// Emits an event with specified arguments.\n\nemit<Ev extends EventNames<EmitEvents>>(\n    ev: Ev,\n    ...args: EventParams<EmitEvents, Ev>\n  ): boolean {\n    return super.emit(ev, ...args);\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:08:56.334Z
+Question Type: select-all
+Function: listeners
+Function Size: 378 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: listeners (TypeScript)\n// Returns the listeners subscribed to a specified event.\n\nlisteners<Ev extends ReservedOrUserEventNames<ReservedEvents, ListenEvents>>(\n    event: Ev,\n  ): ReservedOrUserListener<ReservedEvents, ListenEvents, Ev>[] {\n    return super.listeners(event) as ReservedO
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:08:59.964Z
+Question Type: order-sequence
+Function: listeners
+Function Size: 378 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: listeners (TypeScript)\n// Returns the listeners subscribed to a specified event.\n\nlisteners<Ev extends ReservedOrUserEventNames<ReservedEvents, ListenEvents>>(\n    event: Ev,\n  ): ReservedOrUserListener<ReservedEvents, ListenEvents, Ev>[] {\n    return super.listeners(event) as ReservedO
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:09:00.041Z
+Question Type: function-variant
+Function: emit
+Function Size: 224 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: emit (TypeScript)\n// Emits an event with specified arguments.\n\nemit<Ev extends EventNames<EmitEvents>>(\n    ev: Ev,\n    ...args: EventParams<EmitEvents, Ev>\n  ): boolean {\n    return super.emit(ev, ...args);\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:09:08.285Z
+Question Type: function-variant
+Function: on
+Function Size: 286 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: on (TypeScript)\n// Adds a listener function for a specified event.\n\non<Ev extends ReservedOrUserEventNames<ReservedEvents, ListenEvents>>(\n    ev: Ev,\n    listener: ReservedOrUserListener<ReservedEvents, ListenEvents, Ev>,\n  ): this {\n    return super.on(ev, listener);\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:09:08.512Z
+Question Type: select-all
+Function: emit
+Function Size: 224 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: emit (TypeScript)\n// Emits an event with specified arguments.\n\nemit<Ev extends EventNames<EmitEvents>>(\n    ev: Ev,\n    ...args: EventParams<EmitEvents, Ev>\n  ): boolean {\n    return super.emit(ev, ...args);\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:09:12.086Z
+Question Type: order-sequence
+Function: on
+Function Size: 286 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: on (TypeScript)\n// Adds a listener function for a specified event.\n\non<Ev extends ReservedOrUserEventNames<ReservedEvents, ListenEvents>>(\n    ev: Ev,\n    listener: ReservedOrUserListener<ReservedEvents, ListenEvents, Ev>,\n  ): this {\n    return super.on(ev, listener);\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:09:12.720Z
+Question Type: function-variant
+Function: listeners
+Function Size: 378 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: listeners (TypeScript)\n// Returns the listeners subscribed to a specified event.\n\nlisteners<Ev extends ReservedOrUserEventNames<ReservedEvents, ListenEvents>>(\n    event: Ev,\n  ): ReservedOrUserListener<ReservedEvents, ListenEvents, Ev>[] {\n    return super.listeners(event) as ReservedO
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:09:16.850Z
+Question Type: true-false
+Function: emitReserved
+Function Size: 266 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: emitReserved (TypeScript)\n// Emits a reserved event with specified arguments.\n\nprotected emitReserved<Ev extends EventNames<ReservedEvents>>(\n    ev: Ev,\n    ...args: EventParams<ReservedEvents, Ev>\n  ): boolean {\n    return super.emit(ev, ...args);\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:09:18.549Z
+Question Type: select-all
+Function: on
+Function Size: 286 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: on (TypeScript)\n// Adds a listener function for a specified event.\n\non<Ev extends ReservedOrUserEventNames<ReservedEvents, ListenEvents>>(\n    ev: Ev,\n    listener: ReservedOrUserListener<ReservedEvents, ListenEvents, Ev>,\n  ): this {\n    return super.on(ev, listener);\n  }
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760466663427
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 5
+Ended: 2025-10-15T01:09:18.583Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T01:09:26.630Z
+File: [5 files: App.tsx, globals.ts, index.d.ts, transport.ts, on.ts]
+Functions Extracted: 2
+
+
+Function 1: onConnect
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function onConnect() {
+      setIsConnected(true);
+      setTransport(socket.io.engine.transport.name);
+
+      socket.io.engine.on('upgrade', (transport) => {
+        setTransport(transport.name);
+      });
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: on
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+export function on(
+  obj: Emitter<any, any>,
+  ev: string,
+  fn: (err?: any) => any,
+): VoidFunction {
+  obj.on(ev, fn);
+  return function subDestroy(): void {
+    obj.off(ev, fn);
+  };
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:09:35.125Z
+Question Type: select-all
+Function: onConnect
+Function Size: 319 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onConnect (TypeScript)\n// Handles the socket connection event and updates connection status.\n\nfunction onConnect() {\n      setIsConnected(true);\n      setTransport(socket.io.engine.transport.name);\n\n      socket.io.engine.on('upgrade', (transport) => {\n        setTransport(transport.nam
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:09:40.568Z
+Question Type: true-false
+Function: on
+Function Size: 305 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: on (TypeScript)\n// Adds an event listener to an Emitter and returns a function to remove the listener.\n\nexport function on(\n  obj: Emitter<any, any>,\n  ev: string,\n  fn: (err?: any) => any,\n): VoidFunction {\n  obj.on(ev, fn);\n  return function subDestroy(): void {\n    obj.off(ev, fn);\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:09:40.683Z
+Question Type: order-sequence
+Function: onConnect
+Function Size: 319 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onConnect (TypeScript)\n// Handles the socket connection event and updates connection status.\n\nfunction onConnect() {\n      setIsConnected(true);\n      setTransport(socket.io.engine.transport.name);\n\n      socket.io.engine.on('upgrade', (transport) => {\n        setTransport(transport.nam
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:09:41.888Z
+Question Type: function-variant
+Function: on
+Function Size: 305 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: on (TypeScript)\n// Adds an event listener to an Emitter and returns a function to remove the listener.\n\nexport function on(\n  obj: Emitter<any, any>,\n  ev: string,\n  fn: (err?: any) => any,\n): VoidFunction {\n  obj.on(ev, fn);\n  return function subDestroy(): void {\n    obj.off(ev, fn);\n 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760466663427
+Repository: Unknown
+Total Questions Generated: 4
+Total Chunks Processed: 2
+Ended: 2025-10-15T01:09:41.924Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:09:46.497Z
+Question Type: true-false
+Function: emit
+Function Size: 224 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: emit (TypeScript)\n// Emits an event with specified arguments.\n\nemit<Ev extends EventNames<EmitEvents>>(\n    ev: Ev,\n    ...args: EventParams<EmitEvents, Ev>\n  ): boolean {\n    return super.emit(ev, ...args);\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:09:48.030Z
+Question Type: true-false
+Function: onConnect
+Function Size: 319 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onConnect (TypeScript)\n// Handles the socket connection event and updates connection status.\n\nfunction onConnect() {\n      setIsConnected(true);\n      setTransport(socket.io.engine.transport.name);\n\n      socket.io.engine.on('upgrade', (transport) => {\n        setTransport(transport.nam
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:09:52.623Z
+Question Type: select-all
+Function: emit
+Function Size: 224 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: emit (TypeScript)\n// Emits an event with specified arguments.\n\nemit<Ev extends EventNames<EmitEvents>>(\n    ev: Ev,\n    ...args: EventParams<EmitEvents, Ev>\n  ): boolean {\n    return super.emit(ev, ...args);\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:09:54.177Z
+Question Type: function-variant
+Function: listeners
+Function Size: 378 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: listeners (TypeScript)\n// Returns the listeners subscribed to a specified event.\n\nlisteners<Ev extends ReservedOrUserEventNames<ReservedEvents, ListenEvents>>(\n    event: Ev,\n  ): ReservedOrUserListener<ReservedEvents, ListenEvents, Ev>[] {\n    return super.listeners(event) as ReservedO
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760466663427
+Repository: Unknown
+Total Questions Generated: 4
+Total Chunks Processed: 8
+Ended: 2025-10-15T01:09:54.208Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T01:12:32.432Z
+File: [4 files: util.ts, store.ts, redis.ts, App.tsx]
+Functions Extracted: 4
+
+
+Function 1: sanitizeErrorMessage
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+export function sanitizeErrorMessage(message: any) {
+  if (typeof message === "string" && errorValues.includes(message)) {
+    return message;
+  } else {
+    return "an unknown error has occurred";
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: mapErrorDetails
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function mapErrorDetails(details: ValidationErrorItem[]) {
+  return details.map((item) => ({
+    message: item.message,
+    path: item.path,
+    type: item.type,
+  }));
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: setupPrimaryWithRedis
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+export function setupPrimaryWithRedis(
+  pubClient: any,
+  subClient: any,
+  opts?: PrimaryWithRedisOptions,
+) {
+  const primaryId = randomUUID();
+  const prefix = opts?.channelPrefix || "engine.io";
+  const channels = [channelName(prefix), channelName(prefix, primaryId)];
+
+  debug("subscribing to redis channels: %s", channels);
+  SUBSCRIBE(subClient, channels, (buffer: Buffer) => {
+    let message: Message & { _source?: string; _primaryId?: string };
+    try {
+      message = decode(buffer) as Message;
+    } catch (e) {
+      debug("ignore malformed buffer");
+      return;
+    }
+
+    if (message._source !== MESSAGE_SOURCE) {
+      debug("ignore message from unknown source");
+      return;
+    }
+
+    if (message._primaryId === primaryId) {
+      debug("ignore message from self");
+      return;
+    }
+
+    debug("received message: %j", message);
+  });
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: onConnect
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function onConnect() {
+      setIsConnected(true);
+      setTransport(socket.io.engine.transport.name);
+
+      socket.io.engine.on('upgrade', (transport) => {
+        setTransport(transport.name);
+      });
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:12:36.330Z
+Question Type: select-all
+Function: mapErrorDetails
+Function Size: 277 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mapErrorDetails (TypeScript)\n// Maps validation error details to a simplified format.\n\nexport function mapErrorDetails(details: ValidationErrorItem[]) {\n  return details.map((item) => ({\n    message: item.message,\n    path: item.path,\n    type: item.type,\n  }));\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:12:43.336Z
+Question Type: function-variant
+Function: mapErrorDetails
+Function Size: 277 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mapErrorDetails (TypeScript)\n// Maps validation error details to a simplified format.\n\nexport function mapErrorDetails(details: ValidationErrorItem[]) {\n  return details.map((item) => ({\n    message: item.message,\n    path: item.path,\n    type: item.type,\n  }));\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:12:46.393Z
+Question Type: order-sequence
+Function: sanitizeErrorMessage
+Function Size: 325 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sanitizeErrorMessage (TypeScript)\n// Sanitizes error messages to return a known error or a default message.\n\nexport function sanitizeErrorMessage(message: any) {\n  if (typeof message === "string" && errorValues.includes(message)) {\n    return message;\n  } else {\n    return "an unknown e
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:12:46.649Z
+Question Type: function-variant
+Function: sanitizeErrorMessage
+Function Size: 325 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sanitizeErrorMessage (TypeScript)\n// Sanitizes error messages to return a known error or a default message.\n\nexport function sanitizeErrorMessage(message: any) {\n  if (typeof message === "string" && errorValues.includes(message)) {\n    return message;\n  } else {\n    return "an unknown e
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:12:50.393Z
+Question Type: select-all
+Function: mapErrorDetails
+Function Size: 277 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mapErrorDetails (TypeScript)\n// Maps validation error details to a simplified format.\n\nexport function mapErrorDetails(details: ValidationErrorItem[]) {\n  return details.map((item) => ({\n    message: item.message,\n    path: item.path,\n    type: item.type,\n  }));\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:12:51.736Z
+Question Type: select-all
+Function: onConnect
+Function Size: 316 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onConnect (JavaScript)\n// Handles socket connection events and updates connection status.\n\nfunction onConnect() {\n      setIsConnected(true);\n      setTransport(socket.io.engine.transport.name);\n\n      socket.io.engine.on('upgrade', (transport) => {\n        setTransport(transport.name);
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:12:55.846Z
+Question Type: true-false
+Function: mapErrorDetails
+Function Size: 277 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mapErrorDetails (TypeScript)\n// Maps validation error details to a simplified format.\n\nexport function mapErrorDetails(details: ValidationErrorItem[]) {\n  return details.map((item) => ({\n    message: item.message,\n    path: item.path,\n    type: item.type,\n  }));\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:13:00.650Z
+Question Type: function-variant
+Function: onConnect
+Function Size: 316 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onConnect (JavaScript)\n// Handles socket connection events and updates connection status.\n\nfunction onConnect() {\n      setIsConnected(true);\n      setTransport(socket.io.engine.transport.name);\n\n      socket.io.engine.on('upgrade', (transport) => {\n        setTransport(transport.name);
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760466663427
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 4
+Ended: 2025-10-15T01:13:00.713Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T01:13:28.497Z
+File: [3 files: engine.ts, todo.repository.ts, index.d.ts]
+Functions Extracted: 5
+
+
+Function 1: isClientLockable
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function isClientLockable(
+  client: Socket,
+  transportName: string,
+  lockType: "read" | "write",
+) {
+  switch (transportName) {
+    case "polling":
+      return (
+        client.transport.name === "polling" &&
+        (lockType === "write" || !client.transport.writable)
+      );
+    case "websocket":
+    case "webtransport":
+      return (
+        client.transport.name === "polling" &&
+        !client.upgrading &&
+        !client.upgraded
+      );
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: findAll
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+findAll(): Promise<Todo[]> {
+    const entities = Array.from(this.todos.values());
+    return Promise.resolve(entities);
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: findById
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+findById(id: TodoID): Promise<Todo> {
+    if (this.todos.has(id)) {
+      return Promise.resolve(this.todos.get(id)!);
+    } else {
+      return Promise.reject(Errors.ENTITY_NOT_FOUND);
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 4: save
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+save(entity: Todo): Promise<void> {
+    this.todos.set(entity.id, entity);
+    return Promise.resolve();
+  }
+--------------------------------------------------------------------------------
+
+
+Function 5: deleteById
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+deleteById(id: TodoID): Promise<void> {
+    const deleted = this.todos.delete(id);
+    if (deleted) {
+      return Promise.resolve();
+    } else {
+      return Promise.reject(Errors.ENTITY_NOT_FOUND);
+    }
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:13:35.736Z
+Question Type: select-all
+Function: save
+Function Size: 192 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: save (TypeScript)\n// Saves a todo entity to the in-memory repository.\n\nsave(entity: Todo): Promise<void> {\n    this.todos.set(entity.id, entity);\n    return Promise.resolve();\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:13:37.971Z
+Question Type: select-all
+Function: findAll
+Function Size: 211 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: findAll (TypeScript)\n// Retrieves all todos from the in-memory repository.\n\nfindAll(): Promise<Todo[]> {\n    const entities = Array.from(this.todos.values());\n    return Promise.resolve(entities);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:13:39.166Z
+Question Type: select-all
+Function: isClientLockable
+Function Size: 583 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isClientLockable (TypeScript)\n// Determines if a client can be locked based on transport type and lock type.\n\nfunction isClientLockable(\n  client: Socket,\n  transportName: string,\n  lockType: "read" | "write",\n) {\n  switch (transportName) {\n    case "polling":\n      return (\n        cli
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:13:40.406Z
+Question Type: true-false
+Function: deleteById
+Function Size: 320 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deleteById (TypeScript)\n// Deletes a todo by its ID, resolving or rejecting based on existence.\n\ndeleteById(id: TodoID): Promise<void> {\n    const deleted = this.todos.delete(id);\n    if (deleted) {\n      return Promise.resolve();\n    } else {\n      return Promise.reject(Errors.ENTITY_N
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:13:43.475Z
+Question Type: order-sequence
+Function: findAll
+Function Size: 211 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: findAll (TypeScript)\n// Retrieves all todos from the in-memory repository.\n\nfindAll(): Promise<Todo[]> {\n    const entities = Array.from(this.todos.values());\n    return Promise.resolve(entities);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:13:45.219Z
+Question Type: multiple-choice
+Function: isClientLockable
+Function Size: 583 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: isClientLockable (TypeScript)\n// Determines if a client can be locked based on transport type and lock type.\n\nfunction isClientLockable(\n  client: Socket,\n  transportName: string,\n  lockType: "read" | "write",\n) {\n  switch (transportName) {\n    case "polling":\n      return (\n        cli
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:13:47.781Z
+Question Type: order-sequence
+Function: save
+Function Size: 192 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: save (TypeScript)\n// Saves a todo entity to the in-memory repository.\n\nsave(entity: Todo): Promise<void> {\n    this.todos.set(entity.id, entity);\n    return Promise.resolve();\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:13:51.756Z
+Question Type: select-all
+Function: findById
+Function Size: 297 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: findById (TypeScript)\n// Finds a todo by its ID, returning it or an error if not found.\n\nfindById(id: TodoID): Promise<Todo> {\n    if (this.todos.has(id)) {\n      return Promise.resolve(this.todos.get(id)!);\n    } else {\n      return Promise.reject(Errors.ENTITY_NOT_FOUND);\n    }\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:13:52.614Z
+Question Type: function-variant
+Function: findById
+Function Size: 297 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: findById (TypeScript)\n// Finds a todo by its ID, returning it or an error if not found.\n\nfindById(id: TodoID): Promise<Todo> {\n    if (this.todos.has(id)) {\n      return Promise.resolve(this.todos.get(id)!);\n    } else {\n      return Promise.reject(Errors.ENTITY_NOT_FOUND);\n    }\n  }
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760466663427
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 5
+Ended: 2025-10-15T01:13:52.652Z
+================================================================================
+
