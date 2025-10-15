@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe, FOUNDER_PRICE, FOUNDER_TIER_NAME, FOUNDER_TIER_DESCRIPTION } from '@/lib/stripe';
+import { stripe, FOUNDER_PRICE, REGULAR_PRICE, FOUNDER_TIER_NAME, FOUNDER_TIER_DESCRIPTION } from '@/lib/stripe';
+import { getFounderTierStatus } from '@/lib/founder-tier';
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { userId, userEmail, isFounder = true } = body;
+    const { userId, userEmail } = body;
 
     // Validate required fields
     if (!userId) {
@@ -52,6 +53,11 @@ export async function POST(req: NextRequest) {
       customerId = customer.id;
     }
 
+    // Determine pricing based on founder availability
+    const founderStatus = await getFounderTierStatus();
+    const effectiveIsFounder = founderStatus.available;
+    const unitAmount = effectiveIsFounder ? FOUNDER_PRICE : REGULAR_PRICE;
+
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
@@ -65,7 +71,7 @@ export async function POST(req: NextRequest) {
               name: FOUNDER_TIER_NAME,
               description: FOUNDER_TIER_DESCRIPTION,
             },
-            unit_amount: FOUNDER_PRICE,
+            unit_amount: unitAmount,
             recurring: {
               interval: 'month',
             },
@@ -76,14 +82,14 @@ export async function POST(req: NextRequest) {
       // Store user info in metadata for webhook processing
       metadata: {
         userId,
-        isFounder: isFounder.toString(),
-        tier: 'founder',
+        isFounder: effectiveIsFounder.toString(),
+        tier: effectiveIsFounder ? 'founder' : 'regular',
       },
       subscription_data: {
         metadata: {
           userId,
-          isFounder: isFounder.toString(),
-          tier: 'founder',
+          isFounder: effectiveIsFounder.toString(),
+          tier: effectiveIsFounder ? 'founder' : 'regular',
         },
       },
       success_url: `${baseUrl}/?payment=success&session_id={CHECKOUT_SESSION_ID}`,
