@@ -1,5 +1,17 @@
-import { writeFileSync, appendFileSync, existsSync } from 'fs';
-import { join } from 'path';
+// Check if we're in a serverless environment (Vercel, etc.)
+const isServerless = process.env.VERCEL || process.env.NODE_ENV === 'production';
+
+// Only import fs in non-serverless environments
+let fs: any = null;
+let path: any = null;
+if (!isServerless) {
+  try {
+    fs = require('fs');
+    path = require('path');
+  } catch (e) {
+    // fs not available
+  }
+}
 
 interface ChunkLogEntry {
   timestamp: string;
@@ -12,20 +24,39 @@ interface ChunkLogEntry {
 }
 
 export class ChunkLogger {
-  private logFilePath: string;
+  private logFilePath: string | null = null;
   private sessionId: string;
+  private logs: ChunkLogEntry[] = [];
 
   constructor(sessionId?: string) {
     this.sessionId = sessionId || `session-${Date.now()}`;
-    this.logFilePath = join(process.cwd(), `function-logs-${this.sessionId}.txt`);
-    this.initializeLog();
+    
+    // Only create file path in non-serverless environments
+    if (!isServerless && fs && path) {
+      try {
+        this.logFilePath = path.join(process.cwd(), `function-logs-${this.sessionId}.txt`);
+        this.initializeLog();
+      } catch (e) {
+        console.log('📝 File logging disabled - using in-memory logging');
+        this.logFilePath = null;
+      }
+    } else {
+      console.log('📝 Serverless environment detected - using console logging');
+    }
   }
 
   private initializeLog() {
-    const header = `=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===\n`;
-    const subheader = `Session ID: ${this.sessionId}\n`;
-    const timestamp = `Started: ${new Date().toISOString()}\n\n`;
-    writeFileSync(this.logFilePath, header + subheader + timestamp);
+    if (!this.logFilePath || !fs) return;
+    
+    try {
+      const header = `=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===\n`;
+      const subheader = `Session ID: ${this.sessionId}\n`;
+      const timestamp = `Started: ${new Date().toISOString()}\n\n`;
+      fs.writeFileSync(this.logFilePath, header + subheader + timestamp);
+    } catch (e) {
+      console.log('📝 File logging failed - using console logging');
+      this.logFilePath = null;
+    }
   }
 
   logQuestionGeneration(
@@ -49,7 +80,16 @@ export class ChunkLogger {
       repositoryInfo
     };
 
-    const logLine = `
+    // Store in memory for serverless environments
+    this.logs.push(entry);
+
+    // Log to console in serverless environments
+    console.log(`📝 ${entry.questionType} | Chunk ${entry.chunkIndex} | ${entry.chunkSize} chars | ${entry.questionCount} questions | Function: ${functionName}`);
+    
+    // Try to write to file in non-serverless environments
+    if (this.logFilePath && fs) {
+      try {
+        const logLine = `
 --- QUESTION GENERATION ---
 Timestamp: ${entry.timestamp}
 Question Type: ${entry.questionType}
@@ -60,14 +100,23 @@ Repository: ${entry.repositoryInfo || 'Unknown'}
 Function Preview: ${entry.chunkPreview}
 ${'='.repeat(80)}
 `;
-    appendFileSync(this.logFilePath, logLine);
-    
-    console.log(`📝 Question logged: ${questionType} from function "${functionName}" (${chunk.length} chars, ${questionCount} questions)`);
+        fs.appendFileSync(this.logFilePath, logLine);
+      } catch (error) {
+        console.log('📝 File logging failed, using console only');
+        this.logFilePath = null;
+      }
+    }
   }
 
 
   logFunctionExtraction(fileName: string, functions: Array<{ name: string; lineCount: number; language: string; fullCode: string }>) {
-    const logLine = `
+    // Log to console in serverless environments
+    console.log(`🔍 Function extraction: ${fileName} (${functions.length} functions)`);
+    
+    // Try to write to file in non-serverless environments
+    if (this.logFilePath && fs) {
+      try {
+        const logLine = `
 --- FUNCTION EXTRACTION ---
 Timestamp: ${new Date().toISOString()}
 File: ${fileName}
@@ -84,12 +133,22 @@ ${'-'.repeat(80)}
 `).join('\n')}
 ${'='.repeat(80)}
 `;
-    appendFileSync(this.logFilePath, logLine);
-    console.log(`🔍 Logged function extraction: ${fileName} (${functions.length} functions with full code)`);
+        fs.appendFileSync(this.logFilePath, logLine);
+      } catch (error) {
+        console.log('📝 File logging failed, using console only');
+        this.logFilePath = null;
+      }
+    }
   }
 
   logSessionSummary(totalQuestions: number, totalChunks: number, repositoryInfo?: string) {
-    const summary = `
+    // Log to console in serverless environments
+    console.log(`📊 Session summary: ${totalQuestions} questions from ${totalChunks} chunks`);
+    
+    // Try to write to file in non-serverless environments
+    if (this.logFilePath && fs) {
+      try {
+        const summary = `
 
 === SESSION SUMMARY ===
 Session ID: ${this.sessionId}
@@ -100,11 +159,16 @@ Ended: ${new Date().toISOString()}
 ${'='.repeat(80)}
 
 `;
-    appendFileSync(this.logFilePath, summary);
-    console.log(`📊 Session summary logged to: ${this.logFilePath}`);
+        fs.appendFileSync(this.logFilePath, summary);
+        console.log(`📊 Session summary logged to: ${this.logFilePath}`);
+      } catch (error) {
+        console.log('📝 File logging failed, using console only');
+        this.logFilePath = null;
+      }
+    }
   }
 
-  getLogFilePath(): string {
+  getLogFilePath(): string | null {
     return this.logFilePath;
   }
 }

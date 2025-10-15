@@ -25,9 +25,9 @@ export async function extractFunctionsFromFile(
   console.log(`🔍 Extracting functions from ${fileName}...`);
 
   // Skip extremely large files to prevent timeouts
-  const MAX_FILE_SIZE = 50000; // 50KB limit
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB limit (much more reasonable)
   if (fileContent.length > MAX_FILE_SIZE) {
-    console.log(`⚠️ Skipping ${fileName} - too large (${Math.round(fileContent.length / 1024)}KB > ${Math.round(MAX_FILE_SIZE / 1024)}KB limit)`);
+    console.log(`⚠️ Skipping ${fileName} - too large (${Math.round(fileContent.length / 1024 / 1024)}MB > ${Math.round(MAX_FILE_SIZE / 1024 / 1024)}MB limit)`);
     return [];
   }
 
@@ -214,7 +214,7 @@ export async function* extractFunctionsFromFilesStreaming(
   console.log(`🎯 Starting streaming function extraction from up to ${maxFiles} files...`);
 
   // CRITICAL: Filter out extremely large files that cause timeouts
-  const MAX_FILE_SIZE = 50000; // 50KB limit
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB limit (much more reasonable)
   const manageableFiles = files.filter(file => file.content.length <= MAX_FILE_SIZE);
   
   if (manageableFiles.length === 0) {
@@ -222,7 +222,7 @@ export async function* extractFunctionsFromFilesStreaming(
     return;
   }
   
-  console.log(`📊 Filtered files: ${manageableFiles.length}/${files.length} are manageable size`);
+  console.log(`📊 Filtered files: ${manageableFiles.length}/${files.length} are manageable size (≤${Math.round(MAX_FILE_SIZE / 1024 / 1024)}MB)`);
 
   // CRITICAL: Add randomization to prevent repetitive questions
   // Shuffle files before scoring to add variety
