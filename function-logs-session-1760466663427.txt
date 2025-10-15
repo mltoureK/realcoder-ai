@@ -3400,3 +3400,429 @@ Total Chunks Processed: 6
 Ended: 2025-10-15T01:44:13.124Z
 ================================================================================
 
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T02:13:00.808Z
+File: [6 files: lru_cache.py, deck_of_cards.py, sales_rank_mapreduce.py, mint_snippets.py, online_chat.py, social_graph_snippets.py]
+Functions Extracted: 8
+
+
+Function 1: get
+Language: Python
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+def get(self, query):
+        """Get the stored query result from the cache.
+
+        Accessing a node updates its position to the front of the LRU list.
+        """
+        node = self.lookup.get(query)
+        if node is None:
+            return None
+        self.linked_list.move_to_front(node)
+        return node.results
+--------------------------------------------------------------------------------
+
+
+Function 2: set
+Language: Python
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+def set(self, results, query):
+        """Set the result for the given query key in the cache.
+
+        When updating an entry, updates its position to the front of the LRU list.
+        If the entry is new and the cache is at capacity, removes the oldest entry
+        before the new entry is added.
+        """
+        node = self.lookup.get(query)
+        if node is not None:
+            # Key exists in cache, update the value
+            node.results = results
+            self.linked_list.move_to_front(node)
+        else:
+            # Key does not exist in cache
+            if self.size == self.MAX_SIZE:
+                # Remove the oldest entry from the linked list and lookup
+                self.lookup.pop(self.linked_list.tail.query, None)
+                self.linked_list.remove_from_tail()
+            else:
+                self.size += 1
+            # Add the new key and value
+            new_node = Node(results)
+            self.linked_list.append_to_front(new_node)
+            self.lookup[query] = new_node
+--------------------------------------------------------------------------------
+
+
+Function 3: score
+Language: Python
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+def score(self):
+        total_value = 0
+        for card in self.cards:
+            total_value += card.value
+        return total_value
+--------------------------------------------------------------------------------
+
+
+Function 4: score
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+def score(self):
+        min_over = sys.MAXSIZE
+        max_under = -sys.MAXSIZE
+        for score in self.possible_scores():
+            if self.BLACKJACK < score < min_over:
+                min_over = score
+            elif max_under < score <= self.BLACKJACK:
+                max_under = score
+        return max_under if max_under != -sys.MAXSIZE else min_over
+--------------------------------------------------------------------------------
+
+
+Function 5: mapper
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+def mapper(self, _, line):
+        """Parse each log line, extract and transform relevant lines.
+
+        Emit key value pairs of the form:
+
+        (foo, p1), 2
+        (bar, p1), 2
+        (bar, p1), 1
+        (foo, p2), 3
+        (bar, p3), 10
+        (foo, p4), 1
+        """
+        timestamp, product_id, category, quantity = line.split('\t')
+        if self.within_past_week(timestamp):
+            yield (category, product_id), quantity
+--------------------------------------------------------------------------------
+
+
+Function 6: reducer
+Language: Python
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+def reducer(self, key, values):
+        """Sum values for each key.
+
+        (foo, p1), 2
+        (bar, p1), 3
+        (foo, p2), 3
+        (bar, p3), 10
+        (foo, p4), 1
+        """
+        yield key, sum(values)
+--------------------------------------------------------------------------------
+
+
+Function 7: categorize
+Language: Python
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+def categorize(self, transaction):
+        if transaction.seller in self.seller_category_map:
+            return self.seller_category_map[transaction.seller]
+        if transaction.seller in self.seller_category_overrides_map:
+            seller_category_map[transaction.seller] = 
+                self.manual_overrides[transaction.seller].peek_min()
+            return self.seller_category_map[transaction.seller]
+        return None
+--------------------------------------------------------------------------------
+
+
+Function 8: bfs
+Language: Python
+Lines: 13
+Full Code:
+--------------------------------------------------------------------------------
+def bfs(self, source, dest):
+        if source is None:
+            return False
+        queue = deque()
+        queue.append(source)
+        source.visit_state = State.visited
+        while queue:
+            node = queue.popleft()
+            print(node)
+            if dest is node:
+                return True
+            for adjacent_node in node.adj_nodes.values():
+                if adjacent_node.visit_state == State.unvisited:
+                    queue.append(adjacent_node)
+                    adjacent_node.visit_state = State.visited
+        return False
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T02:13:09.696Z
+Question Type: select-all
+Function: reducer
+Function Size: 306 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: reducer (Python)\n// Sums the values for each key in the MapReduce process.\n\ndef reducer(self, key, values):\n        """Sum values for each key.\n\n        (foo, p1), 2\n        (bar, p1), 3\n        (foo, p2), 3\n        (bar, p3), 10\n        (foo, p4), 1\n        """\n        yield key, sum(v
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T02:13:15.956Z
+Question Type: true-false
+Function: categorize
+Function Size: 526 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: categorize (Python)\n// Categorizes a transaction based on seller information.\n\ndef categorize(self, transaction):\n        if transaction.seller in self.seller_category_map:\n            return self.seller_category_map[transaction.seller]\n        if transaction.seller in self.seller_categ
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T02:13:18.121Z
+Question Type: function-variant
+Function: mapper
+Function Size: 548 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mapper (Python)\n// Processes log lines to extract and emit key-value pairs for MapReduce.\n\ndef mapper(self, _, line):\n        """Parse each log line, extract and transform relevant lines.\n\n        Emit key value pairs of the form:\n\n        (foo, p1), 2\n        (bar, p1), 2\n        (bar,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T02:13:21.330Z
+Question Type: function-variant
+Function: bfs
+Function Size: 683 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: bfs (Python)\n// Performs a breadth-first search to find a path from source to destination in a graph.\n\ndef bfs(self, source, dest):\n        if source is None:\n            return False\n        queue = deque()\n        queue.append(source)\n        source.visit_state = State.visited\n       
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T02:13:24.211Z
+Question Type: multiple-choice
+Function: set
+Function Size: 1167 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: set (Python)\n// Sets the result for a query in the cache, updating the position or removing the oldest entry if necessary.\n\ndef set(self, results, query):\n        """Set the result for the given query key in the cache.\n\n        When updating an entry, updates its position to the front o
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T02:13:24.233Z
+Question Type: order-sequence
+Function: get
+Function Size: 428 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: get (Python)\n// Retrieves a stored query result from the cache and updates its position.\n\ndef get(self, query):\n        """Get the stored query result from the cache.\n\n        Accessing a node updates its position to the front of the LRU list.\n        """\n        node = self.lookup.get(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T02:13:30.345Z
+Question Type: function-variant
+Function: set
+Function Size: 1167 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: set (Python)\n// Sets the result for a query in the cache, updating the position or removing the oldest entry if necessary.\n\ndef set(self, results, query):\n        """Set the result for the given query key in the cache.\n\n        When updating an entry, updates its position to the front o
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T02:13:34.370Z
+Question Type: select-all
+Function: score
+Function Size: 218 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: score (Python)\n// Calculates the total score of the cards in hand.\n\ndef score(self):\n        total_value = 0\n        for card in self.cards:\n            total_value += card.value\n        return total_value
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T02:13:36.028Z
+Question Type: select-all
+Function: bfs
+Function Size: 683 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: bfs (Python)\n// Performs a breadth-first search to find a path from source to destination in a graph.\n\ndef bfs(self, source, dest):\n        if source is None:\n            return False\n        queue = deque()\n        queue.append(source)\n        source.visit_state = State.visited\n       
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T02:13:38.202Z
+Question Type: select-all
+Function: score
+Function Size: 472 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: score (Python)\n// Calculates the best score for a Blackjack hand considering possible scores.\n\ndef score(self):\n        min_over = sys.MAXSIZE\n        max_under = -sys.MAXSIZE\n        for score in self.possible_scores():\n            if self.BLACKJACK < score < min_over:\n                
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T02:13:42.207Z
+Question Type: function-variant
+Function: categorize
+Function Size: 526 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: categorize (Python)\n// Categorizes a transaction based on seller information.\n\ndef categorize(self, transaction):\n        if transaction.seller in self.seller_category_map:\n            return self.seller_category_map[transaction.seller]\n        if transaction.seller in self.seller_categ
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T02:13:47.270Z
+Question Type: select-all
+Function: get
+Function Size: 428 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: get (Python)\n// Retrieves a stored query result from the cache and updates its position.\n\ndef get(self, query):\n        """Get the stored query result from the cache.\n\n        Accessing a node updates its position to the front of the LRU list.\n        """\n        node = self.lookup.get(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T02:13:47.736Z
+Question Type: order-sequence
+Function: score
+Function Size: 472 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: score (Python)\n// Calculates the best score for a Blackjack hand considering possible scores.\n\ndef score(self):\n        min_over = sys.MAXSIZE\n        max_under = -sys.MAXSIZE\n        for score in self.possible_scores():\n            if self.BLACKJACK < score < min_over:\n                
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760466663427
+Repository: Unknown
+Total Questions Generated: 15
+Total Chunks Processed: 8
+Ended: 2025-10-15T02:13:49.021Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T02:13:59.468Z
+File: [2 files: web_crawler_snippets.py, parking_lot.py]
+Functions Extracted: 4
+
+
+Function 1: crawl_page
+Language: Python
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+def crawl_page(self, page):
+        for url in page.child_urls:
+            self.data_store.add_link_to_crawl(url)
+        self.reverse_index_queue.generate(page)
+        self.doc_index_queue.generate(page)
+        self.data_store.remove_link_to_crawl(page.url)
+        self.data_store.insert_crawled_link(page.url, page.signature)
+--------------------------------------------------------------------------------
+
+
+Function 2: crawl
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+def crawl(self):
+        while True:
+            page = self.data_store.extract_max_priority_page()
+            if page is None:
+                break
+            if self.data_store.crawled_similar(page.signature):
+                self.data_store.reduce_priority_link_to_crawl(page.url)
+            else:
+                self.crawl_page(page)
+            page = self.data_store.extract_max_priority_page()
+--------------------------------------------------------------------------------
+
+
+Function 3: park_vehicle
+Language: Python
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+def park_vehicle(self, vehicle):
+        for level in self.levels:
+            if level.park_vehicle(vehicle):
+                return True
+        return False
+--------------------------------------------------------------------------------
+
+
+Function 4: park_vehicle
+Language: Python
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+def park_vehicle(self, vehicle):
+        spot = self._find_available_spot(vehicle)
+        if spot is None:
+            return None
+        else:
+            spot.park_vehicle(vehicle)
+            return spot
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T02:14:05.079Z
+Question Type: true-false
+Function: crawl_page
+Function Size: 412 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: crawl_page (Python)\n// Crawls a page and processes its child URLs.\n\ndef crawl_page(self, page):\n        for url in page.child_urls:\n            self.data_store.add_link_to_crawl(url)\n        self.reverse_index_queue.generate(page)\n        self.doc_index_queue.generate(page)\n        self
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T02:14:08.351Z
+Question Type: select-all
+Function: crawl_page
+Function Size: 412 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: crawl_page (Python)\n// Crawls a page and processes its child URLs.\n\ndef crawl_page(self, page):\n        for url in page.child_urls:\n            self.data_store.add_link_to_crawl(url)\n        self.reverse_index_queue.generate(page)\n        self.doc_index_queue.generate(page)\n        self
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T02:14:09.854Z
+Question Type: select-all
+Function: park_vehicle
+Function Size: 245 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: park_vehicle (Python)\n// Attempts to park a vehicle in the parking lot.\n\ndef park_vehicle(self, vehicle):\n        for level in self.levels:\n            if level.park_vehicle(vehicle):\n                return True\n        return False
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T02:14:12.957Z
+Question Type: function-variant
+Function: crawl
+Function Size: 506 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: crawl (Python)\n// Continuously crawls pages based on priority until no pages are left.\n\ndef crawl(self):\n        while True:\n            page = self.data_store.extract_max_priority_page()\n            if page is None:\n                break\n            if self.data_store.crawled_similar(p
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760466663427
+Repository: Unknown
+Total Questions Generated: 4
+Total Chunks Processed: 4
+Ended: 2025-10-15T02:14:13.026Z
+================================================================================
+

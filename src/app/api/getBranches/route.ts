@@ -42,27 +42,34 @@ export async function POST(request: NextRequest) {
     let response;
     let lastError;
     
-    // Retry up to 3 times
-    for (let attempt = 1; attempt <= 3; attempt++) {
-      try {
-        console.log(`🔄 Branch fetch attempt ${attempt}/3`);
-        response = await fetch(branchesUrl, { 
-          headers,
-          signal: controller.signal,
-          // Add some additional fetch options for reliability
-          cache: 'no-cache',
-          redirect: 'follow'
-        });
-        clearTimeout(timeoutId);
-        if (response.ok) break;
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      } catch (error) {
-        lastError = error;
-        console.warn(`⚠️ Branch fetch attempt ${attempt} failed:`, error);
-        if (attempt === 3) throw error;
-        // Wait before retry (exponential backoff)
-        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+    try {
+      // Retry up to 3 times
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          console.log(`🔄 Branch fetch attempt ${attempt}/3`);
+          response = await fetch(branchesUrl, { 
+            headers,
+            signal: controller.signal,
+            // Add some additional fetch options for reliability
+            cache: 'no-cache',
+            redirect: 'follow'
+          });
+          if (response.ok) {
+            break;
+          }
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        } catch (error) {
+          lastError = error;
+          console.warn(`⚠️ Branch fetch attempt ${attempt} failed:`, error);
+          if (attempt === 3) {
+            throw error;
+          }
+          // Wait before retry (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        }
       }
+    } finally {
+      clearTimeout(timeoutId);
     }
     
     if (!response.ok) {
@@ -79,19 +86,22 @@ export async function POST(request: NextRequest) {
       const repoController = new AbortController();
       const repoTimeoutId = setTimeout(() => repoController.abort(), 10000); // 10 seconds for repo info
       
-      const repoResponse = await fetch(repoUrl, { 
-        headers,
-        signal: repoController.signal,
-        cache: 'no-cache' 
-      });
-      clearTimeout(repoTimeoutId);
-      
-      if (repoResponse.ok) {
-        const repoData = await repoResponse.json();
-        defaultBranchName = repoData.default_branch || 'main';
-        console.log('🔍 Repository default branch from API:', defaultBranchName);
-      } else {
-        console.warn('⚠️ Failed to get repository info, using fallback branch');
+      try {
+        const repoResponse = await fetch(repoUrl, { 
+          headers,
+          signal: repoController.signal,
+          cache: 'no-cache'
+        });
+        
+        if (repoResponse.ok) {
+          const repoData = await repoResponse.json();
+          defaultBranchName = repoData.default_branch || 'main';
+          console.log('🔍 Repository default branch from API:', defaultBranchName);
+        } else {
+          console.warn('⚠️ Failed to get repository info, using fallback branch');
+        }
+      } finally {
+        clearTimeout(repoTimeoutId);
       }
     } catch (error) {
       console.warn('⚠️ Error getting repository info, using fallback branch:', error);

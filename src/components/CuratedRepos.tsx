@@ -15,6 +15,7 @@ import {
   STRIPE_LEARNING_PATH,
   LARAVEL_LEARNING_PATH
 } from '@/lib/curated-repos';
+import { getTechIcon } from './TechIcons';
 
 // Use the imported arrays with the expected names
 const NEXTJS_CHILD_REPOS = NEXTJS_REPOS;
@@ -30,7 +31,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       difficulty: 'Intermediate',
       stars: '711',
       category: 'Full-Stack App',
-      icon: '🚀',
       isProduction: true
     },
     {
@@ -41,7 +41,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       difficulty: 'Advanced',
       stars: '80k+',
       category: 'Full-Stack App',
-      icon: '🌍',
       isProduction: true
     },
     {
@@ -52,7 +51,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       difficulty: 'Advanced',
       stars: '400k+',
       category: 'Education Platform',
-      icon: '📚',
       isProduction: true
     },
     {
@@ -63,7 +61,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       difficulty: 'Advanced',
       stars: '170k+',
       category: 'Code Editor',
-      icon: '💻',
       isProduction: true
     },
     {
@@ -280,7 +277,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       difficulty: 'Beginner',
       stars: '65k+',
       category: 'Backend Framework',
-      icon: '🚀',
       isProduction: true
     },
     {
@@ -429,7 +425,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       difficulty: 'Intermediate',
       stars: '1k+',
       category: 'Maps',
-      icon: '🌍',
       isProduction: true
     },
 
@@ -475,7 +470,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       difficulty: 'Intermediate',
       stars: '85k+',
       category: 'Component Development',
-      icon: '📚',
       isProduction: true
     },
 
@@ -670,7 +664,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       difficulty: 'Intermediate',
       stars: '2k+',
       category: 'Full-Stack CRUD',
-      icon: '🚀',
       isProduction: true
     },
     {
@@ -976,7 +969,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       difficulty: 'Intermediate',
       stars: '25k+',
       category: 'React Native',
-      icon: '🚀',
       isProduction: true
     },
 
@@ -989,7 +981,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       difficulty: 'Intermediate',
       stars: '711',
       category: 'React Full-Stack',
-      icon: '🚀',
       isProduction: true
     },
     {
@@ -1205,7 +1196,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       difficulty: 'Advanced',
       stars: '10k+',
       category: 'Spring Boot',
-      icon: '🌍',
       isProduction: true
     },
     {
@@ -1227,7 +1217,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       difficulty: 'Intermediate',
       stars: '12k+',
       category: 'Spring Boot',
-      icon: '📚',
       isProduction: true
     },
     {
@@ -1533,7 +1522,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       difficulty: 'Advanced',
       stars: '6k+',
       category: 'Micronaut Production',
-      icon: '🚀',
       isProduction: true
     },
 
@@ -1804,7 +1792,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       difficulty: 'Intermediate',
       stars: '75k+',
       category: 'PHP Framework',
-      icon: '🚀',
       isProduction: true,
       childRepos: LARAVEL_LEARNING_PATH
     },
@@ -1937,7 +1924,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       difficulty: 'Beginner',
       stars: '8k+',
       category: 'Web Framework',
-      icon: '🚀',
       isProduction: true
     },
     {
@@ -2029,7 +2015,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       difficulty: 'Advanced',
       stars: '20k+',
       category: 'Web Framework',
-      icon: '🚀',
       isProduction: true
     },
     {
@@ -2152,7 +2137,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       difficulty: 'Intermediate',
       stars: '65k+',
       category: 'Real-time Framework',
-      icon: '🚀',
       isProduction: true
     },
     {
@@ -2186,7 +2170,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       difficulty: 'Advanced',
       stars: '15k+',
       category: 'High Performance',
-      icon: '🚀',
       isProduction: true
     },
     // Network Security Tools
@@ -2407,7 +2390,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       difficulty: 'Advanced',
       stars: 'Official',
       category: 'International',
-      icon: '🌍',
       isProduction: true
     },
     {
@@ -2505,7 +2487,9 @@ export default function CuratedRepos({ onRepoSelect }: { onRepoSelect: (url: str
           >
             <div className="flex items-start justify-between mb-2">
               <div className="flex items-center space-x-2">
-                <span className="text-lg">{repo.icon}</span>
+                <div className="flex-shrink-0">
+                  {getTechIcon(repo.name, "w-5 h-5")}
+                </div>
                 <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
                   {repo.name}
                 </h4>
@@ -2578,7 +2562,9 @@ export default function CuratedRepos({ onRepoSelect }: { onRepoSelect: (url: str
                   >
                     <div className="flex items-start justify-between mb-1">
                       <div className="flex items-center space-x-2">
-                        <span className="text-sm">{childRepo.icon}</span>
+                        <div className="flex-shrink-0">
+                          {getTechIcon(childRepo.name, "w-4 h-4")}
+                        </div>
                         <h5 className="font-medium text-gray-900 dark:text-white text-xs">
                           {childRepo.name}
                         </h5>
