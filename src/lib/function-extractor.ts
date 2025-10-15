@@ -31,6 +31,13 @@ export async function extractFunctionsFromFile(
     return [];
   }
 
+  // Skip minified files (they're hard to parse and not useful for questions)
+  if (fileName.includes('.min.') || fileName.includes('.minified') || 
+      (fileContent.length > 1000 && fileContent.split('\n').length < 10)) {
+    console.log(`⚠️ Skipping ${fileName} - appears to be minified code`);
+    return [];
+  }
+
   const controller = new AbortController();
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
   const clearTimer = () => {
@@ -41,8 +48,8 @@ export async function extractFunctionsFromFile(
   };
 
   try {
-    // Increase timeout for larger files but cap it
-    const timeoutMs = Math.min(60000, Math.max(15000, fileContent.length / 10)); // 15-60 seconds based on file size
+    // More generous timeout - minimum 30 seconds, up to 90 seconds for larger files
+    const timeoutMs = Math.min(90000, Math.max(30000, fileContent.length / 100)); // 30-90 seconds based on file size
     timeoutId = setTimeout(() => controller.abort(), timeoutMs);
     console.log(`⏱️ Using ${timeoutMs/1000}s timeout for ${Math.round(fileContent.length / 1024)}KB file`);
     
@@ -213,16 +220,27 @@ export async function* extractFunctionsFromFilesStreaming(
 ): AsyncGenerator<ExtractedFunction[], void, unknown> {
   console.log(`🎯 Starting streaming function extraction from up to ${maxFiles} files...`);
 
-  // CRITICAL: Filter out extremely large files that cause timeouts
+  // CRITICAL: Filter out extremely large files and minified files
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB limit (much more reasonable)
-  const manageableFiles = files.filter(file => file.content.length <= MAX_FILE_SIZE);
+  const manageableFiles = files.filter(file => {
+    // Skip large files
+    if (file.content.length > MAX_FILE_SIZE) return false;
+    
+    // Skip minified files
+    if (file.name.includes('.min.') || file.name.includes('.minified')) return false;
+    
+    // Skip files that look minified (long content with few lines)
+    if (file.content.length > 1000 && file.content.split('\n').length < 10) return false;
+    
+    return true;
+  });
   
   if (manageableFiles.length === 0) {
-    console.log('⚠️ No manageable files found (all too large)');
+    console.log('⚠️ No manageable files found (all too large or minified)');
     return;
   }
   
-  console.log(`📊 Filtered files: ${manageableFiles.length}/${files.length} are manageable size (≤${Math.round(MAX_FILE_SIZE / 1024 / 1024)}MB)`);
+  console.log(`📊 Filtered files: ${manageableFiles.length}/${files.length} are manageable size (≤${Math.round(MAX_FILE_SIZE / 1024 / 1024)}MB, not minified)`);
 
   // CRITICAL: Add randomization to prevent repetitive questions
   // Shuffle files before scoring to add variety
