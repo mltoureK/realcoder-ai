@@ -24,9 +24,17 @@ export async function extractFunctionsFromFile(
 ): Promise<ExtractedFunction[]> {
   console.log(`🔍 Extracting functions from ${fileName}...`);
 
+  const controller = new AbortController();
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  const clearTimer = () => {
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+  };
+
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
     
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -93,6 +101,8 @@ CRITICAL:
         max_tokens: 4000
       })
     });
+
+    clearTimer();
 
     if (!response.ok) {
       console.error(`❌ Function extraction failed for ${fileName}: ${response.status}`);
@@ -166,11 +176,11 @@ CRITICAL:
       logger.logFunctionExtraction(fileName, functionSummary);
     }
 
-    clearTimeout(timeoutId);
     return validFunctions;
 
   } catch (error) {
-    clearTimeout(timeoutId);
+    clearTimer();
+    controller.abort();
     console.error(`❌ Error extracting functions from ${fileName}:`, error);
     return [];
   }
@@ -304,4 +314,3 @@ export function functionsToChunks(functions: ExtractedFunction[]): string[] {
 
   return chunks;
 }
-
