@@ -14,6 +14,8 @@ export default function SubscriptionPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState(false);
+  // Local-only hint to show scheduled cancellation end date after user clicks cancel
+  const [cancelAtUnix, setCancelAtUnix] = useState<number | null>(null);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -66,11 +68,16 @@ export default function SubscriptionPage() {
         throw new Error('Failed to cancel subscription');
       }
 
+      // Capture Stripe period end to show messaging
+      const payload = await response.json();
+      const endUnix = payload?.subscription?.current_period_end ?? null;
+      if (typeof endUnix === 'number') setCancelAtUnix(endUnix);
+
       // Refresh user data
       const userData = await getUser(user!.uid);
       setUserDoc(userData);
-      
-      alert('Subscription cancelled successfully. You will retain access until the end of your billing period.');
+
+      alert('Cancellation scheduled. You will retain access until the end of your current billing period.');
     } catch (err) {
       console.error('Error cancelling subscription:', err);
       setError('Failed to cancel subscription. Please try again.');
@@ -114,6 +121,7 @@ export default function SubscriptionPage() {
   const isActive = userDoc?.subscriptionStatus === 'active';
   const isTrialing = userDoc?.subscriptionStatus === 'trialing';
   const isCancelled = userDoc?.subscriptionStatus === 'canceled';
+  const isCancelScheduled = !!cancelAtUnix || isCancelled;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
@@ -151,6 +159,11 @@ export default function SubscriptionPage() {
           <p className="text-gray-600 dark:text-gray-400">
             Manage your subscription, billing, and account settings.
           </p>
+          {isCancelled && (
+            <div className="mt-4 p-3 rounded-md border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200">
+              <span className="font-medium">Cancellation scheduled.</span> You will retain access until the end of your current billing period{cancelAtUnix ? ` (${new Date(cancelAtUnix * 1000).toLocaleDateString()})` : ''}.
+            </div>
+          )}
         </div>
 
         {/* Subscription Status */}
@@ -208,12 +221,17 @@ export default function SubscriptionPage() {
                   </label>
                   <div className="flex items-center space-x-2">
                     <div className={`w-3 h-3 rounded-full ${
+                      isCancelScheduled ? 'bg-red-500' :
                       isActive ? 'bg-green-500' : 
                       isTrialing ? 'bg-blue-500' : 
-                      isCancelled ? 'bg-red-500' : 'bg-gray-500'
+                      'bg-gray-500'
                     }`}></div>
                     <span className="text-gray-900 dark:text-white font-medium capitalize">
-                      {userDoc?.subscriptionStatus || 'Unknown'}
+                      {isCancelScheduled
+                        ? (cancelAtUnix
+                            ? `cancellation scheduled • active until ${new Date(cancelAtUnix * 1000).toLocaleDateString()}`
+                            : 'canceled')
+                        : (userDoc?.subscriptionStatus || 'Unknown')}
                     </span>
                   </div>
                 </div>
@@ -235,7 +253,7 @@ export default function SubscriptionPage() {
               {/* Action Buttons */}
               <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex flex-col sm:flex-row gap-4">
-                  {!isCancelled ? (
+                  {!(isCancelled || cancelAtUnix) ? (
                     <button
                       onClick={handleCancelSubscription}
                       disabled={cancelling}
@@ -246,7 +264,11 @@ export default function SubscriptionPage() {
                   ) : (
                     <div className="text-red-600 dark:text-red-400">
                       <p className="font-medium">Subscription Cancelled</p>
-                      <p className="text-sm">You will retain access until the end of your billing period.</p>
+                      <p className="text-sm">
+                        {cancelAtUnix
+                          ? `You retain access until ${new Date(cancelAtUnix * 1000).toLocaleDateString()}.`
+                          : 'You will retain access until the end of your billing period.'}
+                      </p>
                     </div>
                   )}
                   
@@ -294,12 +316,16 @@ export default function SubscriptionPage() {
                 <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
                   Next Billing Date
                 </label>
-                <p className="text-gray-900 dark:text-white">
-                  {userDoc?.lastQuizDate 
-                    ? new Date(userDoc.lastQuizDate.toDate().getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString()
-                    : 'Unknown'
-                  }
-                </p>
+                {!isCancelScheduled && (
+                  <p className="text-gray-900 dark:text-white">
+                    {userDoc?.lastQuizDate 
+                      ? new Date(userDoc.lastQuizDate.toDate().getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString()
+                      : 'Unknown'}
+                  </p>
+                )}
+                {isCancelScheduled && (
+                  <p className="text-gray-900 dark:text-white">Cancelled</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
@@ -310,11 +336,7 @@ export default function SubscriptionPage() {
                 </p>
               </div>
             </div>
-            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Billing is managed securely through Stripe. You can update your payment method and view detailed invoices in your Stripe customer portal.
-              </p>
-            </div>
+            {/* Removed Stripe billing blurb per request */}
           </div>
         )}
 
