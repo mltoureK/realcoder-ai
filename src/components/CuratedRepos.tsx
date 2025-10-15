@@ -6,7 +6,8 @@ import {
   REACT_FRONTEND_REPOS,
   REACT_MOBILE_REPOS,
   NEXTJS_REPOS,
-  RXJS_REACTIVE_REPOS
+  RXJS_REACTIVE_REPOS,
+  RUST_LEARNING_PATH
 } from '@/lib/curated-repos';
 
 // Use the imported arrays with the expected names
@@ -46,6 +47,50 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       stars: '400k+',
       category: 'Education Platform',
       icon: '📚',
+      isProduction: true
+    },
+    {
+      name: 'VS Code',
+      url: 'https://github.com/microsoft/vscode',
+      description: 'Visual Studio Code - the most popular code editor in the world - 170k+ stars',
+      language: 'TypeScript',
+      difficulty: 'Advanced',
+      stars: '170k+',
+      category: 'Code Editor',
+      icon: '💻',
+      isProduction: true
+    },
+    {
+      name: 'Tailwind CSS',
+      url: 'https://github.com/tailwindlabs/tailwindcss',
+      description: 'A utility-first CSS framework for rapid UI development - 80k+ stars',
+      language: 'CSS',
+      difficulty: 'Beginner',
+      stars: '80k+',
+      category: 'CSS Framework',
+      icon: '🎨',
+      isProduction: true
+    },
+    {
+      name: 'Headless UI',
+      url: 'https://github.com/tailwindlabs/headlessui',
+      description: 'Unstyled, accessible UI components designed to integrate with Tailwind CSS - 25k+ stars',
+      language: 'JavaScript',
+      difficulty: 'Intermediate',
+      stars: '25k+',
+      category: 'UI Components',
+      icon: '🎭',
+      isProduction: true
+    },
+    {
+      name: 'shadcn/ui',
+      url: 'https://github.com/shadcn/ui',
+      description: 'Beautifully designed components built with Radix UI and Tailwind CSS - 50k+ stars',
+      language: 'TypeScript',
+      difficulty: 'Intermediate',
+      stars: '50k+',
+      category: 'Component Library',
+      icon: '✨',
       isProduction: true
     },
     {
@@ -588,6 +633,72 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       category: 'Development Tool',
       icon: '👁️',
       isProduction: true
+    },
+    {
+      name: 'StreamRip',
+      url: 'https://github.com/nathom/streamrip',
+      description: 'StreamRip - A modern, fast, and flexible music downloader - 2k+ stars',
+      language: 'Python',
+      difficulty: 'Intermediate',
+      stars: '2k+',
+      category: 'Music Downloader',
+      icon: '🎵',
+      isProduction: true
+    },
+    {
+      name: 'Falcor',
+      url: 'https://github.com/Netflix/falcor',
+      description: 'A JavaScript library for efficient data fetching - used by Netflix - 10k+ stars',
+      language: 'JavaScript',
+      difficulty: 'Advanced',
+      stars: '10k+',
+      category: 'Data Fetching',
+      icon: '🌊',
+      isProduction: true
+    },
+    {
+      name: 'React + Spring Boot + MySQL',
+      url: 'https://github.com/bezkoder/react-spring-boot-mysql',
+      description: 'React + Spring Boot + MySQL Full Stack CRUD Application - 2k+ stars',
+      language: 'JavaScript',
+      difficulty: 'Intermediate',
+      stars: '2k+',
+      category: 'Full-Stack CRUD',
+      icon: '🚀',
+      isProduction: true
+    },
+    {
+      name: 'React + Spring Boot + PostgreSQL',
+      url: 'https://github.com/bezkoder/react-spring-boot-postgresql',
+      description: 'React + Spring Boot + PostgreSQL Full Stack CRUD Application - 1k+ stars',
+      language: 'JavaScript',
+      difficulty: 'Intermediate',
+      stars: '1k+',
+      category: 'Full-Stack CRUD',
+      icon: '🐘',
+      isProduction: true
+    },
+    {
+      name: 'Angular + Spring Boot',
+      url: 'https://github.com/bezkoder/angular-spring-boot-mysql',
+      description: 'Angular + Spring Boot + MySQL Full Stack CRUD Application - 1k+ stars',
+      language: 'TypeScript',
+      difficulty: 'Intermediate',
+      stars: '1k+',
+      category: 'Full-Stack CRUD',
+      icon: '🅰️',
+      isProduction: true
+    },
+    {
+      name: 'Vue + Spring Boot',
+      url: 'https://github.com/bezkoder/vue-spring-boot-mysql',
+      description: 'Vue + Spring Boot + MySQL Full Stack CRUD Application - 1k+ stars',
+      language: 'JavaScript',
+      difficulty: 'Intermediate',
+      stars: '1k+',
+      category: 'Full-Stack CRUD',
+      icon: '💚',
+      isProduction: true
     }
   ],
   'RxJS & Reactive': [
@@ -1067,6 +1178,50 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       stars: '8k+',
       category: 'Apache Production',
       icon: '🐱',
+      isProduction: true
+    },
+    {
+      name: 'DSA Bootcamp Java',
+      url: 'https://github.com/kunal-kushwaha/DSA-Bootcamp-Java',
+      description: 'Complete Data Structures & Algorithms Bootcamp in Java - 15k+ stars',
+      language: 'Java',
+      difficulty: 'Intermediate',
+      stars: '15k+',
+      category: 'Data Structures',
+      icon: '📊',
+      isProduction: true
+    },
+    {
+      name: 'Spring Boot RealWorld',
+      url: 'https://github.com/gothinkster/spring-boot-realworld-example-app',
+      description: 'Exemplary full stack Medium.com clone powered by Spring Boot - 10k+ stars',
+      language: 'Java',
+      difficulty: 'Advanced',
+      stars: '10k+',
+      category: 'Spring Boot',
+      icon: '🌍',
+      isProduction: true
+    },
+    {
+      name: 'Spring PetClinic',
+      url: 'https://github.com/spring-projects/spring-petclinic',
+      description: 'A sample Spring-based application used in tutorials - 8k+ stars',
+      language: 'Java',
+      difficulty: 'Intermediate',
+      stars: '8k+',
+      category: 'Spring Boot',
+      icon: '🐾',
+      isProduction: true
+    },
+    {
+      name: 'Spring Boot Examples',
+      url: 'https://github.com/in28minutes/spring-boot-examples',
+      description: 'Amazing Spring Boot Examples with many small projects - 12k+ stars',
+      language: 'Java',
+      difficulty: 'Intermediate',
+      stars: '12k+',
+      category: 'Spring Boot',
+      icon: '📚',
       isProduction: true
     },
     {
@@ -1669,6 +1824,28 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       isProduction: true
     },
     {
+      name: 'Monica',
+      url: 'https://github.com/monicahq/monica',
+      description: 'Personal CRM - organize your social relationships - 18k+ stars',
+      language: 'PHP',
+      difficulty: 'Intermediate',
+      stars: '18k+',
+      category: 'CRM',
+      icon: '👥',
+      isProduction: true
+    },
+    {
+      name: 'WooCommerce',
+      url: 'https://github.com/woocommerce/woocommerce',
+      description: 'An open-source e-commerce plugin for WordPress - 9k+ stars',
+      language: 'PHP',
+      difficulty: 'Advanced',
+      stars: '9k+',
+      category: 'E-commerce',
+      icon: '🛒',
+      isProduction: true
+    },
+    {
       name: 'Composer',
       url: 'https://github.com/composer/composer',
       description: 'Dependency Manager for PHP',
@@ -1798,6 +1975,111 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       stars: '4k+',
       category: 'CMS',
       icon: '💧',
+      isProduction: true
+    }
+  ],
+  'Rust': [
+    // Rust Core with Learning Path
+    {
+      name: 'Rust (Systems Programming)',
+      url: 'https://github.com/rust-lang/rust',
+      description: '🦀 Master systems programming - 100k stars, learn Rust + 12 production projects',
+      language: 'Rust',
+      difficulty: 'Advanced',
+      stars: '100k+',
+      category: 'Rust Systems',
+      icon: '🦀',
+      isProduction: true,
+      childRepos: RUST_LEARNING_PATH
+    },
+    {
+      name: 'Tokio',
+      url: 'https://github.com/tokio-rs/tokio',
+      description: 'A runtime for writing reliable asynchronous applications with Rust - 25k+ stars',
+      language: 'Rust',
+      difficulty: 'Advanced',
+      stars: '25k+',
+      category: 'Async Runtime',
+      icon: '⚡',
+      isProduction: true
+    },
+    {
+      name: 'Serde',
+      url: 'https://github.com/serde-rs/serde',
+      description: 'Serialization framework for Rust - 8k+ stars',
+      language: 'Rust',
+      difficulty: 'Intermediate',
+      stars: '8k+',
+      category: 'Serialization',
+      icon: '📦',
+      isProduction: true
+    },
+    {
+      name: 'Actix Web',
+      url: 'https://github.com/actix/actix-web',
+      description: 'Powerful, pragmatic, and extremely fast web framework for Rust - 20k+ stars',
+      language: 'Rust',
+      difficulty: 'Advanced',
+      stars: '20k+',
+      category: 'Web Framework',
+      icon: '🚀',
+      isProduction: true
+    },
+    {
+      name: 'Warp',
+      url: 'https://github.com/seanmonstar/warp',
+      description: 'A super-easy, composable, web server framework for warp speeds - 8k+ stars',
+      language: 'Rust',
+      difficulty: 'Intermediate',
+      stars: '8k+',
+      category: 'Web Framework',
+      icon: '🌊',
+      isProduction: true
+    }
+  ],
+  'C++': [
+    {
+      name: 'Linux Kernel',
+      url: 'https://github.com/torvalds/linux',
+      description: 'Linux kernel source tree - 170k+ stars',
+      language: 'C',
+      difficulty: 'Expert',
+      stars: '170k+',
+      category: 'Operating System',
+      icon: '🐧',
+      isProduction: true
+    },
+    {
+      name: 'ArkVime',
+      url: 'https://github.com/arkime/arkime',
+      description: 'Arkime (formerly Moloch) is a large scale, open source, indexed packet capture and search system - 6k+ stars',
+      language: 'C++',
+      difficulty: 'Advanced',
+      stars: '6k+',
+      category: 'Network Security',
+      icon: '🔍',
+      isProduction: true
+    },
+    {
+      name: 'System Design Primer',
+      url: 'https://github.com/donnemartin/system-design-primer',
+      description: 'Learn how to design large-scale systems. Prep for the system design interview - 250k+ stars',
+      language: 'Python',
+      difficulty: 'Advanced',
+      stars: '250k+',
+      category: 'System Design',
+      icon: '🏗️',
+      isProduction: true
+    },
+    {
+      name: 'NoCodeDB',
+      url: 'https://github.com/nocodb/nocodb',
+      description: 'Open Source Airtable Alternative - 40k+ stars',
+      language: 'TypeScript',
+      difficulty: 'Intermediate',
+      stars: '40k+',
+      category: 'Database',
+      icon: '🗄️',
       isProduction: true
     }
   ]
