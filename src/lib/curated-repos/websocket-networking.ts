@@ -3,17 +3,6 @@ import { type CuratedRepo } from './types';
 export const WEBSOCKET_NETWORKING_PATH: CuratedRepo[] = [
   // Beginner - WebSocket Basics
   {
-    name: 'WebSocket Fundamentals',
-    url: 'https://developer.mozilla.org/en-US/docs/Web/API/WebSocket',
-    description: 'Master the WebSocket API - learn handshake, frames, and real-time communication basics',
-    language: 'JavaScript',
-    difficulty: 'Beginner',
-    stars: 'MDN',
-    category: 'API Documentation',
-    icon: '📚',
-    isProduction: true
-  },
-  {
     name: 'ws (WebSocket Library)',
     url: 'https://github.com/websockets/ws',
     description: 'Pure WebSocket implementation for Node.js - 20k+ stars, battle-tested',
@@ -25,13 +14,13 @@ export const WEBSOCKET_NETWORKING_PATH: CuratedRepo[] = [
     isProduction: true
   },
   {
-    name: 'WebSocket Chat Example',
-    url: 'https://github.com/websockets/ws/tree/master/examples/chat',
-    description: 'Simple chat application using pure WebSocket - learn the fundamentals',
+    name: 'Socket.IO',
+    url: 'https://github.com/socketio/socket.io',
+    description: 'Real-time bidirectional event-based communication - 65k+ stars, battle-tested',
     language: 'JavaScript',
     difficulty: 'Beginner',
-    stars: 'Example',
-    category: 'Chat Application',
+    stars: '65k+',
+    category: 'Real-time Framework',
     icon: '💬',
     isProduction: true
   },
@@ -49,31 +38,31 @@ export const WEBSOCKET_NETWORKING_PATH: CuratedRepo[] = [
     isProduction: true
   },
   {
-    name: 'ws vs Socket.IO Benchmark',
-    url: 'https://github.com/uNetworking/uWebSockets.js#benchmarks',
-    description: 'Performance comparison - learn when to use pure WebSocket vs frameworks',
-    language: 'Benchmark',
+    name: 'Socket.IO Client',
+    url: 'https://github.com/socketio/socket.io-client',
+    description: 'Socket.IO client library - 10k+ stars, official client implementation',
+    language: 'JavaScript',
     difficulty: 'Intermediate',
-    stars: 'Benchmark',
-    category: 'Performance Analysis',
-    icon: '📊',
+    stars: '10k+',
+    category: 'Client Library',
+    icon: '📱',
     isProduction: true
   },
   {
-    name: 'Cluster WebSocket Example',
-    url: 'https://github.com/websockets/ws/tree/master/examples/express-session-parse',
-    description: 'Scaling WebSocket with Node.js clusters - production-ready patterns',
+    name: 'Engine.IO',
+    url: 'https://github.com/socketio/engine.io',
+    description: 'Real-time engine for Socket.IO - 7k+ stars, learn transport abstraction',
     language: 'JavaScript',
     difficulty: 'Intermediate',
-    stars: 'Example',
-    category: 'Scaling',
+    stars: '7k+',
+    category: 'Transport Layer',
     icon: '⚙️',
     isProduction: true
   },
 
   // Advanced - Production Patterns
   {
-    name: 'Redis Adapter for ws',
+    name: 'Socket.IO Redis Adapter',
     url: 'https://github.com/socketio/socket.io-redis-adapter',
     description: 'Redis adapter for scaling WebSocket across multiple servers',
     language: 'JavaScript',
@@ -84,24 +73,24 @@ export const WEBSOCKET_NETWORKING_PATH: CuratedRepo[] = [
     isProduction: true
   },
   {
-    name: 'WebSocket Load Testing',
-    url: 'https://github.com/obs-websocket-community-projects/obs-websocket-js',
-    description: 'Load testing WebSocket connections - learn performance optimization',
+    name: 'Socket.IO Admin UI',
+    url: 'https://github.com/socketio/socket.io-admin-ui',
+    description: 'Admin UI for Socket.IO - 1k+ stars, learn monitoring and debugging',
     language: 'JavaScript',
     difficulty: 'Advanced',
     stars: '1k+',
-    category: 'Testing',
-    icon: '🧪',
+    category: 'Monitoring',
+    icon: '📊',
     isProduction: true
   },
   {
-    name: 'WebSocket Security Best Practices',
-    url: 'https://cheatsheetseries.owasp.org/cheatsheets/HTML5_Security_Cheat_Sheet.html#websockets',
-    description: 'OWASP security guidelines for WebSocket implementations',
-    language: 'Security',
+    name: 'Socket.IO Protocol',
+    url: 'https://github.com/socketio/socket.io-protocol',
+    description: 'Socket.IO protocol implementation - learn real-time communication protocols',
+    language: 'JavaScript',
     difficulty: 'Advanced',
-    stars: 'OWASP',
-    category: 'Security',
+    stars: 'Official',
+    category: 'Protocol',
     icon: '🔒',
     isProduction: true
   }

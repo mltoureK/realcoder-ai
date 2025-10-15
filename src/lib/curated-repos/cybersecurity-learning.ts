@@ -3,17 +3,6 @@ import { type CuratedRepo } from './types';
 export const CYBERSECURITY_LEARNING_PATH: CuratedRepo[] = [
   // Beginner - Security Fundamentals
   {
-    name: 'OWASP Top 10',
-    url: 'https://owasp.org/www-project-top-ten/',
-    description: 'Master the top 10 web application security risks - essential knowledge',
-    language: 'Security',
-    difficulty: 'Beginner',
-    stars: 'OWASP',
-    category: 'Security Fundamentals',
-    icon: '🛡️',
-    isProduction: true
-  },
-  {
     name: 'WebGoat',
     url: 'https://github.com/WebGoat/WebGoat',
     description: 'Deliberately insecure web application for learning - 7k+ stars',
@@ -25,9 +14,9 @@ export const CYBERSECURITY_LEARNING_PATH: CuratedRepo[] = [
     isProduction: true
   },
   {
-    name: 'DVWA (Damn Vulnerable Web App)',
+    name: 'DVWA',
     url: 'https://github.com/digininja/DVWA',
-    description: 'PHP/MySQL vulnerable web app for learning - 8k+ stars',
+    description: 'Damn Vulnerable Web Application - 8k+ stars, PHP/MySQL vulnerable app for learning',
     language: 'PHP',
     difficulty: 'Beginner',
     stars: '8k+',
@@ -60,12 +49,12 @@ export const CYBERSECURITY_LEARNING_PATH: CuratedRepo[] = [
     isProduction: true
   },
   {
-    name: 'Burp Suite Community',
-    url: 'https://portswigger.net/burp/communitydownload',
-    description: 'Web application security testing - industry standard tool',
+    name: 'Burp Suite',
+    url: 'https://github.com/PortSwigger/burp-suite-community',
+    description: 'Web application security testing - 1k+ stars, industry standard tool',
     language: 'Java',
     difficulty: 'Intermediate',
-    stars: 'Industry',
+    stars: '1k+',
     category: 'Web Security',
     icon: '🕷️',
     isProduction: true

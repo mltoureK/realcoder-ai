@@ -3,35 +3,24 @@ import { type CuratedRepo } from './types';
 export const NETWORK_ANALYSIS_PATH: CuratedRepo[] = [
   // Beginner - Network Fundamentals
   {
-    name: 'Network Basics Tutorial',
-    url: 'https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13788-3.html',
-    description: 'Learn TCP/IP fundamentals, OSI model, and basic networking concepts',
-    language: 'Networking',
-    difficulty: 'Beginner',
-    stars: 'Cisco',
-    category: 'Fundamentals',
-    icon: '📚',
-    isProduction: true
-  },
-  {
     name: 'tcpdump',
-    url: 'https://www.tcpdump.org/',
-    description: 'Command-line packet analyzer - learn to capture and analyze network traffic',
+    url: 'https://github.com/the-tcpdump-group/tcpdump',
+    description: 'Command-line packet analyzer - 2k+ stars, learn to capture and analyze network traffic',
     language: 'C',
     difficulty: 'Beginner',
-    stars: 'Classic',
+    stars: '2k+',
     category: 'Packet Capture',
     icon: '📦',
     isProduction: true
   },
   {
-    name: 'netstat',
-    url: 'https://en.wikipedia.org/wiki/Netstat',
-    description: 'Network statistics tool - learn to monitor network connections and routing',
-    language: 'System',
+    name: 'libpcap',
+    url: 'https://github.com/the-tcpdump-group/libpcap',
+    description: 'Packet capture library - 1k+ stars, learn network packet capture fundamentals',
+    language: 'C',
     difficulty: 'Beginner',
-    stars: 'Built-in',
-    category: 'Network Stats',
+    stars: '1k+',
+    category: 'Packet Capture Library',
     icon: '📊',
     isProduction: true
   },
@@ -61,11 +50,11 @@ export const NETWORK_ANALYSIS_PATH: CuratedRepo[] = [
   },
   {
     name: 'tshark',
-    url: 'https://www.wireshark.org/docs/man-pages/tshark.html',
+    url: 'https://gitlab.com/wireshark/wireshark',
     description: 'Command-line version of Wireshark - learn network analysis automation',
     language: 'C++',
     difficulty: 'Intermediate',
-    stars: 'Wireshark',
+    stars: '2k+',
     category: 'CLI Analysis',
     icon: '⚡',
     isProduction: true

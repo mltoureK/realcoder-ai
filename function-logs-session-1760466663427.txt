@@ -3107,3 +3107,296 @@ Total Chunks Processed: 2
 Ended: 2025-10-15T01:28:32.047Z
 ================================================================================
 
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T01:43:18.601Z
+File: [3 files: ApiTokenController.php, Team.php, LogoutOtherBrowserSessionsForm.php]
+Functions Extracted: 6
+
+
+Function 1: index
+Language: PHP
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+public function index(Request $request) {
+        return Jetstream::inertia()->render($request, 'API/Index', [
+            'tokens' => $request->user()->tokens->map(function ($token) {
+                return $token->toArray() + [
+                    'last_used_ago' => optional($token->last_used_at)->diffForHumans(),
+                ];
+            }),
+            'availablePermissions' => Jetstream::$permissions,
+            'defaultPermissions' => Jetstream::$defaultPermissions,
+        ]);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: store
+Language: PHP
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+public function store(Request $request) {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $token = $request->user()->createToken(
+            $request->name,
+            Jetstream::validPermissions($request->input('permissions', []))
+        );
+
+        return back()->with('flash', [
+            'token' => explode('|', $token->plainTextToken, 2)[1],
+        ]);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: update
+Language: PHP
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+public function update(Request $request, $tokenId) {
+        $request->validate([
+            'permissions' => 'array',
+            'permissions.*' => 'string',
+        ]);
+
+        $token = $request->user()->tokens()->where('id', $tokenId)->firstOrFail();
+
+        $token->forceFill([
+            'abilities' => Jetstream::validPermissions($request->input('permissions', [])),
+        ])->save();
+
+        return back(303);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 4: destroy
+Language: PHP
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+public function destroy(Request $request, $tokenId) {
+        $request->user()->tokens()->where('id', $tokenId)->first()->delete();
+
+        return back(303);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 5: logoutOtherBrowserSessions
+Language: PHP
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public function logoutOtherBrowserSessions(StatefulGuard $guard) {
+        if (config('session.driver') !== 'database') {
+            return;
+        }
+
+        $this->resetErrorBag();
+
+        if (! Hash::check($this->password, Auth::user()->password)) {
+            throw ValidationException::withMessages([
+                'password' => [__('This password does not match our records.')],
+            ]);
+        }
+
+        $guard->logoutOtherDevices($this->password);
+
+        $this->deleteOtherSessionRecords();
+
+        request()->session()->put([
+            'password_hash_'.Auth::getDefaultDriver() => Auth::user()->getAuthPassword(),
+        ]);
+
+        $this->confirmingLogout = false;
+
+        $this->dispatch('loggedOut');
+    }
+--------------------------------------------------------------------------------
+
+
+Function 6: getSessionsProperty
+Language: PHP
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public function getSessionsProperty() {
+        if (config('session.driver') !== 'database') {
+            return collect();
+        }
+
+        return collect(
+            DB::connection(config('session.connection'))->table(config('session.table', 'sessions'))
+                    ->where('user_id', Auth::user()->getAuthIdentifier())
+                    ->orderBy('last_activity', 'desc')
+                    ->get()
+        )->map(function ($session) {
+            return (object) [
+                'agent' => $this->createAgent($session),
+                'ip_address' => $session->ip_address,
+                'is_current_device' => $session->id === request()->session()->getId(),
+                'last_active' => Carbon::createFromTimestamp($session->last_activity)->diffForHumans(),
+            ];
+        });
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:43:24.954Z
+Question Type: true-false
+Function: update
+Function Size: 506 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: update (PHP)\n// Updates the permissions of a given API token.\n\npublic function update(Request $request, $tokenId) {\n        $request->validate([\n            'permissions' => 'array',\n            'permissions.*' => 'string',\n        ]);\n\n        $token = $request->user()->tokens()->where
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:43:30.760Z
+Question Type: select-all
+Function: update
+Function Size: 506 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: update (PHP)\n// Updates the permissions of a given API token.\n\npublic function update(Request $request, $tokenId) {\n        $request->validate([\n            'permissions' => 'array',\n            'permissions.*' => 'string',\n        ]);\n\n        $token = $request->user()->tokens()->where
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:43:30.916Z
+Question Type: order-sequence
+Function: logoutOtherBrowserSessions
+Function Size: 866 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: logoutOtherBrowserSessions (PHP)\n// Logs out from other browser sessions after confirming the user's password.\n\npublic function logoutOtherBrowserSessions(StatefulGuard $guard) {\n        if (config('session.driver') !== 'database') {\n            return;\n        }\n\n        $this->resetEr
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:43:32.229Z
+Question Type: select-all
+Function: destroy
+Function Size: 222 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: destroy (PHP)\n// Deletes a given API token.\n\npublic function destroy(Request $request, $tokenId) {\n        $request->user()->tokens()->where('id', $tokenId)->first()->delete();\n\n        return back(303);\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:43:35.285Z
+Question Type: function-variant
+Function: store
+Function Size: 495 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: store (PHP)\n// Creates a new API token for the user.\n\npublic function store(Request $request) {\n        $request->validate([\n            'name' => ['required', 'string', 'max:255'],\n        ]);\n\n        $token = $request->user()->createToken(\n            $request->name,\n            Jets
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:43:40.550Z
+Question Type: select-all
+Function: index
+Function Size: 591 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: index (PHP)\n// Shows the user API token screen with tokens and permissions.\n\npublic function index(Request $request) {\n        return Jetstream::inertia()->render($request, 'API/Index', [\n            'tokens' => $request->user()->tokens->map(function ($token) {\n                return $t
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:43:41.853Z
+Question Type: true-false
+Function: destroy
+Function Size: 222 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: destroy (PHP)\n// Deletes a given API token.\n\npublic function destroy(Request $request, $tokenId) {\n        $request->user()->tokens()->where('id', $tokenId)->first()->delete();\n\n        return back(303);\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:43:43.529Z
+Question Type: select-all
+Function: getSessionsProperty
+Function Size: 921 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getSessionsProperty (PHP)\n// Retrieves the current sessions for the authenticated user.\n\npublic function getSessionsProperty() {\n        if (config('session.driver') !== 'database') {\n            return collect();\n        }\n\n        return collect(\n            DB::connection(config('ses
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:43:51.902Z
+Question Type: select-all
+Function: store
+Function Size: 495 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: store (PHP)\n// Creates a new API token for the user.\n\npublic function store(Request $request) {\n        $request->validate([\n            'name' => ['required', 'string', 'max:255'],\n        ]);\n\n        $token = $request->user()->createToken(\n            $request->name,\n            Jets
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:43:52.370Z
+Question Type: function-variant
+Function: index
+Function Size: 591 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: index (PHP)\n// Shows the user API token screen with tokens and permissions.\n\npublic function index(Request $request) {\n        return Jetstream::inertia()->render($request, 'API/Index', [\n            'tokens' => $request->user()->tokens->map(function ($token) {\n                return $t
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:43:59.228Z
+Question Type: multiple-choice
+Function: index
+Function Size: 591 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: index (PHP)\n// Shows the user API token screen with tokens and permissions.\n\npublic function index(Request $request) {\n        return Jetstream::inertia()->render($request, 'API/Index', [\n            'tokens' => $request->user()->tokens->map(function ($token) {\n                return $t
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:44:06.388Z
+Question Type: function-variant
+Function: update
+Function Size: 506 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: update (PHP)\n// Updates the permissions of a given API token.\n\npublic function update(Request $request, $tokenId) {\n        $request->validate([\n            'permissions' => 'array',\n            'permissions.*' => 'string',\n        ]);\n\n        $token = $request->user()->tokens()->where
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:44:07.308Z
+Question Type: function-variant
+Function: destroy
+Function Size: 222 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: destroy (PHP)\n// Deletes a given API token.\n\npublic function destroy(Request $request, $tokenId) {\n        $request->user()->tokens()->where('id', $tokenId)->first()->delete();\n\n        return back(303);\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T01:44:07.543Z
+Question Type: function-variant
+Function: logoutOtherBrowserSessions
+Function Size: 866 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: logoutOtherBrowserSessions (PHP)\n// Logs out from other browser sessions after confirming the user's password.\n\npublic function logoutOtherBrowserSessions(StatefulGuard $guard) {\n        if (config('session.driver') !== 'database') {\n            return;\n        }\n\n        $this->resetEr
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760466663427
+Repository: Unknown
+Total Questions Generated: 12
+Total Chunks Processed: 6
+Ended: 2025-10-15T01:44:13.124Z
+================================================================================
+

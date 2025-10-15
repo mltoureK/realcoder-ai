@@ -12,7 +12,8 @@ import {
   CYBERSECURITY_LEARNING_PATH,
   NETWORK_ANALYSIS_PATH,
   DEVOPS_NETWORKING_PATH,
-  STRIPE_LEARNING_PATH
+  STRIPE_LEARNING_PATH,
+  LARAVEL_LEARNING_PATH
 } from '@/lib/curated-repos';
 
 // Use the imported arrays with the expected names
@@ -1796,15 +1797,16 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
   ],
   'PHP': [
     {
-      name: 'Laravel',
+      name: 'Laravel Framework Mastery',
       url: 'https://github.com/laravel/laravel',
-      description: 'A PHP framework for web artisans',
+      description: '🚀 Master PHP\'s most popular framework - 75k stars, learn Laravel + 24 projects',
       language: 'PHP',
       difficulty: 'Intermediate',
       stars: '75k+',
-      category: 'Web Framework',
-      icon: '🎨',
-      isProduction: true
+      category: 'PHP Framework',
+      icon: '🚀',
+      isProduction: true,
+      childRepos: LARAVEL_LEARNING_PATH
     },
     {
       name: 'Symfony',
@@ -2329,18 +2331,7 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
     },
     // Payment Security & Compliance
     {
-      name: 'PCI DSS Compliance',
-      url: 'https://github.com/pcicompliance/pci-dss',
-      description: 'PCI DSS compliance guidelines - learn payment security standards',
-      language: 'Documentation',
-      difficulty: 'Advanced',
-      stars: 'Compliance',
-      category: 'Security',
-      icon: '🔒',
-      isProduction: true
-    },
-    {
-      name: 'Payment Tokenization',
+      name: 'Stripe Tokenization',
       url: 'https://github.com/stripe-samples/tokenization',
       description: 'Secure payment tokenization - learn to protect sensitive payment data',
       language: 'JavaScript',
@@ -2350,11 +2341,22 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       icon: '🔐',
       isProduction: true
     },
+    {
+      name: 'Stripe Security',
+      url: 'https://github.com/stripe-samples/security-tools',
+      description: 'Payment security tools and best practices - learn secure payment patterns',
+      language: 'JavaScript',
+      difficulty: 'Advanced',
+      stars: 'Official',
+      category: 'Security',
+      icon: '🛡️',
+      isProduction: true
+    },
     // Cryptocurrency Payments
     {
-      name: 'Bitcoin Payment Integration',
+      name: 'Bitcoin Core',
       url: 'https://github.com/bitcoin/bitcoin',
-      description: 'Bitcoin payment processing - 75k+ stars, learn cryptocurrency payments',
+      description: 'Bitcoin implementation - 75k+ stars, learn cryptocurrency payments',
       language: 'C++',
       difficulty: 'Expert',
       stars: '75k+',
@@ -2363,9 +2365,9 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       isProduction: true
     },
     {
-      name: 'Ethereum Payment Gateway',
+      name: 'Web3.js',
       url: 'https://github.com/ethereum/web3.js',
-      description: 'Ethereum payment integration - 20k+ stars, smart contract payments',
+      description: 'Ethereum JavaScript API - 20k+ stars, smart contract payments',
       language: 'JavaScript',
       difficulty: 'Advanced',
       stars: '20k+',
@@ -2375,7 +2377,7 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
     },
     // Payment Analytics & Reporting
     {
-      name: 'Payment Analytics Dashboard',
+      name: 'Stripe Analytics Dashboard',
       url: 'https://github.com/stripe-samples/analytics-dashboard',
       description: 'Payment analytics and reporting - learn business intelligence for payments',
       language: 'JavaScript',
@@ -2386,7 +2388,7 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       isProduction: true
     },
     {
-      name: 'Revenue Recognition',
+      name: 'Stripe Revenue Recognition',
       url: 'https://github.com/stripe-samples/revenue-recognition',
       description: 'Automated revenue recognition - learn accounting for subscription businesses',
       language: 'JavaScript',
@@ -2398,7 +2400,7 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
     },
     // International Payments
     {
-      name: 'Multi-Currency E-commerce',
+      name: 'Stripe Multi-Currency E-commerce',
       url: 'https://github.com/stripe-samples/multi-currency-ecommerce',
       description: 'Global payment processing - learn international payment patterns',
       language: 'JavaScript',
@@ -2409,7 +2411,7 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       isProduction: true
     },
     {
-      name: 'Local Payment Methods',
+      name: 'Stripe Local Payment Methods',
       url: 'https://github.com/stripe-samples/local-payment-methods',
       description: 'Regional payment methods - learn Alipay, iDEAL, SEPA, and more',
       language: 'JavaScript',
