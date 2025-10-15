@@ -181,17 +181,30 @@ export async function checkQuizLimit(userId: string): Promise<{
   isPremium: boolean;
 }> {
   try {
-    const user = await getUser(userId);
+    let user = await getUser(userId);
     if (!user) {
-      return {
-        canTake: false,
-        reason: 'User not found',
-        weeklyRemaining: 0,
-        monthlyRemaining: 0,
-        weeklyLimit: 0,
-        monthlyLimit: 0,
-        isPremium: false
-      };
+      // User not found - this might be a race condition during signup
+      // Try to initialize the user with default data
+      console.log('⚠️ User not found in checkQuizLimit, attempting to initialize...');
+      try {
+        user = await initializeUser(userId, {
+          email: 'anonymous@example.com',
+          name: 'Anonymous User',
+          provider: 'anonymous'
+        });
+        console.log('✅ User initialized in checkQuizLimit');
+      } catch (initError) {
+        console.error('❌ Failed to initialize user in checkQuizLimit:', initError);
+        return {
+          canTake: false,
+          reason: 'User not found and initialization failed',
+          weeklyRemaining: 0,
+          monthlyRemaining: 0,
+          weeklyLimit: 0,
+          monthlyLimit: 0,
+          isPremium: false
+        };
+      }
     }
 
     // Check for resets
