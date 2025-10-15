@@ -20,12 +20,11 @@ const COLLECTIONS = {
 
 // Usage limits
 export const USAGE_LIMITS = {
-  FREE_WEEK: 3,          // 3 quizzes per week for free users
-  FREE_MONTH: 10,        // 10 quizzes per month for free users
+  ANONYMOUS_TOTAL: 3,    // 3 total quizzes for anonymous users
+  FREE_WEEK: 5,          // 5 quizzes per week for logged-in free users
+  FREE_MONTH: 15,        // 15 quizzes per month for logged-in free users
   PREMIUM_WEEK: -1,      // Unlimited for premium
   PREMIUM_MONTH: -1,     // Unlimited for premium
-  FIRST_100_WEEK: 5,     // 5 quizzes per week for first 100 users
-  FIRST_100_MONTH: 15,   // 15 quizzes per month for first 100 users
 } as const;
 
 /**
@@ -104,8 +103,6 @@ export async function initializeUser(
       return { id: userId, ...existingData, ...updates } as UserDoc;
     } else {
       // Create new user
-      const isFirst100Users = await checkIfFirst100Users();
-      
       const newUserData: Omit<UserDoc, 'id'> = {
         email: userData.email,
         name: userData.name,
@@ -130,12 +127,12 @@ export async function initializeUser(
         joinedAt: serverTimestamp() as Timestamp,
         lastSeen: serverTimestamp() as Timestamp,
         
-        // Legacy
-        isFirst100Users
+        // Legacy - remove first 100 discrimination
+        isFirst100Users: false
       };
 
       await setDoc(userRef, newUserData);
-      console.log(`✅ Created new user ${userId} (First 100: ${isFirst100Users})`);
+      console.log(`✅ Created new user ${userId} (Provider: ${userData.provider})`);
       
       return { id: userId, ...newUserData } as UserDoc;
     }
@@ -242,13 +239,41 @@ export async function checkQuizLimit(userId: string): Promise<{
     let weeklyLimit: number;
     let monthlyLimit: number;
     
-    if (user.isFirst100Users) {
-      weeklyLimit = USAGE_LIMITS.FIRST_100_WEEK;
-      monthlyLimit = USAGE_LIMITS.FIRST_100_MONTH;
-    } else {
-      weeklyLimit = USAGE_LIMITS.FREE_WEEK;
-      monthlyLimit = USAGE_LIMITS.FREE_MONTH;
+    // Anonymous users get 3 total quizzes (no weekly/monthly limits)
+    if (user.provider === 'anonymous') {
+      const totalUsed = user.quizzesUsed || 0;
+      const totalLimit = USAGE_LIMITS.ANONYMOUS_TOTAL;
+      const totalRemaining = Math.max(0, totalLimit - totalUsed);
+      
+      if (totalUsed >= totalLimit) {
+        return {
+          canTake: false,
+          reason: `Anonymous limit reached (${totalLimit} total quizzes)`,
+          weeklyRemaining: 0,
+          monthlyRemaining: 0,
+          weeklyLimit: totalLimit,
+          monthlyLimit: totalLimit,
+          weekResetDate,
+          monthResetDate,
+          isPremium: false
+        };
+      }
+      
+      return {
+        canTake: true,
+        weeklyRemaining: totalRemaining,
+        monthlyRemaining: totalRemaining,
+        weeklyLimit: totalLimit,
+        monthlyLimit: totalLimit,
+        weekResetDate,
+        monthResetDate,
+        isPremium: false
+      };
     }
+    
+    // Logged-in free users get weekly/monthly limits
+    weeklyLimit = USAGE_LIMITS.FREE_WEEK;
+    monthlyLimit = USAGE_LIMITS.FREE_MONTH;
 
     const weeklyRemaining = Math.max(0, weeklyLimit - weeklyUsed);
     const monthlyRemaining = Math.max(0, monthlyLimit - monthlyUsed);
@@ -416,23 +441,6 @@ export async function updateUserPremiumStatus(
   }
 }
 
-/**
- * Check if user is in the first 100 users
- */
-export async function checkIfFirst100Users(): Promise<boolean> {
-  try {
-    const q = query(collection(db, COLLECTIONS.USERS));
-    const querySnapshot = await getDocs(q);
-    
-    const totalUsers = querySnapshot.size;
-    console.log(`📊 Total users in database: ${totalUsers}`);
-    
-    return totalUsers < 100;
-  } catch (error) {
-    console.error('❌ Error checking first 100 users:', error);
-    return false;
-  }
-}
 
 /**
  * Legacy function for backward compatibility

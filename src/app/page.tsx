@@ -1225,18 +1225,31 @@ export default function Home() {
             <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                    {quizLimit.weeklyRemaining} quizzes remaining this week
-                  </p>
-                  <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
-                    {quizLimit.monthlyRemaining} remaining this month • Resets {new Date(quizLimit.weekResetDate || Date.now()).toLocaleDateString()}
-                  </p>
+                  {user.isAnonymous ? (
+                    <>
+                      <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                        {quizLimit.weeklyRemaining} quizzes remaining (anonymous)
+                      </p>
+                      <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                        Sign up to get 5 quizzes per week • Unlimited with premium
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                        {quizLimit.weeklyRemaining} quizzes remaining this week
+                      </p>
+                      <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                        {quizLimit.monthlyRemaining} remaining this month • Resets {new Date(quizLimit.weekResetDate || Date.now()).toLocaleDateString()}
+                      </p>
+                    </>
+                  )}
                 </div>
                 <button
                   onClick={() => setShowUpgradeModal(true)}
                   className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-medium rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all"
                 >
-                  Upgrade
+                  {user.isAnonymous ? 'Sign Up' : 'Upgrade'}
                 </button>
               </div>
             </div>
