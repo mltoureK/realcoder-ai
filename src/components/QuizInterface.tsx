@@ -50,7 +50,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
   const [generatedTickets, setGeneratedTickets] = useState<any[]>([]);
   const [loadingPct, setLoadingPct] = useState(0);
-  const [waitForCompleteStream, setWaitForCompleteStream] = useState(true);
+  
   const [showStreamingWarning, setShowStreamingWarning] = useState(false);
 
   const funTips = [
@@ -371,11 +371,10 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     const isFinishingQuiz = !nextAvailable;
     const isStreamingComplete = quizSession.completed || false;
     
-    if (isFinishingQuiz && waitForCompleteStream && !isStreamingComplete) {
-      // Show warning animation and prevent finishing
+    // If finishing while streaming, show a warning but allow finishing
+    if (isFinishingQuiz && !isStreamingComplete) {
       setShowStreamingWarning(true);
       setTimeout(() => setShowStreamingWarning(false), 2000);
-      return;
     }
     
     if (nextAvailable) {
@@ -1306,18 +1305,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               {/* Settings Toggle */}
               <div className="flex items-center space-x-2">
                 <span className="text-xs text-gray-600 dark:text-gray-400">Wait for complete stream:</span>
-                <button
-                  onClick={() => setWaitForCompleteStream(!waitForCompleteStream)}
-                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                    waitForCompleteStream ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
-                      waitForCompleteStream ? 'translate-x-5' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
+                {/* Streaming toggle removed: always allow streaming, finishing permitted with warning if incomplete */}
               </div>
             </div>
           </div>
