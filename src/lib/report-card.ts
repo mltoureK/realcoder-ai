@@ -158,13 +158,14 @@ export async function generateStrengthsWeaknesses(analysis: Analysis, results: Q
   // Extract concepts from passed questions (strengths)
   const passedQuestions = results.filter(r => r.isCorrect);
   if (passedQuestions.length > 0) {
-    const strengthConcepts = await extractConceptsFromQuestions(passedQuestions, failedQuestions, 'strengths');
+    const strengthConcepts = await extractConceptsFromFunctions(passedQuestions, failedQuestions, 'strengths');
     strengths.push(...strengthConcepts);
   }
 
-  // Extract concepts from failed questions (weaknesses)
+  // Extract concepts from failed questions (weaknesses) - limit to 3 most recent failed questions
   if (failedQuestions.length > 0) {
-    const weaknessConcepts = await extractConceptsFromQuestions([], failedQuestions, 'weaknesses');
+    const recentFailedQuestions = failedQuestions.slice(0, 3);
+    const weaknessConcepts = await extractConceptsFromFunctions([], recentFailedQuestions, 'weaknesses');
     weaknesses.push(...weaknessConcepts);
   }
 
@@ -175,37 +176,42 @@ export async function generateStrengthsWeaknesses(analysis: Analysis, results: Q
   return { strengths, weaknesses };
 }
 
-async function extractConceptsFromQuestions(passedQuestions: QuestionResult[], failedQuestions: FailedQuestion[], type: 'strengths' | 'weaknesses'): Promise<string[]> {
+async function extractConceptsFromFunctions(passedQuestions: QuestionResult[], failedQuestions: FailedQuestion[], type: 'strengths' | 'weaknesses'): Promise<string[]> {
   try {
     const questionsToAnalyze = type === 'strengths' ? passedQuestions : failedQuestions;
     
     if (questionsToAnalyze.length === 0) return [];
 
-    // Prepare question data for AI analysis
-    const questionData = questionsToAnalyze.slice(0, 10).map((q, index) => {
+    // Prepare function data for AI analysis
+    const functionData = questionsToAnalyze.slice(0, 5).map((q, index) => {
       if (type === 'strengths') {
         const result = q as QuestionResult;
         // For strengths, we need to find the corresponding failed question to get the full question content
         const correspondingFailed = failedQuestions.find(fq => fq.questionId === result.questionId);
-        if (correspondingFailed) {
+        if (correspondingFailed && correspondingFailed.codeContext) {
           return {
-            question: `Question ${index + 1}`,
-            content: `Question: ${correspondingFailed.question}, Type: ${result.type}, Language: ${result.language || 'Unknown'}, Code Context: ${correspondingFailed.codeContext || 'None'}`
-          };
-        } else {
-          return {
-            question: `Question ${index + 1}`,
-            content: `Type: ${result.type}, Language: ${result.language || 'Unknown'}, Correct: ${result.isCorrect}`
+            function: `Function ${index + 1}`,
+            code: correspondingFailed.codeContext,
+            language: result.language || 'Unknown',
+            type: result.type
           };
         }
+        return null;
       } else {
         const failed = q as FailedQuestion;
-        return {
-          question: `Question ${index + 1}`,
-          content: `Question: ${failed.question}, Type: ${failed.type}, Language: ${failed.language || 'Unknown'}, Code Context: ${failed.codeContext || 'None'}`
-        };
+        if (failed.codeContext) {
+          return {
+            function: `Function ${index + 1}`,
+            code: failed.codeContext,
+            language: failed.language || 'Unknown',
+            type: failed.type
+          };
+        }
+        return null;
       }
-    });
+    }).filter(Boolean);
+
+    if (functionData.length === 0) return getFallbackConcepts(type);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -218,29 +224,32 @@ async function extractConceptsFromQuestions(passedQuestions: QuestionResult[], f
         messages: [
           {
             role: 'system',
-            content: 'You are a programming concept analyzer. Analyze quiz questions and provide detailed, specific insights about programming skills demonstrated or missed. Return ONLY a JSON array of detailed concept descriptions, no additional text.'
+            content: 'You are a programming concept analyzer. Analyze code functions and provide detailed, specific insights about programming skills demonstrated or needed. Return ONLY a JSON array of detailed concept descriptions, no additional text.'
           },
           {
             role: 'user',
-            content: `Analyze these ${type === 'strengths' ? 'passed' : 'failed'} programming quiz questions and provide 5 detailed, specific insights about the programming concepts demonstrated. Be specific and actionable.
+            content: `Analyze these ${type === 'strengths' ? 'functions the user got correct' : 'functions the user got wrong'} and provide 5 detailed, specific insights about the programming concepts that ${type === 'strengths' ? 'this function demonstrates understanding of' : 'this function requires understanding of'}.
 
-Questions to analyze:
-${questionData.map(q => `${q.question}: ${q.content}`).join('\n')}
+Functions to analyze:
+${functionData.map(f => `${f.function} (${f.language}, ${f.type}):
+\`\`\`${f.language.toLowerCase()}
+${f.code}
+\`\`\``).join('\n\n')}
 
 Return format: ["detailed insight 1", "detailed insight 2", "detailed insight 3", "detailed insight 4", "detailed insight 5"]
 
-For ${type === 'strengths' ? 'strengths' : 'weaknesses'}, provide specific insights like:
-- "Strong understanding of React hooks and state management patterns"
-- "Excellent grasp of async/await and Promise handling"
-- "Solid knowledge of array methods and functional programming"
-- "Good understanding of error handling and defensive programming"
-- "Strong TypeScript generics and type safety concepts"
+For ${type === 'strengths' ? 'strengths' : 'weaknesses'}, provide specific insights about what programming concepts ${type === 'strengths' ? 'are demonstrated by getting this function right' : 'are required to understand this function properly'}, such as:
+- "Understanding of ${type === 'strengths' ? 'async/await patterns and Promise handling' : 'async/await patterns and Promise handling'}"
+- "Knowledge of ${type === 'strengths' ? 'array methods and functional programming' : 'array methods and functional programming'}"
+- "Grasp of ${type === 'strengths' ? 'error handling and defensive programming' : 'error handling and defensive programming'}"
+- "Understanding of ${type === 'strengths' ? 'object destructuring and modern syntax' : 'object destructuring and modern syntax'}"
+- "Knowledge of ${type === 'strengths' ? 'closure and scope concepts' : 'closure and scope concepts'}"
 
-Focus on specific programming skills, patterns, and concepts that can be improved or built upon.`
+Focus on specific programming skills, patterns, and concepts that ${type === 'strengths' ? 'are demonstrated by correctly answering questions about these functions' : 'are needed to properly understand and work with these functions'}.`
           }
         ],
         temperature: 0.3,
-        max_tokens: 500
+        max_tokens: 600
       })
     });
 

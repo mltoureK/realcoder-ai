@@ -216,48 +216,48 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gradient-to-br from-slate-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 overflow-y-auto">
-      <div className="w-full max-w-6xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 h-[95vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 bg-gradient-to-br from-slate-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 overflow-y-auto">
+      <div className="w-full max-w-7xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 h-[98vh] overflow-y-auto">
         {/* Header */}
-        <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-800">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-4">
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${passed ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'}`}>
+        <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-800">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center space-x-3">
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-xl ${passed ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'}`}>
                 {passed ? '🎯' : '🔁'}
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Your Report Card</h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Personalized insights, resources, and exercises</p>
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Your Report Card</h2>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Personalized insights, resources, and exercises</p>
               </div>
             </div>
             <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
           
           {/* Overall Score and Repo IQ in header */}
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-3">
-              <div className="px-4 py-2 rounded-lg bg-gradient-to-br from-indigo-600 to-blue-600 text-white">
-                <div className="text-xs opacity-80">Overall Score</div>
-                <div className="text-2xl font-bold">{percentage}%</div>
-                <div className="text-xs opacity-90">{analysis.overall.correct} / {analysis.overall.total}</div>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <div className="px-3 py-1.5 rounded-lg bg-gradient-to-br from-indigo-600 to-blue-600 text-white">
+                <div className="text-[10px] opacity-80">Overall Score</div>
+                <div className="text-xl font-bold">{percentage}%</div>
+                <div className="text-[10px] opacity-90">{analysis.overall.correct} / {analysis.overall.total}</div>
               </div>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <div className="relative">
                 <div
-                  className="w-16 h-16 rounded-lg bg-center bg-cover select-none"
+                  className="w-12 h-12 rounded-lg bg-center bg-cover select-none"
                   style={{ backgroundImage: `url(${robotSrc})` }}
                   aria-label="Repo IQ Robot"
                 />
                 <div className="absolute -bottom-1 -right-1">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-600 to-red-600 text-white shadow-lg flex flex-col items-center justify-center">
-                    <div className="text-[8px] opacity-80">IQ</div>
-                    <div className="text-lg font-bold">{repoIQ.score}</div>
+                  <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-rose-600 to-red-600 text-white shadow-lg flex flex-col items-center justify-center">
+                    <div className="text-[6px] opacity-80">IQ</div>
+                    <div className="text-sm font-bold">{repoIQ.score}</div>
                   </div>
                 </div>
               </div>
@@ -266,65 +266,66 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
         </div>
 
         {/* Body */}
-        <div className="p-4 grid gap-4">
-          <div className="grid gap-4">
-            {/* Strengths & Weaknesses */}
-            <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-              <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
-                <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Strengths</div>
-                <ul className="space-y-2">
+        <div className="p-3 grid gap-3">
+          <div className="grid gap-3">
+            {/* Top Row: Strengths & Weaknesses */}
+            <div className="grid gap-3 grid-cols-1 lg:grid-cols-2">
+              <div className="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+                <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 mb-2">Strengths</div>
+                <ul className="space-y-1.5">
                   {sw.strengths.map((s, i) => (
-                    <li key={i} className="text-sm text-gray-800 dark:text-gray-200">
-                      <span className="mr-2">✅</span>{s}
+                    <li key={i} className="text-xs text-gray-800 dark:text-gray-200 leading-relaxed">
+                      <span className="mr-1.5">✅</span>{s}
                     </li>
                   ))}
                 </ul>
               </div>
-              <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
-                <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Weaknesses</div>
-                <ul className="space-y-2">
+              <div className="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+                <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 mb-2">Weaknesses</div>
+                <ul className="space-y-1.5">
                   {sw.weaknesses.map((w, i) => (
-                    <li key={i} className="text-sm text-gray-800 dark:text-gray-200">
-                      <span className="mr-2">⚠️</span>{w}
+                    <li key={i} className="text-xs text-gray-800 dark:text-gray-200 leading-relaxed">
+                      <span className="mr-1.5">⚠️</span>{w}
                     </li>
                   ))}
                 </ul>
               </div>
             </div>
 
-            <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-              <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-                <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">By Language</div>
-                <div className="space-y-3 max-h-40 overflow-y-auto pr-1">
+            {/* Middle Row: By Language & By Question Type */}
+            <div className="grid gap-3 grid-cols-1 lg:grid-cols-2">
+              <div className="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 mb-2">By Language</div>
+                <div className="space-y-2 max-h-32 overflow-y-auto pr-1">
                   {Object.entries(analysis.byLanguage).map(([lang, b]) => {
                     const pct = Math.round(b.accuracy * 100);
                     return (
                       <div key={lang}>
-                        <div className="flex items-center justify-between text-xs mb-1">
+                        <div className="flex items-center justify-between text-[10px] mb-1">
                           <span className="text-gray-700 dark:text-gray-300">{lang}</span>
-                          <span className="text-gray-600 dark:text-gray-400">{pct}</span>
+                          <span className="text-gray-600 dark:text-gray-400">{pct}%</span>
                         </div>
-                        <div className="w-full h-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                          <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ type: 'spring', stiffness: 120, damping: 20 }} className="h-2 rounded-full bg-indigo-600" />
+                        <div className="w-full h-1.5 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                          <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ type: 'spring', stiffness: 120, damping: 20 }} className="h-1.5 rounded-full bg-indigo-600" />
                         </div>
                       </div>
                     );
                   })}
                 </div>
               </div>
-              <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-                <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">By Question Type</div>
-                <div className="space-y-3 max-h-40 overflow-y-auto pr-1">
+              <div className="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 mb-2">By Question Type</div>
+                <div className="space-y-2 max-h-32 overflow-y-auto pr-1">
                   {Object.entries(analysis.byType).map(([t, b]) => {
                     const pct = Math.round(b.accuracy * 100);
                     return (
                       <div key={t}>
-                        <div className="flex items-center justify-between text-xs mb-1">
+                        <div className="flex items-center justify-between text-[10px] mb-1">
                           <span className="text-gray-700 dark:text-gray-300">{t}</span>
-                          <span className="text-gray-600 dark:text-gray-400">{pct}</span>
+                          <span className="text-gray-600 dark:text-gray-400">{pct}%</span>
                         </div>
-                        <div className="w-full h-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                          <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ type: 'spring', stiffness: 120, damping: 20 }} className="h-2 rounded-full bg-blue-600" />
+                        <div className="w-full h-1.5 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                          <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ type: 'spring', stiffness: 120, damping: 20 }} className="h-1.5 rounded-full bg-blue-600" />
                         </div>
                       </div>
                     );
@@ -335,18 +336,18 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
 
 
             {/* Tickets Panel */}
-            <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-between mb-4">
-                <div className="text-sm font-semibold text-gray-800 dark:text-gray-200">Tickets</div>
+            <div className="p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-xs font-semibold text-gray-800 dark:text-gray-200">Tickets</div>
                 <div className="flex items-center gap-2">
-                  <button onClick={addBugTicketRandom} className="text-xs px-2 py-1 rounded-md bg-indigo-600 text-white hover:bg-indigo-700">Add Code Bug Ticket</button>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">{numDone}/{tickets.length} completed</div>
+                  <button onClick={addBugTicketRandom} className="text-[10px] px-2 py-1 rounded-md bg-indigo-600 text-white hover:bg-indigo-700">Add Code Bug Ticket</button>
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400">{numDone}/{tickets.length} completed</div>
                 </div>
               </div>
               {tickets.length === 0 ? (
-                <div className="text-sm text-gray-600 dark:text-gray-400">No tickets yet — add from Targeted Exercises.</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">No tickets yet — add from Targeted Exercises.</div>
               ) : (
-                <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+                <div className="space-y-2 max-h-[40vh] overflow-y-auto pr-1">
                   <AnimatePresence initial={false}>
                     {tickets.map(t => (
                       <motion.div
@@ -558,13 +559,13 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
         )}
 
         {/* Footer */}
-        <div className="px-6 py-5 border-t border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row gap-3 sm:justify-between">
-          <div className="text-sm text-gray-600 dark:text-gray-400">
+        <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row gap-2 sm:justify-between">
+          <div className="text-xs text-gray-600 dark:text-gray-400">
             {passed ? 'Nice work. Keep going! 🔥' : 'You\'re close — a little focused practice will do wonders.'}
           </div>
-          <div className="flex gap-3">
-            <button onClick={onRetry} className="px-5 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">Retake Quiz</button>
-            <button onClick={onClose} className="px-5 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600">Back to Home</button>
+          <div className="flex gap-2">
+            <button onClick={onRetry} className="px-4 py-1.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 text-sm">Retake Quiz</button>
+            <button onClick={onClose} className="px-4 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 text-sm">Back to Home</button>
           </div>
         </div>
       </div>
