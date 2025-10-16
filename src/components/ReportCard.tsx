@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   analyzeResults,
   generateRecommendations,
@@ -34,6 +34,14 @@ type Ticket = {
   };
 };
 
+function getDefaultFixSnippet(ticket: Ticket): string {
+  const base = [
+    '// Fix this code and/or add applicable comments.',
+    '// You will be graded on: logic correctness, problem solving approach, code quality.',
+  ].join('\n');
+  return `${base}\n${ticket.bugSnippet || ''}`;
+}
+
 type Props = {
   results: QuestionResult[];
   failedQuestions?: FailedQuestion[];
@@ -54,7 +62,9 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
   const [gradeResultsById, setGradeResultsById] = useState<Record<string, any>>({});
   const [isReviewing, setIsReviewing] = useState(false);
   const [openResultTicketId, setOpenResultTicketId] = useState<string | null>(null);
+  const [fullscreenTicketId, setFullscreenTicketId] = useState<string | null>(null);
   const robotSrc = '/report-bot.png';
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const generateSW = async () => {
@@ -106,6 +116,22 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
       localStorage.setItem('rc_tickets', JSON.stringify(tickets));
     } catch (_) {}
   }, [tickets]);
+
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (el) el.scrollTo({ top: 0, behavior: 'auto' });
+  }, []);
+
+  useEffect(() => {
+    if (!fullscreenTicketId) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setFullscreenTicketId(null);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [fullscreenTicketId]);
 
   function isInTickets(title: string): boolean {
     return tickets.some((t) => t.title === title);
@@ -261,7 +287,7 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
   );
 
   const sectionCardClass =
-    'rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/95 dark:bg-slate-900/80 shadow-sm backdrop-blur-sm p-4 sm:p-6';
+    'rounded-3xl border border-slate-200/70 bg-white shadow-sm dark:border-slate-700/60 dark:bg-slate-900/80 p-5 sm:p-6';
   const sectionTitleClass = 'text-sm font-semibold text-slate-700 dark:text-slate-200';
   const languageEntries = Object.entries(analysis.byLanguage || {}) as Array<[string, Breakdown]>;
   const typeEntriesRaw = Object.entries(analysis.byType || {}) as Array<[string, Breakdown]>;
@@ -271,11 +297,14 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
   );
   const topResources = recs.resources.slice(0, 3);
   const topExercises = recs.exercises.slice(0, 2);
+  const weakLanguages = analysis.weaknesses.languages.slice(0, 3);
+  const weakTypes = analysis.weaknesses.types.slice(0, 3);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-gradient-to-br from-slate-50 to-indigo-100 p-2 sm:items-center sm:p-4 dark:from-gray-900 dark:to-gray-800">
-      <div className="w-full max-w-5xl">
-        <div className="flex flex-col gap-6 p-3 sm:p-6 lg:p-8">
+    <div ref={scrollContainerRef} className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-br from-slate-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+      <div className="flex min-h-full w-full justify-center px-2 py-4 sm:px-4 sm:py-8">
+        <div className="w-full max-w-5xl">
+          <div className="flex flex-col gap-6 p-3 sm:p-6 lg:p-8">
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-blue-600 to-purple-600 text-white shadow-2xl">
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.4),_transparent_55%)] opacity-30" />
             <button
@@ -555,9 +584,13 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
             ) : (
               <div className="space-y-4">
                 <AnimatePresence initial={false}>
-                  {tickets.map((t) => (
-                    <motion.div
-                      key={t.id}
+                  {tickets.map((t) => {
+                    const codeValue = userCodeById[t.id] ?? getDefaultFixSnippet(t);
+                    const isFullscreen = fullscreenTicketId === t.id;
+                    const languageLabel = (t.language || 'javascript').toUpperCase();
+                    return (
+                      <motion.div
+                        key={t.id}
                       layout
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -603,18 +636,38 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
                             </div>
                           )}
                           <div className="space-y-3">
-                            <div>
-                              <div className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                                Your Fix
+                            <div
+                              className={`overflow-hidden rounded-xl border shadow-inner transition ${
+                                isFullscreen
+                                  ? 'border-indigo-300/70 ring-2 ring-indigo-300/40'
+                                  : 'border-slate-200 dark:border-slate-700'
+                              } bg-[#0d1117] text-slate-200 dark:bg-slate-950/80`}
+                            >
+                              <div className="flex items-center justify-between border-b border-white/5 bg-[#161b22] px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-slate-300">
+                                <div className="flex items-center gap-2">
+                                  <span>Your Fix</span>
+                                  <span className="rounded bg-white/10 px-2 py-0.5 text-[10px] font-medium text-slate-200">
+                                    {languageLabel}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() => setFullscreenTicketId(t.id)}
+                                    className="rounded-lg bg-white/5 px-2 py-1 text-[10px] font-semibold text-slate-200 transition hover:bg-white/10"
+                                  >
+                                    Full Screen
+                                  </button>
+                                </div>
                               </div>
                               <textarea
-                                className="h-40 w-full resize-y rounded-xl border border-slate-200 bg-white p-3 font-mono text-xs text-slate-700 dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-200"
-                                value={
-                                  userCodeById[t.id] ??
-                                  `// Fix this code and/or add applicable comments. You will be graded on: logic correctness, problem solving approach, code quality.\n${t.bugSnippet || ''}`
-                                }
+                                className="h-48 w-full resize-y bg-transparent px-4 py-3 font-mono text-xs leading-relaxed text-slate-100 placeholder-slate-500 outline-none focus:ring-0 sm:text-sm"
+                                value={codeValue}
                                 onChange={(e) => setUserCodeById((prev) => ({ ...prev, [t.id]: e.target.value }))}
                               />
+                              <div className="flex items-center justify-between border-t border-white/5 bg-[#161b22] px-4 py-2 text-[11px] text-slate-400">
+                                <span>Spaces: 2</span>
+                                <span>UTF-8</span>
+                              </div>
                             </div>
                             <div>
                               <div className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
@@ -696,7 +749,7 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
                                 : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-200 dark:hover:bg-emerald-900/40'
                             }`}
                           >
-                            {t.done ? 'Reopen Ticket' : 'Mark Complete'}
+                            {t.done ? 'Reopen Ticket' : 'Mark as Complete'}
                           </motion.button>
                           <motion.button
                             whileTap={{ scale: 0.96 }}
@@ -734,8 +787,9 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
                           )}
                         </div>
                       </div>
-                    </motion.div>
-                  ))}
+                      </motion.div>
+                    );
+                  })}
                 </AnimatePresence>
               </div>
             )}
@@ -778,6 +832,55 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
           </div>
         </div>
       </div>
+    </div>
+
+      {fullscreenTicketId && (() => {
+        const fullscreenTicket = tickets.find((ticket) => ticket.id === fullscreenTicketId);
+        if (!fullscreenTicket) return null;
+        const fullscreenValue = userCodeById[fullscreenTicket.id] ?? getDefaultFixSnippet(fullscreenTicket);
+        const fullscreenLanguage = (fullscreenTicket.language || 'javascript').toUpperCase();
+        return (
+          <div className="fixed inset-0 z-[65] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
+            <div className="flex h-full w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-slate-700 bg-[#0d1117] shadow-2xl">
+              <div className="flex items-center justify-between border-b border-slate-700 bg-[#161b22] px-5 py-3">
+                <div>
+                  <div className="text-sm font-semibold text-white">Your Fix - Full Screen</div>
+                  <div className="text-xs text-slate-400">{fullscreenTicket.title}</div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="rounded bg-indigo-500/20 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-100">
+                    {fullscreenLanguage}
+                  </span>
+                  <button
+                    onClick={() => setFullscreenTicketId(null)}
+                    className="rounded-lg bg-white/10 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-white/20"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+              <textarea
+                autoFocus
+                className="flex-1 w-full resize-none bg-transparent px-6 py-5 font-mono text-sm leading-relaxed text-slate-100 outline-none focus:ring-0"
+                value={fullscreenValue}
+                onChange={(e) =>
+                  setUserCodeById((prev) => ({
+                    ...prev,
+                    [fullscreenTicket.id]: e.target.value,
+                  }))
+                }
+              />
+              <div className="flex items-center justify-between border-t border-slate-700 bg-[#161b22] px-5 py-3 text-xs text-slate-400">
+                <span>Esc to exit full screen</span>
+                <div className="flex items-center gap-4">
+                  <span>Spaces: 2</span>
+                  <span>UTF-8</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {openResultTicketId && gradeResultsById[openResultTicketId] && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
