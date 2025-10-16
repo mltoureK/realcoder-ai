@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { QuizSession } from '@/lib/quiz-service';
 import { detectLanguage } from '@/lib/question-plugins/utils';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -10,7 +10,8 @@ import { QuestionResult, FailedQuestion } from '@/lib/report-card';
 import { motion, AnimatePresence } from 'framer-motion';
 import QuestionVotingButtons from './QuestionVotingButtons';
 import QuestionPoll from './QuestionPoll';
-import { addQuestionToBank } from '@/lib/quiz-history';
+import { addQuestionToBank, saveQuizResults } from '@/lib/quiz-history';
+import { useAuth } from '@/context/AuthContext';
 
 interface QuizInterfaceProps {
   quizSession: QuizSession;
@@ -43,6 +44,7 @@ function getHighlighterLanguage(lang: string): string {
 }
 
 export default function QuizInterface({ quizSession, onClose }: QuizInterfaceProps) {
+  const { user } = useAuth();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
   const [showResults, setShowResults] = useState(false);
@@ -74,6 +76,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   const [failedQuestions, setFailedQuestions] = useState<FailedQuestion[]>([]);
   const [questionRatings, setQuestionRatings] = useState<Record<string, 'up' | 'down'>>({});
   const [pollUpdatedQuestions, setPollUpdatedQuestions] = useState<Set<string>>(new Set());
+  const [hasSavedResults, setHasSavedResults] = useState(false);
 
   // Timers: per-question and overall (increase as questions stream in)
   const [questionTimeTotal, setQuestionTimeTotal] = useState(0);
@@ -112,6 +115,73 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   const totalQuestions = Array.isArray(quizSession.questions) ? quizSession.questions.length : 0;
   const hasQuestion = totalQuestions > 0 && currentQuestionIndex < totalQuestions;
   const currentQuestion: any = hasQuestion ? quizSession.questions[currentQuestionIndex] : undefined;
+
+  // Reset saved-results flag when session changes
+  useEffect(() => {
+    setHasSavedResults(false);
+  }, [quizSession?.id]);
+
+  const persistQuizResults = useCallback(async () => {
+    if (hasSavedResults) return;
+    if (!user) {
+      console.log('⚠️ [QuizInterface] Skipping quiz result save - anonymous session');
+      return;
+    }
+    if (!quizSession?.repositoryInfo) {
+      console.warn('⚠️ [QuizInterface] Missing repository info, cannot save quiz results');
+      return;
+    }
+    if (results.length === 0) {
+      console.log('⚠️ [QuizInterface] No recorded results yet, skipping save');
+      return;
+    }
+
+    try {
+      const { owner, repo } = quizSession.repositoryInfo;
+      const repoUrl = `https://github.com/${owner}/${repo}`;
+      const repoName = `${owner}/${repo}`;
+      const detectedLanguage = results.find(r => r.language)?.language || undefined;
+
+      console.log('💾 [QuizInterface] Persisting quiz results:', {
+        repoUrl,
+        score,
+        totalQuestions,
+        resultsCount: results.length
+      });
+
+      await saveQuizResults(
+        user.uid,
+        repoUrl,
+        repoName,
+        score,
+        totalQuestions,
+        results,
+        quizSession.id,
+        detectedLanguage ?? undefined,
+        undefined
+      );
+
+      setHasSavedResults(true);
+      console.log('✅ [QuizInterface] Quiz results saved successfully');
+    } catch (error) {
+      console.error('❌ [QuizInterface] Failed to save quiz results:', error);
+    }
+  }, [
+    hasSavedResults,
+    user?.uid,
+    quizSession?.repositoryInfo?.owner,
+    quizSession?.repositoryInfo?.repo,
+    quizSession?.id,
+    results,
+    score,
+    totalQuestions
+  ]);
+
+  useEffect(() => {
+    if (!hasSavedResults && (showReportPrompt || showResults)) {
+      void persistQuizResults();
+    }
+  }, [hasSavedResults, showReportPrompt, showResults, persistQuizResults]);
 
   // Utility: derive seconds based on code line counts (6s per line)
   function computeTimeForQuestion(q: any): number {

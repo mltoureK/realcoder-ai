@@ -133,11 +133,17 @@ export async function saveQuizResults(
       score,
       totalQuestions,
       completedAt: serverTimestamp() as Timestamp,
-      results,
       sessionId,
-      language,
-      difficulty
+      results
     };
+
+    if (language) {
+      quizHistoryData.language = language;
+    }
+
+    if (difficulty) {
+      quizHistoryData.difficulty = difficulty;
+    }
 
     const docRef = await addDoc(collection(db, COLLECTIONS.QUIZ_HISTORY), quizHistoryData);
     console.log('✅ Quiz results saved with ID:', docRef.id);
@@ -243,7 +249,47 @@ export async function getUserQuizHistoryByRepo(
     return quizHistory;
   } catch (error) {
     console.error('❌ Error getting user quiz history by repo:', error);
-    throw error;
+
+    const isIndexError =
+      (error as Record<string, unknown>)?.code === 'failed-precondition' ||
+      (error as Error)?.message?.includes('index');
+
+    if (!isIndexError) {
+      throw error;
+    }
+
+    try {
+      console.warn('⚠️ Falling back to simple query for user quiz history (no composite index)');
+      const simpleQ = query(
+        collection(db, COLLECTIONS.QUIZ_HISTORY),
+        where('userId', '==', userId)
+      );
+
+      const snapshot = await getDocs(simpleQ);
+      const docs: QuizHistoryDoc[] = [];
+
+      snapshot.forEach((docSnap) => {
+        docs.push({
+          id: docSnap.id,
+          ...(docSnap.data() as QuizHistoryDoc)
+        });
+      });
+
+      const filtered = docs
+        .filter((doc) => doc.repoUrl === repoUrl)
+        .sort((a, b) => {
+          const aTime = (a.completedAt as Timestamp | undefined)?.toMillis?.() ?? 0;
+          const bTime = (b.completedAt as Timestamp | undefined)?.toMillis?.() ?? 0;
+          return bTime - aTime;
+        })
+        .slice(0, limitCount);
+
+      console.log(`📊 Fallback query returned ${filtered.length} records for user ${userId} and repo ${repoUrl}`);
+      return filtered;
+    } catch (fallbackError) {
+      console.error('❌ Fallback query for user quiz history also failed:', fallbackError);
+      throw error;
+    }
   }
 }
 
