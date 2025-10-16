@@ -334,8 +334,6 @@ useEffect(() => {
   const typeBreakdownEntries = (typeEntriesFiltered.length > 0 ? typeEntriesFiltered : typeEntriesRaw).map(
     ([label, breakdown]) => [label, breakdown] as [string, Breakdown],
   );
-  const topResources = recs.resources.slice(0, 3);
-  const topExercises = recs.exercises.slice(0, 2);
   const weakLanguages = analysis.weaknesses.languages.slice(0, 3);
   const weakTypes = analysis.weaknesses.types.slice(0, 3);
 
@@ -347,13 +345,11 @@ useEffect(() => {
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-blue-600 to-purple-600 text-white shadow-2xl">
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.4),_transparent_55%)] opacity-30" />
             <button
+              type="button"
               onClick={onClose}
-              className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25"
+              className="absolute right-4 top-4 inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-white transition hover:bg-white/25 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600"
             >
-              <span className="sr-only">Close</span>
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              Back to Home
             </button>
             <div className="relative z-10 grid items-start gap-6 p-6 sm:p-8 md:grid-cols-[1.5fr,1fr]">
               <div className="space-y-6">
@@ -467,8 +463,8 @@ useEffect(() => {
             </section>
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-3">
-            <section className={`${sectionCardClass} lg:col-span-2`}>
+          <div className="grid gap-4 lg:grid-cols-2">
+            <section className={`${sectionCardClass}`}>
               <div className="flex flex-col gap-4">
                 <div>
                   <h3 className={sectionTitleClass}>Performance Trends</h3>
@@ -539,54 +535,35 @@ useEffect(() => {
                 </div>
               </div>
             </section>
+
             <section className={sectionCardClass}>
-              <h3 className={sectionTitleClass}>Next Moves</h3>
+              <h3 className={sectionTitleClass}>Focus Areas</h3>
               <div className="mt-3 space-y-4">
                 <div>
-                  <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                    Resources
-                  </div>
-                  {topResources.length === 0 ? (
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      We'll surface curated resources once we have more signal.
-                    </p>
+                  <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Weak Languages</div>
+                  {weakLanguages.length === 0 ? (
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Nothing critical stood out from your language breakdown.</p>
                   ) : (
-                    <ul className="space-y-2">
-                      {topResources.map((resource) => (
-                        <li key={resource.title}>
-                          <a
-                            href={resource.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-sm font-medium text-indigo-600 transition hover:text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200"
-                          >
-                            {resource.title}
-                          </a>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{resource.reason}</p>
+                    <ul className="space-y-1">
+                      {weakLanguages.map((lang) => (
+                        <li key={lang} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
+                          <span>{lang}</span>
+                          <span className="text-[10px] uppercase tracking-wide text-rose-500">needs reps</span>
                         </li>
                       ))}
                     </ul>
                   )}
                 </div>
                 <div>
-                  <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                    Exercises
-                  </div>
-                  {topExercises.length === 0 ? (
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      Complete a run to unlock targeted drills for rapid improvement.
-                    </p>
+                  <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Weak Question Types</div>
+                  {weakTypes.length === 0 ? (
+                    <p className="text-xs text-slate-500 dark:text-slate-400">No standout weak types detected this run.</p>
                   ) : (
-                    <ul className="space-y-2">
-                      {topExercises.map((exercise) => (
-                        <li
-                          key={exercise.title}
-                          className="rounded-xl border border-slate-200/70 bg-slate-50/60 p-3 dark:border-slate-700/70 dark:bg-slate-800/60"
-                        >
-                          <div className="text-sm font-semibold text-slate-700 dark:text-slate-200">{exercise.title}</div>
-                          <p className="mt-1 whitespace-pre-wrap text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                            {exercise.description}
-                          </p>
+                    <ul className="space-y-1">
+                      {weakTypes.map((type) => (
+                        <li key={type} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
+                          <span className="capitalize">{type}</span>
+                          <span className="text-[10px] uppercase tracking-wide text-rose-500">target next</span>
                         </li>
                       ))}
                     </ul>
