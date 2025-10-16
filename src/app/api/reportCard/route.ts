@@ -25,8 +25,14 @@ export async function POST(req: Request) {
   const { results, failedQuestions } = (await req.json()) as { results: QuestionResult[]; failedQuestions: FailedQuestion[] };
   const analysis: Analysis = analyzeResults(results || []);
   const repoIQ: RepoIQ = computeRepoIQ(analysis);
-  const strengthsWeaknesses: StrengthsWeaknesses = await generateStrengthsWeaknesses(analysis, results || [], failedQuestions || []);
   const tickets = await generateTicketsFromFailedQuestions(failedQuestions || []);
+  
+  // Return with static fallback strengths/weaknesses to avoid API calls
+  const strengthsWeaknesses: StrengthsWeaknesses = {
+    strengths: ['Solid programming fundamentals and problem-solving skills'],
+    weaknesses: ['Continue practicing to identify specific improvement areas']
+  };
+  
   return NextResponse.json({ analysis, repoIQ, strengthsWeaknesses, tickets });
 }
 
@@ -42,139 +48,45 @@ async function generateTicketsFromFailedQuestions(failedQuestions: FailedQuestio
     return [];
   }
 
-  // OPTIMIZATION: Generate all tickets in a single API call instead of 6 separate calls
-  const tickets = await generateAllTicketsInOneCall(questionsToProcess);
+  // Generate all tickets in parallel for maximum speed
+  const ticketPromises = questionsToProcess.map(async (failedQuestion, i) => {
+    // Determine language from the failed question
+    const language = detectLanguageFromFailedQuestion(failedQuestion);
+
+    // Generate both title/description and buggy code in parallel
+    const [titleDescriptionResult, bugResult] = await Promise.all([
+      generateEngagingTicketTitleAndDescription(failedQuestion, language),
+      generateBugFromFailedQuestion(failedQuestion, language)
+    ]);
+
+    // Create ticket based on the specific failed question
+    const ticket: Ticket = {
+      id: `ticket-${failedQuestion.type}-${i + 1}`,
+      title: titleDescriptionResult.title,
+      description: titleDescriptionResult.description,
+      language: language,
+      buggyCode: bugResult.buggyCode,
+      solutionCode: bugResult.solutionCode,
+      explanation: bugResult.explanation,
+      tests: [{ name: 'correct behavior', code: '// test based on failed question concept' }],
+      difficulty: 'medium' as const,
+      sourceQuestion: {
+        type: failedQuestion.type,
+        question: failedQuestion.question,
+        codeContext: failedQuestion.codeContext,
+        userAnswer: failedQuestion.selectedAnswers.join(', ') || 'No answer provided',
+        correctAnswer: failedQuestion.correctAnswers.join(', ') || 'Correct answer not available'
+      }
+    };
+
+    return ticket;
+  });
+
+  // Wait for all tickets to be generated in parallel
+  const tickets = await Promise.all(ticketPromises);
 
   console.log('✅ Generated', tickets.length, 'tickets:', tickets.map(t => t.id));
   return tickets;
-}
-
-async function generateAllTicketsInOneCall(failedQuestions: FailedQuestion[]): Promise<Ticket[]> {
-  try {
-    console.log('🚀 Generating all tickets in single API call for', failedQuestions.length, 'failed questions');
-    
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a Jira ticket generator. Create engaging, realistic bug tickets based on failed programming questions. Return ONLY valid JSON with no additional text.'
-          },
-          {
-            role: 'user',
-            content: `Generate ${failedQuestions.length} complete bug tickets based on these failed programming questions:
-
-${failedQuestions.map((q, i) => `
-Question ${i + 1}:
-- Type: ${q.type}
-- Question: ${q.question}
-- Code Context: ${q.codeContext || 'No code context'}
-- User's Answer: ${q.selectedAnswers.join(', ')}
-- Correct Answer: ${q.correctAnswers.join(', ')}
-- Explanation: ${q.explanation || 'No explanation provided'}
-`).join('\n')}
-
-For each failed question, create a complete ticket with:
-1. An engaging title that describes a specific bug or issue
-2. A description that starts with "symptom of the logic error in the code: [specific observable behavior]"
-3. Buggy code that demonstrates the same programming concept the user missed
-4. Fixed solution code
-5. Clear explanation of the bug and fix
-
-Return JSON format:
-{
-  "tickets": [
-    {
-      "title": "engaging bug title",
-      "description": "symptom of the logic error in the code: [specific issue]",
-      "language": "javascript|typescript|python|java",
-      "buggyCode": "code with bug",
-      "solutionCode": "fixed code",
-      "explanation": "explanation of bug and fix"
-    }
-  ]
-}`
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 6000
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const content = data.choices[0]?.message?.content;
-    
-    if (!content) {
-      throw new Error('No content from OpenAI');
-    }
-
-    const result = JSON.parse(content);
-    const aiTickets = result.tickets || [];
-    
-    // Convert AI response to our Ticket format
-    const tickets: Ticket[] = aiTickets.map((aiTicket: any, index: number) => {
-      const failedQuestion = failedQuestions[index];
-      const language = detectLanguageFromFailedQuestion(failedQuestion);
-      
-      return {
-        id: `ticket-${failedQuestion.type}-${index + 1}`,
-        title: aiTicket.title || `Fix ${failedQuestion.type} logic error`,
-        description: aiTicket.description || 'symptom of the logic error in the code: unexpected behavior detected',
-        language: (aiTicket.language || language) as 'javascript'|'typescript'|'python'|'java',
-        buggyCode: aiTicket.buggyCode || '// Bug code not generated',
-        solutionCode: aiTicket.solutionCode || '// Solution not generated',
-        explanation: aiTicket.explanation || 'Bug explanation not generated',
-        tests: [{ name: 'correct behavior', code: '// test based on failed question concept' }],
-        difficulty: 'medium' as const,
-        sourceQuestion: {
-          type: failedQuestion.type,
-          question: failedQuestion.question,
-          codeContext: failedQuestion.codeContext,
-          userAnswer: failedQuestion.selectedAnswers.join(', ') || 'No answer provided',
-          correctAnswer: failedQuestion.correctAnswers.join(', ') || 'Correct answer not available'
-        }
-      };
-    });
-
-    console.log('✅ Generated', tickets.length, 'tickets in single API call');
-    return tickets;
-    
-  } catch (error) {
-    console.error('Error generating tickets in single call:', error);
-    
-    // Fallback: generate simple tickets without AI
-    return failedQuestions.map((failedQuestion, index) => {
-      const language = detectLanguageFromFailedQuestion(failedQuestion);
-      return {
-        id: `ticket-${failedQuestion.type}-${index + 1}`,
-        title: `Fix ${failedQuestion.type} logic error`,
-        description: 'symptom of the logic error in the code: unexpected behavior detected',
-        language: language,
-        buggyCode: `// ${failedQuestion.type} bug in ${language}\n// TODO: Fix this logic error`,
-        solutionCode: `// ${failedQuestion.type} fix in ${language}\n// TODO: Implement correct solution`,
-        explanation: `This is a ${failedQuestion.type} question type in ${language}. The bug relates to the programming concept you missed.`,
-        tests: [{ name: 'correct behavior', code: '// test based on failed question concept' }],
-        difficulty: 'medium' as const,
-        sourceQuestion: {
-          type: failedQuestion.type,
-          question: failedQuestion.question,
-          codeContext: failedQuestion.codeContext,
-          userAnswer: failedQuestion.selectedAnswers.join(', ') || 'No answer provided',
-          correctAnswer: failedQuestion.correctAnswers.join(', ') || 'Correct answer not available'
-        }
-      };
-    });
-  }
 }
 
 async function generateEngagingTicketTitleAndDescription(failedQuestion: FailedQuestion, language: 'javascript'|'typescript'|'python'|'java'): Promise<{ title: string; description: string }> {
