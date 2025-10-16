@@ -601,26 +601,28 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
                     const codeValue = userCodeById[t.id] ?? getDefaultFixSnippet(t);
                     const isFullscreen = fullscreenTicketId === t.id;
                     const languageLabel = (t.language || 'javascript').toUpperCase();
+                    const isCollapsed = collapsedTickets[t.id] ?? false;
                     return (
                       <motion.div
                         key={t.id}
-                      layout
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ type: 'spring', stiffness: 200, damping: 24 }}
-                      className={`rounded-2xl border p-4 sm:p-5 shadow-sm ${
-                        t.done
-                          ? 'border-emerald-300/70 bg-emerald-50/40 dark:border-emerald-700/70 dark:bg-emerald-900/20'
-                          : 'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900'
-                      }`}
-                    >
-                      <div className="flex flex-col gap-4 lg:flex-row">
-                        <div className="min-w-0 flex-1 space-y-3">
-                          <div>
+                        layout
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -8 }}
+                        transition={{ type: 'spring', stiffness: 200, damping: 24 }}
+                        className={`rounded-2xl border p-4 sm:p-5 shadow-sm ${
+                          t.done
+                            ? 'border-emerald-300/70 bg-emerald-50/40 dark:border-emerald-700/70 dark:bg-emerald-900/20'
+                            : 'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900'
+                        }`}
+                      >
+                        <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between">
+                          <div className="min-w-0">
                             <div
                               className={`text-sm font-semibold ${
-                                t.done ? 'text-emerald-700 line-through decoration-emerald-400/70 dark:text-emerald-300' : 'text-slate-800 dark:text-slate-100'
+                                t.done
+                                  ? 'text-emerald-700 line-through decoration-emerald-400/70 dark:text-emerald-300'
+                                  : 'text-slate-800 dark:text-slate-100'
                               }`}
                             >
                               {t.title}
@@ -633,177 +635,203 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
                               {t.description}
                             </p>
                           </div>
-                          {t.bugSnippet && (
-                            <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700">
-                              <div className="bg-slate-50 px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-800/80 dark:text-slate-400">
-                                Buggy Code
-                              </div>
-                              <SyntaxHighlighter
-                                language={t.language || 'javascript'}
-                                style={vscDarkPlus}
-                                wrapLongLines
-                                customStyle={codeBlockStyle}
-                              >
-                                {t.bugSnippet}
-                              </SyntaxHighlighter>
-                            </div>
-                          )}
-                          <div className="space-y-3">
-                            <div
-                              className={`overflow-hidden rounded-xl border shadow-inner transition ${
-                                isFullscreen
-                                  ? 'border-indigo-300/70 ring-2 ring-indigo-300/40'
-                                  : 'border-slate-200 dark:border-slate-700'
-                              } bg-[#0d1117] text-slate-200 dark:bg-slate-950/80`}
+                          <div className="flex flex-wrap items-center gap-2">
+                            <button
+                              onClick={() => toggleCollapsed(t.id)}
+                              className="rounded-lg border border-slate-200 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
                             >
-                              <div className="flex items-center justify-between border-b border-white/5 bg-[#161b22] px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-slate-300">
-                                <div className="flex items-center gap-2">
-                                  <span>Your Fix</span>
-                                  <span className="rounded bg-white/10 px-2 py-0.5 text-[10px] font-medium text-slate-200">
-                                    {languageLabel}
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <button
-                                    onClick={() => setFullscreenTicketId(t.id)}
-                                    className="rounded-lg bg-white/5 px-2 py-1 text-[10px] font-semibold text-slate-200 transition hover:bg-white/10"
-                                  >
-                                    Full Screen
-                                  </button>
-                                </div>
-                              </div>
-                              <textarea
-                                className="h-48 w-full resize-y bg-transparent px-4 py-3 font-mono text-xs leading-relaxed text-slate-100 placeholder-slate-500 outline-none focus:ring-0 sm:text-sm"
-                                value={codeValue}
-                                onChange={(e) => setUserCodeById((prev) => ({ ...prev, [t.id]: e.target.value }))}
-                              />
-                              <div className="flex items-center justify-between border-t border-white/5 bg-[#161b22] px-4 py-2 text-[11px] text-slate-400">
-                                <span>Spaces: 2</span>
-                                <span>UTF-8</span>
-                              </div>
-                            </div>
-                            <div>
-                              <div className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                                Written Explanation
-                              </div>
-                              <textarea
-                                className="h-24 w-full resize-y rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-700 dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-200"
-                                placeholder="Explain what was wrong and why your change fixes it."
-                                value={userExplanationById[t.id] ?? ''}
-                                onChange={(e) => setUserExplanationById((prev) => ({ ...prev, [t.id]: e.target.value }))}
-                              />
-                            </div>
+                              {isCollapsed ? 'Expand' : 'Collapse'}
+                            </button>
                           </div>
-                          {t.done && t.fixedSnippet && (
-                            <div className="overflow-hidden rounded-xl border border-emerald-200 dark:border-emerald-700">
-                              <div className="bg-emerald-50 px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-300">
-                                Authoritative Fix
-                              </div>
-                              <SyntaxHighlighter
-                                language={t.language || 'javascript'}
-                                style={vscDarkPlus}
-                                wrapLongLines
-                                customStyle={codeBlockStyle}
-                              >
-                                {t.fixedSnippet}
-                              </SyntaxHighlighter>
-                            </div>
-                          )}
-                          {t.done && t.solutionText && (
-                            <div className="rounded-xl border border-emerald-200/70 bg-emerald-50/60 p-3 text-xs text-emerald-700 dark:border-emerald-700/70 dark:bg-emerald-900/20 dark:text-emerald-200">
-                              <strong>Solution:</strong> {t.solutionText}
-                            </div>
-                          )}
-                          {t.sourceQuestion && (
-                            <div className="space-y-2 rounded-xl border border-sky-200/70 bg-sky-50/60 p-3 text-xs text-sky-800 dark:border-sky-700/70 dark:bg-sky-900/20 dark:text-sky-200">
-                              <div className="font-semibold text-sky-700 dark:text-sky-200">Based on failed question</div>
-                              <div>
-                                <strong>Type:</strong> {t.sourceQuestion.type}
-                              </div>
-                              <div>
-                                <strong>Question:</strong> {t.sourceQuestion.question}
-                              </div>
-                              {t.sourceQuestion.codeContext && (
-                                <div>
-                                  <strong>Code Context:</strong>
-                                  <div className="mt-2 overflow-hidden rounded-lg border border-sky-200 dark:border-sky-700">
-                                    <SyntaxHighlighter
-                                      language={t.language || 'javascript'}
-                                      style={vscDarkPlus}
-                                      wrapLongLines
-                                      customStyle={compactCodeBlockStyle}
+                        </div>
+
+                        <AnimatePresence initial={false}>
+                          {!isCollapsed && (
+                            <motion.div
+                              key="ticket-body"
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.25 }}
+                              className="overflow-hidden"
+                            >
+                              <div className="mt-4 flex flex-col gap-4 lg:flex-row">
+                                <div className="min-w-0 flex-1 space-y-3">
+                                  {t.bugSnippet && (
+                                    <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700">
+                                      <div className="bg-slate-50 px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-800/80 dark:text-slate-400">
+                                        Buggy Code
+                                      </div>
+                                      <SyntaxHighlighter
+                                        language={t.language || 'javascript'}
+                                        style={vscDarkPlus}
+                                        wrapLongLines
+                                        customStyle={codeBlockStyle}
+                                      >
+                                        {t.bugSnippet}
+                                      </SyntaxHighlighter>
+                                    </div>
+                                  )}
+                                  <div className="space-y-3">
+                                    <div
+                                      className={`overflow-hidden rounded-xl border shadow-inner transition ${
+                                        isFullscreen
+                                          ? 'border-indigo-300/70 ring-2 ring-indigo-300/40'
+                                          : 'border-slate-200 dark:border-slate-700'
+                                      } bg-[#0d1117] text-slate-200 dark:bg-slate-950/80`}
                                     >
-                                      {t.sourceQuestion.codeContext}
-                                    </SyntaxHighlighter>
+                                      <div className="flex items-center justify-between border-b border-white/5 bg-[#161b22] px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-slate-300">
+                                        <div className="flex items-center gap-2">
+                                          <span>Your Fix</span>
+                                          <span className="rounded bg-white/10 px-2 py-0.5 text-[10px] font-medium text-slate-200">
+                                            {languageLabel}
+                                          </span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                          <button
+                                            onClick={() => setFullscreenTicketId(t.id)}
+                                            className="rounded-lg bg-white/5 px-2 py-1 text-[10px] font-semibold text-slate-200 transition hover:bg-white/10"
+                                          >
+                                            Full Screen
+                                          </button>
+                                        </div>
+                                      </div>
+                                      <textarea
+                                        className="h-48 w-full resize-y bg-transparent px-4 py-3 font-mono text-xs leading-relaxed text-slate-100 placeholder-slate-500 outline-none focus:ring-0 sm:text-sm"
+                                        value={codeValue}
+                                        onChange={(e) => setUserCodeById((prev) => ({ ...prev, [t.id]: e.target.value }))}
+                                      />
+                                      <div className="flex items-center justify-between border-t border-white/5 bg-[#161b22] px-4 py-2 text-[11px] text-slate-400">
+                                        <span>Spaces: 2</span>
+                                        <span>UTF-8</span>
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <div className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                                        Written Explanation
+                                      </div>
+                                      <textarea
+                                        className="h-24 w-full resize-y rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-700 dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-200"
+                                        placeholder="Explain what was wrong and why your change fixes it."
+                                        value={userExplanationById[t.id] ?? ''}
+                                        onChange={(e) => setUserExplanationById((prev) => ({ ...prev, [t.id]: e.target.value }))}
+                                      />
+                                    </div>
                                   </div>
+                                  {gradeResultsById[t.id] && t.fixedSnippet && (
+                                    <div className="overflow-hidden rounded-xl border border-emerald-200 dark:border-emerald-700">
+                                      <div className="bg-emerald-50 px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-300">
+                                        Authoritative Fix
+                                      </div>
+                                      <SyntaxHighlighter
+                                        language={t.language || 'javascript'}
+                                        style={vscDarkPlus}
+                                        wrapLongLines
+                                        customStyle={codeBlockStyle}
+                                      >
+                                        {t.fixedSnippet}
+                                      </SyntaxHighlighter>
+                                    </div>
+                                  )}
+                                  {gradeResultsById[t.id] && t.solutionText && (
+                                    <div className="rounded-xl border border-emerald-200/70 bg-emerald-50/60 p-3 text-xs text-emerald-700 dark:border-emerald-700/70 dark:bg-emerald-900/20 dark:text-emerald-200">
+                                      <strong>Solution:</strong> {t.solutionText}
+                                    </div>
+                                  )}
+                                  {t.sourceQuestion && (
+                                    <div className="space-y-2 rounded-xl border border-sky-200/70 bg-sky-50/60 p-3 text-xs text-sky-800 dark:border-sky-700/70 dark:bg-sky-900/20 dark:text-sky-200">
+                                      <div className="font-semibold text-sky-700 dark:text-sky-200">Based on failed question</div>
+                                      <div>
+                                        <strong>Type:</strong> {t.sourceQuestion.type}
+                                      </div>
+                                      <div>
+                                        <strong>Question:</strong> {t.sourceQuestion.question}
+                                      </div>
+                                      {t.sourceQuestion.codeContext && (
+                                        <div>
+                                          <strong>Code Context:</strong>
+                                          <div className="mt-2 overflow-hidden rounded-lg border border-sky-200 dark:border-sky-700">
+                                            <SyntaxHighlighter
+                                              language={t.language || 'javascript'}
+                                              style={vscDarkPlus}
+                                              wrapLongLines
+                                              customStyle={compactCodeBlockStyle}
+                                            >
+                                              {t.sourceQuestion.codeContext}
+                                            </SyntaxHighlighter>
+                                          </div>
+                                        </div>
+                                      )}
+                                      <div>
+                                        <strong>Your Answer:</strong> {t.sourceQuestion.userAnswer}
+                                      </div>
+                                      <div>
+                                        <strong>Correct Answer:</strong> {t.sourceQuestion.correctAnswer}
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
-                              )}
-                              <div>
-                                <strong>Your Answer:</strong> {t.sourceQuestion.userAnswer}
+                                <div className="flex w-full flex-col gap-2 lg:max-w-[220px]">
+                                  <motion.button
+                                    whileTap={{ scale: 0.96 }}
+                                    onClick={() => {
+                                      const hasCode = (userCodeById[t.id] ?? '').trim().length > 0;
+                                      const hasText = (userExplanationById[t.id] ?? '').trim().length > 0;
+                                      if (!t.done && (!hasCode || !hasText)) return;
+                                      toggleDone(t.id);
+                                    }}
+                                    className={`w-full rounded-xl px-3 py-2 text-xs font-semibold transition ${
+                                      t.done
+                                        ? 'bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-200 dark:hover:bg-amber-900/40'
+                                        : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-200 dark:hover:bg-emerald-900/40'
+                                    }`}
+                                  >
+                                    {t.done ? 'Reopen Ticket' : 'Mark as Complete'}
+                                  </motion.button>
+                                  <motion.button
+                                    whileTap={{ scale: 0.96 }}
+                                    onClick={() => copyTicket(t.id)}
+                                    className="w-full rounded-xl bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                                  >
+                                    Copy Summary
+                                  </motion.button>
+                                  <motion.button
+                                    whileTap={{ scale: 0.96 }}
+                                    onClick={() => removeTicket(t.id)}
+                                    className="w-full rounded-xl bg-rose-100 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-200 dark:bg-rose-900/30 dark:text-rose-200 dark:hover:bg-rose-900/50"
+                                  >
+                                    Delete
+                                  </motion.button>
+                                  {gradeResultsById[t.id] && (
+                                    <div className="mt-2 space-y-2 rounded-xl border border-slate-200 bg-slate-50/70 p-3 text-xs text-slate-600 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-300">
+                                      <div className="font-semibold text-slate-700 dark:text-slate-200">
+                                        Grading {gradeResultsById[t.id].pass ? '✅' : '❌'}
+                                      </div>
+                                      <div>Weighted Score: {gradeResultsById[t.id].weightedScore}/10</div>
+                                      <div>
+                                        Code: {gradeResultsById[t.id].codeScore}/10 • Written: {gradeResultsById[t.id].writtenScore}/10
+                                      </div>
+                                      <div className="text-xs text-slate-500 dark:text-slate-400">
+                                        Feedback: {gradeResultsById[t.id].feedback}
+                                      </div>
+                                      <button
+                                        onClick={() => setOpenResultTicketId(t.id)}
+                                        className="w-full rounded-lg bg-indigo-600 px-3 py-2 text-xs font-semibold text-white hover:bg-indigo-500"
+                                      >
+                                        View Breakdown
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                              <div>
-                                <strong>Correct Answer:</strong> {t.sourceQuestion.correctAnswer}
-                              </div>
-                            </div>
+                            </motion.div>
                           )}
-                        </div>
-                        <div className="flex w-full flex-col gap-2 lg:max-w-[220px]">
-                          <motion.button
-                            whileTap={{ scale: 0.96 }}
-                            onClick={() => {
-                              const hasCode = (userCodeById[t.id] ?? '').trim().length > 0;
-                              const hasText = (userExplanationById[t.id] ?? '').trim().length > 0;
-                              if (!t.done && (!hasCode || !hasText)) return;
-                              toggleDone(t.id);
-                            }}
-                            className={`w-full rounded-xl px-3 py-2 text-xs font-semibold transition ${
-                              t.done
-                                ? 'bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-200 dark:hover:bg-amber-900/40'
-                                : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-200 dark:hover:bg-emerald-900/40'
-                            }`}
-                          >
-                            {t.done ? 'Reopen Ticket' : 'Mark as Complete'}
-                          </motion.button>
-                          <motion.button
-                            whileTap={{ scale: 0.96 }}
-                            onClick={() => copyTicket(t.id)}
-                            className="w-full rounded-xl bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
-                          >
-                            Copy Summary
-                          </motion.button>
-                          <motion.button
-                            whileTap={{ scale: 0.96 }}
-                            onClick={() => removeTicket(t.id)}
-                            className="w-full rounded-xl bg-rose-100 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-200 dark:bg-rose-900/30 dark:text-rose-200 dark:hover:bg-rose-900/50"
-                          >
-                            Delete
-                          </motion.button>
-                          {gradeResultsById[t.id] && (
-                            <div className="mt-2 space-y-2 rounded-xl border border-slate-200 bg-slate-50/70 p-3 text-xs text-slate-600 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-300">
-                              <div className="font-semibold text-slate-700 dark:text-slate-200">
-                                Grading {gradeResultsById[t.id].pass ? '✅' : '❌'}
-                              </div>
-                              <div>Weighted Score: {gradeResultsById[t.id].weightedScore}/10</div>
-                              <div>
-                                Code: {gradeResultsById[t.id].codeScore}/10 • Written: {gradeResultsById[t.id].writtenScore}/10
-                              </div>
-                              <div className="text-xs text-slate-500 dark:text-slate-400">
-                                Feedback: {gradeResultsById[t.id].feedback}
-                              </div>
-                              <button
-                                onClick={() => setOpenResultTicketId(t.id)}
-                                className="w-full rounded-lg bg-indigo-600 px-3 py-2 text-xs font-semibold text-white hover:bg-indigo-500"
-                              >
-                                View Breakdown
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                        </AnimatePresence>
                       </motion.div>
                     );
                   })}
                 </AnimatePresence>
+
               </div>
             )}
             <div className="flex flex-col gap-3 rounded-2xl border border-dashed border-slate-300 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5 dark:border-slate-700">
