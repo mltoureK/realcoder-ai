@@ -1,0 +1,539 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1760506980003
+Started: 2025-10-15T05:43:00.003Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T05:43:00.006Z
+File: stripe-stripe-python-09248ae/stripe/_http_client.py
+Functions Extracted: 7
+
+
+Function 1: _should_retry
+Language: Python
+Lines: 38
+Full Code:
+--------------------------------------------------------------------------------
+def _should_retry(
+        self,
+        response: Optional[Tuple[Any, int, Optional[Mapping[str, str]]]],
+        api_connection_error: Optional[APIConnectionError],
+        num_retries: int,
+        max_network_retries: Optional[int],
+    ):
+        max_network_retries = (
+            max_network_retries if max_network_retries is not None else 0
+        )
+        if num_retries >= max_network_retries:
+            return False
+
+        if response is None:
+            # We generally want to retry on timeout and connection
+            # exceptions, but defer this decision to underlying subclass
+            # implementations. They should evaluate the driver-specific
+            # errors worthy of retries, and set flag on the error returned.
+            assert api_connection_error is not None
+            return api_connection_error.should_retry
+
+        _, status_code, rheaders = response
+
+        # The API may ask us not to retry (eg; if doing so would be a no-op)
+        # or advise us to retry (eg; in cases of lock timeouts); we defer to that.
+        #
+        # Note that we expect the headers object to be a CaseInsensitiveDict, as is the case with the requests library.
+        if rheaders is not None and "stripe-should-retry" in rheaders:
+            if rheaders["stripe-should-retry"] == "false":
+                return False
+            if rheaders["stripe-should-retry"] == "true":
+                return True
+
+        # Retry on conflict errors.
+        if status_code == 409:
+            return True
+
+        # Retry on 500, 503, and other internal errors.
+        #
+        # Note that we expect the stripe-should-retry header to be false
+        # in most cases when a 500 is returned, since our idempotency framework
+        # would typically replay it anyway.
+        if status_code >= 500:
+            return True
+
+        return False
+--------------------------------------------------------------------------------
+
+
+Function 2: _retry_after_header
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+def _retry_after_header(
+        self, response: Optional[Tuple[Any, Any, Mapping[str, str]]] = None
+    ):
+        if response is None:
+            return None
+        _, _, rheaders = response
+
+        try:
+            return int(rheaders["retry-after"])
+        except (KeyError, ValueError):
+            return None
+--------------------------------------------------------------------------------
+
+
+Function 3: _sleep_time_seconds
+Language: Python
+Lines: 25
+Full Code:
+--------------------------------------------------------------------------------
+def _sleep_time_seconds(
+        self,
+        num_retries: int,
+        response: Optional[Tuple[Any, Any, Mapping[str, str]]] = None,
+    ) -> float:
+        """
+        Apply exponential backoff with initial_network_retry_delay on the number of num_retries so far as inputs.
+        Do not allow the number to exceed `max_network_retry_delay`.
+        """
+        sleep_seconds = min(
+            HTTPClient.INITIAL_DELAY * (2 ** (num_retries - 1)),
+            HTTPClient.MAX_DELAY,
+        )
+
+        sleep_seconds = self._add_jitter_time(sleep_seconds)
+
+        # But never sleep less than the base sleep seconds.
+        sleep_seconds = max(HTTPClient.INITIAL_DELAY, sleep_seconds)
+
+        # And never sleep less than the time the API asks us to wait, assuming it's a reasonable ask.
+        retry_after = self._retry_after_header(response) or 0
+        if retry_after <= HTTPClient.MAX_RETRY_AFTER:
+            sleep_seconds = max(retry_after, sleep_seconds)
+
+        return sleep_seconds
+--------------------------------------------------------------------------------
+
+
+Function 4: request_with_retries
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+def request_with_retries(
+        self,
+        method: str,
+        url: str,
+        headers: Mapping[str, str],
+        post_data: Any = None,
+        max_network_retries: Optional[int] = None,
+        *,
+        _usage: Optional[List[str]] = None,
+    ) -> Tuple[str, int, Mapping[str, str]]:
+        return self._request_with_retries_internal(
+            method,
+            url,
+            headers,
+            post_data,
+            is_streaming=False,
+            max_network_retries=max_network_retries,
+            _usage=_usage,
+        )
+--------------------------------------------------------------------------------
+
+
+Function 5: _request_with_retries_internal
+Language: Python
+Lines: 44
+Full Code:
+--------------------------------------------------------------------------------
+def _request_with_retries_internal(
+        self,
+        method: str,
+        url: str,
+        headers: Mapping[str, str],
+        post_data: Any,
+        is_streaming: bool,
+        max_network_retries: Optional[int],
+        *,
+        _usage: Optional[List[str]] = None,
+    ) -> Tuple[Any, int, Mapping[str, str]]:
+        headers = self._add_telemetry_header(headers)
+
+        num_retries = 0
+
+        while True:
+            request_start = _now_ms()
+
+            try:
+                if is_streaming:
+                    response = self.request_stream(
+                        method, url, headers, post_data
+                    )
+                else:
+                    response = self.request(method, url, headers, post_data)
+                connection_error = None
+            except APIConnectionError as e:
+                connection_error = e
+                response = None
+
+            if self._should_retry(
+                response, connection_error, num_retries, max_network_retries
+            ):
+                if connection_error:
+                    _util.log_info(
+                        "Encountered a retryable error %s"
+                        % connection_error.user_message
+                    )
+                num_retries += 1
+                sleep_time = self._sleep_time_seconds(num_retries, response)
+                _util.log_info(
+                    (
+                        "Initiating retry %i for request %s %s after "
+                        "sleeping %.2f seconds."
+                        % (num_retries, method, url, sleep_time)
+                    )
+                )
+                time.sleep(sleep_time)
+            else:
+                if response is not None:
+                    self._record_request_metrics(
+                        response, request_start, usage=_usage
+                    )
+
+                    return response
+                else:
+                    assert connection_error is not None
+                    raise connection_error
+--------------------------------------------------------------------------------
+
+
+Function 6: request_async
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+async def request_async(
+        self, method: str, url: str, headers: Mapping[str, str], post_data=None
+    ) -> Tuple[bytes, int, Mapping[str, str]]:
+        if self._async_fallback_client is not None:
+            return await self._async_fallback_client.request_async(
+                method, url, headers, post_data
+            )
+        raise NotImplementedError(
+            "HTTPClient subclasses must implement `request_async`"
+        )
+--------------------------------------------------------------------------------
+
+
+Function 7: request_stream_async
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+async def request_stream_async(
+        self, method: str, url: str, headers: Mapping[str, str], post_data=None
+    ) -> Tuple[AsyncIterable[bytes], int, Mapping[str, str]]:
+        if self._async_fallback_client is not None:
+            return await self._async_fallback_client.request_stream_async(
+                method, url, headers, post_data
+            )
+        raise NotImplementedError(
+            "HTTPClient subclasses must implement `request_stream_async`"
+        )
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:43:06.557Z
+Question Type: select-all
+Function: _retry_after_header
+Function Size: 430 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _retry_after_header (Python)\n// Extracts the 'retry-after' header from the response, if present.\n\ndef _retry_after_header(\n        self, response: Optional[Tuple[Any, Any, Mapping[str, str]]] = None\n    ):\n        if response is None:\n            return None\n        _, _, rheaders = res
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:43:08.901Z
+Question Type: select-all
+Function: request_stream_async
+Function Size: 615 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: request_stream_async (Python)\n// Asynchronously streams a request, delegating to an async fallback client if available.\n\nasync def request_stream_async(\n        self, method: str, url: str, headers: Mapping[str, str], post_data=None\n    ) -> Tuple[AsyncIterable[bytes], int, Mapping[str,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:43:10.443Z
+Question Type: select-all
+Function: _sleep_time_seconds
+Function Size: 1119 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _sleep_time_seconds (Python)\n// Calculates the sleep time for retries using exponential backoff and jitter.\n\ndef _sleep_time_seconds(\n        self,\n        num_retries: int,\n        response: Optional[Tuple[Any, Any, Mapping[str, str]]] = None,\n    ) -> float:\n        """\n        Apply 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:43:13.118Z
+Question Type: multiple-choice
+Function: request_stream_async
+Function Size: 615 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: request_stream_async (Python)\n// Asynchronously streams a request, delegating to an async fallback client if available.\n\nasync def request_stream_async(\n        self, method: str, url: str, headers: Mapping[str, str], post_data=None\n    ) -> Tuple[AsyncIterable[bytes], int, Mapping[str,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:43:18.709Z
+Question Type: function-variant
+Function: request_with_retries
+Function Size: 682 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: request_with_retries (Python)\n// Makes a request with retries based on the specified method, URL, headers, and data.\n\ndef request_with_retries(\n        self,\n        method: str,\n        url: str,\n        headers: Mapping[str, str],\n        post_data: Any = None,\n        max_network_ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:43:19.242Z
+Question Type: true-false
+Function: request_with_retries
+Function Size: 682 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: request_with_retries (Python)\n// Makes a request with retries based on the specified method, URL, headers, and data.\n\ndef request_with_retries(\n        self,\n        method: str,\n        url: str,\n        headers: Mapping[str, str],\n        post_data: Any = None,\n        max_network_ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:43:21.038Z
+Question Type: order-sequence
+Function: _request_with_retries_internal
+Function Size: 2142 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _request_with_retries_internal (Python)\n// Handles making a request with retries, including logging and error handling.\n\ndef _request_with_retries_internal(\n        self,\n        method: str,\n        url: str,\n        headers: Mapping[str, str],\n        post_data: Any,\n        is_stream
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:43:25.680Z
+Question Type: true-false
+Function: request_async
+Function Size: 570 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: request_async (Python)\n// Asynchronously makes a request, delegating to an async fallback client if available.\n\nasync def request_async(\n        self, method: str, url: str, headers: Mapping[str, str], post_data=None\n    ) -> Tuple[bytes, int, Mapping[str, str]]:\n        if self._async_
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:43:26.565Z
+Question Type: function-variant
+Function: _retry_after_header
+Function Size: 430 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _retry_after_header (Python)\n// Extracts the 'retry-after' header from the response, if present.\n\ndef _retry_after_header(\n        self, response: Optional[Tuple[Any, Any, Mapping[str, str]]] = None\n    ):\n        if response is None:\n            return None\n        _, _, rheaders = res
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:43:30.168Z
+Question Type: select-all
+Function: _should_retry
+Function Size: 1999 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _should_retry (Python)\n// Determines whether a request should be retried based on the response and error conditions.\n\ndef _should_retry(\n        self,\n        response: Optional[Tuple[Any, int, Optional[Mapping[str, str]]]],\n        api_connection_error: Optional[APIConnectionError],\n  
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:43:31.752Z
+Question Type: function-variant
+Function: request_async
+Function Size: 570 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: request_async (Python)\n// Asynchronously makes a request, delegating to an async fallback client if available.\n\nasync def request_async(\n        self, method: str, url: str, headers: Mapping[str, str], post_data=None\n    ) -> Tuple[bytes, int, Mapping[str, str]]:\n        if self._async_
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:43:36.919Z
+Question Type: order-sequence
+Function: _should_retry
+Function Size: 1999 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _should_retry (Python)\n// Determines whether a request should be retried based on the response and error conditions.\n\ndef _should_retry(\n        self,\n        response: Optional[Tuple[Any, int, Optional[Mapping[str, str]]]],\n        api_connection_error: Optional[APIConnectionError],\n  
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:43:42.572Z
+Question Type: function-variant
+Function: request_stream_async
+Function Size: 615 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: request_stream_async (Python)\n// Asynchronously streams a request, delegating to an async fallback client if available.\n\nasync def request_stream_async(\n        self, method: str, url: str, headers: Mapping[str, str], post_data=None\n    ) -> Tuple[AsyncIterable[bytes], int, Mapping[str,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:43:47.293Z
+Question Type: function-variant
+Function: _sleep_time_seconds
+Function Size: 1119 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _sleep_time_seconds (Python)\n// Calculates the sleep time for retries using exponential backoff and jitter.\n\ndef _sleep_time_seconds(\n        self,\n        num_retries: int,\n        response: Optional[Tuple[Any, Any, Mapping[str, str]]] = None,\n    ) -> float:\n        """\n        Apply 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:43:47.354Z
+Question Type: select-all
+Function: _request_with_retries_internal
+Function Size: 2142 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _request_with_retries_internal (Python)\n// Handles making a request with retries, including logging and error handling.\n\ndef _request_with_retries_internal(\n        self,\n        method: str,\n        url: str,\n        headers: Mapping[str, str],\n        post_data: Any,\n        is_stream
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760506980003
+Repository: Unknown
+Total Questions Generated: 14
+Total Chunks Processed: 7
+Ended: 2025-10-15T05:43:47.358Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T05:43:53.412Z
+File: stripe-stripe-python-09248ae/stripe/_account_session.py
+Functions Extracted: 2
+
+
+Function 1: create
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+@classmethod
+    def create(
+        cls, **params: Unpack["AccountSessionCreateParams"]
+    ) -> "AccountSession":
+        """
+        Creates a AccountSession object that includes a single-use token that the platform can use on their front-end to grant client-side API access.
+        """
+        return cast(
+            "AccountSession",
+            cls._static_request(
+                "post",
+                cls.class_url(),
+                params=params,
+            ),
+        )
+--------------------------------------------------------------------------------
+
+
+Function 2: create_async
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+@classmethod
+    async def create_async(
+        cls, **params: Unpack["AccountSessionCreateParams"]
+    ) -> "AccountSession":
+        """
+        Creates a AccountSession object that includes a single-use token that the platform can use on their front-end to grant client-side API access.
+        """
+        return cast(
+            "AccountSession",
+            await cls._static_request_async(
+                "post",
+                cls.class_url(),
+                params=params,
+            ),
+        )
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:43:58.469Z
+Question Type: true-false
+Function: create
+Function Size: 581 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: create (Python)\n// Creates an AccountSession object for client-side API access.\n\n@classmethod\n    def create(\n        cls, **params: Unpack["AccountSessionCreateParams"]\n    ) -> "AccountSession":\n        """\n        Creates a AccountSession object that includes a single-use token that 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:44:01.698Z
+Question Type: select-all
+Function: create
+Function Size: 581 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: create (Python)\n// Creates an AccountSession object for client-side API access.\n\n@classmethod\n    def create(\n        cls, **params: Unpack["AccountSessionCreateParams"]\n    ) -> "AccountSession":\n        """\n        Creates a AccountSession object that includes a single-use token that 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:44:03.484Z
+Question Type: select-all
+Function: create_async
+Function Size: 626 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: create_async (Python)\n// Asynchronously creates an AccountSession object for client-side API access.\n\n@classmethod\n    async def create_async(\n        cls, **params: Unpack["AccountSessionCreateParams"]\n    ) -> "AccountSession":\n        """\n        Creates a AccountSession object that 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:44:05.858Z
+Question Type: order-sequence
+Function: create
+Function Size: 581 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: create (Python)\n// Creates an AccountSession object for client-side API access.\n\n@classmethod\n    def create(\n        cls, **params: Unpack["AccountSessionCreateParams"]\n    ) -> "AccountSession":\n        """\n        Creates a AccountSession object that includes a single-use token that 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:44:11.379Z
+Question Type: order-sequence
+Function: create_async
+Function Size: 626 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: create_async (Python)\n// Asynchronously creates an AccountSession object for client-side API access.\n\n@classmethod\n    async def create_async(\n        cls, **params: Unpack["AccountSessionCreateParams"]\n    ) -> "AccountSession":\n        """\n        Creates a AccountSession object that 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:44:13.010Z
+Question Type: select-all
+Function: create_async
+Function Size: 626 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: create_async (Python)\n// Asynchronously creates an AccountSession object for client-side API access.\n\n@classmethod\n    async def create_async(\n        cls, **params: Unpack["AccountSessionCreateParams"]\n    ) -> "AccountSession":\n        """\n        Creates a AccountSession object that 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T05:44:18.366Z
+Question Type: function-variant
+Function: create_async
+Function Size: 626 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: create_async (Python)\n// Asynchronously creates an AccountSession object for client-side API access.\n\n@classmethod\n    async def create_async(\n        cls, **params: Unpack["AccountSessionCreateParams"]\n    ) -> "AccountSession":\n        """\n        Creates a AccountSession object that 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760506980003
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 2
+Ended: 2025-10-15T05:44:18.425Z
+================================================================================
+

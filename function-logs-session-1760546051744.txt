@@ -1,0 +1,2750 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1760546051744
+Started: 2025-10-15T16:34:11.744Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T16:34:11.746Z
+File: [3 files: Specific Stripe Error types:, route.ts, No need to run further tests on non-Node environments]
+Functions Extracted: 2
+
+
+Function 1: POST
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+export async function POST(req: Request) {
+  let event: Stripe.Event;
+
+  try {
+    const stripeSignature = (await headers()).get('stripe-signature');
+
+    event = stripe.webhooks.constructEvent(
+      await req.text(),
+      stripeSignature as string,
+      process.env.STRIPE_WEBHOOK_SECRET as string
+    );
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: createEmitter
+Language: JavaScript
+Lines: 39
+Full Code:
+--------------------------------------------------------------------------------
+describe('createEmitter', () => {
+      let emitter;
+      beforeEach(() => {
+        emitter = platformFunctions.createEmitter();
+      });
+
+      it('should emit a `foo` event with data to listeners', (done) => {
+        function onFoo(data): void {
+          emitter.removeListener('foo', onFoo);
+
+          expect(data.bar).to.equal('bar');
+          expect(data.baz).to.equal('baz');
+
+          done();
+        }
+
+        emitter.on('foo', onFoo);
+        emitter.emit('foo', {bar: 'bar', baz: 'baz'});
+      });
+
+      it('listeners registered via `on` keep firing until removed', (done) => {
+        let calls = 0;
+
+        function onFoo(): void {
+          calls += 1;
+        }
+
+        emitter.on('foo', onFoo);
+        emitter.emit('foo');
+        expect(calls).to.equal(1);
+        emitter.emit('foo');
+        expect(calls).to.equal(2);
+        emitter.removeListener('foo', onFoo);
+
+        done();
+      });
+
+      it('listeners registered via `once` only fire once', (done) => {
+        let calls = 0;
+
+        function onFoo(): void {
+          calls += 1;
+        }
+
+        emitter.once('foo', onFoo);
+        emitter.emit('foo');
+        expect(calls).to.equal(1);
+        emitter.emit('foo');
+        expect(calls).to.equal(1);
+
+        done();
+      });
+
+      it('listeners registered multiple times are for each time it was registered', (done) => {
+        let calls = 0;
+
+        function onFoo(): void {
+          calls += 1;
+        }
+
+        emitter.on('foo', onFoo);
+        emitter.once('foo', onFoo);
+
+        emitter.emit('foo');
+        expect(calls).to.equal(2);
+
+        done();
+      });
+
+      it('should not emit a `foo` event to removed listeners', (done) => {
+        function onFoo(): void {
+          done(new Error('How did you get here?'));
+        }
+
+        emitter.once('response', onFoo);
+        emitter.removeListener('response', onFoo);
+        emitter.emit('foo');
+
+        done();
+      });
+    });
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:34:29.870Z
+Question Type: order-sequence
+Function: createEmitter
+Function Size: 2093 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createEmitter (JavaScript)\n// Tests the functionality of an event emitter, ensuring events are emitted and handled correctly.\n\ndescribe('createEmitter', () => {\n      let emitter;\n      beforeEach(() => {\n        emitter = platformFunctions.createEmitter();\n      });\n\n      it('should e
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:34:31.712Z
+Question Type: function-variant
+Function: createEmitter
+Function Size: 2093 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createEmitter (JavaScript)\n// Tests the functionality of an event emitter, ensuring events are emitted and handled correctly.\n\ndescribe('createEmitter', () => {\n      let emitter;\n      beforeEach(() => {\n        emitter = platformFunctions.createEmitter();\n      });\n\n      it('should e
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:34:34.208Z
+Question Type: select-all
+Function: createEmitter
+Function Size: 2093 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createEmitter (JavaScript)\n// Tests the functionality of an event emitter, ensuring events are emitted and handled correctly.\n\ndescribe('createEmitter', () => {\n      let emitter;\n      beforeEach(() => {\n        emitter = platformFunctions.createEmitter();\n      });\n\n      it('should e
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:34:39.092Z
+Question Type: true-false
+Function: POST
+Function Size: 498 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: POST (TypeScript)\n// Handles incoming POST requests for Stripe webhooks.\n\nexport async function POST(req: Request) {\n  let event: Stripe.Event;\n\n  try {\n    const stripeSignature = (await headers()).get('stripe-signature');\n\n    event = stripe.webhooks.constructEvent(\n      await req.te
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 4
+Total Chunks Processed: 2
+Ended: 2025-10-15T16:34:39.119Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T16:34:45.024Z
+File: [2 files: We can't use .flat() since this isn't supported in Node 10., rawErrorTypeEnum: The end of the section generated from our OpenAPI spec]
+Functions Extracted: 1
+
+
+Function 1: onCustomer
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function onCustomer(customer, next) {
+  customerIds.push(customer.id);
+  if (customerIds.length === LIMIT) {
+    next(false);
+  } else {
+    expect(customerIds.length).to.be.lessThan(LIMIT);
+    next();
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:34:51.776Z
+Question Type: true-false
+Function: onCustomer
+Function Size: 356 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onCustomer (JavaScript)\n// Handles each customer during pagination, pushing customer IDs to an array and controlling pagination flow.\n\nfunction onCustomer(customer, next) {\n  customerIds.push(customer.id);\n  if (customerIds.length === LIMIT) {\n    next(false);\n  } else {\n    expect(cust
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:34:55.720Z
+Question Type: select-all
+Function: onCustomer
+Function Size: 356 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onCustomer (JavaScript)\n// Handles each customer during pagination, pushing customer IDs to an array and controlling pagination flow.\n\nfunction onCustomer(customer, next) {\n  customerIds.push(customer.id);\n  if (customerIds.length === LIMIT) {\n    next(false);\n  } else {\n    expect(cust
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:35:05.043Z
+Question Type: multiple-choice
+Function: onCustomer
+Function Size: 356 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: onCustomer (JavaScript)\n// Handles each customer during pagination, pushing customer IDs to an array and controlling pagination flow.\n\nfunction onCustomer(customer, next) {\n  customerIds.push(customer.id);\n  if (customerIds.length === LIMIT) {\n    next(false);\n  } else {\n    expect(cust
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:35:06.269Z
+Question Type: function-variant
+Function: onCustomer
+Function Size: 356 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onCustomer (JavaScript)\n// Handles each customer during pagination, pushing customer IDs to an array and controlling pagination flow.\n\nfunction onCustomer(customer, next) {\n  customerIds.push(customer.id);\n  if (customerIds.length === LIMIT) {\n    next(false);\n  } else {\n    expect(cust
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 1
+Ended: 2025-10-15T16:35:06.322Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T16:35:14.708Z
+File: [3 files: PlatformFunctions.ts, HttpClient.ts, errorClassNameEnum: The end of the section generated from our OpenAPI spec]
+Functions Extracted: 2
+
+
+Function 1: secureCompare
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+secureCompare(a: string, b: string): boolean {
+    // Implementation of secure string comparison
+    if (a.length !== b.length) return false;
+    let result = 0;
+    for (let i = 0; i < a.length; i++) {
+        result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+    }
+    return result === 0;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: makeRequest
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+makeRequest(
+    host: string,
+    port: string,
+    path: string,
+    method: string,
+    headers: RequestHeaders,
+    requestData: string,
+    protocol: string,
+    timeout: number
+): Promise<HttpClientResponseInterface> {
+    // Implementation for making an HTTP request to the Stripe API
+    throw new Error('makeRequest not implemented.');
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:35:25.283Z
+Question Type: select-all
+Function: secureCompare
+Function Size: 397 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: secureCompare (TypeScript)\n// Compares two strings in constant time to prevent timing attacks.\n\nsecureCompare(a: string, b: string): boolean {\n    // Implementation of secure string comparison\n    if (a.length !== b.length) return false;\n    let result = 0;\n    for (let i = 0; i < a.len
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:35:27.037Z
+Question Type: select-all
+Function: makeRequest
+Function Size: 450 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: makeRequest (TypeScript)\n// Issues a request to the Stripe API with specified parameters.\n\nmakeRequest(\n    host: string,\n    port: string,\n    path: string,\n    method: string,\n    headers: RequestHeaders,\n    requestData: string,\n    protocol: string,\n    timeout: number\n): Promise<Ht
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:35:34.550Z
+Question Type: multiple-choice
+Function: makeRequest
+Function Size: 450 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: makeRequest (TypeScript)\n// Issues a request to the Stripe API with specified parameters.\n\nmakeRequest(\n    host: string,\n    port: string,\n    path: string,\n    method: string,\n    headers: RequestHeaders,\n    requestData: string,\n    protocol: string,\n    timeout: number\n): Promise<Ht
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:35:38.231Z
+Question Type: function-variant
+Function: makeRequest
+Function Size: 450 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeRequest (TypeScript)\n// Issues a request to the Stripe API with specified parameters.\n\nmakeRequest(\n    host: string,\n    port: string,\n    path: string,\n    method: string,\n    headers: RequestHeaders,\n    requestData: string,\n    protocol: string,\n    timeout: number\n): Promise<Ht
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:35:42.465Z
+Question Type: order-sequence
+Function: secureCompare
+Function Size: 397 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: secureCompare (TypeScript)\n// Compares two strings in constant time to prevent timing attacks.\n\nsecureCompare(a: string, b: string): boolean {\n    // Implementation of secure string comparison\n    if (a.length !== b.length) return false;\n    let result = 0;\n    for (let i = 0; i < a.len
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:35:44.714Z
+Question Type: function-variant
+Function: secureCompare
+Function Size: 397 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: secureCompare (TypeScript)\n// Compares two strings in constant time to prevent timing attacks.\n\nsecureCompare(a: string, b: string): boolean {\n    // Implementation of secure string comparison\n    if (a.length !== b.length) return false;\n    let result = 0;\n    for (let i = 0; i < a.len
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:35:57.535Z
+Question Type: select-all
+Function: makeRequest
+Function Size: 450 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeRequest (TypeScript)\n// Issues a request to the Stripe API with specified parameters.\n\nmakeRequest(\n    host: string,\n    port: string,\n    path: string,\n    method: string,\n    headers: RequestHeaders,\n    requestData: string,\n    protocol: string,\n    timeout: number\n): Promise<Ht
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:35:58.552Z
+Question Type: function-variant
+Function: secureCompare
+Function Size: 397 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: secureCompare (TypeScript)\n// Compares two strings in constant time to prevent timing attacks.\n\nsecureCompare(a: string, b: string): boolean {\n    // Implementation of secure string comparison\n    if (a.length !== b.length) return false;\n    let result = 0;\n    for (let i = 0; i < a.len
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:35:59.260Z
+Question Type: function-variant
+Function: makeRequest
+Function Size: 450 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeRequest (TypeScript)\n// Issues a request to the Stripe API with specified parameters.\n\nmakeRequest(\n    host: string,\n    port: string,\n    path: string,\n    method: string,\n    headers: RequestHeaders,\n    requestData: string,\n    protocol: string,\n    timeout: number\n): Promise<Ht
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:36:05.610Z
+Question Type: true-false
+Function: makeRequest
+Function Size: 450 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeRequest (TypeScript)\n// Issues a request to the Stripe API with specified parameters.\n\nmakeRequest(\n    host: string,\n    port: string,\n    path: string,\n    method: string,\n    headers: RequestHeaders,\n    requestData: string,\n    protocol: string,\n    timeout: number\n): Promise<Ht
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 2
+Ended: 2025-10-15T16:36:05.658Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T16:36:45.733Z
+File: eslint-disable-next-line no-await-in-loop
+Functions Extracted: 3
+
+
+Function 1: forAwaitUntil
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+async function forAwaitUntil(iterator, limit) {
+    const items = [];
+    for await (const item of iterator) {
+        items.push(item);
+        if (items.length === limit) {
+            break;
+        }
+        if (items.length > limit) {
+            throw Error('Kept iterating after break.');
+        }
+    }
+    return items;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: mockPaginationV1Search
+Language: JavaScript
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+const mockPaginationV1Search = (pages, initialArgs) => {
+    let i = 1;
+    const paramsLog = [];
+    const spec = {
+        method: 'GET',
+        methodType: 'search',
+    };
+
+    const addNextPage = (props) => {
+        const nextPageProperties = {
+            next_page: props.has_more
+                ? `${props.data[props.data.length - 1].id}-encoded`
+                : null,
+        };
+        return {...props, ...nextPageProperties};
+    };
+
+    const mockStripe = getMockStripe(
+        {},
+        (_1, _2, path, _4, _5, _6, _7, callback) => {
+            paramsLog.push(path.slice(path.indexOf('?')));
+
+            callback(
+                null,
+                Promise.resolve(
+                    addNextPage({
+                        data: pages[i].map((id) => ({id})),
+                        has_more: i < pages.length - 1,
+                    })
+                )
+            );
+            i += 1;
+        }
+    );
+    const resource = new StripeResource(mockStripe);
+
+    const paginator = makeAutoPaginationMethods(
+        resource,
+        initialArgs || {},
+        spec,
+        Promise.resolve(
+            addNextPage({
+                data: pages[0].map((id) => ({id})),
+                has_more: pages.length > 1,
+            })
+        )
+    );
+    return {paginator, paramsLog};
+};
+--------------------------------------------------------------------------------
+
+
+Function 3: mockPaginationV2List
+Language: JavaScript
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+const mockPaginationV2List = (pages, initialArgs) => {
+    let i = 1;
+    const paramsLog = [];
+    const spec = {
+        method: 'GET',
+        fullPath: '/v2/items',
+        methodType: 'list',
+    };
+
+    const mockStripe = getMockStripe(
+        {},
+        (_1, _2, path, _4, _5, _6, _7, callback) => {
+            paramsLog.push(path.slice(path.indexOf('?')));
+            callback(
+                null,
+                Promise.resolve({
+                    data: pages[i].ids.map((id) => ({id})),
+                    next_page_url: pages[i].next_page_url,
+                })
+            );
+            i += 1;
+        }
+    );
+    const resource = new StripeResource(mockStripe);
+
+    const paginator = makeAutoPaginationMethods(
+        resource,
+        initialArgs || {},
+        spec,
+        Promise.resolve({
+            data: pages[0].ids.map((id) => ({id})),
+            next_page_url: pages[0].next_page_url,
+        })
+    );
+    return {paginator, paramsLog};
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:36:54.761Z
+Question Type: select-all
+Function: mockPaginationV1Search
+Function Size: 1452 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mockPaginationV1Search (JavaScript)\n// Mocks pagination for V1 search, simulating API responses based on provided page data.\n\nconst mockPaginationV1Search = (pages, initialArgs) => {\n    let i = 1;\n    const paramsLog = [];\n    const spec = {\n        method: 'GET',\n        methodType: '
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:36:56.601Z
+Question Type: select-all
+Function: forAwaitUntil
+Function Size: 456 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: forAwaitUntil (JavaScript)\n// Collects items from an asynchronous iterator until a specified limit is reached.\n\nasync function forAwaitUntil(iterator, limit) {\n    const items = [];\n    for await (const item of iterator) {\n        items.push(item);\n        if (items.length === limit) {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:36:59.899Z
+Question Type: order-sequence
+Function: forAwaitUntil
+Function Size: 456 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: forAwaitUntil (JavaScript)\n// Collects items from an asynchronous iterator until a specified limit is reached.\n\nasync function forAwaitUntil(iterator, limit) {\n    const items = [];\n    for await (const item of iterator) {\n        items.push(item);\n        if (items.length === limit) {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:37:07.772Z
+Question Type: multiple-choice
+Function: forAwaitUntil
+Function Size: 456 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: forAwaitUntil (JavaScript)\n// Collects items from an asynchronous iterator until a specified limit is reached.\n\nasync function forAwaitUntil(iterator, limit) {\n    const items = [];\n    for await (const item of iterator) {\n        items.push(item);\n        if (items.length === limit) {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:37:12.507Z
+Question Type: true-false
+Function: mockPaginationV2List
+Function Size: 1117 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mockPaginationV2List (JavaScript)\n// Mocks pagination for V2 list, simulating API responses based on provided page data.\n\nconst mockPaginationV2List = (pages, initialArgs) => {\n    let i = 1;\n    const paramsLog = [];\n    const spec = {\n        method: 'GET',\n        fullPath: '/v2/item
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:37:15.769Z
+Question Type: function-variant
+Function: mockPaginationV2List
+Function Size: 1117 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: mockPaginationV2List (JavaScript)\n// Mocks pagination for V2 list, simulating API responses based on provided page data.\n\nconst mockPaginationV2List = (pages, initialArgs) => {\n    let i = 1;\n    const paramsLog = [];\n    const spec = {\n        method: 'GET',\n        fullPath: '/v2/item
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:37:24.214Z
+Question Type: true-false
+Function: mockPaginationV1Search
+Function Size: 1452 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mockPaginationV1Search (JavaScript)\n// Mocks pagination for V1 search, simulating API responses based on provided page data.\n\nconst mockPaginationV1Search = (pages, initialArgs) => {\n    let i = 1;\n    const paramsLog = [];\n    const spec = {\n        method: 'GET',\n        methodType: '
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:37:26.617Z
+Question Type: function-variant
+Function: mockPaginationV1Search
+Function Size: 1452 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: mockPaginationV1Search (JavaScript)\n// Mocks pagination for V1 search, simulating API responses based on provided page data.\n\nconst mockPaginationV1Search = (pages, initialArgs) => {\n    let i = 1;\n    const paramsLog = [];\n    const spec = {\n        method: 'GET',\n        methodType: '
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:37:33.777Z
+Question Type: select-all
+Function: mockPaginationV2List
+Function Size: 1117 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mockPaginationV2List (JavaScript)\n// Mocks pagination for V2 list, simulating API responses based on provided page data.\n\nconst mockPaginationV2List = (pages, initialArgs) => {\n    let i = 1;\n    const paramsLog = [];\n    const spec = {\n        method: 'GET',\n        fullPath: '/v2/item
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:37:41.144Z
+Question Type: order-sequence
+Function: mockPaginationV2List
+Function Size: 1117 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mockPaginationV2List (JavaScript)\n// Mocks pagination for V2 list, simulating API responses based on provided page data.\n\nconst mockPaginationV2List = (pages, initialArgs) => {\n    let i = 1;\n    const paramsLog = [];\n    const spec = {\n        method: 'GET',\n        fullPath: '/v2/item
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:37:44.307Z
+Question Type: select-all
+Function: mockPaginationV1Search
+Function Size: 1452 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mockPaginationV1Search (JavaScript)\n// Mocks pagination for V1 search, simulating API responses based on provided page data.\n\nconst mockPaginationV1Search = (pages, initialArgs) => {\n    let i = 1;\n    const paramsLog = [];\n    const spec = {\n        method: 'GET',\n        methodType: '
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:37:44.447Z
+Question Type: function-variant
+Function: forAwaitUntil
+Function Size: 456 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: forAwaitUntil (JavaScript)\n// Collects items from an asynchronous iterator until a specified limit is reached.\n\nasync function forAwaitUntil(iterator, limit) {\n    const items = [];\n    for await (const item of iterator) {\n        items.push(item);\n        if (items.length === limit) {\n
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 3
+Ended: 2025-10-15T16:37:44.491Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T16:38:04.879Z
+File: [4 files: Specific Stripe Error types:, HttpClient.ts, route.ts, errorClassNameEnum: The end of the section generated from our OpenAPI spec]
+Functions Extracted: 3
+
+
+Function 1: POST
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+export async function POST(req: Request) {
+  let event: Stripe.Event;
+
+  try {
+    const stripeSignature = (await headers()).get('stripe-signature');
+
+    event = stripe.webhooks.constructEvent(
+      await req.text(),
+      stripeSignature as string,
+      process.env.STRIPE_WEBHOOK_SECRET as string
+    );
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: makeRequest
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+makeRequest(
+    host: string,
+    port: string,
+    path: string,
+    method: string,
+    headers: RequestHeaders,
+    requestData: string,
+    protocol: string,
+    timeout: number
+  ): Promise<HttpClientResponseInterface> {
+    throw new Error('makeRequest not implemented.');
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: makeTimeoutError
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+static makeTimeoutError(): TimeoutError {
+    const timeoutErr: TimeoutError = new TypeError(
+      HttpClient.TIMEOUT_ERROR_CODE
+    );
+    timeoutErr.code = HttpClient.TIMEOUT_ERROR_CODE;
+    return timeoutErr;
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:38:14.465Z
+Question Type: true-false
+Function: POST
+Function Size: 556 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: POST (TypeScript)\n// Handles incoming POST requests for Stripe webhooks, constructs the event from the request body and signature.\n\nexport async function POST(req: Request) {\n  let event: Stripe.Event;\n\n  try {\n    const stripeSignature = (await headers()).get('stripe-signature');\n\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:38:20.686Z
+Question Type: select-all
+Function: POST
+Function Size: 556 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: POST (TypeScript)\n// Handles incoming POST requests for Stripe webhooks, constructs the event from the request body and signature.\n\nexport async function POST(req: Request) {\n  let event: Stripe.Event;\n\n  try {\n    const stripeSignature = (await headers()).get('stripe-signature');\n\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:38:21.492Z
+Question Type: order-sequence
+Function: makeRequest
+Function Size: 432 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeRequest (TypeScript)\n// Defines the method to make an HTTP request to the Stripe API, which needs to be implemented by subclasses.\n\nmakeRequest(\n    host: string,\n    port: string,\n    path: string,\n    method: string,\n    headers: RequestHeaders,\n    requestData: string,\n    protoc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:38:24.255Z
+Question Type: order-sequence
+Function: makeTimeoutError
+Function Size: 361 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeTimeoutError (TypeScript)\n// Creates a standardized timeout error object for consistent error handling across implementations.\n\nstatic makeTimeoutError(): TimeoutError {\n    const timeoutErr: TimeoutError = new TypeError(\n      HttpClient.TIMEOUT_ERROR_CODE\n    );\n    timeoutErr.cod
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:38:26.543Z
+Question Type: select-all
+Function: POST
+Function Size: 556 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: POST (TypeScript)\n// Handles incoming POST requests for Stripe webhooks, constructs the event from the request body and signature.\n\nexport async function POST(req: Request) {\n  let event: Stripe.Event;\n\n  try {\n    const stripeSignature = (await headers()).get('stripe-signature');\n\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:38:35.630Z
+Question Type: function-variant
+Function: makeTimeoutError
+Function Size: 361 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeTimeoutError (TypeScript)\n// Creates a standardized timeout error object for consistent error handling across implementations.\n\nstatic makeTimeoutError(): TimeoutError {\n    const timeoutErr: TimeoutError = new TypeError(\n      HttpClient.TIMEOUT_ERROR_CODE\n    );\n    timeoutErr.cod
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:38:36.443Z
+Question Type: multiple-choice
+Function: makeTimeoutError
+Function Size: 361 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: makeTimeoutError (TypeScript)\n// Creates a standardized timeout error object for consistent error handling across implementations.\n\nstatic makeTimeoutError(): TimeoutError {\n    const timeoutErr: TimeoutError = new TypeError(\n      HttpClient.TIMEOUT_ERROR_CODE\n    );\n    timeoutErr.cod
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 3
+Ended: 2025-10-15T16:38:36.476Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:38:46.695Z
+Question Type: multiple-choice
+Function: forAwaitUntil
+Function Size: 456 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: forAwaitUntil (JavaScript)\n// Collects items from an asynchronous iterator until a specified limit is reached.\n\nasync function forAwaitUntil(iterator, limit) {\n    const items = [];\n    for await (const item of iterator) {\n        items.push(item);\n        if (items.length === limit) {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:38:49.139Z
+Question Type: select-all
+Function: makeTimeoutError
+Function Size: 361 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeTimeoutError (TypeScript)\n// Creates a standardized timeout error object for consistent error handling across implementations.\n\nstatic makeTimeoutError(): TimeoutError {\n    const timeoutErr: TimeoutError = new TypeError(\n      HttpClient.TIMEOUT_ERROR_CODE\n    );\n    timeoutErr.cod
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:38:50.347Z
+Question Type: true-false
+Function: mockPaginationV2List
+Function Size: 1117 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mockPaginationV2List (JavaScript)\n// Mocks pagination for V2 list, simulating API responses based on provided page data.\n\nconst mockPaginationV2List = (pages, initialArgs) => {\n    let i = 1;\n    const paramsLog = [];\n    const spec = {\n        method: 'GET',\n        fullPath: '/v2/item
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:38:51.084Z
+Question Type: select-all
+Function: makeRequest
+Function Size: 432 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeRequest (TypeScript)\n// Defines the method to make an HTTP request to the Stripe API, which needs to be implemented by subclasses.\n\nmakeRequest(\n    host: string,\n    port: string,\n    path: string,\n    method: string,\n    headers: RequestHeaders,\n    requestData: string,\n    protoc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:38:56.987Z
+Question Type: true-false
+Function: makeTimeoutError
+Function Size: 361 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeTimeoutError (TypeScript)\n// Creates a standardized timeout error object for consistent error handling across implementations.\n\nstatic makeTimeoutError(): TimeoutError {\n    const timeoutErr: TimeoutError = new TypeError(\n      HttpClient.TIMEOUT_ERROR_CODE\n    );\n    timeoutErr.cod
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:39:05.585Z
+Question Type: select-all
+Function: forAwaitUntil
+Function Size: 456 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: forAwaitUntil (JavaScript)\n// Collects items from an asynchronous iterator until a specified limit is reached.\n\nasync function forAwaitUntil(iterator, limit) {\n    const items = [];\n    for await (const item of iterator) {\n        items.push(item);\n        if (items.length === limit) {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:39:06.421Z
+Question Type: order-sequence
+Function: mockPaginationV1Search
+Function Size: 1452 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mockPaginationV1Search (JavaScript)\n// Mocks pagination for V1 search, simulating API responses based on provided page data.\n\nconst mockPaginationV1Search = (pages, initialArgs) => {\n    let i = 1;\n    const paramsLog = [];\n    const spec = {\n        method: 'GET',\n        methodType: '
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:39:09.761Z
+Question Type: select-all
+Function: POST
+Function Size: 556 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: POST (TypeScript)\n// Handles incoming POST requests for Stripe webhooks, constructs the event from the request body and signature.\n\nexport async function POST(req: Request) {\n  let event: Stripe.Event;\n\n  try {\n    const stripeSignature = (await headers()).get('stripe-signature');\n\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:39:16.745Z
+Question Type: function-variant
+Function: mockPaginationV1Search
+Function Size: 1452 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: mockPaginationV1Search (JavaScript)\n// Mocks pagination for V1 search, simulating API responses based on provided page data.\n\nconst mockPaginationV1Search = (pages, initialArgs) => {\n    let i = 1;\n    const paramsLog = [];\n    const spec = {\n        method: 'GET',\n        methodType: '
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T16:39:24.209Z
+Question Type: function-variant
+Function: makeTimeoutError
+Function Size: 361 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeTimeoutError (TypeScript)\n// Creates a standardized timeout error object for consistent error handling across implementations.\n\nstatic makeTimeoutError(): TimeoutError {\n    const timeoutErr: TimeoutError = new TypeError(\n      HttpClient.TIMEOUT_ERROR_CODE\n    );\n    timeoutErr.cod
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 6
+Ended: 2025-10-15T16:39:24.249Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T17:08:16.846Z
+File: [2 files: HttpClient.ts, FetchHttpClient.ts]
+Functions Extracted: 2
+
+
+Function 1: makeRequest
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+makeRequest(
+    host: string,
+    port: string,
+    path: string,
+    method: string,
+    headers: RequestHeaders,
+    requestData: string,
+    protocol: string,
+    timeout: number
+  ): Promise<HttpClientResponseInterface> {
+    throw new Error('makeRequest not implemented.');
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: makeTimeoutError
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+static makeTimeoutError(): TimeoutError {
+    const timeoutErr: TimeoutError = new TypeError(
+      HttpClient.TIMEOUT_ERROR_CODE
+    );
+    timeoutErr.code = HttpClient.TIMEOUT_ERROR_CODE;
+    return timeoutErr;
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:08:28.073Z
+Question Type: select-all
+Function: makeRequest
+Function Size: 406 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeRequest (TypeScript)\n// Defines the structure for making HTTP requests, to be implemented by subclasses.\n\nmakeRequest(\n    host: string,\n    port: string,\n    path: string,\n    method: string,\n    headers: RequestHeaders,\n    requestData: string,\n    protocol: string,\n    timeout: n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:08:36.561Z
+Question Type: function-variant
+Function: makeRequest
+Function Size: 406 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeRequest (TypeScript)\n// Defines the structure for making HTTP requests, to be implemented by subclasses.\n\nmakeRequest(\n    host: string,\n    port: string,\n    path: string,\n    method: string,\n    headers: RequestHeaders,\n    requestData: string,\n    protocol: string,\n    timeout: n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:08:36.947Z
+Question Type: function-variant
+Function: makeRequest
+Function Size: 406 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeRequest (TypeScript)\n// Defines the structure for making HTTP requests, to be implemented by subclasses.\n\nmakeRequest(\n    host: string,\n    port: string,\n    path: string,\n    method: string,\n    headers: RequestHeaders,\n    requestData: string,\n    protocol: string,\n    timeout: n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:08:37.768Z
+Question Type: select-all
+Function: makeTimeoutError
+Function Size: 322 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeTimeoutError (TypeScript)\n// Creates a consistent timeout error across implementations.\n\nstatic makeTimeoutError(): TimeoutError {\n    const timeoutErr: TimeoutError = new TypeError(\n      HttpClient.TIMEOUT_ERROR_CODE\n    );\n    timeoutErr.code = HttpClient.TIMEOUT_ERROR_CODE;\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:08:42.085Z
+Question Type: function-variant
+Function: makeRequest
+Function Size: 406 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeRequest (TypeScript)\n// Defines the structure for making HTTP requests, to be implemented by subclasses.\n\nmakeRequest(\n    host: string,\n    port: string,\n    path: string,\n    method: string,\n    headers: RequestHeaders,\n    requestData: string,\n    protocol: string,\n    timeout: n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:08:44.423Z
+Question Type: true-false
+Function: makeTimeoutError
+Function Size: 322 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeTimeoutError (TypeScript)\n// Creates a consistent timeout error across implementations.\n\nstatic makeTimeoutError(): TimeoutError {\n    const timeoutErr: TimeoutError = new TypeError(\n      HttpClient.TIMEOUT_ERROR_CODE\n    );\n    timeoutErr.code = HttpClient.TIMEOUT_ERROR_CODE;\n    
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 2
+Ended: 2025-10-15T17:08:44.450Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T17:09:05.270Z
+File: eslint-disable-next-line no-await-in-loop
+Functions Extracted: 3
+
+
+Function 1: forAwaitUntil
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+async function forAwaitUntil(iterator, limit) {
+  const items = [];
+  for await (const item of iterator) {
+    items.push(item);
+    if (items.length === limit) {
+      break;
+    }
+    if (items.length > limit) {
+      throw Error('Kept iterating after break.');
+    }
+  }
+  return items;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: mockPaginationV1Search
+Language: JavaScript
+Lines: 38
+Full Code:
+--------------------------------------------------------------------------------
+const mockPaginationV1Search = (pages, initialArgs) => {
+  let i = 1;
+  const paramsLog = [];
+  const spec = {
+    method: 'GET',
+    methodType: 'search',
+  };
+
+  const addNextPage = (props) => {
+    const nextPageProperties = {
+      next_page: props.has_more
+        ? `${props.data[props.data.length - 1].id}-encoded`
+        : null,
+    };
+    return {...props, ...nextPageProperties};
+  };
+
+  const mockStripe = getMockStripe(
+    {},
+    (_1, _2, path, _4, _5, _6, _7, callback) => {
+      paramsLog.push(path.slice(path.indexOf('?')));
+
+      callback(
+        null,
+        Promise.resolve(
+          addNextPage({
+            data: pages[i].map((id) => ({id})),
+            has_more: i < pages.length - 1,
+          })
+        )
+      );
+      i += 1;
+    }
+  );
+  const resource = new StripeResource(mockStripe);
+
+  const paginator = makeAutoPaginationMethods(
+    resource,
+    initialArgs || {},
+    spec,
+    Promise.resolve(
+      addNextPage({
+        data: pages[0].map((id) => ({id})),
+        has_more: pages.length > 1,
+      })
+    )
+  );
+  return {paginator, paramsLog};
+};
+--------------------------------------------------------------------------------
+
+
+Function 3: mockPaginationV2List
+Language: JavaScript
+Lines: 38
+Full Code:
+--------------------------------------------------------------------------------
+const mockPaginationV2List = (pages, initialArgs) => {
+  let i = 1;
+  const paramsLog = [];
+  const spec = {
+    method: 'GET',
+    fullPath: '/v2/items',
+    methodType: 'list',
+  };
+
+  const mockStripe = getMockStripe(
+    {},
+    (_1, _2, path, _4, _5, _6, _7, callback) => {
+      paramsLog.push(path.slice(path.indexOf('?')));
+      callback(
+        null,
+        Promise.resolve({
+          data: pages[i].ids.map((id) => ({id})),
+          next_page_url: pages[i].next_page_url,
+        })
+      );
+      i += 1;
+    }
+  );
+  const resource = new StripeResource(mockStripe);
+
+  const paginator = makeAutoPaginationMethods(
+    resource,
+    initialArgs || {},
+    spec,
+    Promise.resolve({
+      data: pages[0].ids.map((id) => ({id})),
+      next_page_url: pages[0].next_page_url,
+    })
+  );
+  return {paginator, paramsLog};
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:09:20.076Z
+Question Type: true-false
+Function: mockPaginationV1Search
+Function Size: 1242 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mockPaginationV1Search (JavaScript)\n// Mocks a pagination function for V1 search results, simulating the retrieval of pages of data.\n\nconst mockPaginationV1Search = (pages, initialArgs) => {\n  let i = 1;\n  const paramsLog = [];\n  const spec = {\n    method: 'GET',\n    methodType: 'search
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:09:23.213Z
+Question Type: select-all
+Function: mockPaginationV1Search
+Function Size: 1242 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mockPaginationV1Search (JavaScript)\n// Mocks a pagination function for V1 search results, simulating the retrieval of pages of data.\n\nconst mockPaginationV1Search = (pages, initialArgs) => {\n  let i = 1;\n  const paramsLog = [];\n  const spec = {\n    method: 'GET',\n    methodType: 'search
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:09:23.638Z
+Question Type: function-variant
+Function: forAwaitUntil
+Function Size: 416 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: forAwaitUntil (JavaScript)\n// Collects items from an asynchronous iterator until a specified limit is reached.\n\nasync function forAwaitUntil(iterator, limit) {\n  const items = [];\n  for await (const item of iterator) {\n    items.push(item);\n    if (items.length === limit) {\n      break;
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:09:24.038Z
+Question Type: select-all
+Function: mockPaginationV1Search
+Function Size: 1242 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mockPaginationV1Search (JavaScript)\n// Mocks a pagination function for V1 search results, simulating the retrieval of pages of data.\n\nconst mockPaginationV1Search = (pages, initialArgs) => {\n  let i = 1;\n  const paramsLog = [];\n  const spec = {\n    method: 'GET',\n    methodType: 'search
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:09:35.750Z
+Question Type: select-all
+Function: mockPaginationV2List
+Function Size: 981 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mockPaginationV2List (JavaScript)\n// Mocks a pagination function for V2 list results, simulating the retrieval of pages of data.\n\nconst mockPaginationV2List = (pages, initialArgs) => {\n  let i = 1;\n  const paramsLog = [];\n  const spec = {\n    method: 'GET',\n    fullPath: '/v2/items',\n  
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:09:35.815Z
+Question Type: select-all
+Function: mockPaginationV2List
+Function Size: 981 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mockPaginationV2List (JavaScript)\n// Mocks a pagination function for V2 list results, simulating the retrieval of pages of data.\n\nconst mockPaginationV2List = (pages, initialArgs) => {\n  let i = 1;\n  const paramsLog = [];\n  const spec = {\n    method: 'GET',\n    fullPath: '/v2/items',\n  
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 3
+Ended: 2025-10-15T17:09:35.833Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T17:10:22.823Z
+File: We can't use .flat() since this isn't supported in Node 10.
+Functions Extracted: 3
+
+
+Function 1: onCustomer
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function onCustomer(customer, next) {
+  customerIds.push(customer.id);
+  if (customerIds.length === LIMIT) {
+    next(false);
+  } else {
+    expect(customerIds.length).to.be.lessThan(LIMIT);
+    next();
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: onCustomer
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function onCustomer(customer) {
+  customerIds.push(customer.id);
+  if (customerIds.length === LIMIT) {
+    return false;
+  } else {
+    expect(customerIds.length).to.be.lessThan(LIMIT);
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: onCustomer
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function onCustomer(customer) {
+  customerIds.push(customer.id);
+  if (customerIds.length === LIMIT) {
+    return Promise.resolve(false);
+  } else {
+    expect(customerIds.length).to.be.lessThan(LIMIT);
+    return Promise.resolve();
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:10:31.564Z
+Question Type: select-all
+Function: onCustomer
+Function Size: 381 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onCustomer (JavaScript)\n// Handles each customer and returns a promise, allowing for asynchronous control of the iteration flow.\n\nfunction onCustomer(customer) {\n  customerIds.push(customer.id);\n  if (customerIds.length === LIMIT) {\n    return Promise.resolve(false);\n  } else {\n    expe
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:10:32.466Z
+Question Type: select-all
+Function: onCustomer
+Function Size: 336 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onCustomer (JavaScript)\n// Processes each customer and allows breaking the iteration by returning false when the limit is reached.\n\nfunction onCustomer(customer) {\n  customerIds.push(customer.id);\n  if (customerIds.length === LIMIT) {\n    return false;\n  } else {\n    expect(customerIds.
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:10:36.609Z
+Question Type: function-variant
+Function: onCustomer
+Function Size: 381 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onCustomer (JavaScript)\n// Handles each customer and returns a promise, allowing for asynchronous control of the iteration flow.\n\nfunction onCustomer(customer) {\n  customerIds.push(customer.id);\n  if (customerIds.length === LIMIT) {\n    return Promise.resolve(false);\n  } else {\n    expe
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:10:36.865Z
+Question Type: function-variant
+Function: onCustomer
+Function Size: 381 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onCustomer (JavaScript)\n// Handles each customer and returns a promise, allowing for asynchronous control of the iteration flow.\n\nfunction onCustomer(customer) {\n  customerIds.push(customer.id);\n  if (customerIds.length === LIMIT) {\n    return Promise.resolve(false);\n  } else {\n    expe
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:10:39.947Z
+Question Type: select-all
+Function: onCustomer
+Function Size: 355 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onCustomer (JavaScript)\n// Handles each customer in the pagination, pushing their ID to an array and controlling the iteration flow.\n\nfunction onCustomer(customer, next) {\n  customerIds.push(customer.id);\n  if (customerIds.length === LIMIT) {\n    next(false);\n  } else {\n    expect(custo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:10:43.305Z
+Question Type: select-all
+Function: onCustomer
+Function Size: 355 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onCustomer (JavaScript)\n// Handles each customer in the pagination, pushing their ID to an array and controlling the iteration flow.\n\nfunction onCustomer(customer, next) {\n  customerIds.push(customer.id);\n  if (customerIds.length === LIMIT) {\n    next(false);\n  } else {\n    expect(custo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:10:46.599Z
+Question Type: multiple-choice
+Function: onCustomer
+Function Size: 336 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: onCustomer (JavaScript)\n// Processes each customer and allows breaking the iteration by returning false when the limit is reached.\n\nfunction onCustomer(customer) {\n  customerIds.push(customer.id);\n  if (customerIds.length === LIMIT) {\n    return false;\n  } else {\n    expect(customerIds.
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:10:53.650Z
+Question Type: function-variant
+Function: onCustomer
+Function Size: 336 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onCustomer (JavaScript)\n// Processes each customer and allows breaking the iteration by returning false when the limit is reached.\n\nfunction onCustomer(customer) {\n  customerIds.push(customer.id);\n  if (customerIds.length === LIMIT) {\n    return false;\n  } else {\n    expect(customerIds.
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:10:54.719Z
+Question Type: function-variant
+Function: onCustomer
+Function Size: 336 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onCustomer (JavaScript)\n// Processes each customer and allows breaking the iteration by returning false when the limit is reached.\n\nfunction onCustomer(customer) {\n  customerIds.push(customer.id);\n  if (customerIds.length === LIMIT) {\n    return false;\n  } else {\n    expect(customerIds.
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:10:56.658Z
+Question Type: order-sequence
+Function: onCustomer
+Function Size: 355 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onCustomer (JavaScript)\n// Handles each customer in the pagination, pushing their ID to an array and controlling the iteration flow.\n\nfunction onCustomer(customer, next) {\n  customerIds.push(customer.id);\n  if (customerIds.length === LIMIT) {\n    next(false);\n  } else {\n    expect(custo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:10:57.244Z
+Question Type: select-all
+Function: onCustomer
+Function Size: 381 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onCustomer (JavaScript)\n// Handles each customer and returns a promise, allowing for asynchronous control of the iteration flow.\n\nfunction onCustomer(customer) {\n  customerIds.push(customer.id);\n  if (customerIds.length === LIMIT) {\n    return Promise.resolve(false);\n  } else {\n    expe
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:10:57.804Z
+Question Type: true-false
+Function: onCustomer
+Function Size: 381 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onCustomer (JavaScript)\n// Handles each customer and returns a promise, allowing for asynchronous control of the iteration flow.\n\nfunction onCustomer(customer) {\n  customerIds.push(customer.id);\n  if (customerIds.length === LIMIT) {\n    return Promise.resolve(false);\n  } else {\n    expe
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 14
+Total Chunks Processed: 3
+Ended: 2025-10-15T17:10:57.822Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T17:30:59.076Z
+File: calcom-cal.com-94ae3a5/apps/api/v2/src/ee/event-types/event-types_2024_04_15/outputs/get-event-type-public.output.ts
+Functions Extracted: 2
+
+
+Function 1: GetEventTypePublicOutput
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export class GetEventTypePublicOutput {
+  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS] })
+  @IsEnum([SUCCESS_STATUS, ERROR_STATUS])
+  status!: typeof SUCCESS_STATUS | typeof ERROR_STATUS;
+
+  @ValidateNested({ each: true })
+  @Type(() => PublicEventTypeOutput)
+  @IsArray()
+  data!: PublicEventTypeOutput | null;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: PublicEventTypeOutput
+Language: TypeScript
+Lines: 66
+Full Code:
+--------------------------------------------------------------------------------
+class PublicEventTypeOutput {
+  @IsInt()
+  @ApiProperty()
+  id!: number;
+
+  @IsString()
+  @ApiProperty()
+  title!: string;
+
+  @IsString()
+  @ApiProperty()
+  description!: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional({ type: String, nullable: true })
+  eventName?: string | null;
+
+  @IsString()
+  @ApiProperty()
+  slug!: string;
+
+  @IsBoolean()
+  @ApiProperty()
+  isInstantEvent!: boolean;
+
+  @IsOptional()
+  @ApiPropertyOptional()
+  aiPhoneCallConfig?: any;
+
+  @IsOptional()
+  @ApiPropertyOptional()
+  schedulingType?: any;
+
+  @IsInt()
+  @ApiProperty()
+  length!: number;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => Location)
+  @ApiProperty({ type: [Location] })
+  locations!: Location[];
+
+  @IsArray()
+  @ApiProperty({ type: [Object] })
+  customInputs!: any[];
+
+  @IsBoolean()
+  @ApiProperty()
+  disableGuests!: boolean;
+
+  @IsObject()
+  @ApiProperty({ type: Object, nullable: true })
+  metadata!: object | null;
+
+  @IsBoolean()
+  @ApiProperty()
+  lockTimeZoneToggleOnBookingPage!: boolean;
+
+  @IsBoolean()
+  @ApiProperty()
+  requiresConfirmation!: boolean;
+
+  @IsBoolean()
+  @ApiProperty()
+  requiresBookerEmailVerification!: boolean;
+
+  @IsOptional()
+  @ApiPropertyOptional()
+  recurringEvent?: any;
+
+  @IsNumber()
+  @ApiProperty()
+  price!: number;
+
+  @IsString()
+  @ApiProperty()
+  currency!: string;
+
+  @IsOptional()
+  @ApiPropertyOptional({ type: Number, nullable: true })
+  seatsPerTimeSlot?: number | null;
+
+  @IsBoolean()
+  @ApiProperty({ type: Boolean, nullable: true })
+  seatsShowAvailabilityCount!: boolean | null;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => BookingField)
+  @ApiProperty({ type: [BookingField] })
+  bookingFields!: BookingField[];
+
+  @IsOptional()
+  @ApiPropertyOptional()
+  team?: any;
+
+  @IsOptional()
+  @IsUrl()
+  @ApiPropertyOptional({ type: String, nullable: true })
+  successRedirectUrl?: string | null;
+
+  @IsArray()
+  @ApiProperty()
+  workflows!: any[];
+
+  @IsArray()
+  @ApiPropertyOptional()
+  hosts?: any[];
+
+  @ValidateNested()
+  @Type(() => Owner)
+  @ApiProperty({ type: Owner, nullable: true })
+  owner!: Owner | null;
+
+  @ValidateNested()
+  @Type(() => Schedule)
+  @ApiProperty({ type: Schedule, nullable: true })
+  schedule!: Schedule | null;
+
+  @IsBoolean()
+  @ApiProperty()
+  hidden!: boolean;
+
+  @IsBoolean()
+  @ApiProperty()
+  assignAllTeamMembers!: boolean;
+
+  @IsOptional()
+  @ApiPropertyOptional()
+  bookerLayouts?: any;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => User)
+  @ApiPropertyOptional({ type: [User] })
+  users?: User[];
+
+  @IsObject()
+  @ApiProperty({ type: Object })
+  entity!: object;
+
+  @IsBoolean()
+  isDynamic!: boolean;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:31:13.452Z
+Question Type: order-sequence
+Function: PublicEventTypeOutput
+Function Size: 2826 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: PublicEventTypeOutput (TypeScript)\n// Defines the structure of a public event type with various properties including id, title, description, and more.\n\nclass PublicEventTypeOutput {\n  @IsInt()\n  @ApiProperty()\n  id!: number;\n\n  @IsString()\n  @ApiProperty()\n  title!: string;\n\n  @IsString
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:31:20.350Z
+Question Type: function-variant
+Function: GetEventTypePublicOutput
+Function Size: 488 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GetEventTypePublicOutput (TypeScript)\n// Defines the output structure for getting public event types, including status and data.\n\nexport class GetEventTypePublicOutput {\n  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS] })\n  @IsEnum([SUCCESS_STATUS, ERROR_ST
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:31:24.121Z
+Question Type: true-false
+Function: PublicEventTypeOutput
+Function Size: 2826 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: PublicEventTypeOutput (TypeScript)\n// Defines the structure of a public event type with various properties including id, title, description, and more.\n\nclass PublicEventTypeOutput {\n  @IsInt()\n  @ApiProperty()\n  id!: number;\n\n  @IsString()\n  @ApiProperty()\n  title!: string;\n\n  @IsString
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:31:25.219Z
+Question Type: select-all
+Function: PublicEventTypeOutput
+Function Size: 2826 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: PublicEventTypeOutput (TypeScript)\n// Defines the structure of a public event type with various properties including id, title, description, and more.\n\nclass PublicEventTypeOutput {\n  @IsInt()\n  @ApiProperty()\n  id!: number;\n\n  @IsString()\n  @ApiProperty()\n  title!: string;\n\n  @IsString
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:31:35.075Z
+Question Type: multiple-choice
+Function: PublicEventTypeOutput
+Function Size: 2826 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: PublicEventTypeOutput (TypeScript)\n// Defines the structure of a public event type with various properties including id, title, description, and more.\n\nclass PublicEventTypeOutput {\n  @IsInt()\n  @ApiProperty()\n  id!: number;\n\n  @IsString()\n  @ApiProperty()\n  title!: string;\n\n  @IsString
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:31:43.469Z
+Question Type: function-variant
+Function: PublicEventTypeOutput
+Function Size: 2826 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: PublicEventTypeOutput (TypeScript)\n// Defines the structure of a public event type with various properties including id, title, description, and more.\n\nclass PublicEventTypeOutput {\n  @IsInt()\n  @ApiProperty()\n  id!: number;\n\n  @IsString()\n  @ApiProperty()\n  title!: string;\n\n  @IsString
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:31:47.989Z
+Question Type: function-variant
+Function: GetEventTypePublicOutput
+Function Size: 488 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GetEventTypePublicOutput (TypeScript)\n// Defines the output structure for getting public event types, including status and data.\n\nexport class GetEventTypePublicOutput {\n  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS] })\n  @IsEnum([SUCCESS_STATUS, ERROR_ST
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:31:52.789Z
+Question Type: select-all
+Function: PublicEventTypeOutput
+Function Size: 2826 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: PublicEventTypeOutput (TypeScript)\n// Defines the structure of a public event type with various properties including id, title, description, and more.\n\nclass PublicEventTypeOutput {\n  @IsInt()\n  @ApiProperty()\n  id!: number;\n\n  @IsString()\n  @ApiProperty()\n  title!: string;\n\n  @IsString
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:31:56.160Z
+Question Type: true-false
+Function: GetEventTypePublicOutput
+Function Size: 488 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GetEventTypePublicOutput (TypeScript)\n// Defines the output structure for getting public event types, including status and data.\n\nexport class GetEventTypePublicOutput {\n  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS] })\n  @IsEnum([SUCCESS_STATUS, ERROR_ST
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 2
+Ended: 2025-10-15T17:31:56.174Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T17:32:03.601Z
+File: [2 files: get-booking.output.ts, get-bookings.output.ts]
+Functions Extracted: 2
+
+
+Function 1: GetBookingOutput_2024_04_15
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export class GetBookingOutput_2024_04_15 {
+  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS] })
+  @IsEnum([SUCCESS_STATUS, ERROR_STATUS])
+  status!: typeof SUCCESS_STATUS | typeof ERROR_STATUS;
+
+  @ApiProperty({
+    type: GetBookingData_2024_04_15,
+  })
+  @ValidateNested()
+  @Type(() => GetBookingData_2024_04_15)
+  data!: GetBookingData_2024_04_15;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: GetBookingsOutput_2024_04_15
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export class GetBookingsOutput_2024_04_15 {
+  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS], type: String })
+  @IsEnum([SUCCESS_STATUS, ERROR_STATUS])
+  status!: typeof SUCCESS_STATUS | typeof ERROR_STATUS;
+
+  @ApiProperty({
+    type: GetBookingsData_2024_04_15,
+  })
+  @ValidateNested()
+  @Type(() => GetBookingsData_2024_04_15)
+  data!: GetBookingsData_2024_04_15;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:32:10.706Z
+Question Type: true-false
+Function: GetBookingsOutput_2024_04_15
+Function Size: 521 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GetBookingsOutput_2024_04_15 (TypeScript)\n// Defines the output structure for retrieving multiple bookings.\n\nexport class GetBookingsOutput_2024_04_15 {\n  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS], type: String })\n  @IsEnum([SUCCESS_STATUS, ERROR_STATU
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:32:14.548Z
+Question Type: select-all
+Function: GetBookingsOutput_2024_04_15
+Function Size: 521 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GetBookingsOutput_2024_04_15 (TypeScript)\n// Defines the output structure for retrieving multiple bookings.\n\nexport class GetBookingsOutput_2024_04_15 {\n  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS], type: String })\n  @IsEnum([SUCCESS_STATUS, ERROR_STATU
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:32:20.383Z
+Question Type: select-all
+Function: GetBookingOutput_2024_04_15
+Function Size: 503 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GetBookingOutput_2024_04_15 (TypeScript)\n// Defines the output structure for a booking retrieval operation.\n\nexport class GetBookingOutput_2024_04_15 {\n  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS] })\n  @IsEnum([SUCCESS_STATUS, ERROR_STATUS])\n  status!: 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:32:25.553Z
+Question Type: select-all
+Function: GetBookingOutput_2024_04_15
+Function Size: 503 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GetBookingOutput_2024_04_15 (TypeScript)\n// Defines the output structure for a booking retrieval operation.\n\nexport class GetBookingOutput_2024_04_15 {\n  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS] })\n  @IsEnum([SUCCESS_STATUS, ERROR_STATUS])\n  status!: 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:32:26.269Z
+Question Type: order-sequence
+Function: GetBookingOutput_2024_04_15
+Function Size: 503 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GetBookingOutput_2024_04_15 (TypeScript)\n// Defines the output structure for a booking retrieval operation.\n\nexport class GetBookingOutput_2024_04_15 {\n  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS] })\n  @IsEnum([SUCCESS_STATUS, ERROR_STATUS])\n  status!: 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:32:26.815Z
+Question Type: function-variant
+Function: GetBookingsOutput_2024_04_15
+Function Size: 521 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GetBookingsOutput_2024_04_15 (TypeScript)\n// Defines the output structure for retrieving multiple bookings.\n\nexport class GetBookingsOutput_2024_04_15 {\n  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS], type: String })\n  @IsEnum([SUCCESS_STATUS, ERROR_STATU
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 2
+Ended: 2025-10-15T17:32:26.841Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:33:09.875Z
+Question Type: select-all
+Function: GetBookingOutput_2024_04_15
+Function Size: 503 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: GetBookingOutput_2024_04_15 (TypeScript)\n// Defines the output structure for a booking retrieval operation.\n\nexport class GetBookingOutput_2024_04_15 {\n  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS] })\n  @IsEnum([SUCCESS_STATUS, ERROR_STATUS])\n  status!: 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:33:10.726Z
+Question Type: select-all
+Function: GetEventTypePublicOutput
+Function Size: 488 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GetEventTypePublicOutput (TypeScript)\n// Defines the output structure for getting public event types, including status and data.\n\nexport class GetEventTypePublicOutput {\n  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS] })\n  @IsEnum([SUCCESS_STATUS, ERROR_ST
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:33:22.474Z
+Question Type: true-false
+Function: PublicEventTypeOutput
+Function Size: 2826 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: PublicEventTypeOutput (TypeScript)\n// Defines the structure of a public event type with various properties including id, title, description, and more.\n\nclass PublicEventTypeOutput {\n  @IsInt()\n  @ApiProperty()\n  id!: number;\n\n  @IsString()\n  @ApiProperty()\n  title!: string;\n\n  @IsString
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:33:23.649Z
+Question Type: function-variant
+Function: GetEventTypePublicOutput
+Function Size: 488 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GetEventTypePublicOutput (TypeScript)\n// Defines the output structure for getting public event types, including status and data.\n\nexport class GetEventTypePublicOutput {\n  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS] })\n  @IsEnum([SUCCESS_STATUS, ERROR_ST
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:33:26.171Z
+Question Type: order-sequence
+Function: GetBookingOutput_2024_04_15
+Function Size: 503 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GetBookingOutput_2024_04_15 (TypeScript)\n// Defines the output structure for a booking retrieval operation.\n\nexport class GetBookingOutput_2024_04_15 {\n  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS] })\n  @IsEnum([SUCCESS_STATUS, ERROR_STATUS])\n  status!: 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:33:30.678Z
+Question Type: function-variant
+Function: GetBookingOutput_2024_04_15
+Function Size: 503 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GetBookingOutput_2024_04_15 (TypeScript)\n// Defines the output structure for a booking retrieval operation.\n\nexport class GetBookingOutput_2024_04_15 {\n  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS] })\n  @IsEnum([SUCCESS_STATUS, ERROR_STATUS])\n  status!: 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:33:32.252Z
+Question Type: multiple-choice
+Function: GetBookingsOutput_2024_04_15
+Function Size: 521 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: GetBookingsOutput_2024_04_15 (TypeScript)\n// Defines the output structure for retrieving multiple bookings.\n\nexport class GetBookingsOutput_2024_04_15 {\n  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS], type: String })\n  @IsEnum([SUCCESS_STATUS, ERROR_STATU
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:33:41.635Z
+Question Type: select-all
+Function: GetBookingsOutput_2024_04_15
+Function Size: 521 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GetBookingsOutput_2024_04_15 (TypeScript)\n// Defines the output structure for retrieving multiple bookings.\n\nexport class GetBookingsOutput_2024_04_15 {\n  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS], type: String })\n  @IsEnum([SUCCESS_STATUS, ERROR_STATU
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:33:51.166Z
+Question Type: function-variant
+Function: GetEventTypePublicOutput
+Function Size: 488 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: GetEventTypePublicOutput (TypeScript)\n// Defines the output structure for getting public event types, including status and data.\n\nexport class GetEventTypePublicOutput {\n  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS] })\n  @IsEnum([SUCCESS_STATUS, ERROR_ST
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:33:53.679Z
+Question Type: function-variant
+Function: PublicEventTypeOutput
+Function Size: 2826 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: PublicEventTypeOutput (TypeScript)\n// Defines the structure of a public event type with various properties including id, title, description, and more.\n\nclass PublicEventTypeOutput {\n  @IsInt()\n  @ApiProperty()\n  id!: number;\n\n  @IsString()\n  @ApiProperty()\n  title!: string;\n\n  @IsString
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:33:57.973Z
+Question Type: order-sequence
+Function: GetBookingsOutput_2024_04_15
+Function Size: 521 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GetBookingsOutput_2024_04_15 (TypeScript)\n// Defines the output structure for retrieving multiple bookings.\n\nexport class GetBookingsOutput_2024_04_15 {\n  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS], type: String })\n  @IsEnum([SUCCESS_STATUS, ERROR_STATU
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:33:59.546Z
+Question Type: select-all
+Function: PublicEventTypeOutput
+Function Size: 2826 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: PublicEventTypeOutput (TypeScript)\n// Defines the structure of a public event type with various properties including id, title, description, and more.\n\nclass PublicEventTypeOutput {\n  @IsInt()\n  @ApiProperty()\n  id!: number;\n\n  @IsString()\n  @ApiProperty()\n  title!: string;\n\n  @IsString
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T17:34:06.724Z
+Question Type: true-false
+Function: GetEventTypePublicOutput
+Function Size: 488 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GetEventTypePublicOutput (TypeScript)\n// Defines the output structure for getting public event types, including status and data.\n\nexport class GetEventTypePublicOutput {\n  @ApiProperty({ example: SUCCESS_STATUS, enum: [SUCCESS_STATUS, ERROR_STATUS] })\n  @IsEnum([SUCCESS_STATUS, ERROR_ST
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 4
+Ended: 2025-10-15T17:34:18.621Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:04:47.701Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2094 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: // eslint-disable-next-line @typescript-eslint/no-unsafe-argument\nchallengeFiles:\n          completedChallenge?.challengeFiles?.map(\n            regenerateMissingProperties\n          ) ?? null\n      }\n    : null;\n\n  const id = challengeData?.id;\n  const startIndex = (pageNo - 1) * ITEMS_PER
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:04:49.807Z
+Question Type: true-false
+Function: Unknown
+Function Size: 50 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nid,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:04:55.057Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 58 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nsuperBlock,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:04:55.352Z
+Question Type: select-all
+Function: Unknown
+Function Size: 58 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nsuperBlock,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:04:56.450Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2056 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Items per page in timeline.\nconst ITEMS_PER_PAGE = 15;\n\ninterface TimelineProps {\n  completedMap: CompletedChallenge[];\n  openModal: (arg: string) => void;\n  t: TFunction;\n  username: string;\n}\n\ninterface TimelineInnerProps extends TimelineProps {\n  idToNameMap: Map<string, NameMap>;\n  sort
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:05:02.440Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2094 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: // eslint-disable-next-line @typescript-eslint/no-unsafe-argument\nchallengeFiles:\n          completedChallenge?.challengeFiles?.map(\n            regenerateMissingProperties\n          ) ?? null\n      }\n    : null;\n\n  const id = challengeData?.id;\n  const startIndex = (pageNo - 1) * ITEMS_PER
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:05:03.755Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1629 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: freeCodeCamp-freeCodeCamp-2f90571/client/src/components/profile/components/time-line.tsx\nimport Loadable from '@loadable/component';\nimport { graphql, useStaticQuery } from 'gatsby';\nimport { reverse, sortBy } from 'lodash-es';\nimport React, { useMemo, useState } from 'react';\nimport type {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:05:07.237Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 58 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nsuperBlock,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:05:07.898Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2056 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Items per page in timeline.\nconst ITEMS_PER_PAGE = 15;\n\ninterface TimelineProps {\n  completedMap: CompletedChallenge[];\n  openModal: (arg: string) => void;\n  t: TFunction;\n  username: string;\n}\n\ninterface TimelineInnerProps extends TimelineProps {\n  idToNameMap: Map<string, NameMap>;\n  sort
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:05:10.380Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 50 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nid,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:05:15.257Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 1629 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // File: freeCodeCamp-freeCodeCamp-2f90571/client/src/components/profile/components/time-line.tsx\nimport Loadable from '@loadable/component';\nimport { graphql, useStaticQuery } from 'gatsby';\nimport { reverse, sortBy } from 'lodash-es';\nimport React, { useMemo, useState } from 'react';\nimport type {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:05:15.963Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2056 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Items per page in timeline.\nconst ITEMS_PER_PAGE = 15;\n\ninterface TimelineProps {\n  completedMap: CompletedChallenge[];\n  openModal: (arg: string) => void;\n  t: TFunction;\n  username: string;\n}\n\ninterface TimelineInnerProps extends TimelineProps {\n  idToNameMap: Map<string, NameMap>;\n  sort
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:05:17.566Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2094 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: // eslint-disable-next-line @typescript-eslint/no-unsafe-argument\nchallengeFiles:\n          completedChallenge?.challengeFiles?.map(\n            regenerateMissingProperties\n          ) ?? null\n      }\n    : null;\n\n  const id = challengeData?.id;\n  const startIndex = (pageNo - 1) * ITEMS_PER
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:05:19.390Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1629 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: freeCodeCamp-freeCodeCamp-2f90571/client/src/components/profile/components/time-line.tsx\nimport Loadable from '@loadable/component';\nimport { graphql, useStaticQuery } from 'gatsby';\nimport { reverse, sortBy } from 'lodash-es';\nimport React, { useMemo, useState } from 'react';\nimport type {
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 15
+Total Chunks Processed: 5
+Ended: 2025-10-15T19:05:22.939Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T19:55:34.355Z
+File: [4 files: need to show to the user. Finally, we'll send out a proper response., Vue.php, ThrottleLoginsTest.php, RegistersUsersTest.php]
+Functions Extracted: 6
+
+
+Function 1: sendResetLinkResponse
+Language: PHP
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+protected function sendResetLinkResponse(Request $request, $response) {
+    return $request->wantsJson()
+                ? new JsonResponse(['message' => trans($response)], 200)
+                : back()->with('status', trans($response));
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: sendResetLinkFailedResponse
+Language: PHP
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+protected function sendResetLinkFailedResponse(Request $request, $response) {
+    if ($request->wantsJson()) {
+        throw ValidationException::withMessages([
+            'email' => [trans($response)],
+        ]);
+    }
+
+    return back()
+            ->withInput($request->only('email'))
+            ->withErrors(['email' => trans($response)]);
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: install
+Language: PHP
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+public static function install() {
+    static::ensureComponentDirectoryExists();
+    static::updatePackages();
+    static::updateViteConfiguration();
+    static::updateBootstrapping();
+    static::updateComponent();
+    static::removeNodeModules();
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: validator
+Language: PHP
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+protected function validator(array $data) {
+    return Validator::make($data, [
+        'name' => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+        'password' => ['required', 'string', 'min:8', 'confirmed'],
+    ]);
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: create
+Language: PHP
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+protected function create(array $data) {
+    $user = (new User())->forceFill([
+        'name' => $data['name'],
+        'email' => $data['email'],
+        'password' => Hash::make($data['password']),
+    ]);
+
+    $user->save();
+
+    return $user;
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: handleRequestUsing
+Language: PHP
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+protected function handleRequestUsing(Request $request, callable $callback) {
+    return new TestResponse(
+        (new Pipeline($this->app))
+            ->send($request)
+            ->through([
+                \Illuminate\Session\Middleware\StartSession::class,
+            ])
+            ->then($callback)
+    );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:55:44.401Z
+Question Type: select-all
+Function: validator
+Function Size: 372 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: validator (PHP)\n// Validates the incoming registration request data.\n\nprotected function validator(array $data) {\n    return Validator::make($data, [\n        'name' => ['required', 'string', 'max:255'],\n        'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],\n     
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:55:46.020Z
+Question Type: multiple-choice
+Function: install
+Function Size: 368 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: install (PHP)\n// Installs the Vue preset by ensuring necessary directories and updating configurations.\n\npublic static function install() {\n    static::ensureComponentDirectoryExists();\n    static::updatePackages();\n    static::updateViteConfiguration();\n    static::updateBootstrapping(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:55:50.580Z
+Question Type: function-variant
+Function: handleRequestUsing
+Function Size: 421 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleRequestUsing (PHP)\n// Handles a request using a pipeline and returns a TestResponse.\n\nprotected function handleRequestUsing(Request $request, callable $callback) {\n    return new TestResponse(\n        (new Pipeline($this->app))\n            ->send($request)\n            ->through([\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:55:51.508Z
+Question Type: function-variant
+Function: install
+Function Size: 368 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: install (PHP)\n// Installs the Vue preset by ensuring necessary directories and updating configurations.\n\npublic static function install() {\n    static::ensureComponentDirectoryExists();\n    static::updatePackages();\n    static::updateViteConfiguration();\n    static::updateBootstrapping(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:55:52.644Z
+Question Type: select-all
+Function: sendResetLinkFailedResponse
+Function Size: 505 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sendResetLinkFailedResponse (PHP)\n// Handles the response for a failed password reset link, throwing a validation exception for JSON requests.\n\nprotected function sendResetLinkFailedResponse(Request $request, $response) {\n    if ($request->wantsJson()) {\n        throw ValidationExceptio
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:55:57.546Z
+Question Type: true-false
+Function: handleRequestUsing
+Function Size: 421 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleRequestUsing (PHP)\n// Handles a request using a pipeline and returns a TestResponse.\n\nprotected function handleRequestUsing(Request $request, callable $callback) {\n    return new TestResponse(\n        (new Pipeline($this->app))\n            ->send($request)\n            ->through([\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:56:00.084Z
+Question Type: function-variant
+Function: sendResetLinkResponse
+Function Size: 371 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sendResetLinkResponse (PHP)\n// Returns a response for a successful password reset link, either as JSON or a redirect.\n\nprotected function sendResetLinkResponse(Request $request, $response) {\n    return $request->wantsJson()\n                ? new JsonResponse(['message' => trans($respons
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:56:02.385Z
+Question Type: select-all
+Function: handleRequestUsing
+Function Size: 421 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleRequestUsing (PHP)\n// Handles a request using a pipeline and returns a TestResponse.\n\nprotected function handleRequestUsing(Request $request, callable $callback) {\n    return new TestResponse(\n        (new Pipeline($this->app))\n            ->send($request)\n            ->through([\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:56:08.053Z
+Question Type: select-all
+Function: sendResetLinkResponse
+Function Size: 371 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sendResetLinkResponse (PHP)\n// Returns a response for a successful password reset link, either as JSON or a redirect.\n\nprotected function sendResetLinkResponse(Request $request, $response) {\n    return $request->wantsJson()\n                ? new JsonResponse(['message' => trans($respons
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:56:09.691Z
+Question Type: order-sequence
+Function: sendResetLinkFailedResponse
+Function Size: 505 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sendResetLinkFailedResponse (PHP)\n// Handles the response for a failed password reset link, throwing a validation exception for JSON requests.\n\nprotected function sendResetLinkFailedResponse(Request $request, $response) {\n    if ($request->wantsJson()) {\n        throw ValidationExceptio
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 12
+Total Chunks Processed: 6
+Ended: 2025-10-15T19:56:09.765Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T19:56:25.080Z
+File: [3 files: AuthCommand.php, RegistersUsers.php, React.php]
+Functions Extracted: 5
+
+
+Function 1: handle
+Language: PHP
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public function handle() {
+        if (static::hasMacro($this->argument('type'))) {
+            return call_user_func(static::$macros[$this->argument('type')], $this);
+        }
+
+        if (! in_array($this->argument('type'), ['bootstrap'])) {
+            throw new InvalidArgumentException('Invalid preset.');
+        }
+
+        $this->ensureDirectoriesExist();
+        $this->exportViews();
+
+        if (! $this->option('views')) {
+            $this->exportBackend();
+        }
+
+        $this->components->info('Authentication scaffolding generated successfully.');
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: register
+Language: PHP
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public function register(Request $request) {
+        $this->validator($request->all())->validate();
+
+        event(new Registered($user = $this->create($request->all())));
+
+        $this->guard()->login($user);
+
+        if ($response = $this->registered($request, $user)) {
+            return $response;
+        }
+
+        return $request->wantsJson()
+                    ? new JsonResponse([], 201)
+                    : redirect($this->redirectPath());
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: install
+Language: PHP
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+public static function install() {
+        static::ensureComponentDirectoryExists();
+        static::updatePackages();
+        static::updateViteConfiguration();
+        static::updateBootstrapping();
+        static::updateComponent();
+        static::addViteReactRefreshDirective();
+        static::removeNodeModules();
+    }
+--------------------------------------------------------------------------------
+
+
+Function 4: updatePackageArray
+Language: PHP
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+protected static function updatePackageArray(array $packages) {
+        return [
+            '@vitejs/plugin-react' => '^4.2.0',
+            'react' => '^18.2.0',
+            'react-dom' => '^18.2.0',
+        ] + Arr::except($packages, [
+            '@vitejs/plugin-vue',
+            'vue'
+        ]);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 5: updateComponent
+Language: PHP
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+protected static function updateComponent() {
+        (new Filesystem)->delete(
+            resource_path('js/components/ExampleComponent.vue')
+        );
+
+        copy(
+            __DIR__.'/react-stubs/Example.jsx',
+            resource_path('js/components/Example.jsx')
+        );
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:56:27.804Z
+Question Type: true-false
+Function: register
+Function Size: 595 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: register (PHP)\n// Handles a registration request for the application, validates input, creates a user, and logs them in.\n\npublic function register(Request $request) {\n        $this->validator($request->all())->validate();\n\n        event(new Registered($user = $this->create($request->all
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:56:34.372Z
+Question Type: select-all
+Function: updateComponent
+Function Size: 421 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateComponent (PHP)\n// Updates the example component by deleting the Vue component and copying the React component.\n\nprotected static function updateComponent() {\n        (new Filesystem)->delete(\n            resource_path('js/components/ExampleComponent.vue')\n        );\n\n        copy
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:56:35.006Z
+Question Type: select-all
+Function: install
+Function Size: 464 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: install (PHP)\n// Installs the React preset by ensuring directories exist, updating packages, configuration, and components.\n\npublic static function install() {\n        static::ensureComponentDirectoryExists();\n        static::updatePackages();\n        static::updateViteConfiguration();\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:56:36.532Z
+Question Type: multiple-choice
+Function: handle
+Function Size: 729 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: handle (PHP)\n// Handles the execution of the console command, ensuring directories exist, exporting views, and optionally exporting backend.\n\npublic function handle() {\n        if (static::hasMacro($this->argument('type'))) {\n            return call_user_func(static::$macros[$this->argu
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:56:37.680Z
+Question Type: order-sequence
+Function: install
+Function Size: 464 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: install (PHP)\n// Installs the React preset by ensuring directories exist, updating packages, configuration, and components.\n\npublic static function install() {\n        static::ensureComponentDirectoryExists();\n        static::updatePackages();\n        static::updateViteConfiguration();\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:56:47.861Z
+Question Type: select-all
+Function: handle
+Function Size: 729 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handle (PHP)\n// Handles the execution of the console command, ensuring directories exist, exporting views, and optionally exporting backend.\n\npublic function handle() {\n        if (static::hasMacro($this->argument('type'))) {\n            return call_user_func(static::$macros[$this->argu
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:56:49.401Z
+Question Type: true-false
+Function: updateComponent
+Function Size: 421 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateComponent (PHP)\n// Updates the example component by deleting the Vue component and copying the React component.\n\nprotected static function updateComponent() {\n        (new Filesystem)->delete(\n            resource_path('js/components/ExampleComponent.vue')\n        );\n\n        copy
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T19:56:52.499Z
+Question Type: function-variant
+Function: updateComponent
+Function Size: 421 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateComponent (PHP)\n// Updates the example component by deleting the Vue component and copying the React component.\n\nprotected static function updateComponent() {\n        (new Filesystem)->delete(\n            resource_path('js/components/ExampleComponent.vue')\n        );\n\n        copy
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 5
+Ended: 2025-10-15T19:56:52.570Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-15T23:27:18.012Z
+File: [8 files: UpdateEmployeeComponent.jsx, CreateEmployeeComponent.jsx, EmployeeService.js, SpringbootBackendApplication.java, ViewEmployeeComponent.jsx, index.js, serviceWorker.js, HeaderComponent.js]
+Functions Extracted: 3
+
+
+Function 1: componentDidMount
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+componentDidMount(){
+    EmployeeService.getEmployeeById(this.state.id).then( (res) =>{
+        let employee = res.data;
+        this.setState({firstName: employee.firstName,
+            lastName: employee.lastName,
+            emailId : employee.emailId
+        });
+    });
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: updateEmployee
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+updateEmployee = (e) => {
+        e.preventDefault();
+        let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};
+        console.log('employee => ' + JSON.stringify(employee));
+        console.log('id => ' + JSON.stringify(this.state.id));
+        EmployeeService.updateEmployee(employee, this.state.id).then( res => {
+            this.props.history.push('/employees');
+        });
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: componentDidMount
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+componentDidMount(){
+        EmployeeService.getEmployeeById(this.state.id).then( res => {
+            this.setState({employee: res.data});
+        })
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T23:27:22.562Z
+Question Type: true-false
+Function: componentDidMount
+Function Size: 309 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee details by ID when the component mounts and updates the state with the employee's data.\n\ncomponentDidMount(){\n        EmployeeService.getEmployeeById(this.state.id).then( res => {\n            this.setState({employee: res.data});\n       
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T23:27:22.610Z
+Question Type: true-false
+Function: componentDidMount
+Function Size: 429 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID when the component mounts and updates the state with the employee's details.\n\ncomponentDidMount(){\n    EmployeeService.getEmployeeById(this.state.id).then( (res) =>{\n        let employee = res.data;\n        this.setState({fir
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T23:27:23.758Z
+Question Type: select-all
+Function: componentDidMount
+Function Size: 309 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee details by ID when the component mounts and updates the state with the employee's data.\n\ncomponentDidMount(){\n        EmployeeService.getEmployeeById(this.state.id).then( res => {\n            this.setState({employee: res.data});\n       
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T23:27:30.804Z
+Question Type: multiple-choice
+Function: updateEmployee
+Function Size: 614 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: updateEmployee (JavaScript)\n// Handles the employee update process by sending the updated employee data to the server and redirects to the employee list.\n\nupdateEmployee = (e) => {\n        e.preventDefault();\n        let employee = {firstName: this.state.firstName, lastName: this.state.
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T23:27:35.914Z
+Question Type: function-variant
+Function: componentDidMount
+Function Size: 429 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID when the component mounts and updates the state with the employee's details.\n\ncomponentDidMount(){\n    EmployeeService.getEmployeeById(this.state.id).then( (res) =>{\n        let employee = res.data;\n        this.setState({fir
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 3
+Ended: 2025-10-15T23:27:35.985Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T23:27:40.823Z
+Question Type: select-all
+Function: componentDidMount
+Function Size: 309 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee details by ID when the component mounts and updates the state with the employee's data.\n\ncomponentDidMount(){\n        EmployeeService.getEmployeeById(this.state.id).then( res => {\n            this.setState({employee: res.data});\n       
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T23:27:42.813Z
+Question Type: select-all
+Function: componentDidMount
+Function Size: 429 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID when the component mounts and updates the state with the employee's details.\n\ncomponentDidMount(){\n    EmployeeService.getEmployeeById(this.state.id).then( (res) =>{\n        let employee = res.data;\n        this.setState({fir
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T23:27:44.466Z
+Question Type: select-all
+Function: componentDidMount
+Function Size: 429 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID when the component mounts and updates the state with the employee's details.\n\ncomponentDidMount(){\n    EmployeeService.getEmployeeById(this.state.id).then( (res) =>{\n        let employee = res.data;\n        this.setState({fir
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T23:27:46.495Z
+Question Type: order-sequence
+Function: componentDidMount
+Function Size: 309 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee details by ID when the component mounts and updates the state with the employee's data.\n\ncomponentDidMount(){\n        EmployeeService.getEmployeeById(this.state.id).then( res => {\n            this.setState({employee: res.data});\n       
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T23:27:55.913Z
+Question Type: select-all
+Function: updateEmployee
+Function Size: 614 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateEmployee (JavaScript)\n// Handles the employee update process by sending the updated employee data to the server and redirects to the employee list.\n\nupdateEmployee = (e) => {\n        e.preventDefault();\n        let employee = {firstName: this.state.firstName, lastName: this.state.
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T23:27:56.435Z
+Question Type: function-variant
+Function: componentDidMount
+Function Size: 429 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID when the component mounts and updates the state with the employee's details.\n\ncomponentDidMount(){\n    EmployeeService.getEmployeeById(this.state.id).then( (res) =>{\n        let employee = res.data;\n        this.setState({fir
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T23:27:57.126Z
+Question Type: function-variant
+Function: updateEmployee
+Function Size: 614 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateEmployee (JavaScript)\n// Handles the employee update process by sending the updated employee data to the server and redirects to the employee list.\n\nupdateEmployee = (e) => {\n        e.preventDefault();\n        let employee = {firstName: this.state.firstName, lastName: this.state.
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T23:28:01.667Z
+Question Type: function-variant
+Function: componentDidMount
+Function Size: 429 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID when the component mounts and updates the state with the employee's details.\n\ncomponentDidMount(){\n    EmployeeService.getEmployeeById(this.state.id).then( (res) =>{\n        let employee = res.data;\n        this.setState({fir
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T23:28:03.203Z
+Question Type: true-false
+Function: componentDidMount
+Function Size: 429 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID when the component mounts and updates the state with the employee's details.\n\ncomponentDidMount(){\n    EmployeeService.getEmployeeById(this.state.id).then( (res) =>{\n        let employee = res.data;\n        this.setState({fir
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T23:28:04.165Z
+Question Type: order-sequence
+Function: updateEmployee
+Function Size: 614 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateEmployee (JavaScript)\n// Handles the employee update process by sending the updated employee data to the server and redirects to the employee list.\n\nupdateEmployee = (e) => {\n        e.preventDefault();\n        let employee = {firstName: this.state.firstName, lastName: this.state.
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-15T23:28:04.640Z
+Question Type: multiple-choice
+Function: componentDidMount
+Function Size: 309 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee details by ID when the component mounts and updates the state with the employee's data.\n\ncomponentDidMount(){\n        EmployeeService.getEmployeeById(this.state.id).then( res => {\n            this.setState({employee: res.data});\n       
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 3
+Ended: 2025-10-15T23:28:04.672Z
+================================================================================
+

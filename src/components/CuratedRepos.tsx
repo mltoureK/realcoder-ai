@@ -1,23 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import { 
-  type CuratedRepo,
-  REACT_FRONTEND_REPOS,
-  REACT_MOBILE_REPOS,
-  NEXTJS_REPOS,
-  RXJS_REACTIVE_REPOS,
-  RUST_LEARNING_PATH,
-  WEBSOCKET_NETWORKING_PATH,
-  CYBERSECURITY_LEARNING_PATH,
-  NETWORK_ANALYSIS_PATH,
-  DEVOPS_NETWORKING_PATH,
-  STRIPE_LEARNING_PATH,
-  LARAVEL_LEARNING_PATH
-} from '@/lib/curated-repos';
 
-// Use the imported arrays with the expected names
-const NEXTJS_CHILD_REPOS = NEXTJS_REPOS;
+interface CuratedRepo {
+  name: string;
+  url: string;
+  description: string;
+  language: string;
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  stars: string;
+  category: string;
+  icon: string;
+  isProduction: boolean;
+}
 
 const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
   'JavaScript': [
@@ -53,50 +48,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       stars: '400k+',
       category: 'Education Platform',
       icon: '📚',
-      isProduction: true
-    },
-    {
-      name: 'VS Code',
-      url: 'https://github.com/microsoft/vscode',
-      description: 'Visual Studio Code - the most popular code editor in the world - 170k+ stars',
-      language: 'TypeScript',
-      difficulty: 'Advanced',
-      stars: '170k+',
-      category: 'Code Editor',
-      icon: '💻',
-      isProduction: true
-    },
-    {
-      name: 'Tailwind CSS',
-      url: 'https://github.com/tailwindlabs/tailwindcss',
-      description: 'A utility-first CSS framework for rapid UI development - 80k+ stars',
-      language: 'CSS',
-      difficulty: 'Beginner',
-      stars: '80k+',
-      category: 'CSS Framework',
-      icon: '🎨',
-      isProduction: true
-    },
-    {
-      name: 'Headless UI',
-      url: 'https://github.com/tailwindlabs/headlessui',
-      description: 'Unstyled, accessible UI components designed to integrate with Tailwind CSS - 25k+ stars',
-      language: 'JavaScript',
-      difficulty: 'Intermediate',
-      stars: '25k+',
-      category: 'UI Components',
-      icon: '🎭',
-      isProduction: true
-    },
-    {
-      name: 'shadcn/ui',
-      url: 'https://github.com/shadcn/ui',
-      description: 'Beautifully designed components built with Radix UI and Tailwind CSS - 50k+ stars',
-      language: 'TypeScript',
-      difficulty: 'Intermediate',
-      stars: '50k+',
-      category: 'Component Library',
-      icon: '✨',
       isProduction: true
     },
     {
@@ -639,126 +590,31 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       category: 'Development Tool',
       icon: '👁️',
       isProduction: true
-    },
-    {
-      name: 'StreamRip',
-      url: 'https://github.com/nathom/streamrip',
-      description: 'StreamRip - A modern, fast, and flexible music downloader - 2k+ stars',
-      language: 'Python',
-      difficulty: 'Intermediate',
-      stars: '2k+',
-      category: 'Music Downloader',
-      icon: '🎵',
-      isProduction: true
-    },
-    {
-      name: 'Falcor',
-      url: 'https://github.com/Netflix/falcor',
-      description: 'A JavaScript library for efficient data fetching - used by Netflix - 10k+ stars',
-      language: 'JavaScript',
-      difficulty: 'Advanced',
-      stars: '10k+',
-      category: 'Data Fetching',
-      icon: '🌊',
-      isProduction: true
-    },
-    {
-      name: 'React + Spring Boot + MySQL',
-      url: 'https://github.com/bezkoder/react-spring-boot-mysql',
-      description: 'React + Spring Boot + MySQL Full Stack CRUD Application - 2k+ stars',
-      language: 'JavaScript',
-      difficulty: 'Intermediate',
-      stars: '2k+',
-      category: 'Full-Stack CRUD',
-      icon: '🚀',
-      isProduction: true
-    },
-    {
-      name: 'React + Spring Boot + PostgreSQL',
-      url: 'https://github.com/bezkoder/react-spring-boot-postgresql',
-      description: 'React + Spring Boot + PostgreSQL Full Stack CRUD Application - 1k+ stars',
-      language: 'JavaScript',
-      difficulty: 'Intermediate',
-      stars: '1k+',
-      category: 'Full-Stack CRUD',
-      icon: '🐘',
-      isProduction: true
-    },
-    {
-      name: 'Angular + Spring Boot',
-      url: 'https://github.com/bezkoder/angular-spring-boot-mysql',
-      description: 'Angular + Spring Boot + MySQL Full Stack CRUD Application - 1k+ stars',
-      language: 'TypeScript',
-      difficulty: 'Intermediate',
-      stars: '1k+',
-      category: 'Full-Stack CRUD',
-      icon: '🅰️',
-      isProduction: true
-    },
-    {
-      name: 'Vue + Spring Boot',
-      url: 'https://github.com/bezkoder/vue-spring-boot-mysql',
-      description: 'Vue + Spring Boot + MySQL Full Stack CRUD Application - 1k+ stars',
-      language: 'JavaScript',
-      difficulty: 'Intermediate',
-      stars: '1k+',
-      category: 'Full-Stack CRUD',
-      icon: '💚',
-      isProduction: true
-    }
-  ],
-  'RxJS & Reactive': [
-    {
-      name: 'RxJS (Reactive Programming)',
-      url: 'https://github.com/ReactiveX/rxjs',
-      description: '🌊 Master reactive programming - 30k stars, learn RxJS + 6 reactive repos',
-      language: 'TypeScript',
-      difficulty: 'Advanced',
-      stars: '30k+',
-      category: 'Reactive Core',
-      icon: '🌊',
-      isProduction: true,
-      childRepos: RXJS_REACTIVE_REPOS
     }
   ],
   'React': [
-    // React Core with Frontend Learning Path
+    // React Core & Ecosystem
     {
-      name: 'React (Frontend)',
+      name: 'React',
       url: 'https://github.com/facebook/react',
-      description: '🔥 The library for web UIs - 240k stars, learn React + 15 production frontend repos',
+      description: 'A declarative, efficient, and flexible JavaScript library for building user interfaces - used by Facebook, Netflix, Airbnb',
       language: 'JavaScript',
       difficulty: 'Intermediate',
-      stars: '240k+',
-      category: 'React Frontend',
+      stars: '220k+',
+      category: 'React Core',
       icon: '⚛️',
-      isProduction: true,
-      childRepos: REACT_FRONTEND_REPOS
-    },
-    // React Native with Mobile Learning Path
-    {
-      name: 'React Native (Mobile)',
-      url: 'https://github.com/facebook/react-native',
-      description: '📱 Build native mobile apps - 120k stars, learn React Native + 8 mobile repos',
-      language: 'JavaScript',
-      difficulty: 'Advanced',
-      stars: '120k+',
-      category: 'React Mobile',
-      icon: '📱',
-      isProduction: true,
-      childRepos: REACT_MOBILE_REPOS
+      isProduction: true
     },
     {
       name: 'Next.js',
       url: 'https://github.com/vercel/next.js',
-      description: 'The React Framework for Production - used by Netflix, TikTok, Twitch, Hulu',
+      description: 'The React Framework for Production - used by Vercel, Netflix, TikTok',
       language: 'JavaScript',
       difficulty: 'Intermediate',
-      stars: '128k+',
+      stars: '110k+',
       category: 'React Framework',
       icon: '▲',
-      isProduction: true,
-      childRepos: NEXTJS_CHILD_REPOS
+      isProduction: true
     },
     {
       name: 'React Router',
@@ -1184,50 +1040,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       stars: '8k+',
       category: 'Apache Production',
       icon: '🐱',
-      isProduction: true
-    },
-    {
-      name: 'DSA Bootcamp Java',
-      url: 'https://github.com/kunal-kushwaha/DSA-Bootcamp-Java',
-      description: 'Complete Data Structures & Algorithms Bootcamp in Java - 15k+ stars',
-      language: 'Java',
-      difficulty: 'Intermediate',
-      stars: '15k+',
-      category: 'Data Structures',
-      icon: '📊',
-      isProduction: true
-    },
-    {
-      name: 'Spring Boot RealWorld',
-      url: 'https://github.com/gothinkster/spring-boot-realworld-example-app',
-      description: 'Exemplary full stack Medium.com clone powered by Spring Boot - 10k+ stars',
-      language: 'Java',
-      difficulty: 'Advanced',
-      stars: '10k+',
-      category: 'Spring Boot',
-      icon: '🌍',
-      isProduction: true
-    },
-    {
-      name: 'Spring PetClinic',
-      url: 'https://github.com/spring-projects/spring-petclinic',
-      description: 'A sample Spring-based application used in tutorials - 8k+ stars',
-      language: 'Java',
-      difficulty: 'Intermediate',
-      stars: '8k+',
-      category: 'Spring Boot',
-      icon: '🐾',
-      isProduction: true
-    },
-    {
-      name: 'Spring Boot Examples',
-      url: 'https://github.com/in28minutes/spring-boot-examples',
-      description: 'Amazing Spring Boot Examples with many small projects - 12k+ stars',
-      language: 'Java',
-      difficulty: 'Intermediate',
-      stars: '12k+',
-      category: 'Spring Boot',
-      icon: '📚',
       isProduction: true
     },
     {
@@ -1797,16 +1609,15 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
   ],
   'PHP': [
     {
-      name: 'Laravel Framework Mastery',
+      name: 'Laravel',
       url: 'https://github.com/laravel/laravel',
-      description: '🚀 Master PHP\'s most popular framework - 75k stars, learn Laravel + 24 projects',
+      description: 'A PHP framework for web artisans',
       language: 'PHP',
       difficulty: 'Intermediate',
       stars: '75k+',
-      category: 'PHP Framework',
-      icon: '🚀',
-      isProduction: true,
-      childRepos: LARAVEL_LEARNING_PATH
+      category: 'Web Framework',
+      icon: '🎨',
+      isProduction: true
     },
     {
       name: 'Symfony',
@@ -1828,28 +1639,6 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       stars: '20k+',
       category: 'CMS',
       icon: '📝',
-      isProduction: true
-    },
-    {
-      name: 'Monica',
-      url: 'https://github.com/monicahq/monica',
-      description: 'Personal CRM - organize your social relationships - 18k+ stars',
-      language: 'PHP',
-      difficulty: 'Intermediate',
-      stars: '18k+',
-      category: 'CRM',
-      icon: '👥',
-      isProduction: true
-    },
-    {
-      name: 'WooCommerce',
-      url: 'https://github.com/woocommerce/woocommerce',
-      description: 'An open-source e-commerce plugin for WordPress - 9k+ stars',
-      language: 'PHP',
-      difficulty: 'Advanced',
-      stars: '9k+',
-      category: 'E-commerce',
-      icon: '🛒',
       isProduction: true
     },
     {
@@ -1984,462 +1773,12 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
       icon: '💧',
       isProduction: true
     }
-  ],
-  'Rust': [
-    // Rust Core with Learning Path
-    {
-      name: 'Rust (Systems Programming)',
-      url: 'https://github.com/rust-lang/rust',
-      description: '🦀 Master systems programming - 100k stars, learn Rust + 12 production projects',
-      language: 'Rust',
-      difficulty: 'Advanced',
-      stars: '100k+',
-      category: 'Rust Systems',
-      icon: '🦀',
-      isProduction: true,
-      childRepos: RUST_LEARNING_PATH
-    },
-    {
-      name: 'Tokio',
-      url: 'https://github.com/tokio-rs/tokio',
-      description: 'A runtime for writing reliable asynchronous applications with Rust - 25k+ stars',
-      language: 'Rust',
-      difficulty: 'Advanced',
-      stars: '25k+',
-      category: 'Async Runtime',
-      icon: '⚡',
-      isProduction: true
-    },
-    {
-      name: 'Serde',
-      url: 'https://github.com/serde-rs/serde',
-      description: 'Serialization framework for Rust - 8k+ stars',
-      language: 'Rust',
-      difficulty: 'Intermediate',
-      stars: '8k+',
-      category: 'Serialization',
-      icon: '📦',
-      isProduction: true
-    },
-    {
-      name: 'Actix Web',
-      url: 'https://github.com/actix/actix-web',
-      description: 'Powerful, pragmatic, and extremely fast web framework for Rust - 20k+ stars',
-      language: 'Rust',
-      difficulty: 'Advanced',
-      stars: '20k+',
-      category: 'Web Framework',
-      icon: '🚀',
-      isProduction: true
-    },
-    {
-      name: 'Warp',
-      url: 'https://github.com/seanmonstar/warp',
-      description: 'A super-easy, composable, web server framework for warp speeds - 8k+ stars',
-      language: 'Rust',
-      difficulty: 'Intermediate',
-      stars: '8k+',
-      category: 'Web Framework',
-      icon: '🌊',
-      isProduction: true
-    }
-  ],
-  'C++': [
-    {
-      name: 'Linux Kernel',
-      url: 'https://github.com/torvalds/linux',
-      description: 'Linux kernel source tree - 170k+ stars',
-      language: 'C',
-      difficulty: 'Expert',
-      stars: '170k+',
-      category: 'Operating System',
-      icon: '🐧',
-      isProduction: true
-    },
-    {
-      name: 'ArkVime',
-      url: 'https://github.com/arkime/arkime',
-      description: 'Arkime (formerly Moloch) is a large scale, open source, indexed packet capture and search system - 6k+ stars',
-      language: 'C++',
-      difficulty: 'Advanced',
-      stars: '6k+',
-      category: 'Network Security',
-      icon: '🔍',
-      isProduction: true
-    },
-    {
-      name: 'System Design Primer',
-      url: 'https://github.com/donnemartin/system-design-primer',
-      description: 'Learn how to design large-scale systems. Prep for the system design interview - 250k+ stars',
-      language: 'Python',
-      difficulty: 'Advanced',
-      stars: '250k+',
-      category: 'System Design',
-      icon: '🏗️',
-      isProduction: true
-    },
-    {
-      name: 'NoCodeDB',
-      url: 'https://github.com/nocodb/nocodb',
-      description: 'Open Source Airtable Alternative - 40k+ stars',
-      language: 'TypeScript',
-      difficulty: 'Intermediate',
-      stars: '40k+',
-      category: 'Database',
-      icon: '🗄️',
-      isProduction: true
-    }
-  ],
-  'Networking & Security': [
-    // WebSocket vs Socket.IO with Learning Path
-    {
-      name: 'WebSocket (Pure)',
-      url: 'https://github.com/websockets/ws',
-      description: '🌐 Master real-time communication - 20k stars, learn pure WebSocket + 8 networking projects',
-      language: 'JavaScript',
-      difficulty: 'Intermediate',
-      stars: '20k+',
-      category: 'Real-time Communication',
-      icon: '🌐',
-      isProduction: true,
-      childRepos: WEBSOCKET_NETWORKING_PATH
-    },
-    // Cybersecurity Learning Path
-    {
-      name: 'Cybersecurity Tools',
-      url: 'https://github.com/wireshark/wireshark',
-      description: '🔒 Master ethical hacking - 5k stars, learn Wireshark + 12 security tools',
-      language: 'C++',
-      difficulty: 'Advanced',
-      stars: '5k+',
-      category: 'Network Security',
-      icon: '🔒',
-      isProduction: true,
-      childRepos: CYBERSECURITY_LEARNING_PATH
-    },
-    // Network Analysis Learning Path
-    {
-      name: 'Network Analysis',
-      url: 'https://github.com/nmap/nmap',
-      description: '🔍 Master network discovery - 8k stars, learn Nmap + 10 analysis tools',
-      language: 'C++',
-      difficulty: 'Advanced',
-      stars: '8k+',
-      category: 'Network Discovery',
-      icon: '🔍',
-      isProduction: true,
-      childRepos: NETWORK_ANALYSIS_PATH
-    },
-    // DevOps Networking Learning Path
-    {
-      name: 'DevOps Networking',
-      url: 'https://github.com/nginx/nginx',
-      description: '⚙️ Master infrastructure networking - 20k stars, learn Nginx + 8 DevOps tools',
-      language: 'C',
-      difficulty: 'Advanced',
-      stars: '20k+',
-      category: 'Infrastructure',
-      icon: '⚙️',
-      isProduction: true,
-      childRepos: DEVOPS_NETWORKING_PATH
-    },
-    // Socket.IO vs WebSocket
-    {
-      name: 'Socket.IO',
-      url: 'https://github.com/socketio/socket.io',
-      description: '🚀 Production-ready real-time communication - 65k stars, battle-tested by major companies',
-      language: 'JavaScript',
-      difficulty: 'Intermediate',
-      stars: '65k+',
-      category: 'Real-time Framework',
-      icon: '🚀',
-      isProduction: true
-    },
-    {
-      name: 'Socket.IO Client',
-      url: 'https://github.com/socketio/socket.io-client',
-      description: '📱 Socket.IO client library - 10k stars, official client implementation',
-      language: 'JavaScript',
-      difficulty: 'Intermediate',
-      stars: '10k+',
-      category: 'Client Library',
-      icon: '📱',
-      isProduction: true
-    },
-    // Pure WebSocket Alternatives
-    {
-      name: 'ws (WebSocket)',
-      url: 'https://github.com/websockets/ws',
-      description: '⚡ Pure WebSocket implementation - 20k stars, faster than Socket.IO',
-      language: 'JavaScript',
-      difficulty: 'Intermediate',
-      stars: '20k+',
-      category: 'Pure WebSocket',
-      icon: '⚡',
-      isProduction: true
-    },
-    {
-      name: 'uWebSockets.js',
-      url: 'https://github.com/uNetworking/uWebSockets.js',
-      description: '🚀 Ultra-fast WebSocket server - 15k stars, C++ performance in JavaScript',
-      language: 'JavaScript',
-      difficulty: 'Advanced',
-      stars: '15k+',
-      category: 'High Performance',
-      icon: '🚀',
-      isProduction: true
-    },
-    // Network Security Tools
-    {
-      name: 'Wireshark',
-      url: 'https://gitlab.com/wireshark/wireshark',
-      description: '🔍 Network protocol analyzer - 2k stars, the gold standard for network analysis',
-      language: 'C++',
-      difficulty: 'Advanced',
-      stars: '2k+',
-      category: 'Protocol Analysis',
-      icon: '🔍',
-      isProduction: true
-    },
-    {
-      name: 'Nmap',
-      url: 'https://github.com/nmap/nmap',
-      description: '🗺️ Network discovery and security auditing - 8k stars, used by security professionals worldwide',
-      language: 'C++',
-      difficulty: 'Advanced',
-      stars: '8k+',
-      category: 'Network Scanner',
-      icon: '🗺️',
-      isProduction: true
-    },
-    {
-      name: 'Hashcat',
-      url: 'https://github.com/hashcat/hashcat',
-      description: '💥 World\'s fastest password recovery tool - 10k stars, GPU-accelerated cracking',
-      language: 'C++',
-      difficulty: 'Expert',
-      stars: '10k+',
-      category: 'Password Security',
-      icon: '💥',
-      isProduction: true
-    },
-    {
-      name: 'Burp Suite Community',
-      url: 'https://portswigger.net/burp/communitydownload',
-      description: '🕷️ Web application security testing - industry standard for web security testing',
-      language: 'Java',
-      difficulty: 'Advanced',
-      stars: 'N/A',
-      category: 'Web Security',
-      icon: '🕷️',
-      isProduction: true
-    },
-    // Infrastructure & Load Balancing
-    {
-      name: 'Nginx',
-      url: 'https://github.com/nginx/nginx',
-      description: '⚡ High-performance web server and reverse proxy - 20k stars, powers 40% of websites',
-      language: 'C',
-      difficulty: 'Advanced',
-      stars: '20k+',
-      category: 'Web Server',
-      icon: '⚡',
-      isProduction: true
-    },
-    {
-      name: 'HAProxy',
-      url: 'https://github.com/haproxy/haproxy',
-      description: '🔄 High availability load balancer - 3k stars, used by major tech companies',
-      language: 'C',
-      difficulty: 'Advanced',
-      stars: '3k+',
-      category: 'Load Balancer',
-      icon: '🔄',
-      isProduction: true
-    },
-    {
-      name: 'Traefik',
-      url: 'https://github.com/traefik/traefik',
-      description: '🐳 Modern reverse proxy and load balancer - 50k stars, cloud-native networking',
-      language: 'Go',
-      difficulty: 'Intermediate',
-      stars: '50k+',
-      category: 'Cloud Native',
-      icon: '🐳',
-      isProduction: true
-    },
-    // Docker & Kubernetes Networking
-    {
-      name: 'Docker',
-      url: 'https://github.com/docker/docker',
-      description: '🐳 Container platform with networking - 70k stars, revolutionized DevOps',
-      language: 'Go',
-      difficulty: 'Intermediate',
-      stars: '70k+',
-      category: 'Container Platform',
-      icon: '🐳',
-      isProduction: true
-    },
-    {
-      name: 'Kubernetes',
-      url: 'https://github.com/kubernetes/kubernetes',
-      description: '☸️ Container orchestration with advanced networking - 110k stars, industry standard',
-      language: 'Go',
-      difficulty: 'Expert',
-      stars: '110k+',
-      category: 'Orchestration',
-      icon: '☸️',
-      isProduction: true
-    }
-  ],
-  'Payment Processing': [
-    // Stripe Learning Path
-    {
-      name: 'Stripe Payment Mastery',
-      url: 'https://github.com/stripe/stripe-node',
-      description: '💳 Master payment processing - 4k stars, learn Stripe + 24 official projects',
-      language: 'JavaScript',
-      difficulty: 'Intermediate',
-      stars: '4k+',
-      category: 'Payment Processing',
-      icon: '💳',
-      isProduction: true,
-      childRepos: STRIPE_LEARNING_PATH
-    },
-    // Alternative Payment Processors
-    {
-      name: 'PayPal SDK',
-      url: 'https://github.com/paypal/PayPal-node-SDK',
-      description: 'PayPal integration for Node.js - 500+ stars, alternative payment processor',
-      language: 'JavaScript',
-      difficulty: 'Intermediate',
-      stars: '500+',
-      category: 'Alternative Payment',
-      icon: '🟦',
-      isProduction: true
-    },
-    {
-      name: 'Square SDK',
-      url: 'https://github.com/square/connect-nodejs-sdk',
-      description: 'Square payment integration - 200+ stars, point-of-sale and online payments',
-      language: 'JavaScript',
-      difficulty: 'Intermediate',
-      stars: '200+',
-      category: 'Point of Sale',
-      icon: '⬜',
-      isProduction: true
-    },
-    // Payment Security & Compliance
-    {
-      name: 'Stripe Tokenization',
-      url: 'https://github.com/stripe-samples/tokenization',
-      description: 'Secure payment tokenization - learn to protect sensitive payment data',
-      language: 'JavaScript',
-      difficulty: 'Advanced',
-      stars: 'Official',
-      category: 'Security',
-      icon: '🔐',
-      isProduction: true
-    },
-    {
-      name: 'Stripe Security',
-      url: 'https://github.com/stripe-samples/security-tools',
-      description: 'Payment security tools and best practices - learn secure payment patterns',
-      language: 'JavaScript',
-      difficulty: 'Advanced',
-      stars: 'Official',
-      category: 'Security',
-      icon: '🛡️',
-      isProduction: true
-    },
-    // Cryptocurrency Payments
-    {
-      name: 'Bitcoin Core',
-      url: 'https://github.com/bitcoin/bitcoin',
-      description: 'Bitcoin implementation - 75k+ stars, learn cryptocurrency payments',
-      language: 'C++',
-      difficulty: 'Expert',
-      stars: '75k+',
-      category: 'Cryptocurrency',
-      icon: '₿',
-      isProduction: true
-    },
-    {
-      name: 'Web3.js',
-      url: 'https://github.com/ethereum/web3.js',
-      description: 'Ethereum JavaScript API - 20k+ stars, smart contract payments',
-      language: 'JavaScript',
-      difficulty: 'Advanced',
-      stars: '20k+',
-      category: 'Cryptocurrency',
-      icon: 'Ξ',
-      isProduction: true
-    },
-    // Payment Analytics & Reporting
-    {
-      name: 'Stripe Analytics Dashboard',
-      url: 'https://github.com/stripe-samples/analytics-dashboard',
-      description: 'Payment analytics and reporting - learn business intelligence for payments',
-      language: 'JavaScript',
-      difficulty: 'Advanced',
-      stars: 'Official',
-      category: 'Analytics',
-      icon: '📊',
-      isProduction: true
-    },
-    {
-      name: 'Stripe Revenue Recognition',
-      url: 'https://github.com/stripe-samples/revenue-recognition',
-      description: 'Automated revenue recognition - learn accounting for subscription businesses',
-      language: 'JavaScript',
-      difficulty: 'Expert',
-      stars: 'Official',
-      category: 'Accounting',
-      icon: '💰',
-      isProduction: true
-    },
-    // International Payments
-    {
-      name: 'Stripe Multi-Currency E-commerce',
-      url: 'https://github.com/stripe-samples/multi-currency-ecommerce',
-      description: 'Global payment processing - learn international payment patterns',
-      language: 'JavaScript',
-      difficulty: 'Advanced',
-      stars: 'Official',
-      category: 'International',
-      icon: '🌍',
-      isProduction: true
-    },
-    {
-      name: 'Stripe Local Payment Methods',
-      url: 'https://github.com/stripe-samples/local-payment-methods',
-      description: 'Regional payment methods - learn Alipay, iDEAL, SEPA, and more',
-      language: 'JavaScript',
-      difficulty: 'Advanced',
-      stars: 'Official',
-      category: 'Local Payments',
-      icon: '🏦',
-      isProduction: true
-    }
   ]
 };
 
 export default function CuratedRepos({ onRepoSelect }: { onRepoSelect: (url: string) => void }) {
   const [selectedLanguage, setSelectedLanguage] = useState<string>('JavaScript');
   const [searchTerm, setSearchTerm] = useState('');
-  const [expandedRepos, setExpandedRepos] = useState<Set<string>>(new Set());
-
-  const toggleRepoExpansion = (repoName: string) => {
-    setExpandedRepos(prev => {
-      const next = new Set(prev);
-      if (next.has(repoName)) {
-        next.delete(repoName);
-      } else {
-        next.add(repoName);
-      }
-      return next;
-    });
-  };
 
   const languages = Object.keys(CURATED_REPOS);
   const filteredRepos = CURATED_REPOS[selectedLanguage].filter(repo =>
@@ -2493,15 +1832,10 @@ export default function CuratedRepos({ onRepoSelect }: { onRepoSelect: (url: str
       {/* Repository Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
         {filteredRepos.map((repo) => (
-          <div key={repo.url} className="flex flex-col">
-            {/* Main Repository Card */}
-            <div
-              onClick={() => repo.childRepos ? null : onRepoSelect(repo.url)}
-              className={`p-4 border border-gray-200 dark:border-gray-600 rounded-lg transition-colors ${
-                repo.childRepos 
-                  ? 'cursor-default' 
-                  : 'hover:border-blue-300 dark:hover:border-blue-500 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700'
-              }`}
+          <div
+            key={repo.url}
+            onClick={() => onRepoSelect(repo.url)}
+            className="p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
           >
             <div className="flex items-start justify-between mb-2">
               <div className="flex items-center space-x-2">
@@ -2509,11 +1843,6 @@ export default function CuratedRepos({ onRepoSelect }: { onRepoSelect: (url: str
                 <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
                   {repo.name}
                 </h4>
-                  {repo.childRepos && (
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      ({repo.childRepos.length} repos)
-                    </span>
-                  )}
               </div>
               <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
                 ⭐ {repo.stars}
@@ -2540,88 +1869,10 @@ export default function CuratedRepos({ onRepoSelect }: { onRepoSelect: (url: str
                 </span>
               </div>
               
-                {repo.childRepos ? (
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleRepoExpansion(repo.name);
-                    }}
-                    className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-xs font-medium flex items-center gap-1"
-                  >
-                    {expandedRepos.has(repo.name) ? '▼' : '▶'} Explore Learning Path
-                  </button>
-                ) : (
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onRepoSelect(repo.url);
-                    }}
-                    className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-xs font-medium"
-                  >
-                    Select →
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Child Repositories (Expandable) */}
-            {repo.childRepos && expandedRepos.has(repo.name) && (
-              <div className="ml-4 mt-2 space-y-2 pl-4 border-l-2 border-blue-200 dark:border-blue-800">
-                <div className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  📚 {repo.name} Learning Path - {repo.childRepos.length} Production Projects
-                </div>
-                {repo.childRepos.map((childRepo) => (
-                  <div
-                    key={childRepo.url}
-                    onClick={() => onRepoSelect(childRepo.url)}
-                    className="p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    <div className="flex items-start justify-between mb-1">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm">{childRepo.icon}</span>
-                        <h5 className="font-medium text-gray-900 dark:text-white text-xs">
-                          {childRepo.name}
-                        </h5>
-                      </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
-                        ⭐ {childRepo.stars}
-                      </span>
-                    </div>
-                    
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
-                      {childRepo.description}
-                    </p>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <span className={`px-2 py-0.5 text-xs rounded-full ${
-                          childRepo.difficulty === 'Beginner' 
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                            : childRepo.difficulty === 'Intermediate'
-                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                        }`}>
-                          {childRepo.difficulty}
-                        </span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {childRepo.category}
-                        </span>
-                      </div>
-                      
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onRepoSelect(childRepo.url);
-                        }}
-                        className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-xs font-medium"
-                      >
+              <button className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-xs font-medium">
                 Select →
               </button>
             </div>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         ))}
       </div>
