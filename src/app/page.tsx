@@ -488,7 +488,10 @@ export default function Home() {
           throw new Error('No repository files available. Please ensure the repository was processed successfully.');
         }
         
-        // STRATEGY: If ≥50 cached, use only cached. If <50, use up to 10 cached + generate rest
+        // STRATEGY: 
+        // - < 8 cached: Use all cached + generate rest
+        // - 8-49 cached: Use all cached + generate some new ones to build cache
+        // - ≥ 50 cached: Use only cached, randomly select 15 each time
         if (cachedQuestions.length >= 50) {
           console.log('✅ Using ONLY cached questions (50+ available)');
           
@@ -527,7 +530,51 @@ export default function Home() {
           setIsLoading(false);
           setShowLoadingOverlay(false);
           return; // Skip API generation
-        } else if (cachedQuestions.length > 0 && cachedQuestions.length < 50) {
+        } else if (cachedQuestions.length >= 8 && cachedQuestions.length < 50) {
+          // Use all cached + generate some new ones to build up cache
+          console.log(`🔄 Using ALL ${cachedQuestions.length} cached questions + generating new ones to build cache`);
+          
+          const cachedToUse = cachedQuestions.map(q => ({
+            ...q,
+            isCached: true
+          }));
+          
+          console.log('✨ Cached questions to use:', cachedToUse.map(q => ({
+            id: q.id,
+            type: q.type,
+            isCached: q.isCached,
+            question: q.question?.substring(0, 50)
+          })));
+          
+          // IMMEDIATELY show cached questions - no loading delay!
+          const cachedSession = {
+            id: Date.now().toString(),
+            title: 'Community Reviewed Quiz',
+            questions: cachedToUse,
+            currentQuestionIndex: 0,
+            score: 0,
+            lives: 3,
+            lastLifeRefill: new Date(),
+            completed: false,
+            repositoryInfo: {
+              owner: githubRepo.owner,
+              repo: githubRepo.repo,
+              branch: selectedBranch || 'main'
+            },
+            isCached: true,
+            isStreaming: true // Mark that we're still streaming new questions
+          };
+          
+          setQuizSession(cachedSession);
+          setIsLoading(false);
+          setShowLoadingOverlay(false);
+          
+          // Store for background streaming to add more questions
+          (window as any).__cachedQuestionsToMerge = cachedToUse;
+          
+          // Continue to API generation to add more questions in background
+          // Don't return here - we want to stream new questions too
+        } else if (cachedQuestions.length > 0 && cachedQuestions.length < 8) {
           // Use up to 10 cached + generate the rest
           const numCached = Math.min(10, cachedQuestions.length);
           const cachedToUse = cachedQuestions.slice(0, numCached).map(q => ({
@@ -615,7 +662,16 @@ export default function Home() {
             branch: selectedBranch || 'main'
           }
         } as any;
-        setQuizSession(initialSession);
+        const mergingCachedQuestions = typeof window !== 'undefined'
+          && Array.isArray((window as any).__cachedQuestionsToMerge)
+          && (window as any).__cachedQuestionsToMerge.length > 0;
+        setQuizSession((prev: any) => {
+          if (prev && prev.isCached && mergingCachedQuestions) {
+            console.log('♻️ Preserving cached quiz while streaming new questions');
+            return { ...prev, isStreaming: true };
+          }
+          return initialSession;
+        });
         
         const reader = quizResponse.body.getReader();
         const decoder = new TextDecoder();
@@ -643,36 +699,48 @@ export default function Home() {
                 }
                 setQuizSession((prev: any) => {
                   if (!prev) return initialSession;
-                  const updated = { ...prev, questions: [...prev.questions, evt.question] };
-                  console.log('🔄 Updated quiz session with', updated.questions.length, 'questions');
-                  return updated;
+                  
+                  // Check if we already have cached questions (8-49 case)
+                  const cachedToMerge = (window as any).__cachedQuestionsToMerge;
+                  if (cachedToMerge && cachedToMerge.length > 0) {
+                    // We're adding to an existing cached quiz - add new questions to the end
+                    const updated = { 
+                      ...prev, 
+                      questions: [...prev.questions, evt.question],
+                      isStreaming: true // Keep streaming flag
+                    };
+                    console.log('🔄 Added new question to cached quiz. Total:', updated.questions.length);
+                    return updated;
+                  } else {
+                    // Normal case - building quiz from scratch
+                    const updated = { ...prev, questions: [...prev.questions, evt.question] };
+                    console.log('🔄 Updated quiz session with', updated.questions.length, 'questions');
+                    return updated;
+                  }
                 });
               } else if (evt.type === 'done') {
                 console.log('✅ Stream done:', evt.count);
                 
-                // Merge cached questions if any
+                // Handle completion for cached + streaming case
                 const cachedToMerge = (window as any).__cachedQuestionsToMerge;
                 if (cachedToMerge && cachedToMerge.length > 0) {
-                  console.log(`🔄 Merging ${cachedToMerge.length} cached questions with generated ones`);
+                  console.log(`🔄 Stream complete for cached quiz. Final composition:`, {
+                    cached: cachedToMerge.length,
+                    new: evt.count,
+                    total: cachedToMerge.length + evt.count
+                  });
+                  
                   setQuizSession((prev: any) => {
                     if (!prev) return prev;
-                    // Cached questions FIRST, then new ones
-                    const allQuestions = [...cachedToMerge, ...prev.questions];
-                    const finalQuestions = allQuestions.slice(0, 15);
                     
-                    console.log('✅ Final quiz composition:', {
-                      total: finalQuestions.length,
-                      cached: finalQuestions.filter(q => q.isCached).length,
-                      new: finalQuestions.filter(q => !q.isCached).length,
-                      order: finalQuestions.map((q, i) => `Q${i+1}: ${q.isCached ? 'CACHED' : 'NEW'}`)
-                    });
-                    
+                    // Mark streaming as complete
                     return {
                       ...prev,
-                      questions: finalQuestions, // Cached first, then new
+                      isStreaming: false,
                       title: 'Community Reviewed + AI Quiz'
                     };
                   });
+                  
                   // Clear the temporary storage
                   delete (window as any).__cachedQuestionsToMerge;
                 }
@@ -741,7 +809,16 @@ export default function Home() {
             branch: selectedBranch || 'main'
           }
         } as any;
-        setQuizSession(initialSession);
+        const mergingCachedQuestions = typeof window !== 'undefined'
+          && Array.isArray((window as any).__cachedQuestionsToMerge)
+          && (window as any).__cachedQuestionsToMerge.length > 0;
+        setQuizSession((prev: any) => {
+          if (prev && prev.isCached && mergingCachedQuestions) {
+            console.log('♻️ Preserving cached quiz while streaming new questions');
+            return { ...prev, isStreaming: true };
+          }
+          return initialSession;
+        });
         
         const reader = quizResponse.body.getReader();
         const decoder = new TextDecoder();
@@ -769,9 +846,24 @@ export default function Home() {
                 }
                 setQuizSession((prev: any) => {
                   if (!prev) return initialSession;
-                  const updated = { ...prev, questions: [...prev.questions, evt.question] };
-                  console.log('🔄 Updated quiz session with', updated.questions.length, 'questions');
-                  return updated;
+                  
+                  // Check if we already have cached questions (8-49 case)
+                  const cachedToMerge = (window as any).__cachedQuestionsToMerge;
+                  if (cachedToMerge && cachedToMerge.length > 0) {
+                    // We're adding to an existing cached quiz - add new questions to the end
+                    const updated = { 
+                      ...prev, 
+                      questions: [...prev.questions, evt.question],
+                      isStreaming: true // Keep streaming flag
+                    };
+                    console.log('🔄 Added new question to cached quiz. Total:', updated.questions.length);
+                    return updated;
+                  } else {
+                    // Normal case - building quiz from scratch
+                    const updated = { ...prev, questions: [...prev.questions, evt.question] };
+                    console.log('🔄 Updated quiz session with', updated.questions.length, 'questions');
+                    return updated;
+                  }
                 });
               } else if (evt.type === 'done') {
                 console.log('✅ Stream done:', evt.count);
@@ -1330,6 +1422,8 @@ export default function Home() {
                           <div className="text-xs text-green-600 dark:text-green-400">
                             {cachedQuestionCount >= 50 
                               ? 'All questions from community (no loading!)' 
+                              : cachedQuestionCount >= 8
+                              ? 'All cached + generating new ones to build cache'
                               : `${Math.min(10, cachedQuestionCount)} will load instantly`}
                           </div>
                         </div>
