@@ -446,6 +446,23 @@ export default function Home() {
       return;
     }
 
+    // CACHE CHECK: Load cached questions BEFORE starting loading states
+    let cachedQuestions: any[] = [];
+    if (activeTab === 'github' && githubUrl) {
+      const repoUrl = `https://github.com/${githubRepo.owner}/${githubRepo.repo}`;
+      console.log('🔍 Checking for cached questions for:', repoUrl);
+      
+      const { getCachedQuestions } = await import('@/lib/quiz-history');
+      cachedQuestions = await getCachedQuestions(repoUrl, 50, hidePassedQuestions ? user?.uid : undefined);
+      
+      setCachedQuestionCount(cachedQuestions.length); // Update state for UI display
+      
+      console.log(`📦 Found ${cachedQuestions.length} cached questions for ${repoUrl}`);
+      if (cachedQuestions.length > 0) {
+        console.log('📋 First cached question:', cachedQuestions[0]);
+      }
+    }
+
     setIsLoading(true);
     setShowLoadingOverlay(true);
     try {
@@ -469,20 +486,6 @@ export default function Home() {
         
         if (repositoryFiles.length === 0) {
           throw new Error('No repository files available. Please ensure the repository was processed successfully.');
-        }
-        
-        // CACHE CHECK: Try to load cached questions first
-        const repoUrl = `https://github.com/${githubRepo.owner}/${githubRepo.repo}`;
-        console.log('🔍 Checking for cached questions for:', repoUrl);
-        
-        const { getCachedQuestions } = await import('@/lib/quiz-history');
-        const cachedQuestions = await getCachedQuestions(repoUrl, 50, hidePassedQuestions ? user?.uid : undefined);
-        
-        setCachedQuestionCount(cachedQuestions.length); // Update state for UI display
-        
-        console.log(`📦 Found ${cachedQuestions.length} cached questions for ${repoUrl}`);
-        if (cachedQuestions.length > 0) {
-          console.log('📋 First cached question:', cachedQuestions[0]);
         }
         
         // STRATEGY: If ≥50 cached, use only cached. If <50, use up to 10 cached + generate rest
