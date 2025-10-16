@@ -66,7 +66,7 @@ export default function QuestionPoll({
         }
         
         // Get updated poll data
-        const data = await getQuestionPollData(questionId, repoUrl);
+        const data = await getQuestionPollData(questionId, repoUrl, questionWithRepo);
         
         if (data) {
           setPollData({

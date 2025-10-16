@@ -11,7 +11,8 @@ import {
   serverTimestamp,
   Timestamp,
   updateDoc,
-  setDoc
+  setDoc,
+  runTransaction
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { QuestionResult } from './report-card';
@@ -96,6 +97,7 @@ export interface QuestionDoc {
   downvotes: number;
   totalVotes: number;
   qualityScore: number;
+  approvalRate?: number;
   correctAnswers: number;
   incorrectAnswers: number;
   status: 'active' | 'flagged' | 'removed';
@@ -108,8 +110,24 @@ export interface QuestionRatingDoc {
   questionId: string;
   userId: string;
   rating: 'up' | 'down';
+  repoUrl?: string | null;
   timestamp: Timestamp;
 }
+
+const buildQuestionDocumentId = (questionId: string, repoUrl?: string): string => {
+  if (repoUrl) {
+    const { repoKey } = extractRepoInfo(repoUrl);
+    if (!questionId.startsWith(`${repoKey}__`)) {
+      return `${repoKey}__${questionId}`;
+    }
+  }
+  return questionId;
+};
+
+const buildRatingDocumentId = (questionId: string, userId: string, repoUrl?: string): string => {
+  const questionDocId = buildQuestionDocumentId(questionId, repoUrl);
+  return `${questionDocId}__${userId}`;
+};
 
 /**
  * Save quiz results to Firestore
@@ -347,25 +365,61 @@ export async function saveQuestions(questions: unknown[], repoUrl: string): Prom
  * Rate a question (thumbs up/down)
  */
 export async function rateQuestion(
-  questionId: string, 
-  userId: string, 
-  rating: 'up' | 'down'
-): Promise<string> {
-  try {
-    const ratingData: Omit<QuestionRatingDoc, 'id'> = {
-      questionId,
-      userId,
-      rating,
-      timestamp: serverTimestamp() as Timestamp
-    };
+  questionId: string,
+  userId: string,
+  rating: 'up' | 'down',
+  repoUrl?: string
+): Promise<{ upvotes: number; downvotes: number; totalVotes: number; approvalRate: number }> {
+  const questionDocId = buildQuestionDocumentId(questionId, repoUrl);
+  const ratingDocId = buildRatingDocumentId(questionId, userId, repoUrl);
+  const ratingRef = doc(db, COLLECTIONS.QUESTION_RATINGS, ratingDocId);
+  const questionRef = doc(db, COLLECTIONS.QUESTIONS, questionDocId);
 
-    const docRef = await addDoc(collection(db, COLLECTIONS.QUESTION_RATINGS), ratingData);
-    console.log(`✅ Question ${questionId} rated ${rating} by user ${userId}`);
-    
-    // Update question quality score
-    await updateQuestionQualityScore(questionId, rating);
-    
-    return docRef.id;
+  try {
+    return await runTransaction(db, async (transaction) => {
+      const existingRatingSnap = await transaction.get(ratingRef);
+      if (existingRatingSnap.exists()) {
+        throw new Error('User has already rated this question.');
+      }
+
+      const questionSnap = await transaction.get(questionRef);
+      const questionData = questionSnap.exists() ? questionSnap.data() : {};
+      const currentUpvotes = Number(questionData.upvotes ?? 0);
+      const currentDownvotes = Number(questionData.downvotes ?? 0);
+
+      const newUpvotes = rating === 'up' ? currentUpvotes + 1 : currentUpvotes;
+      const newDownvotes = rating === 'down' ? currentDownvotes + 1 : currentDownvotes;
+      const totalVotes = newUpvotes + newDownvotes;
+      const approvalRate = totalVotes > 0 ? (newUpvotes / totalVotes) * 100 : 0;
+
+      transaction.set(ratingRef, {
+        questionId: questionDocId,
+        userId,
+        rating,
+        repoUrl: repoUrl ?? questionData.repoUrl ?? null,
+        timestamp: serverTimestamp() as Timestamp
+      });
+
+      transaction.set(
+        questionRef,
+        {
+          upvotes: newUpvotes,
+          downvotes: newDownvotes,
+          totalVotes,
+          approvalRate,
+          repoUrl: repoUrl ?? questionData.repoUrl ?? null,
+          lastUpdated: serverTimestamp()
+        },
+        { merge: true }
+      );
+
+      return {
+        upvotes: newUpvotes,
+        downvotes: newDownvotes,
+        totalVotes,
+        approvalRate
+      };
+    });
   } catch (error) {
     console.error('❌ Error rating question:', error);
     throw error;
@@ -375,14 +429,44 @@ export async function rateQuestion(
 /**
  * Update question quality score based on ratings
  */
-export async function updateQuestionQualityScore(questionId: string, newRating: 'up' | 'down'): Promise<void> {
+export async function updateQuestionQualityScore(questionId: string, repoUrl?: string): Promise<void> {
   try {
-    // Get current question data
-    doc(db, COLLECTIONS.QUESTIONS, questionId);
-    
-    // For now, we'll implement a simple quality score calculation
-    // In a real app, you'd fetch current ratings and recalculate
-    console.log(`📊 Updated quality score for question ${questionId} with ${newRating} rating`);
+    const questionDocId = buildQuestionDocumentId(questionId, repoUrl);
+    const ratingsQuery = query(
+      collection(db, COLLECTIONS.QUESTION_RATINGS),
+      where('questionId', '==', questionDocId)
+    );
+
+    const ratingsSnapshot = await getDocs(ratingsQuery);
+    let upvotes = 0;
+    let downvotes = 0;
+
+    ratingsSnapshot.forEach((docSnap) => {
+      const rating = docSnap.data() as QuestionRatingDoc;
+      if (rating.rating === 'up') {
+        upvotes++;
+      } else if (rating.rating === 'down') {
+        downvotes++;
+      }
+    });
+
+    const totalVotes = upvotes + downvotes;
+    const approvalRate = totalVotes > 0 ? (upvotes / totalVotes) * 100 : 0;
+    const qualityScore = totalVotes > 0 ? approvalRate : 100;
+    const needsReview = totalVotes >= 10 && approvalRate < 30;
+
+    const questionRef = doc(db, COLLECTIONS.QUESTIONS, questionDocId);
+    await updateDoc(questionRef, {
+      upvotes,
+      downvotes,
+      totalVotes,
+      approvalRate,
+      qualityScore,
+      status: needsReview ? 'flagged' : 'active',
+      lastUpdated: serverTimestamp()
+    });
+
+    console.log(`✅ Recalculated quality score for question ${questionDocId}: ${qualityScore.toFixed(1)}% (${needsReview ? 'flagged' : 'active'})`);
   } catch (error) {
     console.error('❌ Error updating question quality score:', error);
     throw error;
@@ -392,16 +476,12 @@ export async function updateQuestionQualityScore(questionId: string, newRating: 
 /**
  * Check if user has already rated a question
  */
-export async function hasUserRatedQuestion(questionId: string, userId: string): Promise<boolean> {
+export async function hasUserRatedQuestion(questionId: string, userId: string, repoUrl?: string): Promise<boolean> {
   try {
-    const q = query(
-      collection(db, COLLECTIONS.QUESTION_RATINGS),
-      where('questionId', '==', questionId),
-      where('userId', '==', userId)
-    );
-
-    const querySnapshot = await getDocs(q);
-    return !querySnapshot.empty;
+    const ratingDocId = buildRatingDocumentId(questionId, userId, repoUrl);
+    const ratingRef = doc(db, COLLECTIONS.QUESTION_RATINGS, ratingDocId);
+    const ratingSnap = await getDoc(ratingRef);
+    return ratingSnap.exists();
   } catch (error) {
     console.error('❌ Error checking if user rated question:', error);
     return false;
@@ -411,22 +491,16 @@ export async function hasUserRatedQuestion(questionId: string, userId: string): 
 /**
  * Get user's rating for a question
  */
-export async function getUserQuestionRating(questionId: string, userId: string): Promise<'up' | 'down' | null> {
+export async function getUserQuestionRating(questionId: string, userId: string, repoUrl?: string): Promise<'up' | 'down' | null> {
   try {
-    const q = query(
-      collection(db, COLLECTIONS.QUESTION_RATINGS),
-      where('questionId', '==', questionId),
-      where('userId', '==', userId)
-    );
-
-    const querySnapshot = await getDocs(q);
-    
-    if (querySnapshot.empty) {
+    const ratingDocId = buildRatingDocumentId(questionId, userId, repoUrl);
+    const ratingRef = doc(db, COLLECTIONS.QUESTION_RATINGS, ratingDocId);
+    const ratingSnap = await getDoc(ratingRef);
+    if (!ratingSnap.exists()) {
       return null;
     }
-
-    const ratingDoc = querySnapshot.docs[0];
-    return ratingDoc.data().rating;
+    const data = ratingSnap.data() as QuestionRatingDoc;
+    return data.rating;
   } catch (error) {
     console.error('❌ Error getting user question rating:', error);
     return null;
@@ -441,6 +515,7 @@ export const updateQuestionPoll = async (
   repoUrl?: string
 ): Promise<void> => {
   try {
+    const normalizedQuestionData = questionData ? normalizeQuestionForStorage(questionData) : undefined;
     let repoDocId: string | undefined;
     if (repoUrl) {
       const { repoKey } = extractRepoInfo(repoUrl);
@@ -456,18 +531,79 @@ export const updateQuestionPoll = async (
       const legacyRef = doc(db, COLLECTIONS.QUESTIONS, questionId);
       const legacySnap = await getDoc(legacyRef);
       if (legacySnap.exists()) {
-        console.log(`♻️ [updateQuestionPoll] Migrating legacy poll doc for ${questionId} -> ${repoDocId}`);
-        await setDoc(questionRef, legacySnap.data(), { merge: true });
-        questionSnap = await getDoc(questionRef);
+        const legacyData = legacySnap.data();
+        const legacyRepoUrl = legacyData.repoUrl as string | undefined;
+        const canMigrate =
+          legacyRepoUrl && repoUrl
+            ? legacyRepoUrl === repoUrl
+            : !legacyRepoUrl && !repoUrl;
+
+        if (!canMigrate) {
+          console.warn(
+            `⚠️ [updateQuestionPoll] Skipping legacy migration for ${questionId}: repo mismatch (${legacyRepoUrl} vs ${repoUrl})`
+          );
+        } else {
+          console.log(`♻️ [updateQuestionPoll] Migrating legacy poll doc for ${questionId} -> ${repoDocId}`);
+          await setDoc(questionRef, legacyData, { merge: true });
+          questionSnap = await getDoc(questionRef);
+        }
       }
     }
     
     if (questionSnap.exists()) {
       const currentData = questionSnap.data();
+      const storedRepoUrl = currentData.repoUrl as string | undefined;
+      const repoMismatch =
+        !!repoUrl && !!storedRepoUrl && storedRepoUrl !== repoUrl;
+      const questionMismatch =
+        !!normalizedQuestionData &&
+        typeof normalizedQuestionData.question === 'string' &&
+        typeof currentData.question === 'string' &&
+        normalizedQuestionData.question !== currentData.question;
+
+      if (repoMismatch || questionMismatch) {
+        console.warn(
+          `⚠️ [updateQuestionPoll] Detected mismatch for ${questionId} (repoMismatch=${repoMismatch}, questionMismatch=${questionMismatch}) - resetting poll doc`
+        );
+
+        const repoKey =
+          repoUrl !== undefined
+            ? extractRepoInfo(repoUrl).repoKey
+            : (currentData.repoKey as string | undefined);
+
+        let resetData: Record<string, unknown> = {
+          questionId,
+          repoUrl: repoUrl ?? normalizedQuestionData?.repoUrl ?? storedRepoUrl ?? null,
+          repoKey,
+          upvotes: 0,
+          downvotes: 0,
+          totalVotes: 0,
+          approvalRate: 0,
+          status: 'active',
+          passedCount: isCorrect ? 1 : 0,
+          failedCount: isCorrect ? 0 : 1,
+          totalAttempts: 1,
+          passRate: isCorrect ? 100 : 0,
+          createdAt: currentData.createdAt ?? serverTimestamp(),
+          lastUpdated: serverTimestamp()
+        };
+
+        if (normalizedQuestionData) {
+          resetData = {
+            ...normalizedQuestionData,
+            ...resetData
+          };
+        }
+
+        await setDoc(questionRef, resetData, { merge: false });
+        return;
+      }
+
       const currentPassed = currentData.passedCount || 0;
       const currentFailed = currentData.failedCount || 0;
       
       const updates: Record<string, unknown> = {
+        repoUrl: repoUrl ?? storedRepoUrl ?? currentData.repoUrl ?? null,
         lastUpdated: serverTimestamp()
       };
       
@@ -477,8 +613,10 @@ export const updateQuestionPoll = async (
         updates.failedCount = currentFailed + 1;
       }
       
-      updates.totalAttempts = (currentPassed + currentFailed + 1);
-      updates.passRate = ((updates.passedCount || currentPassed) / updates.totalAttempts) * 100;
+      const nextPassed = (updates.passedCount as number | undefined) ?? currentPassed;
+      const nextFailed = (updates.failedCount as number | undefined) ?? currentFailed;
+      updates.totalAttempts = nextPassed + nextFailed;
+      updates.passRate = updates.totalAttempts > 0 ? (nextPassed / updates.totalAttempts) * 100 : 0;
       
       await updateDoc(questionRef, updates);
     } else {
@@ -500,11 +638,10 @@ export const updateQuestionPoll = async (
       };
       
       // If full question data is provided, include it immediately
-      if (questionData) {
+      if (normalizedQuestionData) {
         console.log(`📊 [updateQuestionPoll] Saving FULL question data on first poll`);
-        const normalized = normalizeQuestionForStorage(questionData);
         initialData = {
-          ...normalized,
+          ...normalizedQuestionData,
           ...initialData // Keep poll metrics
         };
       } else if (repoUrl) {
@@ -523,7 +660,11 @@ export const updateQuestionPoll = async (
   }
 };
 
-export const getQuestionPollData = async (questionId: string, repoUrl?: string): Promise<{
+export const getQuestionPollData = async (
+  questionId: string,
+  repoUrl?: string,
+  questionData?: unknown
+): Promise<{
   passedCount: number;
   failedCount: number;
   totalAttempts: number;
@@ -544,14 +685,43 @@ export const getQuestionPollData = async (questionId: string, repoUrl?: string):
       const legacyRef = doc(db, COLLECTIONS.QUESTIONS, questionId);
       const legacySnap = await getDoc(legacyRef);
       if (legacySnap.exists()) {
-        console.log(`♻️ [getQuestionPollData] Migrating legacy poll doc for ${questionId} -> ${repoDocId}`);
-        await setDoc(questionRef, legacySnap.data(), { merge: true });
-        questionSnap = await getDoc(questionRef);
+        const legacyData = legacySnap.data();
+        const legacyRepoUrl = legacyData.repoUrl as string | undefined;
+        const canMigrate =
+          legacyRepoUrl && repoUrl
+            ? legacyRepoUrl === repoUrl
+            : !legacyRepoUrl && !repoUrl;
+
+        if (!canMigrate) {
+          console.warn(
+            `⚠️ [getQuestionPollData] Skipping legacy migration for ${questionId}: repo mismatch (${legacyRepoUrl} vs ${repoUrl})`
+          );
+        } else {
+          console.log(`♻️ [getQuestionPollData] Migrating legacy poll doc for ${questionId} -> ${repoDocId}`);
+          await setDoc(questionRef, legacyData, { merge: true });
+          questionSnap = await getDoc(questionRef);
+        }
       }
     }
     
     if (questionSnap.exists()) {
       const data = questionSnap.data();
+      if (questionData) {
+        const normalized = normalizeQuestionForStorage(questionData);
+        if (
+          typeof normalized.question === 'string' &&
+          typeof data.question === 'string' &&
+          normalized.question !== data.question
+        ) {
+          console.warn(`⚠️ [getQuestionPollData] Question mismatch detected for ${questionId}; returning zeroed stats`);
+          return {
+            passedCount: 0,
+            failedCount: 0,
+            totalAttempts: 0,
+            passRate: 0
+          };
+        }
+      }
       return {
         passedCount: data.passedCount || 0,
         failedCount: data.failedCount || 0,

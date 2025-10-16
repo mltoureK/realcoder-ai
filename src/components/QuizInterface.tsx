@@ -10,7 +10,7 @@ import { QuestionResult, FailedQuestion } from '@/lib/report-card';
 import { motion, AnimatePresence } from 'framer-motion';
 import QuestionVotingButtons from './QuestionVotingButtons';
 import QuestionPoll from './QuestionPoll';
-import { addQuestionToBank, saveQuizResults } from '@/lib/quiz-history';
+import { addQuestionToBank, saveQuizResults, rateQuestion } from '@/lib/quiz-history';
 import { useAuth } from '@/context/AuthContext';
 
 interface QuizInterfaceProps {
@@ -499,13 +499,33 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     console.log(`🚨 [QuizInterface] handleQuestionRating called with:`, { questionId, rating });
     console.log(`🚨 [QuizInterface] Full quizSession:`, quizSession);
     
+    console.log(`📊 Question ${questionId} rated as: ${rating}`);
+
+    const repoUrl = quizSession.repositoryInfo ? `https://github.com/${quizSession.repositoryInfo.owner}/${quizSession.repositoryInfo.repo}` : undefined;
+
+    if (user?.uid) {
+      try {
+        await rateQuestion(questionId, user.uid, rating, repoUrl);
+      } catch (error) {
+        const message = (error as Error).message || '';
+        if (message.includes('already rated')) {
+          console.warn(`⚠️ User ${user?.uid} already rated question ${questionId}`);
+          return;
+        } else {
+          console.error('❌ Error recording question rating:', error);
+          return;
+        }
+      }
+    } else {
+      console.warn('❌ [QuizInterface] Cannot record rating without authenticated user');
+      return;
+    }
+
     setQuestionRatings(prev => ({
       ...prev,
       [questionId]: rating
     }));
-    
-    console.log(`📊 Question ${questionId} rated as: ${rating}`);
-    
+
     // Auto-save to question bank on upvote
     console.log(`🚨 [QuizInterface] Checking conditions:`, { 
       isUpvote: rating === 'up', 
@@ -515,7 +535,11 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     
     if (rating === 'up' && quizSession.repositoryInfo) {
       try {
-        const repoUrl = `https://github.com/${quizSession.repositoryInfo.owner}/${quizSession.repositoryInfo.repo}`;
+        if (!repoUrl) {
+          console.warn('❌ [QuizInterface] Missing repository URL while trying to save question to bank');
+          return;
+        }
+
         const currentQuestion = quizSession.questions.find(q => q.id === questionId);
         
         console.log(`🔍 [QuizInterface] Upvoting question:`, currentQuestion);
@@ -557,7 +581,6 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
       });
     }
     
-    // TODO: Save rating to Firebase when ready
   };
 
   const handlePollUpdate = (questionId: string, isCorrect: boolean) => {

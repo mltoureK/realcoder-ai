@@ -1,0 +1,2748 @@
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T13:42:54.489Z
+File: [3 files: currency-selector.d.ts, containing the package.json version, index.test.ts]
+Functions Extracted: 4
+
+
+Function 1: findScript
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+export const findScript = (): HTMLScriptElement | null => {
+  const scripts = document.querySelectorAll<HTMLScriptElement>(
+    `script[src^="${ORIGIN}"]`
+  );
+
+  for (let i = 0; i < scripts.length; i++) {
+    const script = scripts[i];
+
+    if (!isStripeJSURL(script.src)) {
+      continue;
+    }
+
+    return script;
+  }
+
+  return null;
+};
+--------------------------------------------------------------------------------
+
+
+Function 2: injectScript
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const injectScript = (params: null | LoadParams): HTMLScriptElement => {
+  const queryString =
+    params && !params.advancedFraudSignals ? '?advancedFraudSignals=false' : '';
+  const script = document.createElement('script');
+  script.src = `${STRIPE_JS_URL}${queryString}`;
+
+  const headOrBody = document.head || document.body;
+
+  if (!headOrBody) {
+    throw new Error(
+      'Expected document.body not to be null. Stripe.js requires a <body> element.'
+    );
+  }
+
+  headOrBody.appendChild(script);
+
+  return script;
+};
+--------------------------------------------------------------------------------
+
+
+Function 3: onLoad
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+const onLoad = (
+  resolve: (
+    value: StripeConstructor | PromiseLike<StripeConstructor | null> | null
+  ) => void,
+  reject: (reason?: any) => void
+) => () => {
+  if (window.Stripe) {
+    resolve(window.Stripe);
+  } else {
+    reject(new Error('Stripe.js not available'));
+  }
+};
+--------------------------------------------------------------------------------
+
+
+Function 4: dispatchScriptEvent
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+const dispatchScriptEvent = (eventType: string): void => {
+  const injectedScript = document.querySelector(`script[src="${SCRIPT_SRC}"]`);
+
+  if (!injectedScript) {
+    throw new Error('could not find Stripe.js script element');
+  }
+
+  injectedScript.dispatchEvent(new Event(eventType));
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:43:05.073Z
+Question Type: select-all
+Function: injectScript
+Function Size: 645 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: injectScript (TypeScript)\n// Injects the Stripe.js script into the document and returns the script element.\n\nconst injectScript = (params: null | LoadParams): HTMLScriptElement => {\n  const queryString =\n    params && !params.advancedFraudSignals ? '?advancedFraudSignals=false' : '';\n  
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:43:05.728Z
+Question Type: order-sequence
+Function: onLoad
+Function Size: 386 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onLoad (TypeScript)\n// Handles load events after the Stripe.js script has been injected.\n\nconst onLoad = (\n  resolve: (\n    value: StripeConstructor | PromiseLike<StripeConstructor | null> | null\n  ) => void,\n  reject: (reason?: any) => void\n) => () => {\n  if (window.Stripe) {\n    resol
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:43:10.763Z
+Question Type: function-variant
+Function: dispatchScriptEvent
+Function Size: 416 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: dispatchScriptEvent (TypeScript)\n// Dispatches a specified event type on the injected Stripe.js script element.\n\nconst dispatchScriptEvent = (eventType: string): void => {\n  const injectedScript = document.querySelector(`script[src="${SCRIPT_SRC}"]`);\n\n  if (!injectedScript) {\n    throw
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:43:11.781Z
+Question Type: true-false
+Function: dispatchScriptEvent
+Function Size: 416 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: dispatchScriptEvent (TypeScript)\n// Dispatches a specified event type on the injected Stripe.js script element.\n\nconst dispatchScriptEvent = (eventType: string): void => {\n  const injectedScript = document.querySelector(`script[src="${SCRIPT_SRC}"]`);\n\n  if (!injectedScript) {\n    throw
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:43:17.409Z
+Question Type: function-variant
+Function: findScript
+Function Size: 469 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: findScript (TypeScript)\n// Finds and returns the Stripe.js script element from the document, or null if not found.\n\nexport const findScript = (): HTMLScriptElement | null => {\n  const scripts = document.querySelectorAll<HTMLScriptElement>(\n    `script[src^="${ORIGIN}"]`\n  );\n\n  for (let
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:43:19.750Z
+Question Type: order-sequence
+Function: injectScript
+Function Size: 645 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: injectScript (TypeScript)\n// Injects the Stripe.js script into the document and returns the script element.\n\nconst injectScript = (params: null | LoadParams): HTMLScriptElement => {\n  const queryString =\n    params && !params.advancedFraudSignals ? '?advancedFraudSignals=false' : '';\n  
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:43:21.043Z
+Question Type: select-all
+Function: dispatchScriptEvent
+Function Size: 416 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: dispatchScriptEvent (TypeScript)\n// Dispatches a specified event type on the injected Stripe.js script element.\n\nconst dispatchScriptEvent = (eventType: string): void => {\n  const injectedScript = document.querySelector(`script[src="${SCRIPT_SRC}"]`);\n\n  if (!injectedScript) {\n    throw
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:43:25.207Z
+Question Type: select-all
+Function: onLoad
+Function Size: 386 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onLoad (TypeScript)\n// Handles load events after the Stripe.js script has been injected.\n\nconst onLoad = (\n  resolve: (\n    value: StripeConstructor | PromiseLike<StripeConstructor | null> | null\n  ) => void,\n  reject: (reason?: any) => void\n) => () => {\n  if (window.Stripe) {\n    resol
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760602383416
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 4
+Ended: 2025-10-16T13:43:25.330Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T13:43:47.780Z
+File: [2 files: payment.d.ts, orders.d.ts]
+Functions Extracted: 1
+
+
+Function 1: on
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+on(eventType: 'change', handler: (event: StripePaymentElementChangeEvent) => any): StripePaymentElement;
+on(eventType: 'ready', handler: (event: {elementType: 'payment'}) => any): StripePaymentElement;
+on(eventType: 'focus', handler: (event: {elementType: 'payment'}) => any): StripePaymentElement;
+on(eventType: 'blur', handler: (event: {elementType: 'payment'}) => any): StripePaymentElement;
+on(eventType: 'escape', handler: (event: {elementType: 'payment'}) => any): StripePaymentElement;
+on(eventType: 'loaderror', handler: (event: {elementType: 'payment'; error: StripeError}) => any): StripePaymentElement;
+on(eventType: 'loaderstart', handler: (event: {elementType: 'payment'}) => any): StripePaymentElement;
+on(eventType: 'carddetailschange', handler: (event: StripePaymentElementCardDetailsChangeEvent) => any): StripePaymentElement;
+on(eventType: 'savedpaymentmethodupdate', handler: (event: StripePaymentElementSavedPaymentMethodUpdateEvent) => any): StripePaymentElement;
+on(eventType: 'savedpaymentmethodremove', handler: (event: StripePaymentElementSavedPaymentMethodRemoveEvent) => any): StripePaymentElement;
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:44:01.411Z
+Question Type: function-variant
+Function: on
+Function Size: 1243 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: on (TypeScript)\n// Registers an event handler for the specified event type on the StripePaymentElement.\n\non(eventType: 'change', handler: (event: StripePaymentElementChangeEvent) => any): StripePaymentElement;\non(eventType: 'ready', handler: (event: {elementType: 'payment'}) => any): St
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:44:02.253Z
+Question Type: select-all
+Function: on
+Function Size: 1243 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: on (TypeScript)\n// Registers an event handler for the specified event type on the StripePaymentElement.\n\non(eventType: 'change', handler: (event: StripePaymentElementChangeEvent) => any): StripePaymentElement;\non(eventType: 'ready', handler: (event: {elementType: 'payment'}) => any): St
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:44:03.868Z
+Question Type: select-all
+Function: on
+Function Size: 1243 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: on (TypeScript)\n// Registers an event handler for the specified event type on the StripePaymentElement.\n\non(eventType: 'change', handler: (event: StripePaymentElementChangeEvent) => any): StripePaymentElement;\non(eventType: 'ready', handler: (event: {elementType: 'payment'}) => any): St
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:44:07.387Z
+Question Type: order-sequence
+Function: on
+Function Size: 1243 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: on (TypeScript)\n// Registers an event handler for the specified event type on the StripePaymentElement.\n\non(eventType: 'change', handler: (event: StripePaymentElementChangeEvent) => any): StripePaymentElement;\non(eventType: 'ready', handler: (event: {elementType: 'payment'}) => any): St
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:44:14.471Z
+Question Type: function-variant
+Function: on
+Function Size: 1243 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: on (TypeScript)\n// Registers an event handler for the specified event type on the StripePaymentElement.\n\non(eventType: 'change', handler: (event: StripePaymentElementChangeEvent) => any): StripePaymentElement;\non(eventType: 'ready', handler: (event: {elementType: 'payment'}) => any): St
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:44:15.670Z
+Question Type: function-variant
+Function: on
+Function Size: 1243 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: on (TypeScript)\n// Registers an event handler for the specified event type on the StripePaymentElement.\n\non(eventType: 'change', handler: (event: StripePaymentElementChangeEvent) => any): StripePaymentElement;\non(eventType: 'ready', handler: (event: {elementType: 'payment'}) => any): St
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:44:19.597Z
+Question Type: select-all
+Function: on
+Function Size: 1243 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: on (TypeScript)\n// Registers an event handler for the specified event type on the StripePaymentElement.\n\non(eventType: 'change', handler: (event: StripePaymentElementChangeEvent) => any): StripePaymentElement;\non(eventType: 'ready', handler: (event: {elementType: 'payment'}) => any): St
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:44:20.534Z
+Question Type: true-false
+Function: on
+Function Size: 1243 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: on (TypeScript)\n// Registers an event handler for the specified event type on the StripePaymentElement.\n\non(eventType: 'change', handler: (event: StripePaymentElementChangeEvent) => any): StripePaymentElement;\non(eventType: 'ready', handler: (event: {elementType: 'payment'}) => any): St
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760602383416
+Repository: Unknown
+Total Questions Generated: 7
+Total Chunks Processed: 1
+Ended: 2025-10-16T13:44:20.592Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:44:26.568Z
+Question Type: true-false
+Function: onLoad
+Function Size: 386 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onLoad (TypeScript)\n// Handles load events after the Stripe.js script has been injected.\n\nconst onLoad = (\n  resolve: (\n    value: StripeConstructor | PromiseLike<StripeConstructor | null> | null\n  ) => void,\n  reject: (reason?: any) => void\n) => () => {\n  if (window.Stripe) {\n    resol
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:44:36.744Z
+Question Type: select-all
+Function: dispatchScriptEvent
+Function Size: 416 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: dispatchScriptEvent (TypeScript)\n// Dispatches a specified event type on the injected Stripe.js script element.\n\nconst dispatchScriptEvent = (eventType: string): void => {\n  const injectedScript = document.querySelector(`script[src="${SCRIPT_SRC}"]`);\n\n  if (!injectedScript) {\n    throw
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:44:40.366Z
+Question Type: function-variant
+Function: onLoad
+Function Size: 386 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onLoad (TypeScript)\n// Handles load events after the Stripe.js script has been injected.\n\nconst onLoad = (\n  resolve: (\n    value: StripeConstructor | PromiseLike<StripeConstructor | null> | null\n  ) => void,\n  reject: (reason?: any) => void\n) => () => {\n  if (window.Stripe) {\n    resol
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:44:45.165Z
+Question Type: multiple-choice
+Function: on
+Function Size: 1243 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: on (TypeScript)\n// Registers an event handler for the specified event type on the StripePaymentElement.\n\non(eventType: 'change', handler: (event: StripePaymentElementChangeEvent) => any): StripePaymentElement;\non(eventType: 'ready', handler: (event: {elementType: 'payment'}) => any): St
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760602383416
+Repository: Unknown
+Total Questions Generated: 5
+Total Chunks Processed: 5
+Ended: 2025-10-16T13:44:45.832Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:57:16.312Z
+Question Type: true-false
+Function: Unknown
+Function Size: 86 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Execute our own script injection after a tick to give users time to do their\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:57:23.100Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 168 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: if previous attempts are unsuccessful, will re-load script\nreturn getStripePromise().then((maybeStripe) =>\n    initStripe(maybeStripe, args, startTime)\n  );\n};
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:57:23.346Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 420 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: stripe-stripe-js-caf4b30/src/index.ts\nimport {StripeConstructor} from '../types';\nimport {loadScript, initStripe, LoadStripe} from './shared';\n\nlet stripePromise: Promise<StripeConstructor | null> | null;\nlet loadCalled = false;\n\nconst getStripePromise: () => Promise<StripeConstructor | nul
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:57:23.945Z
+Question Type: select-all
+Function: Unknown
+Function Size: 273 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: own script injection.\nPromise.resolve()\n  .then(() => getStripePromise())\n  .catch((error) => {\n    if (!loadCalled) {\n      console.warn(error);\n    }\n  });\n\nexport const loadStripe: LoadStripe = (...args) => {\n  loadCalled = true;\n  const startTime = Date.now();
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:57:24.542Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 118 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: clear cache on error\nstripePromise = null;\n    return Promise.reject(error);\n  });\n  return stripePromise;\n};
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:57:32.779Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 273 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // File: own script injection.\nPromise.resolve()\n  .then(() => getStripePromise())\n  .catch((error) => {\n    if (!loadCalled) {\n      console.warn(error);\n    }\n  });\n\nexport const loadStripe: LoadStripe = (...args) => {\n  loadCalled = true;\n  const startTime = Date.now();
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:57:33.579Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 273 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: own script injection.\nPromise.resolve()\n  .then(() => getStripePromise())\n  .catch((error) => {\n    if (!loadCalled) {\n      console.warn(error);\n    }\n  });\n\nexport const loadStripe: LoadStripe = (...args) => {\n  loadCalled = true;\n  const startTime = Date.now();
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:57:33.925Z
+Question Type: select-all
+Function: Unknown
+Function Size: 420 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: stripe-stripe-js-caf4b30/src/index.ts\nimport {StripeConstructor} from '../types';\nimport {loadScript, initStripe, LoadStripe} from './shared';\n\nlet stripePromise: Promise<StripeConstructor | null> | null;\nlet loadCalled = false;\n\nconst getStripePromise: () => Promise<StripeConstructor | nul
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:57:37.012Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 118 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: clear cache on error\nstripePromise = null;\n    return Promise.reject(error);\n  });\n  return stripePromise;\n};
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:57:39.517Z
+Question Type: true-false
+Function: Unknown
+Function Size: 168 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: if previous attempts are unsuccessful, will re-load script\nreturn getStripePromise().then((maybeStripe) =>\n    initStripe(maybeStripe, args, startTime)\n  );\n};
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:57:40.154Z
+Question Type: select-all
+Function: Unknown
+Function Size: 118 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: clear cache on error\nstripePromise = null;\n    return Promise.reject(error);\n  });\n  return stripePromise;\n};
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:57:47.506Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 86 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Execute our own script injection after a tick to give users time to do their\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:57:48.222Z
+Question Type: select-all
+Function: Unknown
+Function Size: 168 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: if previous attempts are unsuccessful, will re-load script\nreturn getStripePromise().then((maybeStripe) =>\n    initStripe(maybeStripe, args, startTime)\n  );\n};
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760602383416
+Repository: Unknown
+Total Questions Generated: 15
+Total Chunks Processed: 5
+Ended: 2025-10-16T13:57:50.606Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T13:59:33.935Z
+File: [5 files: shared.ts, financial-connections.d.ts, confirmation-tokens.d.ts, index.test.ts, index.d.ts]
+Functions Extracted: 1
+
+
+Function 1: dispatchScriptEvent
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+const dispatchScriptEvent = (eventType: string): void => {
+  const injectedScript = document.querySelector(`script[src="${SCRIPT_SRC}"]`);
+
+  if (!injectedScript) {
+    throw new Error('could not find Stripe.js script element');
+  }
+
+  injectedScript.dispatchEvent(new Event(eventType));
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:59:39.975Z
+Question Type: true-false
+Function: dispatchScriptEvent
+Function Size: 407 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: dispatchScriptEvent (TypeScript)\n// Dispatches a specified event type on the Stripe.js script element.\n\nconst dispatchScriptEvent = (eventType: string): void => {\n  const injectedScript = document.querySelector(`script[src="${SCRIPT_SRC}"]`);\n\n  if (!injectedScript) {\n    throw new Erro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:59:43.896Z
+Question Type: select-all
+Function: dispatchScriptEvent
+Function Size: 407 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: dispatchScriptEvent (TypeScript)\n// Dispatches a specified event type on the Stripe.js script element.\n\nconst dispatchScriptEvent = (eventType: string): void => {\n  const injectedScript = document.querySelector(`script[src="${SCRIPT_SRC}"]`);\n\n  if (!injectedScript) {\n    throw new Erro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:59:44.747Z
+Question Type: select-all
+Function: dispatchScriptEvent
+Function Size: 407 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: dispatchScriptEvent (TypeScript)\n// Dispatches a specified event type on the Stripe.js script element.\n\nconst dispatchScriptEvent = (eventType: string): void => {\n  const injectedScript = document.querySelector(`script[src="${SCRIPT_SRC}"]`);\n\n  if (!injectedScript) {\n    throw new Erro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T13:59:50.442Z
+Question Type: function-variant
+Function: dispatchScriptEvent
+Function Size: 407 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: dispatchScriptEvent (TypeScript)\n// Dispatches a specified event type on the Stripe.js script element.\n\nconst dispatchScriptEvent = (eventType: string): void => {\n  const injectedScript = document.querySelector(`script[src="${SCRIPT_SRC}"]`);\n\n  if (!injectedScript) {\n    throw new Erro
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760602383416
+Repository: Unknown
+Total Questions Generated: 4
+Total Chunks Processed: 1
+Ended: 2025-10-16T13:59:50.484Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T13:59:55.396Z
+File: [3 files: shipping-address.d.ts, index.d.ts, pure.ts]
+Functions Extracted: 1
+
+
+Function 1: loadStripe
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+export const loadStripe: LoadStripe & {setLoadParameters: SetLoadParams} = (...args) => {
+  loadStripeCalled = true;
+  const startTime = Date.now();
+
+  return loadScript(loadParams).then((maybeStripe) =>
+    initStripe(maybeStripe, args, startTime)
+  );
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:00:06.880Z
+Question Type: select-all
+Function: loadStripe
+Function Size: 371 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: loadStripe (TypeScript)\n// Loads the Stripe library and initializes it with the provided parameters.\n\nexport const loadStripe: LoadStripe & {setLoadParameters: SetLoadParams} = (...args) => {\n  loadStripeCalled = true;\n  const startTime = Date.now();\n\n  return loadScript(loadParams).the
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:00:07.186Z
+Question Type: select-all
+Function: loadStripe
+Function Size: 371 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: loadStripe (TypeScript)\n// Loads the Stripe library and initializes it with the provided parameters.\n\nexport const loadStripe: LoadStripe & {setLoadParameters: SetLoadParams} = (...args) => {\n  loadStripeCalled = true;\n  const startTime = Date.now();\n\n  return loadScript(loadParams).the
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:00:11.268Z
+Question Type: true-false
+Function: loadStripe
+Function Size: 371 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: loadStripe (TypeScript)\n// Loads the Stripe library and initializes it with the provided parameters.\n\nexport const loadStripe: LoadStripe & {setLoadParameters: SetLoadParams} = (...args) => {\n  loadStripeCalled = true;\n  const startTime = Date.now();\n\n  return loadScript(loadParams).the
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:00:11.370Z
+Question Type: order-sequence
+Function: loadStripe
+Function Size: 371 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: loadStripe (TypeScript)\n// Loads the Stripe library and initializes it with the provided parameters.\n\nexport const loadStripe: LoadStripe & {setLoadParameters: SetLoadParams} = (...args) => {\n  loadStripeCalled = true;\n  const startTime = Date.now();\n\n  return loadScript(loadParams).the
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:00:11.941Z
+Question Type: true-false
+Function: loadStripe
+Function Size: 371 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: loadStripe (TypeScript)\n// Loads the Stripe library and initializes it with the provided parameters.\n\nexport const loadStripe: LoadStripe & {setLoadParameters: SetLoadParams} = (...args) => {\n  loadStripeCalled = true;\n  const startTime = Date.now();\n\n  return loadScript(loadParams).the
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:00:16.126Z
+Question Type: function-variant
+Function: loadStripe
+Function Size: 371 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: loadStripe (TypeScript)\n// Loads the Stripe library and initializes it with the provided parameters.\n\nexport const loadStripe: LoadStripe & {setLoadParameters: SetLoadParams} = (...args) => {\n  loadStripeCalled = true;\n  const startTime = Date.now();\n\n  return loadScript(loadParams).the
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760602383416
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 1
+Ended: 2025-10-16T14:00:16.218Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:00:25.204Z
+Question Type: select-all
+Function: loadStripe
+Function Size: 371 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: loadStripe (TypeScript)\n// Loads the Stripe library and initializes it with the provided parameters.\n\nexport const loadStripe: LoadStripe & {setLoadParameters: SetLoadParams} = (...args) => {\n  loadStripeCalled = true;\n  const startTime = Date.now();\n\n  return loadScript(loadParams).the
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:00:27.024Z
+Question Type: select-all
+Function: loadStripe
+Function Size: 371 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: loadStripe (TypeScript)\n// Loads the Stripe library and initializes it with the provided parameters.\n\nexport const loadStripe: LoadStripe & {setLoadParameters: SetLoadParams} = (...args) => {\n  loadStripeCalled = true;\n  const startTime = Date.now();\n\n  return loadScript(loadParams).the
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:00:28.073Z
+Question Type: select-all
+Function: dispatchScriptEvent
+Function Size: 407 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: dispatchScriptEvent (TypeScript)\n// Dispatches a specified event type on the Stripe.js script element.\n\nconst dispatchScriptEvent = (eventType: string): void => {\n  const injectedScript = document.querySelector(`script[src="${SCRIPT_SRC}"]`);\n\n  if (!injectedScript) {\n    throw new Erro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:00:37.254Z
+Question Type: select-all
+Function: dispatchScriptEvent
+Function Size: 407 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: dispatchScriptEvent (TypeScript)\n// Dispatches a specified event type on the Stripe.js script element.\n\nconst dispatchScriptEvent = (eventType: string): void => {\n  const injectedScript = document.querySelector(`script[src="${SCRIPT_SRC}"]`);\n\n  if (!injectedScript) {\n    throw new Erro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:00:38.386Z
+Question Type: function-variant
+Function: dispatchScriptEvent
+Function Size: 407 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: dispatchScriptEvent (TypeScript)\n// Dispatches a specified event type on the Stripe.js script element.\n\nconst dispatchScriptEvent = (eventType: string): void => {\n  const injectedScript = document.querySelector(`script[src="${SCRIPT_SRC}"]`);\n\n  if (!injectedScript) {\n    throw new Erro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:00:44.491Z
+Question Type: true-false
+Function: dispatchScriptEvent
+Function Size: 407 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: dispatchScriptEvent (TypeScript)\n// Dispatches a specified event type on the Stripe.js script element.\n\nconst dispatchScriptEvent = (eventType: string): void => {\n  const injectedScript = document.querySelector(`script[src="${SCRIPT_SRC}"]`);\n\n  if (!injectedScript) {\n    throw new Erro
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760602383416
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 2
+Ended: 2025-10-16T14:00:44.593Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:05:30.043Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2080 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: airbnb-lottie-web-bede03d/player/js/modules/main.js\nimport { setLocationHref, setWebWorker } from '../main';\nimport animationManager from '../animation/AnimationManager';\nimport {\n  setDefaultCurveSegments,\n  getDefaultCurveSegments,\n  roundValues,\n  setIdPrefix,\n  setSubframeEnabled,\n  set
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:05:33.474Z
+Question Type: select-all
+Function: Unknown
+Function Size: 360 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-line eqeqeq\nreturn decodeURIComponent(pair[1]);\n    }\n  }\n  return null;\n}\nvar queryString = '';\nif (standalone) {\n  var scripts = document.getElementsByTagName('script');\n  var index = scripts.length - 1;\n  var myScript = scripts[index] || {\n    src: '',\n  };\n  queryString =
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:05:37.847Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 360 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-line eqeqeq\nreturn decodeURIComponent(pair[1]);\n    }\n  }\n  return null;\n}\nvar queryString = '';\nif (standalone) {\n  var scripts = document.getElementsByTagName('script');\n  var index = scripts.length - 1;\n  var myScript = scripts[index] || {\n    src: '',\n  };\n  queryString =
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:05:45.887Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2080 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: airbnb-lottie-web-bede03d/player/js/modules/main.js\nimport { setLocationHref, setWebWorker } from '../main';\nimport animationManager from '../animation/AnimationManager';\nimport {\n  setDefaultCurveSegments,\n  getDefaultCurveSegments,\n  roundValues,\n  setIdPrefix,\n  setSubframeEnabled,\n  set
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:05:46.176Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 997 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: lottie.start = start;\nlottie.goToAndStop = animationManager.goToAndStop;\nlottie.destroy = animationManager.destroy;\nlottie.setQuality = setQuality;\nlottie.inBrowser = inBrowser;\nlottie.installPlugin = installPlugin;\nlottie.freeze = animationManager.freeze;\nlottie.unfreeze = animationManager
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T14:05:46.257Z
+File: [8 files: DatabaseSeeder.php, TestCase.php, ExampleTest.php, 0001_01_01_000001_create_cache_table.php, use Illuminate\Contracts\Auth\MustVerifyEmail;, use Illuminate\Foundation\Testing\RefreshDatabase;, Controller.php, services.php]
+Functions Extracted: 3
+
+
+Function 1: up
+Language: PHP
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+public function up(): void {
+        Schema::create('cache', function (Blueprint $table) {
+            $table->string('key')->primary();
+            $table->mediumText('value');
+            $table->integer('expiration');
+        });
+
+        Schema::create('cache_locks', function (Blueprint $table) {
+            $table->string('key')->primary();
+            $table->string('owner');
+            $table->integer('expiration');
+        });
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: down
+Language: PHP
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+public function down(): void {
+        Schema::dropIfExists('cache');
+        Schema::dropIfExists('cache_locks');
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: test_the_application_returns_a_successful_response
+Language: PHP
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+public function test_the_application_returns_a_successful_response(): void {
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:05:51.902Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 206 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: this adds bodymovin to the window object for backwards compatibility\ntry {\n  if (!(typeof exports === 'object' && typeof module !== 'undefined')\n    && !(typeof define === 'function' && define.amd)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:05:54.415Z
+Question Type: true-false
+Function: up
+Function Size: 533 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: up (PHP)\n// Creates the 'cache' and 'cache_locks' tables in the database.\n\npublic function up(): void {\n        Schema::create('cache', function (Blueprint $table) {\n            $table->string('key')->primary();\n            $table->mediumText('value');\n            $table->integer('expir
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:05:54.647Z
+Question Type: select-all
+Function: Unknown
+Function Size: 149 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-line no-useless-escape\nrenderer = getQueryVariable('renderer');\n}\nvar readyStateCheckInterval = setInterval(checkReady, 100);
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:05:54.706Z
+Question Type: select-all
+Function: test_the_application_returns_a_successful_response
+Function Size: 336 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: test_the_application_returns_a_successful_response (PHP)\n// Tests that the application returns a successful response (HTTP status 200) when accessing the root URL.\n\npublic function test_the_application_returns_a_successful_response(): void {\n        $response = $this->get('/');\n\n       
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:05:56.128Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 206 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: this adds bodymovin to the window object for backwards compatibility\ntry {\n  if (!(typeof exports === 'object' && typeof module !== 'undefined')\n    && !(typeof define === 'function' && define.amd)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:05:59.063Z
+Question Type: order-sequence
+Function: test_the_application_returns_a_successful_response
+Function Size: 336 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: test_the_application_returns_a_successful_response (PHP)\n// Tests that the application returns a successful response (HTTP status 200) when accessing the root URL.\n\npublic function test_the_application_returns_a_successful_response(): void {\n        $response = $this->get('/');\n\n       
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:05:59.689Z
+Question Type: true-false
+Function: Unknown
+Function Size: 997 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: lottie.start = start;\nlottie.goToAndStop = animationManager.goToAndStop;\nlottie.destroy = animationManager.destroy;\nlottie.setQuality = setQuality;\nlottie.inBrowser = inBrowser;\nlottie.installPlugin = installPlugin;\nlottie.freeze = animationManager.freeze;\nlottie.unfreeze = animationManager
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:06:01.432Z
+Question Type: order-sequence
+Function: down
+Function Size: 210 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: down (PHP)\n// Drops the 'cache' and 'cache_locks' tables from the database.\n\npublic function down(): void {\n        Schema::dropIfExists('cache');\n        Schema::dropIfExists('cache_locks');\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:06:03.702Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 360 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-line eqeqeq\nreturn decodeURIComponent(pair[1]);\n    }\n  }\n  return null;\n}\nvar queryString = '';\nif (standalone) {\n  var scripts = document.getElementsByTagName('script');\n  var index = scripts.length - 1;\n  var myScript = scripts[index] || {\n    src: '',\n  };\n  queryString =
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:06:05.134Z
+Question Type: true-false
+Function: test_the_application_returns_a_successful_response
+Function Size: 336 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: test_the_application_returns_a_successful_response (PHP)\n// Tests that the application returns a successful response (HTTP status 200) when accessing the root URL.\n\npublic function test_the_application_returns_a_successful_response(): void {\n        $response = $this->get('/');\n\n       
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:06:05.637Z
+Question Type: select-all
+Function: Unknown
+Function Size: 206 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: this adds bodymovin to the window object for backwards compatibility\ntry {\n  if (!(typeof exports === 'object' && typeof module !== 'undefined')\n    && !(typeof define === 'function' && define.amd)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:06:08.446Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 149 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-line no-useless-escape\nrenderer = getQueryVariable('renderer');\n}\nvar readyStateCheckInterval = setInterval(checkReady, 100);
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:06:08.679Z
+Question Type: select-all
+Function: up
+Function Size: 533 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: up (PHP)\n// Creates the 'cache' and 'cache_locks' tables in the database.\n\npublic function up(): void {\n        Schema::create('cache', function (Blueprint $table) {\n            $table->string('key')->primary();\n            $table->mediumText('value');\n            $table->integer('expir
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:06:09.371Z
+Question Type: function-variant
+Function: down
+Function Size: 210 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: down (PHP)\n// Drops the 'cache' and 'cache_locks' tables from the database.\n\npublic function down(): void {\n        Schema::dropIfExists('cache');\n        Schema::dropIfExists('cache_locks');\n    }
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760602383416
+Repository: Unknown
+Total Questions Generated: 7
+Total Chunks Processed: 3
+Ended: 2025-10-16T14:06:09.413Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:06:11.855Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2080 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: airbnb-lottie-web-bede03d/player/js/modules/main.js\nimport { setLocationHref, setWebWorker } from '../main';\nimport animationManager from '../animation/AnimationManager';\nimport {\n  setDefaultCurveSegments,\n  getDefaultCurveSegments,\n  roundValues,\n  setIdPrefix,\n  setSubframeEnabled,\n  set
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:06:12.823Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 149 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // File: eslint-disable-line no-useless-escape\nrenderer = getQueryVariable('renderer');\n}\nvar readyStateCheckInterval = setInterval(checkReady, 100);
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760602383416
+Repository: Unknown
+Total Questions Generated: 15
+Total Chunks Processed: 5
+Ended: 2025-10-16T14:06:13.143Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:06:15.449Z
+Question Type: true-false
+Function: test_the_application_returns_a_successful_response
+Function Size: 336 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: test_the_application_returns_a_successful_response (PHP)\n// Tests that the application returns a successful response (HTTP status 200) when accessing the root URL.\n\npublic function test_the_application_returns_a_successful_response(): void {\n        $response = $this->get('/');\n\n       
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:06:19.140Z
+Question Type: true-false
+Function: up
+Function Size: 533 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: up (PHP)\n// Creates the 'cache' and 'cache_locks' tables in the database.\n\npublic function up(): void {\n        Schema::create('cache', function (Blueprint $table) {\n            $table->string('key')->primary();\n            $table->mediumText('value');\n            $table->integer('expir
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:06:19.952Z
+Question Type: select-all
+Function: test_the_application_returns_a_successful_response
+Function Size: 336 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: test_the_application_returns_a_successful_response (PHP)\n// Tests that the application returns a successful response (HTTP status 200) when accessing the root URL.\n\npublic function test_the_application_returns_a_successful_response(): void {\n        $response = $this->get('/');\n\n       
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:06:22.641Z
+Question Type: order-sequence
+Function: up
+Function Size: 533 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: up (PHP)\n// Creates the 'cache' and 'cache_locks' tables in the database.\n\npublic function up(): void {\n        Schema::create('cache', function (Blueprint $table) {\n            $table->string('key')->primary();\n            $table->mediumText('value');\n            $table->integer('expir
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:06:34.823Z
+Question Type: function-variant
+Function: test_the_application_returns_a_successful_response
+Function Size: 336 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: test_the_application_returns_a_successful_response (PHP)\n// Tests that the application returns a successful response (HTTP status 200) when accessing the root URL.\n\npublic function test_the_application_returns_a_successful_response(): void {\n        $response = $this->get('/');\n\n       
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:06:36.142Z
+Question Type: function-variant
+Function: test_the_application_returns_a_successful_response
+Function Size: 336 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: test_the_application_returns_a_successful_response (PHP)\n// Tests that the application returns a successful response (HTTP status 200) when accessing the root URL.\n\npublic function test_the_application_returns_a_successful_response(): void {\n        $response = $this->get('/');\n\n       
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:06:37.610Z
+Question Type: select-all
+Function: up
+Function Size: 533 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: up (PHP)\n// Creates the 'cache' and 'cache_locks' tables in the database.\n\npublic function up(): void {\n        Schema::create('cache', function (Blueprint $table) {\n            $table->string('key')->primary();\n            $table->mediumText('value');\n            $table->integer('expir
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:06:39.202Z
+Question Type: function-variant
+Function: up
+Function Size: 533 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: up (PHP)\n// Creates the 'cache' and 'cache_locks' tables in the database.\n\npublic function up(): void {\n        Schema::create('cache', function (Blueprint $table) {\n            $table->string('key')->primary();\n            $table->mediumText('value');\n            $table->integer('expir
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:06:48.952Z
+Question Type: select-all
+Function: down
+Function Size: 210 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: down (PHP)\n// Drops the 'cache' and 'cache_locks' tables from the database.\n\npublic function down(): void {\n        Schema::dropIfExists('cache');\n        Schema::dropIfExists('cache_locks');\n    }
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760602383416
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 3
+Ended: 2025-10-16T14:06:49.079Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T14:11:39.762Z
+File: TODO: Test that listeners are not registered onto any document/container.
+Functions Extracted: 2
+
+
+Function 1: runTest
+Language: JavaScript
+Lines: 37
+Full Code:
+--------------------------------------------------------------------------------
+function runTest() {
+        const lifecycle = [];
+
+        class TestComponent extends React.Component {
+          constructor(props) {
+            super(props);
+            lifecycle.push('getInitialState');
+            this.state = {name: 'TestComponent'};
+          }
+
+          UNSAFE_componentWillMount() {
+            lifecycle.push('componentWillMount');
+          }
+
+          componentDidMount() {
+            lifecycle.push('componentDidMount');
+          }
+
+          render() {
+            lifecycle.push('render');
+            return <span>Component name: {this.state.name}</span>;
+          }
+
+          UNSAFE_componentWillUpdate() {
+            lifecycle.push('componentWillUpdate');
+          }
+
+          componentDidUpdate() {
+            lifecycle.push('componentDidUpdate');
+          }
+
+          shouldComponentUpdate() {
+            lifecycle.push('shouldComponentUpdate');
+          }
+
+          UNSAFE_componentWillReceiveProps() {
+            lifecycle.push('componentWillReceiveProps');
+          }
+
+          componentWillUnmount() {
+            lifecycle.push('componentWillUnmount');
+          }
+        }
+
+        const response = ReactDOMServer.renderToString(<TestComponent />);
+
+        expect(response).toMatch(
+          new RegExp(
+            '<span>' + 'Component name: <!-- -->TestComponent' + '</span>',
+          ),
+        );
+        expect(lifecycle).toEqual([
+          'getInitialState',
+          'componentWillMount',
+          'render',
+        ]);
+      }
+--------------------------------------------------------------------------------
+
+
+Function 2: runTest
+Language: JavaScript
+Lines: 37
+Full Code:
+--------------------------------------------------------------------------------
+function runTest() {
+        const lifecycle = [];
+
+        class TestComponent extends React.Component {
+          constructor(props) {
+            super(props);
+            lifecycle.push('getInitialState');
+            this.state = {name: 'TestComponent'};
+          }
+
+          UNSAFE_componentWillMount() {
+            lifecycle.push('componentWillMount');
+          }
+
+          componentDidMount() {
+            lifecycle.push('componentDidMount');
+          }
+
+          render() {
+            lifecycle.push('render');
+            return <span>Component name: {this.state.name}</span>;
+          }
+
+          UNSAFE_componentWillUpdate() {
+            lifecycle.push('componentWillUpdate');
+          }
+
+          componentDidUpdate() {
+            lifecycle.push('componentDidUpdate');
+          }
+
+          shouldComponentUpdate() {
+            lifecycle.push('shouldComponentUpdate');
+          }
+
+          UNSAFE_componentWillReceiveProps() {
+            lifecycle.push('componentWillReceiveProps');
+          }
+
+          componentWillUnmount() {
+            lifecycle.push('componentWillUnmount');
+          }
+        }
+
+        const response = ReactDOMServer.renderToStaticMarkup(<TestComponent />);
+
+        expect(response).toBe('<span>Component name: TestComponent</span>');
+        expect(lifecycle).toEqual([
+          'getInitialState',
+          'componentWillMount',
+          'render',
+        ]);
+      }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:11:53.738Z
+Question Type: order-sequence
+Function: runTest
+Function Size: 1628 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: runTest (JavaScript)\n// Tests the lifecycle methods of a React component and verifies the rendered output.\n\nfunction runTest() {\n        const lifecycle = [];\n\n        class TestComponent extends React.Component {\n          constructor(props) {\n            super(props);\n            life
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:11:55.527Z
+Question Type: select-all
+Function: runTest
+Function Size: 1628 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: runTest (JavaScript)\n// Tests the lifecycle methods of a React component and verifies the rendered output.\n\nfunction runTest() {\n        const lifecycle = [];\n\n        class TestComponent extends React.Component {\n          constructor(props) {\n            super(props);\n            life
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:12:07.440Z
+Question Type: select-all
+Function: runTest
+Function Size: 1574 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: runTest (JavaScript)\n// Tests the lifecycle methods of a React component with static markup and verifies the rendered output.\n\nfunction runTest() {\n        const lifecycle = [];\n\n        class TestComponent extends React.Component {\n          constructor(props) {\n            super(props
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:12:09.869Z
+Question Type: function-variant
+Function: runTest
+Function Size: 1628 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: runTest (JavaScript)\n// Tests the lifecycle methods of a React component and verifies the rendered output.\n\nfunction runTest() {\n        const lifecycle = [];\n\n        class TestComponent extends React.Component {\n          constructor(props) {\n            super(props);\n            life
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:12:09.890Z
+Question Type: function-variant
+Function: runTest
+Function Size: 1628 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: runTest (JavaScript)\n// Tests the lifecycle methods of a React component and verifies the rendered output.\n\nfunction runTest() {\n        const lifecycle = [];\n\n        class TestComponent extends React.Component {\n          constructor(props) {\n            super(props);\n            life
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:12:12.085Z
+Question Type: select-all
+Function: runTest
+Function Size: 1574 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: runTest (JavaScript)\n// Tests the lifecycle methods of a React component with static markup and verifies the rendered output.\n\nfunction runTest() {\n        const lifecycle = [];\n\n        class TestComponent extends React.Component {\n          constructor(props) {\n            super(props
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:12:21.862Z
+Question Type: true-false
+Function: runTest
+Function Size: 1628 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: runTest (JavaScript)\n// Tests the lifecycle methods of a React component and verifies the rendered output.\n\nfunction runTest() {\n        const lifecycle = [];\n\n        class TestComponent extends React.Component {\n          constructor(props) {\n            super(props);\n            life
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:12:24.933Z
+Question Type: select-all
+Function: runTest
+Function Size: 1628 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: runTest (JavaScript)\n// Tests the lifecycle methods of a React component and verifies the rendered output.\n\nfunction runTest() {\n        const lifecycle = [];\n\n        class TestComponent extends React.Component {\n          constructor(props) {\n            super(props);\n            life
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:12:25.915Z
+Question Type: order-sequence
+Function: runTest
+Function Size: 1574 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: runTest (JavaScript)\n// Tests the lifecycle methods of a React component with static markup and verifies the rendered output.\n\nfunction runTest() {\n        const lifecycle = [];\n\n        class TestComponent extends React.Component {\n          constructor(props) {\n            super(props
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:12:35.360Z
+Question Type: true-false
+Function: runTest
+Function Size: 1574 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: runTest (JavaScript)\n// Tests the lifecycle methods of a React component with static markup and verifies the rendered output.\n\nfunction runTest() {\n        const lifecycle = [];\n\n        class TestComponent extends React.Component {\n          constructor(props) {\n            super(props
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:12:35.908Z
+Question Type: multiple-choice
+Function: runTest
+Function Size: 1628 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: runTest (JavaScript)\n// Tests the lifecycle methods of a React component and verifies the rendered output.\n\nfunction runTest() {\n        const lifecycle = [];\n\n        class TestComponent extends React.Component {\n          constructor(props) {\n            super(props);\n            life
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:12:39.948Z
+Question Type: function-variant
+Function: runTest
+Function Size: 1574 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: runTest (JavaScript)\n// Tests the lifecycle methods of a React component with static markup and verifies the rendered output.\n\nfunction runTest() {\n        const lifecycle = [];\n\n        class TestComponent extends React.Component {\n          constructor(props) {\n            super(props
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:12:50.064Z
+Question Type: select-all
+Function: runTest
+Function Size: 1628 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: runTest (JavaScript)\n// Tests the lifecycle methods of a React component and verifies the rendered output.\n\nfunction runTest() {\n        const lifecycle = [];\n\n        class TestComponent extends React.Component {\n          constructor(props) {\n            super(props);\n            life
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:12:55.080Z
+Question Type: function-variant
+Function: runTest
+Function Size: 1574 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: runTest (JavaScript)\n// Tests the lifecycle methods of a React component with static markup and verifies the rendered output.\n\nfunction runTest() {\n        const lifecycle = [];\n\n        class TestComponent extends React.Component {\n          constructor(props) {\n            super(props
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760602383416
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 2
+Ended: 2025-10-16T14:12:55.940Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T14:13:20.465Z
+File: Renable error overlay
+Functions Extracted: 6
+
+
+Function 1: RendererResult
+Language: JavaScript
+Lines: 21
+Full Code:
+--------------------------------------------------------------------------------
+function RendererResult({
+  result,
+  canonicalResult,
+  defaultValue,
+  canonicalDefaultValue,
+  didWarn,
+  didError,
+  ssrHasSameBehavior,
+  ssrHasSameBehaviorExceptWarnings,
+}) {
+  let backgroundColor;
+  if (didError) {
+    backgroundColor = errorColor;
+  } else if (didWarn) {
+    backgroundColor = warnColor;
+  } else if (canonicalResult !== canonicalDefaultValue) {
+    backgroundColor = 'cyan';
+  } else {
+    backgroundColor = successColor;
+  }
+
+  let style = {
+    display: 'flex',
+    alignItems: 'center',
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
+    backgroundColor,
+  };
+
+  if (!ssrHasSameBehavior) {
+    const color = ssrHasSameBehaviorExceptWarnings ? 'gray' : 'magenta';
+    style.border = `3px dotted ${color}`;
+  }
+
+  return <div css={style}>{canonicalResult}</div>;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: ResultPopover
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function ResultPopover(props) {
+  return (
+    <pre
+      css={{
+        padding: '1em',
+        minWidth: '25em',
+      }}>
+      {JSON.stringify(
+        {
+          reactStable: props.reactStable,
+          reactNext: props.reactNext,
+          hasSameBehavior: props.hasSameBehavior,
+        },
+        null,
+        2
+      )}
+    </pre>
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: CellContent
+Language: JavaScript
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+function CellContent(props) {
+  const {
+    columnIndex,
+    rowIndex,
+    attributesInSortedOrder,
+    completedHashes,
+    toggleAttribute,
+    table,
+  } = props;
+  const attribute = attributesInSortedOrder[rowIndex - 1];
+  const type = types[columnIndex - 1];
+
+  if (columnIndex === 0) {
+    if (rowIndex === 0) {
+      return null;
+    }
+    const row = table.get(attribute);
+    const rowPatternHash = row.rowPatternHash;
+    return (
+      <RowHeader
+        checked={completedHashes.has(rowPatternHash)}
+        onChange={() => toggleAttribute(rowPatternHash)}>
+        {row.hasSameBehaviorForAll ? (
+          attribute.name
+        ) : (
+          <b css={{color: 'purple'}}>{attribute.name}</b>
+        )}
+      </RowHeader>
+    );
+  }
+
+  if (rowIndex === 0) {
+    return <ColumnHeader>{type.name}</ColumnHeader>;
+  }
+
+  const row = table.get(attribute);
+  const result = row.results.get(type.name);
+
+  return <Result {...result} />;
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: saveToLocalStorage
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function saveToLocalStorage(completedHashes) {
+  const str = JSON.stringify([...completedHashes]);
+  localStorage.setItem('completedHashes', str);
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: restoreFromLocalStorage
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+function restoreFromLocalStorage() {
+  const str = localStorage.getItem('completedHashes');
+  if (str) {
+    const completedHashes = new Set(JSON.parse(str));
+    return completedHashes;
+  }
+  return new Set();
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: toggleAttribute
+Language: JavaScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+toggleAttribute = rowPatternHash => {
+    const completedHashes = new Set(this.state.completedHashes);
+    if (completedHashes.has(rowPatternHash)) {
+      completedHashes.delete(rowPatternHash);
+    } else {
+      completedHashes.add(rowPatternHash);
+    }
+    this.setState({completedHashes}, () => saveToLocalStorage(completedHashes));
+  };
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:13:28.876Z
+Question Type: true-false
+Function: toggleAttribute
+Function Size: 461 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: toggleAttribute (JavaScript)\n// Toggles the completion state of an attribute and updates local storage.\n\ntoggleAttribute = rowPatternHash => {\n    const completedHashes = new Set(this.state.completedHashes);\n    if (completedHashes.has(rowPatternHash)) {\n      completedHashes.delete(row
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:13:31.823Z
+Question Type: select-all
+Function: ResultPopover
+Function Size: 463 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: ResultPopover (JavaScript)\n// Displays a popover with JSON representation of the result properties.\n\nfunction ResultPopover(props) {\n  return (\n    <pre\n      css={{\n        padding: '1em',\n        minWidth: '25em',\n      }}>\n      {JSON.stringify(\n        {\n          reactStable: props
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:13:36.399Z
+Question Type: function-variant
+Function: restoreFromLocalStorage
+Function Size: 316 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: restoreFromLocalStorage (JavaScript)\n// Restores the completed hashes from local storage.\n\nfunction restoreFromLocalStorage() {\n  const str = localStorage.getItem('completedHashes');\n  if (str) {\n    const completedHashes = new Set(JSON.parse(str));\n    return completedHashes;\n  }\n  ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:13:38.018Z
+Question Type: true-false
+Function: saveToLocalStorage
+Function Size: 242 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: saveToLocalStorage (JavaScript)\n// Saves the completed hashes to local storage.\n\nfunction saveToLocalStorage(completedHashes) {\n  const str = JSON.stringify([...completedHashes]);\n  localStorage.setItem('completedHashes', str);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:13:50.815Z
+Question Type: function-variant
+Function: RendererResult
+Function Size: 939 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: RendererResult (JavaScript)\n// Renders the result with appropriate background color based on error/warning states.\n\nfunction RendererResult({\n  result,\n  canonicalResult,\n  defaultValue,\n  canonicalDefaultValue,\n  didWarn,\n  didError,\n  ssrHasSameBehavior,\n  ssrHasSameBehaviorExceptWarn
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:13:51.171Z
+Question Type: select-all
+Function: restoreFromLocalStorage
+Function Size: 316 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: restoreFromLocalStorage (JavaScript)\n// Restores the completed hashes from local storage.\n\nfunction restoreFromLocalStorage() {\n  const str = localStorage.getItem('completedHashes');\n  if (str) {\n    const completedHashes = new Set(JSON.parse(str));\n    return completedHashes;\n  }\n  ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:13:58.987Z
+Question Type: function-variant
+Function: CellContent
+Function Size: 1054 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: CellContent (JavaScript)\n// Renders the content of a cell based on its position in the table.\n\nfunction CellContent(props) {\n  const {\n    columnIndex,\n    rowIndex,\n    attributesInSortedOrder,\n    completedHashes,\n    toggleAttribute,\n    table,\n  } = props;\n  const attribute = attrib
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:14:05.468Z
+Question Type: order-sequence
+Function: ResultPopover
+Function Size: 463 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: ResultPopover (JavaScript)\n// Displays a popover with JSON representation of the result properties.\n\nfunction ResultPopover(props) {\n  return (\n    <pre\n      css={{\n        padding: '1em',\n        minWidth: '25em',\n      }}>\n      {JSON.stringify(\n        {\n          reactStable: props
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760602383416
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 6
+Ended: 2025-10-16T14:14:06.145Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T14:14:29.703Z
+File: nothing yielded for bad markup
+Functions Extracted: 9
+
+
+Function 1: Counter
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function Counter(props) {
+        useCallback(() => {
+          yieldValue('should not be invoked');
+        });
+        return <Text text={'Count: ' + props.count} />;
+      }
+--------------------------------------------------------------------------------
+
+
+Function 2: Counter
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function Counter(props) {
+        const renderCount = useCallback(increment => {
+          return 'Count: ' + (props.count + increment);
+        });
+        return <Text text={renderCount(3)} />;
+      }
+--------------------------------------------------------------------------------
+
+
+Function 3: CapitalizedText
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function CapitalizedText(props) {
+          const [text, setText] = useState(props.text);
+          const [count, setCount] = useState(0);
+          const capitalizeText = useCallback(() => text.toUpperCase(), [text]);
+          yieldValue(capitalizeText);
+          if (count < 3) {
+            setCount(count + 1);
+          }
+          if (text === 'hello' && count === 2) {
+            setText('hello, world.');
+          }
+          return <Text text={capitalizeText()} />;
+        }
+--------------------------------------------------------------------------------
+
+
+Function 4: Counter
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function Counter(props, ref) {
+        useImperativeHandle(ref, () => {
+          throw new Error('should not be invoked');
+        });
+        return <Text text={props.label + ': ' + ref.current} />;
+      }
+--------------------------------------------------------------------------------
+
+
+Function 5: Counter
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function Counter() {
+        useInsertionEffect(() => {
+          throw new Error('should not be invoked');
+        });
+
+        return <Text text="Count: 0" />;
+      }
+--------------------------------------------------------------------------------
+
+
+Function 6: Counter
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function Counter() {
+        useLayoutEffect(() => {
+          throw new Error('should not be invoked');
+        });
+
+        return <Text text="Count: 0" />;
+      }
+--------------------------------------------------------------------------------
+
+
+Function 7: App
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function App(props) {
+        return (
+          <div>
+            <Provider foo={props.foo} bar={props.bar} baz={props.baz}>
+              <Indirection>
+                <Indirection>
+                  <FooAndBar />
+                </Indirection>
+                <Indirection>
+                  <Baz />
+                </Indirection>
+              </Indirection>
+            </Provider>
+          </div>
+        );
+      }
+--------------------------------------------------------------------------------
+
+
+Function 8: ReadInMemo
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function ReadInMemo(props) {
+        const count = React.useMemo(() => readContext(Context), []);
+        return <Text text={count} />;
+      }
+--------------------------------------------------------------------------------
+
+
+Function 9: ReadInReducer
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function ReadInReducer(props) {
+        const [count, dispatch] = React.useReducer(() => readContext(Context));
+        if (count !== 42) {
+          dispatch();
+        }
+        return <Text text={count} />;
+      }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:14:38.684Z
+Question Type: select-all
+Function: Counter
+Function Size: 299 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: Counter (JavaScript)\n// A functional component that uses useLayoutEffect but throws an error if invoked during render.\n\nfunction Counter() {\n        useLayoutEffect(() => {\n          throw new Error('should not be invoked');\n        });\n\n        return <Text text="Count: 0" />;\n      }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:14:40.627Z
+Question Type: select-all
+Function: CapitalizedText
+Function Size: 618 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: CapitalizedText (JavaScript)\n// A functional component that capitalizes text and updates state based on conditions.\n\nfunction CapitalizedText(props) {\n          const [text, setText] = useState(props.text);\n          const [count, setCount] = useState(0);\n          const capitalizeText 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:14:43.788Z
+Question Type: function-variant
+Function: ReadInMemo
+Function Size: 241 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: ReadInMemo (JavaScript)\n// A functional component that reads context using useMemo.\n\nfunction ReadInMemo(props) {\n        const count = React.useMemo(() => readContext(Context), []);\n        return <Text text={count} />;\n      }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:14:48.962Z
+Question Type: function-variant
+Function: ReadInReducer
+Function Size: 359 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: ReadInReducer (JavaScript)\n// A functional component that reads context using useReducer and dispatches if the count is not 42.\n\nfunction ReadInReducer(props) {\n        const [count, dispatch] = React.useReducer(() => readContext(Context));\n        if (count !== 42) {\n          dispatch
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:14:49.824Z
+Question Type: multiple-choice
+Function: Counter
+Function Size: 347 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: Counter (JavaScript)\n// A functional component that uses useImperativeHandle to define a ref but throws an error if invoked.\n\nfunction Counter(props, ref) {\n        useImperativeHandle(ref, () => {\n          throw new Error('should not be invoked');\n        });\n        return <Text text
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:14:51.528Z
+Question Type: order-sequence
+Function: App
+Function Size: 541 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// A functional component that provides context to nested components FooAndBar and Baz.\n\nfunction App(props) {\n        return (\n          <div>\n            <Provider foo={props.foo} bar={props.bar} baz={props.baz}>\n              <Indirection>\n                <Indirectio
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:14:55.408Z
+Question Type: select-all
+Function: App
+Function Size: 541 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// A functional component that provides context to nested components FooAndBar and Baz.\n\nfunction App(props) {\n        return (\n          <div>\n            <Provider foo={props.foo} bar={props.bar} baz={props.baz}>\n              <Indirection>\n                <Indirectio
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:15:00.157Z
+Question Type: select-all
+Function: Counter
+Function Size: 293 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: Counter (JavaScript)\n// A functional component that uses useCallback but does not invoke the callback.\n\nfunction Counter(props) {\n        useCallback(() => {\n          yieldValue('should not be invoked');\n        });\n        return <Text text={'Count: ' + props.count} />;\n      }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:15:00.659Z
+Question Type: function-variant
+Function: Counter
+Function Size: 305 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: Counter (JavaScript)\n// A functional component that uses useInsertionEffect but throws an error if invoked during render.\n\nfunction Counter() {\n        useInsertionEffect(() => {\n          throw new Error('should not be invoked');\n        });\n\n        return <Text text="Count: 0" />;\n  
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:15:01.655Z
+Question Type: order-sequence
+Function: Counter
+Function Size: 321 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: Counter (JavaScript)\n// A functional component that uses useCallback to calculate and render the count.\n\nfunction Counter(props) {\n        const renderCount = useCallback(increment => {\n          return 'Count: ' + (props.count + increment);\n        });\n        return <Text text={render
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:15:05.803Z
+Question Type: true-false
+Function: Counter
+Function Size: 293 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: Counter (JavaScript)\n// A functional component that uses useCallback but does not invoke the callback.\n\nfunction Counter(props) {\n        useCallback(() => {\n          yieldValue('should not be invoked');\n        });\n        return <Text text={'Count: ' + props.count} />;\n      }
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760602383416
+Repository: Unknown
+Total Questions Generated: 13
+Total Chunks Processed: 9
+Ended: 2025-10-16T14:15:05.922Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T14:17:27.184Z
+File: [8 files: EmployeeService.js, App.js, HeaderComponent.js, serviceWorker.js, CreateEmployeeComponent.jsx, Service worker found. Proceed as normal., UpdateEmployeeComponent.jsx, ListEmployeeComponent.jsx]
+Functions Extracted: 4
+
+
+Function 1: componentDidMount
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+componentDidMount(){
+        EmployeeService.getEmployees().then((res) => {
+            this.setState({ employees: res.data});
+        });
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: updateEmployee
+Language: JavaScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+updateEmployee = (e) => {
+        e.preventDefault();
+        let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};
+        console.log('employee => ' + JSON.stringify(employee));
+        console.log('id => ' + JSON.stringify(this.state.id));
+        EmployeeService.updateEmployee(employee, this.state.id).then( res => {
+            this.props.history.push('/employees');
+        });
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: deleteEmployee
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+deleteEmployee(id){
+        EmployeeService.deleteEmployee(id).then( res => {
+            this.setState({employees: this.state.employees.filter(employee => employee.id !== id)});
+        });
+    }
+--------------------------------------------------------------------------------
+
+
+Function 4: componentDidMount
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+componentDidMount(){
+        EmployeeService.getEmployeeById(this.state.id).then( (res) =>{
+            let employee = res.data;
+            this.setState({firstName: employee.firstName,
+                lastName: employee.lastName,
+                emailId : employee.emailId
+            });
+        });
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:17:37.187Z
+Question Type: multiple-choice
+Function: updateEmployee
+Function Size: 571 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: updateEmployee (JavaScript)\n// Handles the update of an employee's details and redirects to the employee list.\n\nupdateEmployee = (e) => {\n        e.preventDefault();\n        let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:17:38.788Z
+Question Type: order-sequence
+Function: updateEmployee
+Function Size: 571 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateEmployee (JavaScript)\n// Handles the update of an employee's details and redirects to the employee list.\n\nupdateEmployee = (e) => {\n        e.preventDefault();\n        let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:17:39.099Z
+Question Type: order-sequence
+Function: deleteEmployee
+Function Size: 307 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deleteEmployee (JavaScript)\n// Deletes an employee and updates the state to reflect the changes.\n\ndeleteEmployee(id){\n        EmployeeService.deleteEmployee(id).then( res => {\n            this.setState({employees: this.state.employees.filter(employee => employee.id !== id)});\n        })
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:17:44.718Z
+Question Type: function-variant
+Function: componentDidMount
+Function Size: 271 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Lifecycle method that fetches the list of employees when the component mounts.\n\ncomponentDidMount(){\n        EmployeeService.getEmployees().then((res) => {\n            this.setState({ employees: res.data});\n        });\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:17:48.576Z
+Question Type: select-all
+Function: componentDidMount
+Function Size: 418 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches the employee details by ID when the component mounts.\n\ncomponentDidMount(){\n        EmployeeService.getEmployeeById(this.state.id).then( (res) =>{\n            let employee = res.data;\n            this.setState({firstName: employee.firstName,\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:17:48.834Z
+Question Type: select-all
+Function: deleteEmployee
+Function Size: 307 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deleteEmployee (JavaScript)\n// Deletes an employee and updates the state to reflect the changes.\n\ndeleteEmployee(id){\n        EmployeeService.deleteEmployee(id).then( res => {\n            this.setState({employees: this.state.employees.filter(employee => employee.id !== id)});\n        })
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:17:54.195Z
+Question Type: select-all
+Function: componentDidMount
+Function Size: 418 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches the employee details by ID when the component mounts.\n\ncomponentDidMount(){\n        EmployeeService.getEmployeeById(this.state.id).then( (res) =>{\n            let employee = res.data;\n            this.setState({firstName: employee.firstName,\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:17:54.308Z
+Question Type: true-false
+Function: componentDidMount
+Function Size: 271 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Lifecycle method that fetches the list of employees when the component mounts.\n\ncomponentDidMount(){\n        EmployeeService.getEmployees().then((res) => {\n            this.setState({ employees: res.data});\n        });\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:18:02.099Z
+Question Type: select-all
+Function: updateEmployee
+Function Size: 571 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateEmployee (JavaScript)\n// Handles the update of an employee's details and redirects to the employee list.\n\nupdateEmployee = (e) => {\n        e.preventDefault();\n        let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};\n   
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760602383416
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 4
+Ended: 2025-10-16T14:18:02.233Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:18:07.949Z
+Question Type: true-false
+Function: componentDidMount
+Function Size: 418 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches the employee details by ID when the component mounts.\n\ncomponentDidMount(){\n        EmployeeService.getEmployeeById(this.state.id).then( (res) =>{\n            let employee = res.data;\n            this.setState({firstName: employee.firstName,\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:18:11.015Z
+Question Type: select-all
+Function: componentDidMount
+Function Size: 418 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches the employee details by ID when the component mounts.\n\ncomponentDidMount(){\n        EmployeeService.getEmployeeById(this.state.id).then( (res) =>{\n            let employee = res.data;\n            this.setState({firstName: employee.firstName,\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:18:11.059Z
+Question Type: select-all
+Function: componentDidMount
+Function Size: 271 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Lifecycle method that fetches the list of employees when the component mounts.\n\ncomponentDidMount(){\n        EmployeeService.getEmployees().then((res) => {\n            this.setState({ employees: res.data});\n        });\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:18:16.733Z
+Question Type: true-false
+Function: deleteEmployee
+Function Size: 307 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deleteEmployee (JavaScript)\n// Deletes an employee and updates the state to reflect the changes.\n\ndeleteEmployee(id){\n        EmployeeService.deleteEmployee(id).then( res => {\n            this.setState({employees: this.state.employees.filter(employee => employee.id !== id)});\n        })
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:18:19.352Z
+Question Type: select-all
+Function: componentDidMount
+Function Size: 418 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches the employee details by ID when the component mounts.\n\ncomponentDidMount(){\n        EmployeeService.getEmployeeById(this.state.id).then( (res) =>{\n            let employee = res.data;\n            this.setState({firstName: employee.firstName,\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:18:21.511Z
+Question Type: function-variant
+Function: componentDidMount
+Function Size: 271 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Lifecycle method that fetches the list of employees when the component mounts.\n\ncomponentDidMount(){\n        EmployeeService.getEmployees().then((res) => {\n            this.setState({ employees: res.data});\n        });\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:18:24.571Z
+Question Type: function-variant
+Function: updateEmployee
+Function Size: 571 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateEmployee (JavaScript)\n// Handles the update of an employee's details and redirects to the employee list.\n\nupdateEmployee = (e) => {\n        e.preventDefault();\n        let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};\n   
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760602383416
+Repository: Unknown
+Total Questions Generated: 7
+Total Chunks Processed: 4
+Ended: 2025-10-16T14:18:24.616Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T14:29:11.627Z
+File: facebook-react-85f415e/fixtures/dom/src/components/fixtures/error-handling/index.js
+Functions Extracted: 5
+
+
+Function 1: BadDidMount
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+class BadDidMount extends React.Component {
+  componentDidMount() {
+    this.props.doThrow();
+  }
+
+  render() {
+    return null;
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: ErrorBoundary
+Language: JavaScript
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+class ErrorBoundary extends React.Component {
+  static defaultProps = {
+    buttonText: 'Trigger error',
+    badChildType: BadRender,
+  };
+  state = {
+    shouldThrow: false,
+    didThrow: false,
+    error: null,
+  };
+  componentDidCatch(error) {
+    this.setState({error, didThrow: true});
+  }
+  triggerError = () => {
+    this.setState({
+      shouldThrow: true,
+    });
+  };
+  render() {
+    if (this.state.didThrow) {
+      if (this.state.error) {
+        return <p>Captured an error: {this.state.error.message}</p>;
+      } else {
+        return <p>Captured an error: {String(this.state.error)}</p>;
+      }
+    }
+    if (this.state.shouldThrow) {
+      const BadChild = this.props.badChildType;
+      return <BadChild doThrow={this.props.doThrow} />;
+    }
+    return <button onClick={this.triggerError}>{this.props.buttonText}</button>;
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: Example
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+class Example extends React.Component {
+  state = {key: 0};
+  restart = () => {
+    this.setState(state => ({key: state.key + 1}));
+  };
+  render() {
+    return (
+      <div>
+        <button onClick={this.restart}>Reset</button>
+        <ErrorBoundary
+          buttonText={this.props.buttonText}
+          doThrow={this.props.doThrow}
+          key={this.state.key}
+        />
+      </div>
+    );
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: triggerErrorAndCatch
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+triggerErrorAndCatch = () => {
+    try {
+      ReactDOM.flushSync(() => {
+        ReactDOM.render(
+          <BadRender
+            doThrow={() => {
+              throw new Error('Caught error');
+            }}
+          />, 
+          this.container
+        );
+      });
+    } catch (e) {}
+  };
+--------------------------------------------------------------------------------
+
+
+Function 5: naiveMemoize
+Language: JavaScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+function naiveMemoize(fn) {
+  let memoizedEntry;
+  return function () {
+    if (!memoizedEntry) {
+      memoizedEntry = {result: null};
+      memoizedEntry.result = fn();
+    }
+    return memoizedEntry.result;
+  };
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:29:19.064Z
+Question Type: select-all
+Function: Example
+Function Size: 519 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: Example (JavaScript)\n// A React component that renders a reset button and an ErrorBoundary component.\n\nclass Example extends React.Component {\n  state = {key: 0};\n  restart = () => {\n    this.setState(state => ({key: state.key + 1}));\n  };\n  render() {\n    return (\n      <div>\n        <
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:29:22.287Z
+Question Type: multiple-choice
+Function: triggerErrorAndCatch
+Function Size: 407 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: triggerErrorAndCatch (JavaScript)\n// Triggers an error in the BadRender component and catches it.\n\ntriggerErrorAndCatch = () => {\n    try {\n      ReactDOM.flushSync(() => {\n        ReactDOM.render(\n          <BadRender\n            doThrow={() => {\n              throw new Error('Caught e
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:29:23.963Z
+Question Type: true-false
+Function: ErrorBoundary
+Function Size: 984 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: ErrorBoundary (JavaScript)\n// A React component that acts as an error boundary, catching errors in its child components.\n\nclass ErrorBoundary extends React.Component {\n  static defaultProps = {\n    buttonText: 'Trigger error',\n    badChildType: BadRender,\n  };\n  state = {\n    shouldThro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:29:26.955Z
+Question Type: true-false
+Function: BadDidMount
+Function Size: 262 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: BadDidMount (JavaScript)\n// A React component that throws an error during the componentDidMount lifecycle method.\n\nclass BadDidMount extends React.Component {\n  componentDidMount() {\n    this.props.doThrow();\n  }\n\n  render() {\n    return null;\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:29:29.017Z
+Question Type: function-variant
+Function: triggerErrorAndCatch
+Function Size: 407 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: triggerErrorAndCatch (JavaScript)\n// Triggers an error in the BadRender component and catches it.\n\ntriggerErrorAndCatch = () => {\n    try {\n      ReactDOM.flushSync(() => {\n        ReactDOM.render(\n          <BadRender\n            doThrow={() => {\n              throw new Error('Caught e
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:29:34.651Z
+Question Type: function-variant
+Function: BadDidMount
+Function Size: 262 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: BadDidMount (JavaScript)\n// A React component that throws an error during the componentDidMount lifecycle method.\n\nclass BadDidMount extends React.Component {\n  componentDidMount() {\n    this.props.doThrow();\n  }\n\n  render() {\n    return null;\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:29:35.468Z
+Question Type: select-all
+Function: ErrorBoundary
+Function Size: 984 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: ErrorBoundary (JavaScript)\n// A React component that acts as an error boundary, catching errors in its child components.\n\nclass ErrorBoundary extends React.Component {\n  static defaultProps = {\n    buttonText: 'Trigger error',\n    badChildType: BadRender,\n  };\n  state = {\n    shouldThro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:29:37.334Z
+Question Type: select-all
+Function: triggerErrorAndCatch
+Function Size: 407 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: triggerErrorAndCatch (JavaScript)\n// Triggers an error in the BadRender component and catches it.\n\ntriggerErrorAndCatch = () => {\n    try {\n      ReactDOM.flushSync(() => {\n        ReactDOM.render(\n          <BadRender\n            doThrow={() => {\n              throw new Error('Caught e
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760602383416
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 5
+Ended: 2025-10-16T14:29:37.539Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:31:01.784Z
+Question Type: true-false
+Function: BadDidMount
+Function Size: 262 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: BadDidMount (JavaScript)\n// A React component that throws an error during the componentDidMount lifecycle method.\n\nclass BadDidMount extends React.Component {\n  componentDidMount() {\n    this.props.doThrow();\n  }\n\n  render() {\n    return null;\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:31:08.717Z
+Question Type: select-all
+Function: ErrorBoundary
+Function Size: 984 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: ErrorBoundary (JavaScript)\n// A React component that acts as an error boundary, catching errors in its child components.\n\nclass ErrorBoundary extends React.Component {\n  static defaultProps = {\n    buttonText: 'Trigger error',\n    badChildType: BadRender,\n  };\n  state = {\n    shouldThro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:31:09.696Z
+Question Type: order-sequence
+Function: ErrorBoundary
+Function Size: 984 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: ErrorBoundary (JavaScript)\n// A React component that acts as an error boundary, catching errors in its child components.\n\nclass ErrorBoundary extends React.Component {\n  static defaultProps = {\n    buttonText: 'Trigger error',\n    badChildType: BadRender,\n  };\n  state = {\n    shouldThro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:31:12.726Z
+Question Type: function-variant
+Function: triggerErrorAndCatch
+Function Size: 407 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: triggerErrorAndCatch (JavaScript)\n// Triggers an error in the BadRender component and catches it.\n\ntriggerErrorAndCatch = () => {\n    try {\n      ReactDOM.flushSync(() => {\n        ReactDOM.render(\n          <BadRender\n            doThrow={() => {\n              throw new Error('Caught e
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:31:17.927Z
+Question Type: function-variant
+Function: Example
+Function Size: 519 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: Example (JavaScript)\n// A React component that renders a reset button and an ErrorBoundary component.\n\nclass Example extends React.Component {\n  state = {key: 0};\n  restart = () => {\n    this.setState(state => ({key: state.key + 1}));\n  };\n  render() {\n    return (\n      <div>\n        <
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T14:31:18.461Z
+Question Type: select-all
+Function: BadDidMount
+Function Size: 262 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: BadDidMount (JavaScript)\n// A React component that throws an error during the componentDidMount lifecycle method.\n\nclass BadDidMount extends React.Component {\n  componentDidMount() {\n    this.props.doThrow();\n  }\n\n  render() {\n    return null;\n  }\n}
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760602383416
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 5
+Ended: 2025-10-16T14:31:18.500Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T17:28:52.620Z
+File: [3 files: index.ts, Items per page in timeline., awaitable-messenger.ts]
+Functions Extracted: 4
+
+
+Function 1: base64URLEncode
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function base64URLEncode(buf: Buffer): string {
+  return buf
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: mapErr
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+export async function mapErr<T>(promise: Promise<T>): Promise<Result<T>> {
+  try {
+    return { hasError: false, data: await promise };
+  } catch (error) {
+    return { hasError: true, error };
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: syncMapErr
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+export function syncMapErr<T>(fn: () => T): Result<T> {
+  try {
+    return { hasError: false, data: fn() };
+  } catch (error) {
+    return { hasError: true, error };
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: awaitResponse
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function awaitResponse<
+  MessageOut,
+  MessageIn extends { type: string; value: Value; error: string },
+  Value
+>({
+  messenger,
+  message,
+  onMessage
+}: {
+  messenger: Messenger<MessageOut>;
+  message: MessageOut;
+  onMessage: (
+    response: MessageIn,
+    onSuccess: (res: Value) => void,
+    onFailure: (err: Error) => void
+  ) => void;
+}): Promise<Value> {
+  return new Promise(
+    (resolve: (res: Value) => void, reject: (err: Error) => void) => {
+      const channel = new MessageChannel();
+
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T17:29:00.422Z
+Question Type: multiple-choice
+Function: base64URLEncode
+Function Size: 257 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: base64URLEncode (TypeScript)\n// Utility to encode a buffer to a base64 URI.\n\nexport function base64URLEncode(buf: Buffer): string {\n  return buf\n    .toString('base64')\n    .replace(/\+/g, '-')\n    .replace(/\//g, '_')\n    .replace(/=/g, '');\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T17:29:02.477Z
+Question Type: select-all
+Function: mapErr
+Function Size: 317 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mapErr (TypeScript)\n// Wrapper around a promise to catch errors and return them as part of the promise.\n\nexport async function mapErr<T>(promise: Promise<T>): Promise<Result<T>> {\n  try {\n    return { hasError: false, data: await promise };\n  } catch (error) {\n    return { hasError: tru
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T17:29:04.453Z
+Question Type: function-variant
+Function: mapErr
+Function Size: 317 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mapErr (TypeScript)\n// Wrapper around a promise to catch errors and return them as part of the promise.\n\nexport async function mapErr<T>(promise: Promise<T>): Promise<Result<T>> {\n  try {\n    return { hasError: false, data: await promise };\n  } catch (error) {\n    return { hasError: tru
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T17:29:06.875Z
+Question Type: order-sequence
+Function: syncMapErr
+Function Size: 304 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: syncMapErr (TypeScript)\n// Wrapper around a synchronise function to catch throws and return them as part of the value.\n\nexport function syncMapErr<T>(fn: () => T): Result<T> {\n  try {\n    return { hasError: false, data: fn() };\n  } catch (error) {\n    return { hasError: true, error };\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T17:29:10.869Z
+Question Type: true-false
+Function: mapErr
+Function Size: 317 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mapErr (TypeScript)\n// Wrapper around a promise to catch errors and return them as part of the promise.\n\nexport async function mapErr<T>(promise: Promise<T>): Promise<Result<T>> {\n  try {\n    return { hasError: false, data: await promise };\n  } catch (error) {\n    return { hasError: tru
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T17:29:11.291Z
+Question Type: select-all
+Function: syncMapErr
+Function Size: 304 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: syncMapErr (TypeScript)\n// Wrapper around a synchronise function to catch throws and return them as part of the value.\n\nexport function syncMapErr<T>(fn: () => T): Result<T> {\n  try {\n    return { hasError: false, data: fn() };\n  } catch (error) {\n    return { hasError: true, error };\n 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760602383416
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 4
+Ended: 2025-10-16T17:29:11.365Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T17:29:50.800Z
+File: just need the body to exist, but doesn't seem to use the properties.
+Functions Extracted: 1
+
+
+Function 1: createStripePaymentIntent
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+export function createStripePaymentIntent(body: {
+  email: string | undefined;
+  name: string | undefined;
+  amount: number;
+  duration: DonationDuration;
+}): PaymentIntentResponse {
+  return post('/donate/create-stripe-payment-intent', body);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T17:29:57.944Z
+Question Type: true-false
+Function: createStripePaymentIntent
+Function Size: 420 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createStripePaymentIntent (TypeScript)\n// Creates a Stripe payment intent by sending the payment details to the '/donate/create-stripe-payment-intent' endpoint.\n\nexport function createStripePaymentIntent(body: {\n  email: string | undefined;\n  name: string | undefined;\n  amount: number;\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T17:29:58.741Z
+Question Type: select-all
+Function: createStripePaymentIntent
+Function Size: 420 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createStripePaymentIntent (TypeScript)\n// Creates a Stripe payment intent by sending the payment details to the '/donate/create-stripe-payment-intent' endpoint.\n\nexport function createStripePaymentIntent(body: {\n  email: string | undefined;\n  name: string | undefined;\n  amount: number;\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T17:30:05.009Z
+Question Type: function-variant
+Function: createStripePaymentIntent
+Function Size: 420 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createStripePaymentIntent (TypeScript)\n// Creates a Stripe payment intent by sending the payment details to the '/donate/create-stripe-payment-intent' endpoint.\n\nexport function createStripePaymentIntent(body: {\n  email: string | undefined;\n  name: string | undefined;\n  amount: number;\n
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760602383416
+Repository: Unknown
+Total Questions Generated: 3
+Total Chunks Processed: 1
+Ended: 2025-10-16T17:30:05.868Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T17:30:13.770Z
+Question Type: true-false
+Function: createStripePaymentIntent
+Function Size: 420 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createStripePaymentIntent (TypeScript)\n// Creates a Stripe payment intent by sending the payment details to the '/donate/create-stripe-payment-intent' endpoint.\n\nexport function createStripePaymentIntent(body: {\n  email: string | undefined;\n  name: string | undefined;\n  amount: number;\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T17:30:16.195Z
+Question Type: select-all
+Function: awaitResponse
+Function Size: 607 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: awaitResponse (TypeScript)\n// Sends a message via a messenger and awaits a response.\n\nexport function awaitResponse<\n  MessageOut,\n  MessageIn extends { type: string; value: Value; error: string },\n  Value\n>({\n  messenger,\n  message,\n  onMessage\n}: {\n  messenger: Messenger<MessageOut>;\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T17:30:20.514Z
+Question Type: order-sequence
+Function: mapErr
+Function Size: 317 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mapErr (TypeScript)\n// Wrapper around a promise to catch errors and return them as part of the promise.\n\nexport async function mapErr<T>(promise: Promise<T>): Promise<Result<T>> {\n  try {\n    return { hasError: false, data: await promise };\n  } catch (error) {\n    return { hasError: tru
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T17:30:20.569Z
+Question Type: function-variant
+Function: base64URLEncode
+Function Size: 257 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: base64URLEncode (TypeScript)\n// Utility to encode a buffer to a base64 URI.\n\nexport function base64URLEncode(buf: Buffer): string {\n  return buf\n    .toString('base64')\n    .replace(/\+/g, '-')\n    .replace(/\//g, '_')\n    .replace(/=/g, '');\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T17:30:28.829Z
+Question Type: function-variant
+Function: syncMapErr
+Function Size: 304 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: syncMapErr (TypeScript)\n// Wrapper around a synchronise function to catch throws and return them as part of the value.\n\nexport function syncMapErr<T>(fn: () => T): Result<T> {\n  try {\n    return { hasError: false, data: fn() };\n  } catch (error) {\n    return { hasError: true, error };\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T17:30:30.434Z
+Question Type: select-all
+Function: syncMapErr
+Function Size: 304 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: syncMapErr (TypeScript)\n// Wrapper around a synchronise function to catch throws and return them as part of the value.\n\nexport function syncMapErr<T>(fn: () => T): Result<T> {\n  try {\n    return { hasError: false, data: fn() };\n  } catch (error) {\n    return { hasError: true, error };\n 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760602383416
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 5
+Ended: 2025-10-16T17:30:31.087Z
+================================================================================
+

@@ -35,14 +35,19 @@ export default function QuestionVoting({
   const [metrics, setMetrics] = useState(calculateQualityMetrics(question));
 
   useEffect(() => {
+    setMetrics(calculateQualityMetrics(question));
+  }, [question]);
+
+  useEffect(() => {
     checkUserRating();
-  }, [questionId, userId]);
+  }, [questionId, userId, question.repoUrl]);
 
   const checkUserRating = async () => {
     try {
+      const effectiveQuestionId = questionId || question.id;
       const [rated, rating] = await Promise.all([
-        hasUserRatedQuestion(questionId, userId),
-        getUserQuestionRating(questionId, userId)
+        hasUserRatedQuestion(effectiveQuestionId, userId, question.repoUrl),
+        getUserQuestionRating(effectiveQuestionId, userId, question.repoUrl)
       ]);
       
       setHasRated(rated);
@@ -57,20 +62,21 @@ export default function QuestionVoting({
 
     try {
       setIsLoading(true);
-      await rateQuestion(questionId, userId, rating);
-      
+      const effectiveQuestionId = questionId || question.id;
+      const updated = await rateQuestion(effectiveQuestionId, userId, rating, question.repoUrl);
+
       setUserRating(rating);
       setHasRated(true);
       
-      // Update local metrics
       const newMetrics = calculateQualityMetrics({
         ...question,
-        upvotes: rating === 'up' ? question.upvotes + 1 : question.upvotes,
-        downvotes: rating === 'down' ? question.downvotes + 1 : question.downvotes
+        upvotes: updated.upvotes,
+        downvotes: updated.downvotes,
+        totalVotes: updated.totalVotes
       });
       setMetrics(newMetrics);
       
-      onRatingChange?.(questionId, rating);
+      onRatingChange?.(effectiveQuestionId, rating);
       
       // Show success feedback
       setTimeout(() => {
