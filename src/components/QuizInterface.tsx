@@ -54,6 +54,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   const [loadingPct, setLoadingPct] = useState(0);
   
   const [showStreamingWarning, setShowStreamingWarning] = useState(false);
+  const [showFullscreenCode, setShowFullscreenCode] = useState(false);
 
   const funTips = [
     'Tip: Off-by-one bugs are 0-based 90% of the time.',
@@ -732,20 +733,23 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 </span>
               </div>
               
-              <SyntaxHighlighter
-                language={getHighlighterLanguage(fvLang.name)}
-                style={vscDarkPlus}
-                customStyle={{
-                  margin: 0,
-                  padding: '1.5rem',
-                  fontSize: '0.9375rem',
-                  lineHeight: '1.6',
-                  borderRadius: 0
-                }}
-                showLineNumbers={true}
-              >
-                {currentVariant.code}
-              </SyntaxHighlighter>
+              <div className="overflow-x-auto">
+                <SyntaxHighlighter
+                  language={getHighlighterLanguage(fvLang.name)}
+                  style={vscDarkPlus}
+                  customStyle={{
+                    margin: 0,
+                    padding: '1.5rem',
+                    fontSize: '0.9375rem',
+                    lineHeight: '1.6',
+                    borderRadius: 0,
+                    minWidth: '100%'
+                  }}
+                  showLineNumbers={true}
+                >
+                  {currentVariant.code}
+                </SyntaxHighlighter>
+              </div>
             </div>
 
             {/* Action Buttons */}
@@ -819,7 +823,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-blue-800 dark:text-blue-200 text-sm font-medium">
-                    💡 Drag and drop the steps below to arrange them in the correct execution order for this function
+                    💡 Click on steps or drag and drop to arrange them in the correct execution order for this function
                   </p>
                   <p className="text-blue-700 dark:text-blue-300 text-xs mt-1">
                     Pay attention to dependencies, async operations, and error handling patterns
@@ -856,7 +860,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                       key={step.id}
                       draggable={!isDisabled}
                       className={`p-4 bg-white dark:bg-gray-800 border-2 rounded-lg transition-all ${
-                        isDisabled ? 'opacity-30 cursor-not-allowed' : 'cursor-move hover:border-blue-300 dark:hover:border-blue-500'
+                        isDisabled ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer hover:border-blue-300 dark:hover:border-blue-500'
                       } ${
                         isAlreadySelected ? 'opacity-50' : ''
                       } ${
@@ -871,6 +875,12 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                         }
                         e.dataTransfer.setData('text/plain', step.id);
                       }}
+                      onClick={() => {
+                        if (isDisabled || isAlreadySelected) return;
+                        
+                        // Add step to selected answers (click-to-add functionality)
+                        setSelectedAnswers(prev => [...prev, step.id]);
+                      }}
                     >
                       <div className="flex items-start space-x-3">
                         <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium ${
@@ -878,12 +888,14 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                             ? 'bg-orange-200 dark:bg-orange-800 text-orange-700 dark:text-orange-300' 
                             : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
                         }`}>
-                          {showExplanations && step.isDistractor ? '⚠️' : '⋮⋮'}
+                          {showExplanations && step.isDistractor ? '⚠️' : (isAlreadySelected ? '✓' : '+')}
                         </div>
-                        <div className="flex-1">
-                          <pre className="text-sm font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
-                            {step.code}
-                          </pre>
+                        <div className="flex-1 min-w-0">
+                          <div className="overflow-x-auto">
+                            <pre className="text-sm font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">
+                              {step.code}
+                            </pre>
+                          </div>
                         {showExplanations && (
                           <p className={`text-xs mt-1 ${
                             step.isDistractor 
@@ -1037,10 +1049,12 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                           }`}>
                             {index + 1}
                           </div>
-                          <div className="flex-1">
-                            <pre className="text-sm font-mono text-gray-800 dark:text-gray-200">
-                              {step.code}
-                            </pre>
+                          <div className="flex-1 min-w-0">
+                            <div className="overflow-x-auto">
+                              <pre className="text-sm font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">
+                                {step.code}
+                              </pre>
+                            </div>
                             {showExplanations && step.isDistractor && (
                               <p className="text-xs text-red-600 dark:text-red-400 mt-1">
                                 ⚠️ This is a distractor step - not part of the correct sequence
@@ -1079,8 +1093,10 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                         >
                           <div className="flex items-start space-x-3">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${userMatchedPosition ? 'bg-green-600 text-white' : 'bg-blue-600 text-white'}`}>{idx + 1}</div>
-                            <div className="flex-1">
-                              <pre className="text-sm font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap">{step.code}</pre>
+                            <div className="flex-1 min-w-0">
+                              <div className="overflow-x-auto">
+                                <pre className="text-sm font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">{step.code}</pre>
+                              </div>
                               {step.explanation && (
                                 <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">{step.explanation}</p>
                               )}
@@ -1482,26 +1498,40 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               <div className="rounded-lg mb-4 overflow-hidden border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between px-4 py-2 bg-[#1e1e1e] border-b border-gray-700">
                   <p className="text-sm text-gray-300 font-medium">Code Context</p>
-                  {currentQuestion.language && (
-                    <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${currentQuestion.languageBgColor || 'bg-gray-700'} ${currentQuestion.languageColor || 'text-gray-300'}`}>
-                      {currentQuestion.language}
-                    </span>
-                  )}
+                  <div className="flex items-center space-x-2">
+                    {currentQuestion.language && (
+                      <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${currentQuestion.languageBgColor || 'bg-gray-700'} ${currentQuestion.languageColor || 'text-gray-300'}`}>
+                        {currentQuestion.language}
+                      </span>
+                    )}
+                    <button
+                      onClick={() => setShowFullscreenCode(true)}
+                      className="p-1 text-gray-400 hover:text-gray-200 transition-colors"
+                      title="View in fullscreen"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
-                <SyntaxHighlighter
-                  language={getHighlighterLanguage(currentQuestion.language || 'JavaScript')}
-                  style={vscDarkPlus}
-                  customStyle={{
-                    margin: 0,
-                    padding: '1rem',
-                    fontSize: '0.875rem',
-                    lineHeight: '1.5',
-                    borderRadius: 0
-                  }}
-                  showLineNumbers={true}
-                >
-                  {currentQuestion.codeContext}
-                </SyntaxHighlighter>
+                <div className="overflow-x-auto">
+                  <SyntaxHighlighter
+                    language={getHighlighterLanguage(currentQuestion.language || 'JavaScript')}
+                    style={vscDarkPlus}
+                    customStyle={{
+                      margin: 0,
+                      padding: '1rem',
+                      fontSize: '0.875rem',
+                      lineHeight: '1.5',
+                      borderRadius: 0,
+                      minWidth: '100%'
+                    }}
+                    showLineNumbers={true}
+                  >
+                    {currentQuestion.codeContext}
+                  </SyntaxHighlighter>
+                </div>
               </div>
             )}
           </div>
@@ -1566,20 +1596,23 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                                 </span>
                               )}
                             </div>
-                            <SyntaxHighlighter
-                              language={getHighlighterLanguage(currentQuestion.language || 'JavaScript')}
-                              style={vscDarkPlus}
-                              customStyle={{
-                                margin: 0,
-                                padding: '1rem',
-                                fontSize: '0.875rem',
-                                lineHeight: '1.5',
-                                borderRadius: 0
-                              }}
-                              showLineNumbers={true}
-                            >
-                              {variant.code}
-                            </SyntaxHighlighter>
+                            <div className="overflow-x-auto">
+                              <SyntaxHighlighter
+                                language={getHighlighterLanguage(currentQuestion.language || 'JavaScript')}
+                                style={vscDarkPlus}
+                                customStyle={{
+                                  margin: 0,
+                                  padding: '1rem',
+                                  fontSize: '0.875rem',
+                                  lineHeight: '1.5',
+                                  borderRadius: 0,
+                                  minWidth: '100%'
+                                }}
+                                showLineNumbers={true}
+                              >
+                                {variant.code}
+                              </SyntaxHighlighter>
+                            </div>
                           </div>
                           <p className={`text-sm ${
                             isCorrect
@@ -1878,6 +1911,69 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
           )}
         </div>
       </div>
+
+      {/* Fullscreen Code Modal */}
+      <AnimatePresence>
+        {showFullscreenCode && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4"
+            onClick={() => setShowFullscreenCode(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-[#1e1e1e] rounded-lg w-full max-w-6xl h-full max-h-[90vh] flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-700">
+                <div className="flex items-center space-x-3">
+                  <h3 className="text-lg font-semibold text-white">Code Context</h3>
+                  {currentQuestion.language && (
+                    <span className={`inline-block px-3 py-1 text-sm font-semibold rounded ${currentQuestion.languageBgColor || 'bg-gray-700'} ${currentQuestion.languageColor || 'text-gray-300'}`}>
+                      {currentQuestion.language}
+                    </span>
+                  )}
+                </div>
+                <button
+                  onClick={() => setShowFullscreenCode(false)}
+                  className="p-2 text-gray-400 hover:text-white transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              {/* Code Content */}
+              <div className="flex-1 overflow-auto">
+                <div className="overflow-x-auto h-full">
+                  <SyntaxHighlighter
+                    language={getHighlighterLanguage(currentQuestion.language || 'JavaScript')}
+                    style={vscDarkPlus}
+                    customStyle={{
+                      margin: 0,
+                      padding: '2rem',
+                      fontSize: '14px',
+                      lineHeight: '1.6',
+                      borderRadius: 0,
+                      height: '100%',
+                      minWidth: '100%'
+                    }}
+                    showLineNumbers={true}
+                  >
+                    {currentQuestion.codeContext}
+                  </SyntaxHighlighter>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 } 
