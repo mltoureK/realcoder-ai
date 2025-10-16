@@ -449,10 +449,11 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     const isFinishingQuiz = !nextAvailable;
     const isStreamingComplete = quizSession.completed || false;
     
-    // If finishing while streaming, show a warning but allow finishing
+    // If finishing while streaming, show "slow down tiger" message and prevent finishing
     if (isFinishingQuiz && !isStreamingComplete) {
       setShowStreamingWarning(true);
-      setTimeout(() => setShowStreamingWarning(false), 2000);
+      setTimeout(() => setShowStreamingWarning(false), 3000);
+      return; // Don't allow finishing the quiz
     }
     
     if (nextAvailable) {
@@ -534,7 +535,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             hasOptions: !!questionWithRepo.options,
             hasCorrectAnswer: !!questionWithRepo.correctAnswer,
             hasVariants: !!questionWithRepo.variants,
-            hasSteps: !!questionWithRepo.steps
+            hasSteps: !!(questionWithRepo as any).steps
           });
           
           await addQuestionToBank(repoUrl, questionWithRepo as any, 85); // Start with high quality score
@@ -544,8 +545,8 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         }
       } catch (error) {
         console.error('❌ Error adding question to bank:', error);
-        console.error('❌ Error details:', error.message);
-        console.error('❌ Error stack:', error.stack);
+        console.error('❌ Error details:', (error as Error).message);
+        console.error('❌ Error stack:', (error as Error).stack);
       }
     } else {
       console.log(`❌ [QuizInterface] Not saving to question bank:`, { 
@@ -1304,6 +1305,12 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 {hasQuestion ? (
                   <>
                     Question {currentQuestionIndex + 1} of {totalQuestions}
+                    {!quizSession.completed && (
+                      <span className="ml-3 px-2 py-1 text-xs bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 rounded-full flex items-center gap-1">
+                        <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                        Streaming...
+                      </span>
+                    )}
                     {currentQuestion.isCached && (
                       <span className="ml-3 px-2 py-1 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full flex items-center gap-1">
                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -1421,8 +1428,8 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                   </svg>
                 </motion.div>
                 <div>
-                  <div className="font-semibold">Quiz Still Streaming!</div>
-                  <div className="text-sm opacity-90">Please wait for all questions to load before finishing.</div>
+                  <div className="font-semibold">Slow down tiger! 🐅</div>
+                  <div className="text-sm opacity-90">Wait for all questions to finish loading before you can finish the quiz.</div>
                 </div>
               </div>
             </div>
@@ -1846,12 +1853,25 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 Submit Answer
               </button>
             ) : (
-              <button
-                onClick={handleNextQuestion}
-                className={`bg-green-600 text-white py-3 px-8 rounded-lg font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors ${shakingNext ? 'animate-shake' : ''}`}
-              >
-                {currentQuestionIndex === quizSession.questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
-              </button>
+              <div className="relative">
+                <button
+                  onClick={handleNextQuestion}
+                  disabled={currentQuestionIndex === quizSession.questions.length - 1 && !quizSession.completed}
+                  className={`py-3 px-8 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors ${
+                    currentQuestionIndex === quizSession.questions.length - 1 && !quizSession.completed
+                      ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                      : `bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 ${shakingNext ? 'animate-shake' : ''}`
+                  }`}
+                >
+                  {currentQuestionIndex === quizSession.questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
+                </button>
+                {currentQuestionIndex === quizSession.questions.length - 1 && !quizSession.completed && (
+                  <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap shadow-lg">
+                    Slow down tiger!
+                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-500"></div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
           </>

@@ -15022,3 +15022,600 @@ Total Chunks Processed: 4
 Ended: 2025-10-16T05:47:47.908Z
 ================================================================================
 
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T05:54:47.499Z
+File: motiondivision-motion-b5df740/packages/framer-motion/src/animation/animate/subject.ts
+Functions Extracted: 1
+
+
+Function 1: animateSubject
+Language: TypeScript
+Lines: 49
+Full Code:
+--------------------------------------------------------------------------------
+export function animateSubject<O extends Object>(
+    subject:
+        | MotionValue<number>
+        | MotionValue<string>
+        | number
+        | string
+        | ElementOrSelector
+        | O
+        | O[],
+    keyframes:
+        | number
+        | string
+        | UnresolvedValueKeyframe<number>[]
+        | UnresolvedValueKeyframe<string>[]
+        | DOMKeyframesDefinition
+        | ObjectTarget<O>,
+    options?:
+        | ValueAnimationTransition<number>
+        | ValueAnimationTransition<string>
+        | DynamicAnimationOptions,
+    scope?: AnimationScope
+): AnimationPlaybackControlsWithThen[] {
+    const animations: AnimationPlaybackControlsWithThen[] = []
+
+    if (isSingleValue(subject, keyframes)) {
+        animations.push(
+            animateSingleValue(
+                subject,
+                isDOMKeyframes(keyframes)
+                    ? (keyframes as any).default || keyframes
+                    : keyframes,
+                options ? (options as any).default || options : options
+            )
+        )
+    } else {
+        const subjects = resolveSubjects(
+            subject,
+            keyframes as DOMKeyframesDefinition,
+            scope
+        )
+
+        const numSubjects = subjects.length
+
+        invariant(
+            Boolean(numSubjects),
+            "No valid elements provided.",
+            "no-valid-elements"
+        )
+
+        for (let i = 0; i < numSubjects; i++) {
+            const thisSubject = subjects[i]
+
+            invariant(
+                thisSubject !== null,
+                "You're trying to perform an animation on null. Ensure that selectors are correctly finding elements and refs are correctly hydrated.",
+                "animate-null"
+            )
+
+            const createVisualElement =
+                thisSubject instanceof Element
+                    ? createDOMVisualElement
+                    : createObjectVisualElement
+
+            if (!visualElementStore.has(thisSubject)) {
+                createVisualElement(thisSubject as any)
+            }
+
+            const visualElement = visualElementStore.get(thisSubject)!;
+            const transition = { ...options }
+
+            if (
+                "delay" in transition &&
+                typeof transition.delay === "function"
+            ) {
+                transition.delay = transition.delay(i, numSubjects)
+            }
+
+            animations.push(
+                ...animateTarget(
+                    visualElement,
+                    { ...(keyframes as {}), transition } as TargetAndTransition,
+                    {}
+                )
+            )
+        }
+    }
+
+    return animations
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:54:55.101Z
+Question Type: true-false
+Function: animateSubject
+Function Size: 2810 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, element, or object) based on provided keyframes and options, returning playback controls.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:55:02.236Z
+Question Type: select-all
+Function: animateSubject
+Function Size: 2810 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, element, or object) based on provided keyframes and options, returning playback controls.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:55:06.013Z
+Question Type: select-all
+Function: animateSubject
+Function Size: 2810 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, element, or object) based on provided keyframes and options, returning playback controls.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:55:17.558Z
+Question Type: function-variant
+Function: animateSubject
+Function Size: 2810 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, element, or object) based on provided keyframes and options, returning playback controls.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:55:20.074Z
+Question Type: select-all
+Function: animateSubject
+Function Size: 2810 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, element, or object) based on provided keyframes and options, returning playback controls.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:55:25.129Z
+Question Type: function-variant
+Function: animateSubject
+Function Size: 2810 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, element, or object) based on provided keyframes and options, returning playback controls.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:55:26.975Z
+Question Type: multiple-choice
+Function: animateSubject
+Function Size: 2810 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, element, or object) based on provided keyframes and options, returning playback controls.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:55:29.659Z
+Question Type: order-sequence
+Function: animateSubject
+Function Size: 2810 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, element, or object) based on provided keyframes and options, returning playback controls.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:55:32.254Z
+Question Type: function-variant
+Function: animateSubject
+Function Size: 2810 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, element, or object) based on provided keyframes and options, returning playback controls.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:55:33.541Z
+Question Type: true-false
+Function: animateSubject
+Function Size: 2810 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, element, or object) based on provided keyframes and options, returning playback controls.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:55:39.695Z
+Question Type: select-all
+Function: animateSubject
+Function Size: 2810 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, element, or object) based on provided keyframes and options, returning playback controls.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:55:46.136Z
+Question Type: select-all
+Function: animateSubject
+Function Size: 2810 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, element, or object) based on provided keyframes and options, returning playback controls.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:55:59.736Z
+Question Type: function-variant
+Function: animateSubject
+Function Size: 2810 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, element, or object) based on provided keyframes and options, returning playback controls.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:56:01.186Z
+Question Type: order-sequence
+Function: animateSubject
+Function Size: 2810 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, element, or object) based on provided keyframes and options, returning playback controls.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:56:03.558Z
+Question Type: function-variant
+Function: animateSubject
+Function Size: 2810 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, element, or object) based on provided keyframes and options, returning playback controls.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n      
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 1
+Ended: 2025-10-16T05:56:03.559Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T05:56:22.920Z
+File: animations for instance if layout="size" and an element has only changed position
+Functions Extracted: 7
+
+
+Function 1: propagateDirtyNodes
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export function propagateDirtyNodes(node: IProjectionNode) {
+    if (statsBuffer.value) {
+        metrics.nodes++
+    }
+
+    if (!node.parent) return
+
+    if (!node.isProjecting()) {
+        node.isProjectionDirty = node.parent.isProjectionDirty
+    }
+
+    node.isSharedProjectionDirty ||= Boolean(
+        node.isProjectionDirty ||
+            node.parent.isProjectionDirty ||
+            node.parent.isSharedProjectionDirty
+    )
+
+    node.isTransformDirty ||= node.parent.isTransformDirty
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: cleanDirtyNodes
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function cleanDirtyNodes(node: IProjectionNode) {
+    node.isProjectionDirty =
+        node.isSharedProjectionDirty =
+        node.isTransformDirty =
+            false
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: resetTransformStyle
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function resetTransformStyle(node: IProjectionNode) {
+    const { visualElement } = node.options
+    if (visualElement && visualElement.getProps().onBeforeLayoutMeasure) {
+        visualElement.notify("BeforeLayoutMeasure")
+    }
+
+    node.resetTransform()
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: finishAnimation
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function finishAnimation(node: IProjectionNode) {
+    node.finishAnimation()
+    node.targetDelta = node.relativeTarget = node.target = undefined
+    node.isProjectionDirty = true
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: mixAxisDelta
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+export function mixAxisDelta(output: AxisDelta, delta: AxisDelta, p: number) {
+    output.translate = mixNumber(delta.translate, 0, p)
+    output.scale = mixNumber(delta.scale, 1, p)
+    output.origin = delta.origin
+    output.originPoint = delta.originPoint
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: mixAxis
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function mixAxis(output: Axis, from: Axis, to: Axis, p: number) {
+    output.min = mixNumber(from.min, to.min, p)
+    output.max = mixNumber(from.max, to.max, p)
+}
+--------------------------------------------------------------------------------
+
+
+Function 7: mixBox
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function mixBox(output: Box, from: Box, to: Box, p: number) {
+    mixAxis(output.x, from.x, to.x, p)
+    mixAxis(output.y, from.y, to.y, p)
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:56:28.544Z
+Question Type: true-false
+Function: mixAxisDelta
+Function Size: 372 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mixAxisDelta (TypeScript)\n// Mixes the delta values for an axis based on a given progress factor.\n\nexport function mixAxisDelta(output: AxisDelta, delta: AxisDelta, p: number) {\n    output.translate = mixNumber(delta.translate, 0, p)\n    output.scale = mixNumber(delta.scale, 1, p)\n    o
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:56:30.800Z
+Question Type: select-all
+Function: cleanDirtyNodes
+Function Size: 257 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: cleanDirtyNodes (TypeScript)\n// Resets the dirty flags for a node.\n\nexport function cleanDirtyNodes(node: IProjectionNode) {\n    node.isProjectionDirty =\n        node.isSharedProjectionDirty =\n        node.isTransformDirty =\n            false\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:56:34.617Z
+Question Type: function-variant
+Function: cleanDirtyNodes
+Function Size: 257 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: cleanDirtyNodes (TypeScript)\n// Resets the dirty flags for a node.\n\nexport function cleanDirtyNodes(node: IProjectionNode) {\n    node.isProjectionDirty =\n        node.isSharedProjectionDirty =\n        node.isTransformDirty =\n            false\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:56:35.074Z
+Question Type: order-sequence
+Function: mixBox
+Function Size: 256 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mixBox (TypeScript)\n// Mixes two box values for both x and y axes based on a progress factor.\n\nexport function mixBox(output: Box, from: Box, to: Box, p: number) {\n    mixAxis(output.x, from.x, to.x, p)\n    mixAxis(output.y, from.y, to.y, p)\n}
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 4
+Total Chunks Processed: 7
+Ended: 2025-10-16T05:56:35.112Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T05:56:56.551Z
+File: motiondivision-motion-b5df740/packages/motion-dom/src/value/index.ts
+Functions Extracted: 6
+
+
+Function 1: setCurrent
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+setCurrent(current: V) {
+        this.current = current;
+        this.updatedAt = time.now();
+
+        if (this.canTrackVelocity === null && current !== undefined) {
+            this.canTrackVelocity = isFloat(this.current);
+        }
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: onChange
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+onChange(subscription: Subscriber<V>): () => void {
+        if (process.env.NODE_ENV !== "production") {
+            warnOnce(
+                false,
+                `value.onChange(callback) is deprecated. Switch to value.on("change", callback).`
+            );
+        }
+        return this.on("change", subscription);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: on
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+on<EventName extends keyof MotionValueEventCallbacks<V>>(eventName: EventName, callback: MotionValueEventCallbacks<V>[EventName]) {
+        if (!this.events[eventName]) {
+            this.events[eventName] = new SubscriptionManager();
+        }
+
+        const unsubscribe = this.events[eventName].add(callback);
+
+        if (eventName === "change") {
+            return () => {
+                unsubscribe();
+
+                frame.read(() => {
+                    if (!this.events.change.getSize()) {
+                        this.stop();
+                    }
+                });
+            };
+        }
+
+        return unsubscribe;
+    }
+--------------------------------------------------------------------------------
+
+
+Function 4: set
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+set(v: V) {
+        if (!this.passiveEffect) {
+            this.updateAndNotify(v);
+        } else {
+            this.passiveEffect(v, this.updateAndNotify);
+        }
+    }
+--------------------------------------------------------------------------------
+
+
+Function 5: jump
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+jump(v: V, endAnimation = true) {
+        this.updateAndNotify(v);
+        this.prev = v;
+        this.prevUpdatedAt = this.prevFrameValue = undefined;
+        endAnimation && this.stop();
+        if (this.stopPassiveEffect) this.stopPassiveEffect();
+    }
+--------------------------------------------------------------------------------
+
+
+Function 6: updateAndNotify
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+updateAndNotify = (v: V) => {
+        const currentTime = time.now();
+
+        if (this.updatedAt !== currentTime) {
+            this.setPrevFrameValue();
+        }
+
+        this.prev = this.current;
+
+        this.setCurrent(v);
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:57:01.027Z
+Question Type: true-false
+Function: updateAndNotify
+Function Size: 344 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateAndNotify (TypeScript)\n// Updates the MotionValue and notifies subscribers of the change.\n\nupdateAndNotify = (v: V) => {\n        const currentTime = time.now();\n\n        if (this.updatedAt !== currentTime) {\n            this.setPrevFrameValue();\n        }\n\n        this.prev = this
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:57:02.356Z
+Question Type: select-all
+Function: updateAndNotify
+Function Size: 344 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateAndNotify (TypeScript)\n// Updates the MotionValue and notifies subscribers of the change.\n\nupdateAndNotify = (v: V) => {\n        const currentTime = time.now();\n\n        if (this.updatedAt !== currentTime) {\n            this.setPrevFrameValue();\n        }\n\n        this.prev = this
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:57:04.564Z
+Question Type: select-all
+Function: set
+Function Size: 296 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: set (TypeScript)\n// Sets the state of the MotionValue, notifying subscribers if no passive effect is active.\n\nset(v: V) {\n        if (!this.passiveEffect) {\n            this.updateAndNotify(v);\n        } else {\n            this.passiveEffect(v, this.updateAndNotify);\n        }\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:57:06.313Z
+Question Type: function-variant
+Function: onChange
+Function Size: 438 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onChange (TypeScript)\n// Adds a subscriber for change events and returns an unsubscribe function.\n\nonChange(subscription: Subscriber<V>): () => void {\n        if (process.env.NODE_ENV !== "production") {\n            warnOnce(\n                false,\n                `value.onChange(callba
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 4
+Total Chunks Processed: 6
+Ended: 2025-10-16T05:57:06.367Z
+================================================================================
+
