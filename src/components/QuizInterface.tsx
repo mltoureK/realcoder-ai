@@ -417,6 +417,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     if (isCorrect) {
       setScore(prev => prev + 1);
       setShowExplanations(true);
+      console.log('✅ Answer correct - showing explanations');
     } else {
       // Decrement lives, apply time penalty, and pause timers until next
       const nextLives = Math.max(0, lives - 1);
@@ -429,7 +430,14 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         setShowReportPrompt(true);
       } else {
         setShowExplanations(true);
+        console.log('❌ Answer incorrect - showing explanations');
       }
+    }
+    
+    // Debug: Check if current question has distractors
+    if (currentQuestion.type === 'order-sequence' && currentQuestion.steps) {
+      const distractors = currentQuestion.steps.filter((step: any) => step.isDistractor);
+      console.log('🔍 Order sequence question - distractors found:', distractors.length, distractors);
     }
   };
 
@@ -1822,6 +1830,8 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               console.log(`🔍 [QuizInterface] shouldUpdate for ${currentQuestion.id}:`, shouldUpdate, 'pollUpdatedQuestions:', Array.from(pollUpdatedQuestions));
               return shouldUpdate;
             })()}
+            questionData={currentQuestion}
+            repoUrl={quizSession?.repositoryInfo ? `https://github.com/${quizSession.repositoryInfo.owner}/${quizSession.repositoryInfo.repo}` : undefined}
             onPollUpdate={handlePollUpdate}
           />
 

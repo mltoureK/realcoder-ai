@@ -437,11 +437,30 @@ export async function getUserQuestionRating(questionId: string, userId: string):
 export const updateQuestionPoll = async (
   questionId: string,
   isCorrect: boolean,
-  questionData?: unknown // Optional: full question data to save on first poll
+  questionData?: unknown, // Optional: full question data to save on first poll
+  repoUrl?: string
 ): Promise<void> => {
   try {
-    const questionRef = doc(db, 'questions', questionId);
-    const questionSnap = await getDoc(questionRef);
+    let repoDocId: string | undefined;
+    if (repoUrl) {
+      const { repoKey } = extractRepoInfo(repoUrl);
+      repoDocId = `${repoKey}__${questionId}`;
+    }
+
+    const primaryDocId = repoDocId ?? questionId;
+    let questionRef = doc(db, COLLECTIONS.QUESTIONS, primaryDocId);
+    let questionSnap = await getDoc(questionRef);
+
+    // Legacy compatibility: migrate old doc without repo key if present
+    if (!questionSnap.exists() && repoDocId) {
+      const legacyRef = doc(db, COLLECTIONS.QUESTIONS, questionId);
+      const legacySnap = await getDoc(legacyRef);
+      if (legacySnap.exists()) {
+        console.log(`♻️ [updateQuestionPoll] Migrating legacy poll doc for ${questionId} -> ${repoDocId}`);
+        await setDoc(questionRef, legacySnap.data(), { merge: true });
+        questionSnap = await getDoc(questionRef);
+      }
+    }
     
     if (questionSnap.exists()) {
       const currentData = questionSnap.data();
@@ -466,6 +485,7 @@ export const updateQuestionPoll = async (
       // Create new question document with FULL data if provided
       let initialData: Record<string, unknown> = {
         questionId: questionId,
+        repoUrl: repoUrl,
         upvotes: 0,
         downvotes: 0,
         totalVotes: 0,
@@ -487,6 +507,9 @@ export const updateQuestionPoll = async (
           ...normalized,
           ...initialData // Keep poll metrics
         };
+      } else if (repoUrl) {
+        const { repoKey } = extractRepoInfo(repoUrl);
+        initialData.repoKey = repoKey;
       } else {
         console.log(`📊 [updateQuestionPoll] No question data provided - creating minimal poll document`);
       }
@@ -500,15 +523,32 @@ export const updateQuestionPoll = async (
   }
 };
 
-export const getQuestionPollData = async (questionId: string): Promise<{
+export const getQuestionPollData = async (questionId: string, repoUrl?: string): Promise<{
   passedCount: number;
   failedCount: number;
   totalAttempts: number;
   passRate: number;
 } | null> => {
   try {
-    const questionRef = doc(db, 'questions', questionId);
-    const questionSnap = await getDoc(questionRef);
+    let repoDocId: string | undefined;
+    if (repoUrl) {
+      const { repoKey } = extractRepoInfo(repoUrl);
+      repoDocId = `${repoKey}__${questionId}`;
+    }
+
+    const primaryDocId = repoDocId ?? questionId;
+    let questionRef = doc(db, COLLECTIONS.QUESTIONS, primaryDocId);
+    let questionSnap = await getDoc(questionRef);
+
+    if (!questionSnap.exists() && repoDocId) {
+      const legacyRef = doc(db, COLLECTIONS.QUESTIONS, questionId);
+      const legacySnap = await getDoc(legacyRef);
+      if (legacySnap.exists()) {
+        console.log(`♻️ [getQuestionPollData] Migrating legacy poll doc for ${questionId} -> ${repoDocId}`);
+        await setDoc(questionRef, legacySnap.data(), { merge: true });
+        questionSnap = await getDoc(questionRef);
+      }
+    }
     
     if (questionSnap.exists()) {
       const data = questionSnap.data();
@@ -581,8 +621,9 @@ export const addQuestionToBank = async (
     console.log(`🔍 [addQuestionToBank] Final stored question:`, storedQuestion);
 
     // ALSO save to the main questions collection with complete data
-    const questionRef = doc(db, COLLECTIONS.QUESTIONS, question.id);
-    console.log(`🔍 [addQuestionToBank] Saving to questions collection with ID:`, question.id);
+    const questionDocId = `${repoKey}__${question.id}`;
+    const questionRef = doc(db, COLLECTIONS.QUESTIONS, questionDocId);
+    console.log(`🔍 [addQuestionToBank] Saving to questions collection with ID:`, questionDocId);
     console.log(`🔍 [addQuestionToBank] Document to save:`, JSON.stringify(storedQuestion, null, 2));
     await setDoc(questionRef, storedQuestion, { merge: true });
     console.log(`✅ Question ${question.id} saved to questions collection with complete data`);

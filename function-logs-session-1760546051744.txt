@@ -12850,3 +12850,2175 @@ Total Chunks Processed: 9
 Ended: 2025-10-16T04:35:58.813Z
 ================================================================================
 
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T04:59:30.352Z
+File: WordPress-WordPress-e9bd851/wp-includes/sodium_compat/lib/ristretto255.php
+Functions Extracted: 6
+
+
+Function 1: sodium_crypto_core_ristretto255_add
+Language: PHP
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_core_ristretto255_add(
+    #[\SensitiveParameter]
+    $p,
+    #[\SensitiveParameter]
+    $q
+) {
+    return ParagonIE_Sodium_Compat::ristretto255_add($p, $q, true);
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: sodium_crypto_core_ristretto255_from_hash
+Language: PHP
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_core_ristretto255_from_hash(
+    #[\SensitiveParameter]
+    $s
+) {
+    return ParagonIE_Sodium_Compat::ristretto255_from_hash($s, true);
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: sodium_crypto_core_ristretto255_is_valid_point
+Language: PHP
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_core_ristretto255_is_valid_point(
+    #[\SensitiveParameter]
+    $s
+) {
+    return ParagonIE_Sodium_Compat::ristretto255_is_valid_point($s, true);
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: sodium_crypto_core_ristretto255_scalar_add
+Language: PHP
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_core_ristretto255_scalar_add(
+    #[\SensitiveParameter]
+    $x,
+    #[\SensitiveParameter]
+    $y
+) {
+    return ParagonIE_Sodium_Compat::ristretto255_scalar_add($x, $y, true);
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: sodium_crypto_core_ristretto255_scalar_mul
+Language: PHP
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_core_ristretto255_scalar_mul(
+    #[\SensitiveParameter]
+    $x,
+    #[\SensitiveParameter]
+    $y
+) {
+    return ParagonIE_Sodium_Compat::ristretto255_scalar_mul($x, $y, true);
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: sodium_crypto_scalarmult_ristretto255
+Language: PHP
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_scalarmult_ristretto255(
+    #[\SensitiveParameter]
+    $n,
+    #[\SensitiveParameter]
+    $p
+) {
+    return ParagonIE_Sodium_Compat::scalarmult_ristretto255($n, $p, true);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T04:59:34.733Z
+Question Type: true-false
+Function: sodium_crypto_core_ristretto255_add
+Function Size: 277 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_core_ristretto255_add (PHP)\n// Adds two Ristretto255 points.\n\nfunction sodium_crypto_core_ristretto255_add(\n    #[\SensitiveParameter]\n    $p,\n    #[\SensitiveParameter]\n    $q\n) {\n    return ParagonIE_Sodium_Compat::ristretto255_add($p, $q, true);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T04:59:36.793Z
+Question Type: select-all
+Function: sodium_crypto_core_ristretto255_scalar_mul
+Function Size: 305 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_core_ristretto255_scalar_mul (PHP)\n// Multiplies two Ristretto255 scalars.\n\nfunction sodium_crypto_core_ristretto255_scalar_mul(\n    #[\SensitiveParameter]\n    $x,\n    #[\SensitiveParameter]\n    $y\n) {\n    return ParagonIE_Sodium_Compat::ristretto255_scalar_mul($x, $y, tru
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T04:59:40.807Z
+Question Type: function-variant
+Function: sodium_crypto_scalarmult_ristretto255
+Function Size: 318 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_scalarmult_ristretto255 (PHP)\n// Computes the scalar multiplication of a Ristretto255 point.\n\nfunction sodium_crypto_scalarmult_ristretto255(\n    #[\SensitiveParameter]\n    $n,\n    #[\SensitiveParameter]\n    $p\n) {\n    return ParagonIE_Sodium_Compat::scalarmult_ristretto25
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T04:59:40.952Z
+Question Type: function-variant
+Function: sodium_crypto_core_ristretto255_from_hash
+Function Size: 268 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_core_ristretto255_from_hash (PHP)\n// Creates a Ristretto255 point from a hash.\n\nfunction sodium_crypto_core_ristretto255_from_hash(\n    #[\SensitiveParameter]\n    $s\n) {\n    return ParagonIE_Sodium_Compat::ristretto255_from_hash($s, true);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T04:59:41.858Z
+Question Type: select-all
+Function: sodium_crypto_scalarmult_ristretto255
+Function Size: 318 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_scalarmult_ristretto255 (PHP)\n// Computes the scalar multiplication of a Ristretto255 point.\n\nfunction sodium_crypto_scalarmult_ristretto255(\n    #[\SensitiveParameter]\n    $n,\n    #[\SensitiveParameter]\n    $p\n) {\n    return ParagonIE_Sodium_Compat::scalarmult_ristretto25
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T04:59:46.173Z
+Question Type: select-all
+Function: sodium_crypto_core_ristretto255_add
+Function Size: 277 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_core_ristretto255_add (PHP)\n// Adds two Ristretto255 points.\n\nfunction sodium_crypto_core_ristretto255_add(\n    #[\SensitiveParameter]\n    $p,\n    #[\SensitiveParameter]\n    $q\n) {\n    return ParagonIE_Sodium_Compat::ristretto255_add($p, $q, true);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T04:59:46.896Z
+Question Type: multiple-choice
+Function: sodium_crypto_core_ristretto255_scalar_mul
+Function Size: 305 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_core_ristretto255_scalar_mul (PHP)\n// Multiplies two Ristretto255 scalars.\n\nfunction sodium_crypto_core_ristretto255_scalar_mul(\n    #[\SensitiveParameter]\n    $x,\n    #[\SensitiveParameter]\n    $y\n) {\n    return ParagonIE_Sodium_Compat::ristretto255_scalar_mul($x, $y, tru
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T04:59:49.372Z
+Question Type: select-all
+Function: sodium_crypto_core_ristretto255_is_valid_point
+Function Size: 297 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_core_ristretto255_is_valid_point (PHP)\n// Checks if a given string is a valid Ristretto255 point.\n\nfunction sodium_crypto_core_ristretto255_is_valid_point(\n    #[\SensitiveParameter]\n    $s\n) {\n    return ParagonIE_Sodium_Compat::ristretto255_is_valid_point($s, true);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T04:59:54.899Z
+Question Type: order-sequence
+Function: sodium_crypto_core_ristretto255_scalar_add
+Function Size: 299 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_core_ristretto255_scalar_add (PHP)\n// Adds two Ristretto255 scalars.\n\nfunction sodium_crypto_core_ristretto255_scalar_add(\n    #[\SensitiveParameter]\n    $x,\n    #[\SensitiveParameter]\n    $y\n) {\n    return ParagonIE_Sodium_Compat::ristretto255_scalar_add($x, $y, true);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T04:59:56.627Z
+Question Type: function-variant
+Function: sodium_crypto_core_ristretto255_is_valid_point
+Function Size: 297 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_core_ristretto255_is_valid_point (PHP)\n// Checks if a given string is a valid Ristretto255 point.\n\nfunction sodium_crypto_core_ristretto255_is_valid_point(\n    #[\SensitiveParameter]\n    $s\n) {\n    return ParagonIE_Sodium_Compat::ristretto255_is_valid_point($s, true);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T04:59:56.944Z
+Question Type: order-sequence
+Function: sodium_crypto_core_ristretto255_from_hash
+Function Size: 268 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_core_ristretto255_from_hash (PHP)\n// Creates a Ristretto255 point from a hash.\n\nfunction sodium_crypto_core_ristretto255_from_hash(\n    #[\SensitiveParameter]\n    $s\n) {\n    return ParagonIE_Sodium_Compat::ristretto255_from_hash($s, true);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:00:01.165Z
+Question Type: true-false
+Function: sodium_crypto_core_ristretto255_is_valid_point
+Function Size: 297 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_core_ristretto255_is_valid_point (PHP)\n// Checks if a given string is a valid Ristretto255 point.\n\nfunction sodium_crypto_core_ristretto255_is_valid_point(\n    #[\SensitiveParameter]\n    $s\n) {\n    return ParagonIE_Sodium_Compat::ristretto255_is_valid_point($s, true);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:00:01.525Z
+Question Type: function-variant
+Function: sodium_crypto_core_ristretto255_scalar_mul
+Function Size: 305 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_core_ristretto255_scalar_mul (PHP)\n// Multiplies two Ristretto255 scalars.\n\nfunction sodium_crypto_core_ristretto255_scalar_mul(\n    #[\SensitiveParameter]\n    $x,\n    #[\SensitiveParameter]\n    $y\n) {\n    return ParagonIE_Sodium_Compat::ristretto255_scalar_mul($x, $y, tru
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:00:04.477Z
+Question Type: select-all
+Function: sodium_crypto_core_ristretto255_scalar_add
+Function Size: 299 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_core_ristretto255_scalar_add (PHP)\n// Adds two Ristretto255 scalars.\n\nfunction sodium_crypto_core_ristretto255_scalar_add(\n    #[\SensitiveParameter]\n    $x,\n    #[\SensitiveParameter]\n    $y\n) {\n    return ParagonIE_Sodium_Compat::ristretto255_scalar_add($x, $y, true);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:00:05.337Z
+Question Type: function-variant
+Function: sodium_crypto_core_ristretto255_add
+Function Size: 277 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_core_ristretto255_add (PHP)\n// Adds two Ristretto255 points.\n\nfunction sodium_crypto_core_ristretto255_add(\n    #[\SensitiveParameter]\n    $p,\n    #[\SensitiveParameter]\n    $q\n) {\n    return ParagonIE_Sodium_Compat::ristretto255_add($p, $q, true);\n}
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 12
+Total Chunks Processed: 6
+Ended: 2025-10-16T05:00:05.338Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T05:00:21.193Z
+File: Find us a working transport.
+Functions Extracted: 2
+
+
+Function 1: get_transport
+Language: PHP
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+/**
+ * Get a working transport.
+ *
+ * @param array<string, bool> $capabilities Optional. Associative array of capabilities to test against, i.e. `['<capability>' => true]`.
+ * @return \WpOrg\Requests\Transport
+ * @throws \WpOrg\Requests\Exception If no valid transport is found (`notransport`).
+ */
+protected static function get_transport(array $capabilities = []) {
+	$class = self::get_transport_class($capabilities);
+
+	if ($class === '') {
+		throw new Exception('No working transports found', 'notransport', self::$transports);
+	}
+
+	return new $class();
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: request
+Language: PHP
+Lines: 42
+Full Code:
+--------------------------------------------------------------------------------
+/**
+ * Main interface for HTTP requests
+ *
+ * This method initiates a request and sends it via a transport before
+ * parsing.
+ *
+ * @param string|Stringable $url URL to request
+ * @param array $headers Extra headers to send with the request
+ * @param array|null $data Data to send either as a query string for GET/HEAD requests, or in the body for POST requests
+ * @param string $type HTTP request type (use Requests constants)
+ * @param array $options Options for the request (see description for more information)
+ * @return \WpOrg\Requests\Response
+ * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed $url argument is not a string or Stringable.
+ * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed $type argument is not a string.
+ * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed $options argument is not an array.
+ * @throws \WpOrg\Requests\Exception On invalid URLs (`nonhttp`)
+ */
+public static function request($url, $headers = [], $data = [], $type = self::GET, $options = []) {
+	if (InputValidator::is_string_or_stringable($url) === false) {
+		throw InvalidArgument::create(1, '$url', 'string|Stringable', gettype($url));
+	}
+
+	if (is_string($type) === false) {
+		throw InvalidArgument::create(4, '$type', 'string', gettype($type));
+	}
+
+	if (is_array($options) === false) {
+		throw InvalidArgument::create(5, '$options', 'array', gettype($options));
+	}
+
+	if (empty($options['type'])) {
+		$options['type'] = $type;
+	}
+
+	$options = array_merge(self::get_default_options(), $options);
+
+	self::set_defaults($url, $headers, $data, $type, $options);
+
+	$options['hooks']->dispatch('requests.before_request', [&$url, &$headers, &$data, &$type, &$options]);
+
+	if (!empty($options['transport'])) {
+		$transport = $options['transport'];
+
+		if (is_string($options['transport'])) {
+			$transport = new $transport();
+		}
+	} else {
+		$need_ssl     = (stripos($url, 'https://') === 0);
+		$capabilities = [Capability::SSL => $need_ssl];
+		$transport    = self::get_transport($capabilities);
+	}
+
+	$response = $transport->request($url, $headers, $data, $options);
+
+	$options['hooks']->dispatch('requests.before_parse', [&$response, $url, $headers, $data, $type, $options]);
+
+	return self::parse_response($response, $url, $headers, $data, $options);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:00:26.371Z
+Question Type: true-false
+Function: get_transport
+Function Size: 660 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: get_transport (PHP)\n// Retrieves a working transport based on the provided capabilities.\n\n/**\n * Get a working transport.\n *\n * @param array<string, bool> $capabilities Optional. Associative array of capabilities to test against, i.e. `['<capability>' => true]`.\n * @return \WpOrg\Reques
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:00:32.806Z
+Question Type: true-false
+Function: request
+Function Size: 2398 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: request (PHP)\n// Handles the main logic for sending HTTP requests and processing responses.\n\n/**\n * Main interface for HTTP requests\n *\n * This method initiates a request and sends it via a transport before\n * parsing.\n *\n * @param string|Stringable $url URL to request\n * @param array $
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:00:33.371Z
+Question Type: order-sequence
+Function: request
+Function Size: 2398 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: request (PHP)\n// Handles the main logic for sending HTTP requests and processing responses.\n\n/**\n * Main interface for HTTP requests\n *\n * This method initiates a request and sends it via a transport before\n * parsing.\n *\n * @param string|Stringable $url URL to request\n * @param array $
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:00:34.420Z
+Question Type: order-sequence
+Function: get_transport
+Function Size: 660 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: get_transport (PHP)\n// Retrieves a working transport based on the provided capabilities.\n\n/**\n * Get a working transport.\n *\n * @param array<string, bool> $capabilities Optional. Associative array of capabilities to test against, i.e. `['<capability>' => true]`.\n * @return \WpOrg\Reques
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:00:34.635Z
+Question Type: select-all
+Function: get_transport
+Function Size: 660 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: get_transport (PHP)\n// Retrieves a working transport based on the provided capabilities.\n\n/**\n * Get a working transport.\n *\n * @param array<string, bool> $capabilities Optional. Associative array of capabilities to test against, i.e. `['<capability>' => true]`.\n * @return \WpOrg\Reques
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:00:42.020Z
+Question Type: select-all
+Function: get_transport
+Function Size: 660 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: get_transport (PHP)\n// Retrieves a working transport based on the provided capabilities.\n\n/**\n * Get a working transport.\n *\n * @param array<string, bool> $capabilities Optional. Associative array of capabilities to test against, i.e. `['<capability>' => true]`.\n * @return \WpOrg\Reques
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:00:46.115Z
+Question Type: select-all
+Function: request
+Function Size: 2398 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: request (PHP)\n// Handles the main logic for sending HTTP requests and processing responses.\n\n/**\n * Main interface for HTTP requests\n *\n * This method initiates a request and sends it via a transport before\n * parsing.\n *\n * @param string|Stringable $url URL to request\n * @param array $
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:00:48.958Z
+Question Type: select-all
+Function: get_transport
+Function Size: 660 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: get_transport (PHP)\n// Retrieves a working transport based on the provided capabilities.\n\n/**\n * Get a working transport.\n *\n * @param array<string, bool> $capabilities Optional. Associative array of capabilities to test against, i.e. `['<capability>' => true]`.\n * @return \WpOrg\Reques
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:00:52.699Z
+Question Type: function-variant
+Function: get_transport
+Function Size: 660 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: get_transport (PHP)\n// Retrieves a working transport based on the provided capabilities.\n\n/**\n * Get a working transport.\n *\n * @param array<string, bool> $capabilities Optional. Associative array of capabilities to test against, i.e. `['<capability>' => true]`.\n * @return \WpOrg\Reques
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 2
+Ended: 2025-10-16T05:00:52.797Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T05:05:50.585Z
+File: [2 files: index.ts, index.test.tsx]
+Functions Extracted: 4
+
+
+Function 1: createScopedAnimate
+Language: TypeScript
+Lines: 45
+Full Code:
+--------------------------------------------------------------------------------
+export function createScopedAnimate(scope?: AnimationScope) {
+    function scopedAnimate(
+        sequence: AnimationSequence,
+        options?: SequenceOptions
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate(
+        value: string | MotionValue<string>,
+        keyframes: string | UnresolvedValueKeyframe<string>[],
+        options?: ValueAnimationTransition<string>
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate(
+        value: number | MotionValue<number>,
+        keyframes: number | UnresolvedValueKeyframe<number>[],
+        options?: ValueAnimationTransition<number>
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate<V extends string | number>(
+        value: V | MotionValue<V>,
+        keyframes: V | UnresolvedValueKeyframe<V>[],
+        options?: ValueAnimationTransition<V>
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate(
+        element: ElementOrSelector,
+        keyframes: DOMKeyframesDefinition,
+        options?: DynamicAnimationOptions
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate<O extends {}>(
+        object: O | O[],
+        keyframes: ObjectTarget<O>,
+        options?: DynamicAnimationOptions
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate<O extends {}>(
+        subjectOrSequence:
+            | AnimationSequence
+            | MotionValue<number>
+            | MotionValue<string>
+            | number
+            | string
+            | ElementOrSelector
+            | O
+            | O[],
+        optionsOrKeyframes?:
+            | SequenceOptions
+            | number
+            | string
+            | UnresolvedValueKeyframe<number>[]
+            | UnresolvedValueKeyframe<string>[]
+            | DOMKeyframesDefinition
+            | ObjectTarget<O>,
+        options?:
+            | ValueAnimationTransition<number>
+            | ValueAnimationTransition<string>
+            | DynamicAnimationOptions
+    ): AnimationPlaybackControlsWithThen {
+        let animations: AnimationPlaybackControlsWithThen[] = []
+        let animationOnComplete: VoidFunction | undefined
+
+        if (isSequence(subjectOrSequence)) {
+            animations = animateSequence(
+                subjectOrSequence,
+                optionsOrKeyframes as SequenceOptions,
+                scope
+            )
+        } else {
+            // Implementation details...
+        }
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: onDragStart
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const onDragStart = jest.fn()
+const Component = () => (
+    <MockDrag>
+        <motion.div drag onDragStart={onDragStart} />
+    </MockDrag>
+)
+const { container, rerender } = render(<Component />)
+rerender(<Component />)
+const pointer = await drag(container.firstChild).to(100, 100)
+pointer.end()
+await nextFrame()
+expect(onDragStart).toBeCalledTimes(1)
+--------------------------------------------------------------------------------
+
+
+Function 3: willChange is applied correctly
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const willChange = new WillChangeMotionValue("auto")
+const Component = () => (
+    <MockDrag>
+        <motion.div
+            data-testid="draggable"
+            drag
+            dragTransition={{
+                bounceStiffness: 100000,
+                bounceDamping: 100000,
+            }}
+            style={{ willChange }}
+        />
+    </MockDrag>
+)
+const { container, rerender } = render(<Component />)
+rerender(<Component />)
+const pointer = await drag(container.firstChild).to(100, 100)
+await nextFrame()
+expect(expect(willChange.get()).toBe("transform"))
+pointer.end()
+--------------------------------------------------------------------------------
+
+
+Function 4: onDragEnd
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const onDragEnd = jest.fn()
+const Component = () => (
+    <MockDrag>
+        <motion.div drag onDragEnd={onDragEnd} />
+    </MockDrag>
+)
+const { container, rerender } = render(<Component />)
+rerender(<Component />)
+const pointer = await drag(container.firstChild).to(100, 100)
+pointer.end()
+await nextFrame()
+expect(onDragEnd).toBeCalledTimes(1)
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:05:57.331Z
+Question Type: select-all
+Function: onDragStart
+Function Size: 479 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onDragStart (JavaScript)\n// Tests that the onDragStart event fires correctly when the drag action is initiated.\n\nconst onDragStart = jest.fn()\nconst Component = () => (\n    <MockDrag>\n        <motion.div drag onDragStart={onDragStart} />\n    </MockDrag>\n)\nconst { container, rerender } =
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:06:00.035Z
+Question Type: order-sequence
+Function: onDragStart
+Function Size: 479 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onDragStart (JavaScript)\n// Tests that the onDragStart event fires correctly when the drag action is initiated.\n\nconst onDragStart = jest.fn()\nconst Component = () => (\n    <MockDrag>\n        <motion.div drag onDragStart={onDragStart} />\n    </MockDrag>\n)\nconst { container, rerender } =
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:06:04.346Z
+Question Type: select-all
+Function: onDragEnd
+Function Size: 467 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onDragEnd (JavaScript)\n// Tests that the onDragEnd event fires correctly when the drag action is completed.\n\nconst onDragEnd = jest.fn()\nconst Component = () => (\n    <MockDrag>\n        <motion.div drag onDragEnd={onDragEnd} />\n    </MockDrag>\n)\nconst { container, rerender } = render(<C
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:06:06.091Z
+Question Type: select-all
+Function: createScopedAnimate
+Function Size: 2644 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element, allowing for various types of animations including sequences, strings, numbers, elements, and objects.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    fu
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:06:11.666Z
+Question Type: select-all
+Function: willChange is applied correctly
+Function Size: 715 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: willChange is applied correctly (JavaScript)\n// Tests that the willChange style is applied correctly during a drag action.\n\nconst willChange = new WillChangeMotionValue("auto")\nconst Component = () => (\n    <MockDrag>\n        <motion.div\n            data-testid="draggable"\n            d
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:06:13.090Z
+Question Type: function-variant
+Function: onDragStart
+Function Size: 479 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onDragStart (JavaScript)\n// Tests that the onDragStart event fires correctly when the drag action is initiated.\n\nconst onDragStart = jest.fn()\nconst Component = () => (\n    <MockDrag>\n        <motion.div drag onDragStart={onDragStart} />\n    </MockDrag>\n)\nconst { container, rerender } =
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:06:20.590Z
+Question Type: function-variant
+Function: onDragEnd
+Function Size: 467 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onDragEnd (JavaScript)\n// Tests that the onDragEnd event fires correctly when the drag action is completed.\n\nconst onDragEnd = jest.fn()\nconst Component = () => (\n    <MockDrag>\n        <motion.div drag onDragEnd={onDragEnd} />\n    </MockDrag>\n)\nconst { container, rerender } = render(<C
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:06:21.405Z
+Question Type: multiple-choice
+Function: onDragStart
+Function Size: 479 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: onDragStart (JavaScript)\n// Tests that the onDragStart event fires correctly when the drag action is initiated.\n\nconst onDragStart = jest.fn()\nconst Component = () => (\n    <MockDrag>\n        <motion.div drag onDragStart={onDragStart} />\n    </MockDrag>\n)\nconst { container, rerender } =
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:06:26.455Z
+Question Type: order-sequence
+Function: willChange is applied correctly
+Function Size: 715 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: willChange is applied correctly (JavaScript)\n// Tests that the willChange style is applied correctly during a drag action.\n\nconst willChange = new WillChangeMotionValue("auto")\nconst Component = () => (\n    <MockDrag>\n        <motion.div\n            data-testid="draggable"\n            d
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:06:28.001Z
+Question Type: select-all
+Function: onDragEnd
+Function Size: 467 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: onDragEnd (JavaScript)\n// Tests that the onDragEnd event fires correctly when the drag action is completed.\n\nconst onDragEnd = jest.fn()\nconst Component = () => (\n    <MockDrag>\n        <motion.div drag onDragEnd={onDragEnd} />\n    </MockDrag>\n)\nconst { container, rerender } = render(<C
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:06:32.813Z
+Question Type: true-false
+Function: createScopedAnimate
+Function Size: 2644 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element, allowing for various types of animations including sequences, strings, numbers, elements, and objects.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    fu
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 4
+Ended: 2025-10-16T05:06:32.895Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T05:06:45.101Z
+File: motiondivision-motion-b5df740/packages/framer-motion/src/animation/animate/subject.ts
+Functions Extracted: 1
+
+
+Function 1: animateSubject
+Language: TypeScript
+Lines: 61
+Full Code:
+--------------------------------------------------------------------------------
+export function animateSubject<O extends Object>(
+    subject:
+        | MotionValue<number>
+        | MotionValue<string>
+        | number
+        | string
+        | ElementOrSelector
+        | O
+        | O[],
+    keyframes:
+        | number
+        | string
+        | UnresolvedValueKeyframe<number>[]
+        | UnresolvedValueKeyframe<string>[]
+        | DOMKeyframesDefinition
+        | ObjectTarget<O>,
+    options?:
+        | ValueAnimationTransition<number>
+        | ValueAnimationTransition<string>
+        | DynamicAnimationOptions,
+    scope?: AnimationScope
+): AnimationPlaybackControlsWithThen[] {
+    const animations: AnimationPlaybackControlsWithThen[] = []
+
+    if (isSingleValue(subject, keyframes)) {
+        animations.push(
+            animateSingleValue(
+                subject,
+                isDOMKeyframes(keyframes)
+                    ? (keyframes as any).default || keyframes
+                    : keyframes,
+                options ? (options as any).default || options : options
+            )
+        )
+    } else {
+        const subjects = resolveSubjects(
+            subject,
+            keyframes as DOMKeyframesDefinition,
+            scope
+        )
+
+        const numSubjects = subjects.length
+
+        invariant(
+            Boolean(numSubjects),
+            "No valid elements provided.",
+            "no-valid-elements"
+        )
+
+        for (let i = 0; i < numSubjects; i++) {
+            const thisSubject = subjects[i]
+
+            invariant(
+                thisSubject !== null,
+                "You're trying to perform an animation on null. Ensure that selectors are correctly finding elements and refs are correctly hydrated.",
+                "animate-null"
+            )
+
+            const createVisualElement =
+                thisSubject instanceof Element
+                    ? createDOMVisualElement
+                    : createObjectVisualElement
+
+            if (!visualElementStore.has(thisSubject)) {
+                createVisualElement(thisSubject as any)
+            }
+
+            const visualElement = visualElementStore.get(thisSubject)!;
+            const transition = { ...options }
+
+            if (
+                "delay" in transition &&
+                typeof transition.delay === "function"
+            ) {
+                transition.delay = transition.delay(i, numSubjects)
+            }
+
+            animations.push(
+                ...animateTarget(
+                    visualElement,
+                    { ...(keyframes as {}), transition } as TargetAndTransition,
+                    {}
+                )
+            )
+        }
+    }
+
+    return animations
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:06:56.382Z
+Question Type: order-sequence
+Function: animateSubject
+Function Size: 2785 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, DOM element, or object) based on provided keyframes and options.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n        | number\n        | stri
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:06:58.623Z
+Question Type: true-false
+Function: animateSubject
+Function Size: 2785 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, DOM element, or object) based on provided keyframes and options.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n        | number\n        | stri
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:06:59.880Z
+Question Type: select-all
+Function: animateSubject
+Function Size: 2785 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, DOM element, or object) based on provided keyframes and options.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n        | number\n        | stri
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:07:11.034Z
+Question Type: order-sequence
+Function: animateSubject
+Function Size: 2785 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, DOM element, or object) based on provided keyframes and options.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n        | number\n        | stri
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:07:15.148Z
+Question Type: function-variant
+Function: animateSubject
+Function Size: 2785 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, DOM element, or object) based on provided keyframes and options.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n        | number\n        | stri
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:07:25.449Z
+Question Type: select-all
+Function: animateSubject
+Function Size: 2785 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, DOM element, or object) based on provided keyframes and options.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n        | number\n        | stri
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:07:26.529Z
+Question Type: function-variant
+Function: animateSubject
+Function Size: 2785 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, DOM element, or object) based on provided keyframes and options.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n        | number\n        | stri
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:07:27.777Z
+Question Type: true-false
+Function: animateSubject
+Function Size: 2785 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, DOM element, or object) based on provided keyframes and options.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n        | number\n        | stri
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:07:29.904Z
+Question Type: function-variant
+Function: animateSubject
+Function Size: 2785 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, DOM element, or object) based on provided keyframes and options.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n        | number\n        | stri
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:07:31.283Z
+Question Type: multiple-choice
+Function: animateSubject
+Function Size: 2785 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, DOM element, or object) based on provided keyframes and options.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n        | number\n        | stri
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:07:41.677Z
+Question Type: select-all
+Function: animateSubject
+Function Size: 2785 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, DOM element, or object) based on provided keyframes and options.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n        | number\n        | stri
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:07:43.052Z
+Question Type: select-all
+Function: animateSubject
+Function Size: 2785 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, DOM element, or object) based on provided keyframes and options.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n        | number\n        | stri
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:07:45.709Z
+Question Type: select-all
+Function: animateSubject
+Function Size: 2785 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, DOM element, or object) based on provided keyframes and options.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n        | number\n        | stri
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:07:46.638Z
+Question Type: function-variant
+Function: animateSubject
+Function Size: 2785 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: animateSubject (TypeScript)\n// Animates a subject (string, number, DOM element, or object) based on provided keyframes and options.\n\nexport function animateSubject<O extends Object>(\n    subject:\n        | MotionValue<number>\n        | MotionValue<string>\n        | number\n        | stri
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 13
+Total Chunks Processed: 1
+Ended: 2025-10-16T05:08:11.740Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T05:24:17.676Z
+File: + 3 = 14
+Functions Extracted: 3
+
+
+Function 1: onDragEnd
+Language: JavaScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+const onDragEnd = deferred<Point>()
+const p: Point = { x: 0, y: 0 }
+
+const Component = () => (
+    <MockDrag>
+        <motion.div
+            data-testid="draggable"
+            drag
+            onDrag={(_e, { point }) => {
+                p.x = point.x
+                p.y = point.y
+            }}
+            onDragEnd={(_e, { point }) => {
+                onDragEnd.resolve(point)
+            }}
+            style={{ x: 100, y: 100 }}
+        />
+    </MockDrag>
+)
+
+const { getByTestId, rerender } = render(<Component />)
+rerender(<Component />)
+
+const pointer = await drag(getByTestId("draggable")).to(50, 50)
+pointer.end()
+
+await expect(onDragEnd.promise).resolves.toEqual(p)
+--------------------------------------------------------------------------------
+
+
+Function 2: onDragTransitionEnd
+Language: JavaScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+const onDragTransitionEnd = deferred<boolean>()
+const Component = () => (
+    <MockDrag>
+        <motion.div
+            drag
+            onDragTransitionEnd={() =>
+                onDragTransitionEnd.resolve(true)
+            }
+            dragConstraints={{
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+            }}
+            dragTransition={{
+                bounceStiffness: 100000,
+                bounceDamping: 100000,
+            }}
+        />
+    </MockDrag>
+)
+
+const { container, rerender } = render(<Component />)
+rerender(<Component />)
+
+const pointer = await drag(container.firstChild).to(1, 1)
+await pointer.to(50, 50)
+pointer.end()
+
+expect(onDragTransitionEnd.promise).resolves.toBe(true)
+--------------------------------------------------------------------------------
+
+
+Function 3: whileDrag
+Language: JavaScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+const opacity = motionValue(0)
+const Component = () => (
+    <MockDrag>
+        <motion.div
+            drag
+            whileDrag={{ opacity: 0.5 }}
+            transition={{ type: false }}
+            style={{ opacity }}
+        />
+    </MockDrag>
+)
+
+const { container, rerender } = render(<Component />)
+rerender(<Component />)
+
+const pointer = await drag(container.firstChild).to(0, 100)
+await pointer.to(4, 50)
+expect(opacity.get()).toBe(0.5)
+await pointer.to(10, 200)
+pointer.end()
+
+await nextFrame()
+expect(opacity.get()).toBe(0)
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:24:26.285Z
+Question Type: select-all
+Function: onDragTransitionEnd
+Function Size: 915 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onDragTransitionEnd (JavaScript)\n// Handles drag transition end event and resolves the promise to indicate the transition has completed.\n\nconst onDragTransitionEnd = deferred<boolean>()\nconst Component = () => (\n    <MockDrag>\n        <motion.div\n            drag\n            onDragTrans
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:24:27.420Z
+Question Type: select-all
+Function: onDragTransitionEnd
+Function Size: 915 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onDragTransitionEnd (JavaScript)\n// Handles drag transition end event and resolves the promise to indicate the transition has completed.\n\nconst onDragTransitionEnd = deferred<boolean>()\nconst Component = () => (\n    <MockDrag>\n        <motion.div\n            drag\n            onDragTrans
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:24:29.836Z
+Question Type: function-variant
+Function: onDragTransitionEnd
+Function Size: 915 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onDragTransitionEnd (JavaScript)\n// Handles drag transition end event and resolves the promise to indicate the transition has completed.\n\nconst onDragTransitionEnd = deferred<boolean>()\nconst Component = () => (\n    <MockDrag>\n        <motion.div\n            drag\n            onDragTrans
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:24:38.623Z
+Question Type: order-sequence
+Function: onDragTransitionEnd
+Function Size: 915 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onDragTransitionEnd (JavaScript)\n// Handles drag transition end event and resolves the promise to indicate the transition has completed.\n\nconst onDragTransitionEnd = deferred<boolean>()\nconst Component = () => (\n    <MockDrag>\n        <motion.div\n            drag\n            onDragTrans
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:24:40.637Z
+Question Type: order-sequence
+Function: onDragEnd
+Function Size: 800 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onDragEnd (JavaScript)\n// Handles drag end event and resolves the promise with the final pointer position.\n\nconst onDragEnd = deferred<Point>()\nconst p: Point = { x: 0, y: 0 }\n\nconst Component = () => (\n    <MockDrag>\n        <motion.div\n            data-testid="draggable"\n            d
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:24:45.100Z
+Question Type: select-all
+Function: whileDrag
+Function Size: 649 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: whileDrag (JavaScript)\n// Applies an animation state (opacity) while the element is being dragged.\n\nconst opacity = motionValue(0)\nconst Component = () => (\n    <MockDrag>\n        <motion.div\n            drag\n            whileDrag={{ opacity: 0.5 }}\n            transition={{ type: false
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:24:46.522Z
+Question Type: function-variant
+Function: whileDrag
+Function Size: 649 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: whileDrag (JavaScript)\n// Applies an animation state (opacity) while the element is being dragged.\n\nconst opacity = motionValue(0)\nconst Component = () => (\n    <MockDrag>\n        <motion.div\n            drag\n            whileDrag={{ opacity: 0.5 }}\n            transition={{ type: false
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:24:47.228Z
+Question Type: true-false
+Function: whileDrag
+Function Size: 649 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: whileDrag (JavaScript)\n// Applies an animation state (opacity) while the element is being dragged.\n\nconst opacity = motionValue(0)\nconst Component = () => (\n    <MockDrag>\n        <motion.div\n            drag\n            whileDrag={{ opacity: 0.5 }}\n            transition={{ type: false
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 3
+Ended: 2025-10-16T05:24:47.305Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T05:25:03.939Z
+File: [2 files: hover.ts, animations for instance if layout="size" and an element has only changed position]
+Functions Extracted: 6
+
+
+Function 1: hover
+Language: TypeScript
+Lines: 38
+Full Code:
+--------------------------------------------------------------------------------
+export function hover(
+    elementOrSelector: ElementOrSelector,
+    onHoverStart: OnHoverStartEvent,
+    options: EventOptions = {}
+): VoidFunction {
+    const [elements, eventOptions, cancel] = setupGesture(
+        elementOrSelector,
+        options
+    )
+
+    const onPointerEnter = (enterEvent: PointerEvent) => {
+        if (!isValidHover(enterEvent)) return
+
+        const { target } = enterEvent
+        const onHoverEnd = onHoverStart(target as Element, enterEvent)
+
+        if (typeof onHoverEnd !== "function" || !target) return
+
+        const onPointerLeave = (leaveEvent: PointerEvent) => {
+            if (!isValidHover(leaveEvent)) return
+
+            onHoverEnd(leaveEvent)
+            target.removeEventListener(
+                "pointerleave",
+                onPointerLeave as EventListener
+            )
+        }
+
+        target.addEventListener(
+            "pointerleave",
+            onPointerLeave as EventListener,
+            eventOptions
+        )
+    }
+
+    elements.forEach((element) => {
+        element.addEventListener(
+            "pointerenter",
+            onPointerEnter as EventListener,
+            eventOptions
+        )
+    })
+
+    return cancel
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: propagateDirtyNodes
+Language: TypeScript
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+export function propagateDirtyNodes(node: IProjectionNode) {
+    if (statsBuffer.value) {
+        metrics.nodes++
+    }
+
+    if (!node.parent) return
+
+    if (!node.isProjecting()) {
+        node.isProjectionDirty = node.parent.isProjectionDirty
+    }
+
+    node.isSharedProjectionDirty ||= Boolean(
+        node.isProjectionDirty ||
+            node.parent.isProjectionDirty ||
+            node.parent.isSharedProjectionDirty
+    )
+
+    node.isTransformDirty ||= node.parent.isTransformDirty
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: cleanDirtyNodes
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+export function cleanDirtyNodes(node: IProjectionNode) {
+    node.isProjectionDirty =
+        node.isSharedProjectionDirty =
+        node.isTransformDirty =
+            false
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: finishAnimation
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function finishAnimation(node: IProjectionNode) {
+    node.finishAnimation()
+    node.targetDelta = node.relativeTarget = node.target = undefined
+    node.isProjectionDirty = true
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: mixAxisDelta
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+export function mixAxisDelta(output: AxisDelta, delta: AxisDelta, p: number) {
+    output.translate = mixNumber(delta.translate, 0, p)
+    output.scale = mixNumber(delta.scale, 1, p)
+    output.origin = delta.origin
+    output.originPoint = delta.originPoint
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: mixBox
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+export function mixBox(output: Box, from: Box, to: Box, p: number) {
+    mixAxis(output.x, from.x, to.x, p)
+    mixAxis(output.y, from.y, to.y, p)
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:25:13.272Z
+Question Type: select-all
+Function: cleanDirtyNodes
+Function Size: 274 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: cleanDirtyNodes (TypeScript)\n// Resets the dirty state flags for a projection node.\n\nexport function cleanDirtyNodes(node: IProjectionNode) {\n    node.isProjectionDirty =\n        node.isSharedProjectionDirty =\n        node.isTransformDirty =\n            false\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:25:14.517Z
+Question Type: select-all
+Function: hover
+Function Size: 1293 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: hover (TypeScript)\n// Creates a hover gesture that manages pointer enter and leave events.\n\nexport function hover(\n    elementOrSelector: ElementOrSelector,\n    onHoverStart: OnHoverStartEvent,\n    options: EventOptions = {}\n): VoidFunction {\n    const [elements, eventOptions, cancel] =
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:25:17.244Z
+Question Type: function-variant
+Function: mixBox
+Function Size: 252 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mixBox (TypeScript)\n// Interpolates between two bounding boxes based on a progress value.\n\nexport function mixBox(output: Box, from: Box, to: Box, p: number) {\n    mixAxis(output.x, from.x, to.x, p)\n    mixAxis(output.y, from.y, to.y, p)\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:25:17.322Z
+Question Type: function-variant
+Function: cleanDirtyNodes
+Function Size: 274 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: cleanDirtyNodes (TypeScript)\n// Resets the dirty state flags for a projection node.\n\nexport function cleanDirtyNodes(node: IProjectionNode) {\n    node.isProjectionDirty =\n        node.isSharedProjectionDirty =\n        node.isTransformDirty =\n            false\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:25:22.100Z
+Question Type: true-false
+Function: mixBox
+Function Size: 252 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mixBox (TypeScript)\n// Interpolates between two bounding boxes based on a progress value.\n\nexport function mixBox(output: Box, from: Box, to: Box, p: number) {\n    mixAxis(output.x, from.x, to.x, p)\n    mixAxis(output.y, from.y, to.y, p)\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:25:23.864Z
+Question Type: select-all
+Function: propagateDirtyNodes
+Function Size: 603 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: propagateDirtyNodes (TypeScript)\n// Propagates the dirty state of projection nodes up the tree.\n\nexport function propagateDirtyNodes(node: IProjectionNode) {\n    if (statsBuffer.value) {\n        metrics.nodes++\n    }\n\n    if (!node.parent) return\n\n    if (!node.isProjecting()) {\n       
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:25:25.761Z
+Question Type: function-variant
+Function: finishAnimation
+Function Size: 296 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: finishAnimation (TypeScript)\n// Finalizes the animation for a projection node and marks it as dirty.\n\nfunction finishAnimation(node: IProjectionNode) {\n    node.finishAnimation()\n    node.targetDelta = node.relativeTarget = node.target = undefined\n    node.isProjectionDirty = true\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:25:26.442Z
+Question Type: select-all
+Function: mixBox
+Function Size: 252 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mixBox (TypeScript)\n// Interpolates between two bounding boxes based on a progress value.\n\nexport function mixBox(output: Box, from: Box, to: Box, p: number) {\n    mixAxis(output.x, from.x, to.x, p)\n    mixAxis(output.y, from.y, to.y, p)\n}
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 6
+Ended: 2025-10-16T05:25:26.469Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T05:25:44.627Z
+File: [3 files: index.test.tsx, useSpring.tsx, utils.ts]
+Functions Extracted: 3
+
+
+Function 1: DragExample
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function DragExample() {
+    const dragX = useMotionValue(0)
+    const dragY = useMotionValue(0)
+    const dragXPX = useTransform(dragX, (v) => `${v}%`)
+    const dragYPX = useTransform(dragY, (v) => `${v}%`)
+    const x = useSpring(dragXPX, spring)
+    const y = useSpring(dragYPX, spring)
+
+    return (
+        <motion.div
+            drag
+            dragMomentum={false}
+            _dragX={dragX}
+            _dragY={dragY}
+            style={{ width: 100, height: 100, background: "red", x, y }}
+        >
+            Drag
+        </motion.div>
+    )
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: RerenderExample
+Language: TypeScript
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+function RerenderExample() {
+    const [{ x, y }, setMousePosition] = useState({ x: 0, y: 0 })
+
+    const updateMousePosition = useRef((e) => {
+        frame.postRender(() => setMousePosition({ x: e.clientX, y: e.clientY }))
+    })
+
+    const size = 40
+    const ref = useRef<HTMLDivElement>(null)
+
+    return (
+        <motion.div
+            ref={ref}
+            animate={{ x, y }}
+            transition={spring}
+            style={{
+                width: 100,
+                height: 100,
+                background: "green",
+                position: "absolute",
+                inset: 0,
+            }}
+            onTapStart={() => {
+                window.addEventListener(
+                    "mousemove",
+                    updateMousePosition.current
+                )
+            }}
+            onTap={() => {
+                window.removeEventListener(
+                    "mousemove",
+                    updateMousePosition.current
+                )
+            }}
+            onTapCancel={() => {
+                window.removeEventListener(
+                    "mousemove",
+                    updateMousePosition.current
+                )
+            }}
+        >
+            Rerender
+        </motion.div>
+    )
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: MouseEventExample
+Language: TypeScript
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+function MouseEventExample() {
+    const xPoint = useMotionValue(0)
+    const yPoint = useMotionValue(0)
+    const x = useSpring(0, spring)
+    const y = useSpring(0, spring)
+    const ref = useRef<HTMLDivElement>(null)
+    const onMove = useRef<(event: MouseEvent) => void>(
+        ({ clientX, clientY }: MouseEvent) => {
+            const element = ref.current!
+
+            x.set(clientX - element.offsetLeft - element.offsetWidth / 2)
+            y.set(clientY - element.offsetTop - element.offsetHeight / 2)
+        }
+    )
+
+    function startPointer() {
+        window.addEventListener("pointermove", onMove.current)
+    }
+
+    function cancelPointer() {
+        window.removeEventListener("pointermove", onMove.current)
+    }
+
+    return (
+        <motion.div
+            ref={ref}
+            style={{ width: 100, height: 100, background: "yellow", x, y }}
+            onTapStart={startPointer}
+            onTapCancel={cancelPointer}
+            onTap={cancelPointer}
+        >
+            Mouse Event
+        </motion.div>
+    )
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:25:53.164Z
+Question Type: order-sequence
+Function: DragExample
+Function Size: 669 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: DragExample (TypeScript)\n// A draggable component that uses motion values to track its position.\n\nfunction DragExample() {\n    const dragX = useMotionValue(0)\n    const dragY = useMotionValue(0)\n    const dragXPX = useTransform(dragX, (v) => `${v}%`)\n    const dragYPX = useTransform(dra
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:25:57.190Z
+Question Type: order-sequence
+Function: RerenderExample
+Function Size: 1370 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: RerenderExample (TypeScript)\n// A component that updates its position based on mouse movement and re-renders accordingly.\n\nfunction RerenderExample() {\n    const [{ x, y }, setMousePosition] = useState({ x: 0, y: 0 })\n\n    const updateMousePosition = useRef((e) => {\n        frame.postRe
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:25:57.362Z
+Question Type: select-all
+Function: DragExample
+Function Size: 669 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: DragExample (TypeScript)\n// A draggable component that uses motion values to track its position.\n\nfunction DragExample() {\n    const dragX = useMotionValue(0)\n    const dragY = useMotionValue(0)\n    const dragXPX = useTransform(dragX, (v) => `${v}%`)\n    const dragYPX = useTransform(dra
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:25:57.632Z
+Question Type: select-all
+Function: RerenderExample
+Function Size: 1370 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: RerenderExample (TypeScript)\n// A component that updates its position based on mouse movement and re-renders accordingly.\n\nfunction RerenderExample() {\n    const [{ x, y }, setMousePosition] = useState({ x: 0, y: 0 })\n\n    const updateMousePosition = useRef((e) => {\n        frame.postRe
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:26:11.284Z
+Question Type: select-all
+Function: RerenderExample
+Function Size: 1370 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: RerenderExample (TypeScript)\n// A component that updates its position based on mouse movement and re-renders accordingly.\n\nfunction RerenderExample() {\n    const [{ x, y }, setMousePosition] = useState({ x: 0, y: 0 })\n\n    const updateMousePosition = useRef((e) => {\n        frame.postRe
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:26:17.465Z
+Question Type: function-variant
+Function: DragExample
+Function Size: 669 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: DragExample (TypeScript)\n// A draggable component that uses motion values to track its position.\n\nfunction DragExample() {\n    const dragX = useMotionValue(0)\n    const dragY = useMotionValue(0)\n    const dragXPX = useTransform(dragX, (v) => `${v}%`)\n    const dragYPX = useTransform(dra
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:26:18.319Z
+Question Type: multiple-choice
+Function: DragExample
+Function Size: 669 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: DragExample (TypeScript)\n// A draggable component that uses motion values to track its position.\n\nfunction DragExample() {\n    const dragX = useMotionValue(0)\n    const dragY = useMotionValue(0)\n    const dragXPX = useTransform(dragX, (v) => `${v}%`)\n    const dragYPX = useTransform(dra
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:26:20.491Z
+Question Type: function-variant
+Function: DragExample
+Function Size: 669 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: DragExample (TypeScript)\n// A draggable component that uses motion values to track its position.\n\nfunction DragExample() {\n    const dragX = useMotionValue(0)\n    const dragY = useMotionValue(0)\n    const dragXPX = useTransform(dragX, (v) => `${v}%`)\n    const dragYPX = useTransform(dra
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:26:25.921Z
+Question Type: true-false
+Function: MouseEventExample
+Function Size: 1166 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: MouseEventExample (TypeScript)\n// A component that tracks mouse movement and updates its position accordingly.\n\nfunction MouseEventExample() {\n    const xPoint = useMotionValue(0)\n    const yPoint = useMotionValue(0)\n    const x = useSpring(0, spring)\n    const y = useSpring(0, spring)\n
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 3
+Ended: 2025-10-16T05:26:25.997Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T05:45:23.812Z
+File: [2 files: delta-calc.ts, use-transform.ts]
+Functions Extracted: 3
+
+
+Function 1: calcAxisDelta
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function calcAxisDelta(
+    delta: AxisDelta,
+    source: Axis,
+    target: Axis,
+    origin: number = 0.5
+) {
+    delta.origin = origin;
+    delta.originPoint = mixNumber(source.min, source.max, delta.origin);
+    delta.scale = calcLength(target) / calcLength(source);
+    delta.translate =
+        mixNumber(target.min, target.max, delta.origin) - delta.originPoint;
+
+    if (
+        (delta.scale >= SCALE_MIN && delta.scale <= SCALE_MAX) ||
+        isNaN(delta.scale)
+    ) {
+        delta.scale = 1.0;
+    }
+
+    if (
+        (delta.translate >= TRANSLATE_MIN &&
+            delta.translate <= TRANSLATE_MAX) ||
+        isNaN(delta.translate)
+    ) {
+        delta.translate = 0.0;
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: calcBoxDelta
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export function calcBoxDelta(
+    delta: Delta,
+    source: Box,
+    target: Box,
+    origin?: ResolvedValues
+): void {
+    calcAxisDelta(
+        delta.x,
+        source.x,
+        target.x,
+        origin ? (origin.originX as number) : undefined
+    );
+    calcAxisDelta(
+        delta.y,
+        source.y,
+        target.y,
+        origin ? (origin.originY as number) : undefined
+    );
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: useTransform
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+export function useTransform<I, O>(
+    input:
+        | MotionValue<I>
+        | MotionValue<string>[]
+        | MotionValue<number>[]
+        | MotionValue<AnyResolvedKeyframe>[]
+        | (() => O),
+    inputRangeOrTransformer?: InputRange | Transformer<I, O>,
+    outputRange?: O[],
+    options?: TransformOptions<O>
+): MotionValue<O> {
+    if (typeof input === "function") {
+        return useComputed(input);
+    }
+
+    const transformer =
+        typeof inputRangeOrTransformer === "function"
+            ? inputRangeOrTransformer
+            : transform(inputRangeOrTransformer!, outputRange!, options);
+
+    return Array.isArray(input)
+        ? useListTransform(
+              input,
+              transformer as MultiTransformer<AnyResolvedKeyframe, O>
+          )
+        : useListTransform([input], ([latest]) =>
+              (transformer as SingleTransformer<I, O>)(latest)
+          );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:45:35.520Z
+Question Type: select-all
+Function: calcBoxDelta
+Function Size: 499 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: calcBoxDelta (TypeScript)\n// Calculates the delta for a box based on source and target boxes.\n\nexport function calcBoxDelta(\n    delta: Delta,\n    source: Box,\n    target: Box,\n    origin?: ResolvedValues\n): void {\n    calcAxisDelta(\n        delta.x,\n        source.x,\n        target.x,\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:45:45.458Z
+Question Type: true-false
+Function: calcAxisDelta
+Function Size: 811 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: calcAxisDelta (TypeScript)\n// Calculates the delta for an axis based on source and target axes.\n\nexport function calcAxisDelta(\n    delta: AxisDelta,\n    source: Axis,\n    target: Axis,\n    origin: number = 0.5\n) {\n    delta.origin = origin;\n    delta.originPoint = mixNumber(source.min,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:45:48.025Z
+Question Type: select-all
+Function: calcAxisDelta
+Function Size: 811 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: calcAxisDelta (TypeScript)\n// Calculates the delta for an axis based on source and target axes.\n\nexport function calcAxisDelta(\n    delta: AxisDelta,\n    source: Axis,\n    target: Axis,\n    origin: number = 0.5\n) {\n    delta.origin = origin;\n    delta.originPoint = mixNumber(source.min,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:45:51.406Z
+Question Type: function-variant
+Function: useTransform
+Function Size: 1019 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useTransform (TypeScript)\n// Creates a MotionValue that transforms the output of another MotionValue.\n\nexport function useTransform<I, O>(\n    input:\n        | MotionValue<I>\n        | MotionValue<string>[]\n        | MotionValue<number>[]\n        | MotionValue<AnyResolvedKeyframe>[]\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:45:53.852Z
+Question Type: function-variant
+Function: useTransform
+Function Size: 1019 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: useTransform (TypeScript)\n// Creates a MotionValue that transforms the output of another MotionValue.\n\nexport function useTransform<I, O>(\n    input:\n        | MotionValue<I>\n        | MotionValue<string>[]\n        | MotionValue<number>[]\n        | MotionValue<AnyResolvedKeyframe>[]\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:45:59.890Z
+Question Type: select-all
+Function: calcBoxDelta
+Function Size: 499 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: calcBoxDelta (TypeScript)\n// Calculates the delta for a box based on source and target boxes.\n\nexport function calcBoxDelta(\n    delta: Delta,\n    source: Box,\n    target: Box,\n    origin?: ResolvedValues\n): void {\n    calcAxisDelta(\n        delta.x,\n        source.x,\n        target.x,\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:46:04.209Z
+Question Type: select-all
+Function: calcAxisDelta
+Function Size: 811 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: calcAxisDelta (TypeScript)\n// Calculates the delta for an axis based on source and target axes.\n\nexport function calcAxisDelta(\n    delta: AxisDelta,\n    source: Axis,\n    target: Axis,\n    origin: number = 0.5\n) {\n    delta.origin = origin;\n    delta.originPoint = mixNumber(source.min,
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 3
+Ended: 2025-10-16T05:46:04.320Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-16T05:46:33.376Z
+File: [2 files: useSpring.tsx, hover.ts]
+Functions Extracted: 4
+
+
+Function 1: DragExample
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function DragExample() {
+    const dragX = useMotionValue(0)
+    const dragY = useMotionValue(0)
+    const dragXPX = useTransform(dragX, (v) => `${v}%`)
+    const dragYPX = useTransform(dragY, (v) => `${v}%`)
+    const x = useSpring(dragXPX, spring)
+    const y = useSpring(dragYPX, spring)
+
+    return (
+        <motion.div
+            drag
+            dragMomentum={false}
+            _dragX={dragX}
+            _dragY={dragY}
+            style={{ width: 100, height: 100, background: "red", x, y }}
+        >
+            Drag
+        </motion.div>
+    )
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: RerenderExample
+Language: TypeScript
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+function RerenderExample() {
+    const [{ x, y }, setMousePosition] = useState({ x: 0, y: 0 })
+
+    const updateMousePosition = useRef((e) => {
+        frame.postRender(() => setMousePosition({ x: e.clientX, y: e.clientY }))
+    })
+
+    const size = 40
+    const ref = useRef<HTMLDivElement>(null)
+
+    return (
+        <motion.div
+            ref={ref}
+            animate={{ x, y }}
+            transition={spring}
+            style={{
+                width: 100,
+                height: 100,
+                background: "green",
+                position: "absolute",
+                inset: 0,
+            }}
+            onTapStart={() => {
+                window.addEventListener(
+                    "mousemove",
+                    updateMousePosition.current
+                )
+            }}
+            onTap={() => {
+                window.removeEventListener(
+                    "mousemove",
+                    updateMousePosition.current
+                )
+            }}
+            onTapCancel={() => {
+                window.removeEventListener(
+                    "mousemove",
+                    updateMousePosition.current
+                )
+            }}
+        >
+            Rerender
+        </motion.div>
+    )
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: MouseEventExample
+Language: TypeScript
+Lines: 24
+Full Code:
+--------------------------------------------------------------------------------
+function MouseEventExample() {
+    const xPoint = useMotionValue(0)
+    const yPoint = useMotionValue(0)
+    const x = useSpring(0, spring)
+    const y = useSpring(0, spring)
+    const ref = useRef<HTMLDivElement>(null)
+    const onMove = useRef<(event: MouseEvent) => void>(
+        ({ clientX, clientY }: MouseEvent) => {
+            const element = ref.current!
+
+            x.set(clientX - element.offsetLeft - element.offsetWidth / 2)
+            y.set(clientY - element.offsetTop - element.offsetHeight / 2)
+        }
+    )
+
+    function startPointer() {
+        window.addEventListener("pointermove", onMove.current)
+    }
+
+    function cancelPointer() {
+        window.removeEventListener("pointermove", onMove.current)
+    }
+
+    return (
+        <motion.div
+            ref={ref}
+            style={{ width: 100, height: 100, background: "yellow", x, y }}
+            onTapStart={startPointer}
+            onTapCancel={cancelPointer}
+            onTap={cancelPointer}
+        >
+            Mouse Event
+        </motion.div>
+    )
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: hover
+Language: TypeScript
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+export function hover(
+    elementOrSelector: ElementOrSelector,
+    onHoverStart: OnHoverStartEvent,
+    options: EventOptions = {}
+): VoidFunction {
+    const [elements, eventOptions, cancel] = setupGesture(
+        elementOrSelector,
+        options
+    )
+
+    const onPointerEnter = (enterEvent: PointerEvent) => {
+        if (!isValidHover(enterEvent)) return
+
+        const { target } = enterEvent
+        const onHoverEnd = onHoverStart(target as Element, enterEvent)
+
+        if (typeof onHoverEnd !== "function" || !target) return
+
+        const onPointerLeave = (leaveEvent: PointerEvent) => {
+            if (!isValidHover(leaveEvent)) return
+
+            onHoverEnd(leaveEvent)
+            target.removeEventListener(
+                "pointerleave",
+                onPointerLeave as EventListener
+            )
+        }
+
+        target.addEventListener(
+            "pointerleave",
+            onPointerLeave as EventListener,
+            eventOptions
+        )
+    }
+
+    elements.forEach((element) => {
+        element.addEventListener(
+            "pointerenter",
+            onPointerEnter as EventListener,
+            eventOptions
+        )
+    })
+
+    return cancel
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:46:42.310Z
+Question Type: select-all
+Function: MouseEventExample
+Function Size: 1153 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: MouseEventExample (TypeScript)\n// Creates a component that moves based on mouse pointer position.\n\nfunction MouseEventExample() {\n    const xPoint = useMotionValue(0)\n    const yPoint = useMotionValue(0)\n    const x = useSpring(0, spring)\n    const y = useSpring(0, spring)\n    const ref
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:46:50.367Z
+Question Type: select-all
+Function: hover
+Function Size: 1308 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: hover (TypeScript)\n// Sets up a hover gesture on specified elements, handling hover start and end events.\n\nexport function hover(\n    elementOrSelector: ElementOrSelector,\n    onHoverStart: OnHoverStartEvent,\n    options: EventOptions = {}\n): VoidFunction {\n    const [elements, eventOpt
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:47:03.429Z
+Question Type: function-variant
+Function: DragExample
+Function Size: 667 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: DragExample (TypeScript)\n// Creates a draggable component that moves based on user drag input.\n\nfunction DragExample() {\n    const dragX = useMotionValue(0)\n    const dragY = useMotionValue(0)\n    const dragXPX = useTransform(dragX, (v) => `${v}%`)\n    const dragYPX = useTransform(dragY
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:47:03.456Z
+Question Type: function-variant
+Function: hover
+Function Size: 1308 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: hover (TypeScript)\n// Sets up a hover gesture on specified elements, handling hover start and end events.\n\nexport function hover(\n    elementOrSelector: ElementOrSelector,\n    onHoverStart: OnHoverStartEvent,\n    options: EventOptions = {}\n): VoidFunction {\n    const [elements, eventOpt
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:47:12.363Z
+Question Type: function-variant
+Function: RerenderExample
+Function Size: 1351 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: RerenderExample (TypeScript)\n// Creates a component that updates its position based on mouse movement.\n\nfunction RerenderExample() {\n    const [{ x, y }, setMousePosition] = useState({ x: 0, y: 0 })\n\n    const updateMousePosition = useRef((e) => {\n        frame.postRender(() => setMouse
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:47:15.855Z
+Question Type: order-sequence
+Function: DragExample
+Function Size: 667 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: DragExample (TypeScript)\n// Creates a draggable component that moves based on user drag input.\n\nfunction DragExample() {\n    const dragX = useMotionValue(0)\n    const dragY = useMotionValue(0)\n    const dragXPX = useTransform(dragX, (v) => `${v}%`)\n    const dragYPX = useTransform(dragY
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:47:18.595Z
+Question Type: order-sequence
+Function: MouseEventExample
+Function Size: 1153 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: MouseEventExample (TypeScript)\n// Creates a component that moves based on mouse pointer position.\n\nfunction MouseEventExample() {\n    const xPoint = useMotionValue(0)\n    const yPoint = useMotionValue(0)\n    const x = useSpring(0, spring)\n    const y = useSpring(0, spring)\n    const ref
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:47:20.397Z
+Question Type: function-variant
+Function: hover
+Function Size: 1308 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: hover (TypeScript)\n// Sets up a hover gesture on specified elements, handling hover start and end events.\n\nexport function hover(\n    elementOrSelector: ElementOrSelector,\n    onHoverStart: OnHoverStartEvent,\n    options: EventOptions = {}\n): VoidFunction {\n    const [elements, eventOpt
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:47:27.041Z
+Question Type: select-all
+Function: DragExample
+Function Size: 667 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: DragExample (TypeScript)\n// Creates a draggable component that moves based on user drag input.\n\nfunction DragExample() {\n    const dragX = useMotionValue(0)\n    const dragY = useMotionValue(0)\n    const dragXPX = useTransform(dragX, (v) => `${v}%`)\n    const dragYPX = useTransform(dragY
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:47:33.888Z
+Question Type: true-false
+Function: RerenderExample
+Function Size: 1351 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: RerenderExample (TypeScript)\n// Creates a component that updates its position based on mouse movement.\n\nfunction RerenderExample() {\n    const [{ x, y }, setMousePosition] = useState({ x: 0, y: 0 })\n\n    const updateMousePosition = useRef((e) => {\n        frame.postRender(() => setMouse
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:47:34.407Z
+Question Type: true-false
+Function: hover
+Function Size: 1308 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: hover (TypeScript)\n// Sets up a hover gesture on specified elements, handling hover start and end events.\n\nexport function hover(\n    elementOrSelector: ElementOrSelector,\n    onHoverStart: OnHoverStartEvent,\n    options: EventOptions = {}\n): VoidFunction {\n    const [elements, eventOpt
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:47:38.053Z
+Question Type: multiple-choice
+Function: DragExample
+Function Size: 667 characters
+Questions Generated: 3
+Repository: Unknown
+Function Preview: // Function: DragExample (TypeScript)\n// Creates a draggable component that moves based on user drag input.\n\nfunction DragExample() {\n    const dragX = useMotionValue(0)\n    const dragY = useMotionValue(0)\n    const dragXPX = useTransform(dragX, (v) => `${v}%`)\n    const dragYPX = useTransform(dragY
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:47:45.899Z
+Question Type: function-variant
+Function: MouseEventExample
+Function Size: 1153 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: MouseEventExample (TypeScript)\n// Creates a component that moves based on mouse pointer position.\n\nfunction MouseEventExample() {\n    const xPoint = useMotionValue(0)\n    const yPoint = useMotionValue(0)\n    const x = useSpring(0, spring)\n    const y = useSpring(0, spring)\n    const ref
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:47:47.589Z
+Question Type: select-all
+Function: RerenderExample
+Function Size: 1351 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: RerenderExample (TypeScript)\n// Creates a component that updates its position based on mouse movement.\n\nfunction RerenderExample() {\n    const [{ x, y }, setMousePosition] = useState({ x: 0, y: 0 })\n\n    const updateMousePosition = useRef((e) => {\n        frame.postRender(() => setMouse
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-16T05:47:47.903Z
+Question Type: select-all
+Function: RerenderExample
+Function Size: 1351 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: RerenderExample (TypeScript)\n// Creates a component that updates its position based on mouse movement.\n\nfunction RerenderExample() {\n    const [{ x, y }, setMousePosition] = useState({ x: 0, y: 0 })\n\n    const updateMousePosition = useRef((e) => {\n        frame.postRender(() => setMouse
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760546051744
+Repository: Unknown
+Total Questions Generated: 12
+Total Chunks Processed: 4
+Ended: 2025-10-16T05:47:47.908Z
+================================================================================
+

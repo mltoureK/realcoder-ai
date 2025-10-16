@@ -33,6 +33,17 @@ export default function QuestionPoll({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Reset whenever we switch to a new question
+    setPollData({
+      totalAttempts: 0,
+      passed: 0,
+      failed: 0,
+      passRate: 0
+    });
+    setLoading(true);
+  }, [questionId]);
+
+  useEffect(() => {
     const loadPollData = async () => {
       // Use the actual questionId, don't fall back to generic IDs
       if (!questionId) {
@@ -49,11 +60,13 @@ export default function QuestionPoll({
           ...questionData,
           repoUrl: repoUrl
         } : undefined;
-        
-        await updateQuestionPoll(questionId, isCorrect, questionWithRepo);
+
+        if (shouldUpdate) {
+          await updateQuestionPoll(questionId, isCorrect, questionWithRepo, repoUrl);
+        }
         
         // Get updated poll data
-        const data = await getQuestionPollData(questionId);
+        const data = await getQuestionPollData(questionId, repoUrl);
         
         if (data) {
           setPollData({
@@ -73,7 +86,7 @@ export default function QuestionPoll({
         }
         
         // Call parent callback
-        if (onPollUpdate) {
+        if (shouldUpdate && onPollUpdate) {
           onPollUpdate(questionId, isCorrect);
         }
       } catch (error) {
@@ -100,6 +113,9 @@ export default function QuestionPoll({
     if (showExplanations && questionId && shouldUpdate) {
       console.log(`🚀 [QuestionPoll] About to call loadPollData for ${questionId}`);
       loadPollData();
+    } else if (showExplanations && questionId) {
+      console.log(`ℹ️ [QuestionPoll] Fetching poll data without updating for ${questionId}`);
+      loadPollData();
     } else {
       console.log(`❌ [QuestionPoll] Skipping loadPollData:`, { 
         showExplanations, 
@@ -107,7 +123,7 @@ export default function QuestionPoll({
         shouldUpdate 
       });
     }
-  }, [showExplanations, isCorrect, questionId, questionIndex, shouldUpdate, onPollUpdate]);
+  }, [showExplanations, isCorrect, questionId, questionIndex, shouldUpdate, onPollUpdate, questionData, repoUrl]);
 
   // Only show when explanations are visible
   if (!showExplanations) return null;
