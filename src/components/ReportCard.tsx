@@ -63,6 +63,7 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
   const [isReviewing, setIsReviewing] = useState(false);
   const [openResultTicketId, setOpenResultTicketId] = useState<string | null>(null);
   const [fullscreenTicketId, setFullscreenTicketId] = useState<string | null>(null);
+  const [collapsedTickets, setCollapsedTickets] = useState<Record<string, boolean>>({});
   const robotSrc = '/report-bot.png';
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -200,6 +201,13 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
     setTickets((prev) => prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
   }
 
+  function toggleCollapsed(id: string) {
+    setCollapsedTickets((prev) => ({
+      ...prev,
+      [id]: !(prev[id] ?? false),
+    }));
+  }
+
   function removeTicket(id: string) {
     setTickets((prev) => prev.filter((t) => t.id !== id));
     setUserCodeById((prev) => {
@@ -213,6 +221,11 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
       return next;
     });
     setGradeResultsById((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+    setCollapsedTickets((prev) => {
       const next = { ...prev };
       delete next[id];
       return next;
