@@ -63,7 +63,7 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
   const [isReviewing, setIsReviewing] = useState(false);
   const [openResultTicketId, setOpenResultTicketId] = useState<string | null>(null);
   const [fullscreenTicketId, setFullscreenTicketId] = useState<string | null>(null);
-  const [collapsedTickets, setCollapsedTickets] = useState<Record<string, boolean>>({});
+  const [collapsedTickets, setCollapsedTickets] = useState<Record<string, boolean>>(() => ({}));
   const robotSrc = '/report-bot.png';
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -108,14 +108,37 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
       for (const t of [...prev, ...mapped]) {
         byTitle[t.title] = byTitle[t.title] || t;
       }
-      return Object.values(byTitle);
+      const merged = Object.values(byTitle);
+      setCollapsedTickets((current) => {
+        const next: Record<string, boolean> = {};
+        for (const ticket of merged) {
+          next[ticket.id] = current[ticket.id] ?? true;
+        }
+        return next;
+      });
+      return merged;
     });
   }, [initialTickets && initialTickets.length]);
 
+useEffect(() => {
+  try {
+    localStorage.setItem('rc_tickets', JSON.stringify(tickets));
+  } catch (_) {}
+}, [tickets]);
+
   useEffect(() => {
-    try {
-      localStorage.setItem('rc_tickets', JSON.stringify(tickets));
-    } catch (_) {}
+    setCollapsedTickets((prev) => {
+      const next: Record<string, boolean> = {};
+      let changed = false;
+      for (const ticket of tickets) {
+        const existing = prev[ticket.id];
+        const value = existing === undefined ? true : existing;
+        next[ticket.id] = value;
+        if (existing !== value) changed = true;
+      }
+      if (Object.keys(prev).length !== Object.keys(next).length) changed = true;
+      return changed ? next : prev;
+    });
   }, [tickets]);
 
   useEffect(() => {
@@ -148,6 +171,7 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
       done: false,
     };
     setTickets((prev) => [t, ...prev]);
+    setCollapsedTickets((prev) => ({ ...prev, [t.id]: true }));
   }
 
   const sampleBugTickets: Ticket[] = [
@@ -195,6 +219,8 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
       done: false,
     };
     setTickets((prev) => [t, ...prev]);
+    setCollapsedTickets((prev) => ({ ...prev, [t.id]: true }));
+    setCollapsedTickets((prev) => ({ ...prev, [t.id]: true }));
   }
 
   function toggleDone(id: string) {
@@ -601,7 +627,7 @@ export default function ReportCard({ results, failedQuestions = [], onClose, onR
                     const codeValue = userCodeById[t.id] ?? getDefaultFixSnippet(t);
                     const isFullscreen = fullscreenTicketId === t.id;
                     const languageLabel = (t.language || 'javascript').toUpperCase();
-                    const isCollapsed = collapsedTickets[t.id] ?? false;
+                    const isCollapsed = collapsedTickets[t.id] ?? true;
                     return (
                       <motion.div
                         key={t.id}
