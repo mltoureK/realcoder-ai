@@ -80,8 +80,8 @@ export async function POST(request: NextRequest) {
       'true-false': trueFalsePlugin,
       'select-all': selectAllPlugin
     };
-    // Debug mode: focus exclusively on function-variant questions (see docs/QUIZ_GENERATION.md)
-    const defaultQuestionTypes = ['function-variant'];
+    // Enable all 5 question types (select-all first to ensure it runs before hitting target)
+    const defaultQuestionTypes = ['select-all', 'function-variant', 'order-sequence', 'true-false', 'multiple-choice'];
     const requestedTypes = defaultQuestionTypes;
     
     const selectedPlugins = requestedTypes
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
       // Reduce overall API calls for faster testing
       maxCalls: Number(process.env.OPENAI_MAX_CALLS_PER_REQUEST ?? 10),
       timeouts: {
-        'function-variant': Number(process.env.OPENAI_TIMEOUT_FUNCTION_VARIANT_MS ?? 45000),
+        'function-variant': Number(process.env.OPENAI_TIMEOUT_FUNCTION_VARIANT_MS ?? 30000),
         'multiple-choice': Number(process.env.OPENAI_TIMEOUT_MCQ_MS ?? 10000),
         'true-false': Number(process.env.OPENAI_TIMEOUT_TRUE_FALSE_MS ?? 12500),
         'select-all': Number(process.env.OPENAI_TIMEOUT_SELECT_ALL_MS ?? 30000),
