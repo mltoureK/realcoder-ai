@@ -15,6 +15,8 @@ import {
   balanceVariantVerbosity
 } from '@/lib/question-plugins/utils';
 import { extractFunctionsFromFiles, extractFunctionsFromFilesStreaming, functionsToChunks } from '@/lib/function-extractor';
+import { parseCombinedCode } from '@/lib/quiz-code-utils';
+import { getPrefetchedChunks, getPrefetchKeyForRequest, storePrefetchedChunks } from '@/lib/quiz-prefetch';
 
 // Route now uses plugin-based orchestrator; helpers moved to shared utils.
 
@@ -52,25 +54,11 @@ export async function POST(request: NextRequest) {
     
     // NEW APPROACH: Extract complete functions from high-score files
     console.log('🔍 Step 1: Parsing files from code...');
-    const fileRegex = /\/\/ ([^\n]+)\n([\s\S]*?)(?=\/\/ [^\n]+\n|$)/g;
-    const parsedFiles: Array<{ name: string; content: string; score: number }> = [];
-    
-    let match: RegExpExecArray | null;
-    while ((match = fileRegex.exec(code || '')) !== null) {
-      const filename = match[1];
-      const content = match[2].trim();
-      
-      // Basic scoring: prefer TypeScript/JavaScript files with more functions
-      let score = 10;
-      if (filename.endsWith('.ts') || filename.endsWith('.tsx')) score += 30;
-      if (filename.endsWith('.js') || filename.endsWith('.jsx')) score += 20;
-      const functionCount = (content.match(/function\s+\w+|const\s+\w+\s*=\s*\(|class\s+\w+/g) || []).length;
-      score += functionCount * 10;
-      
-      parsedFiles.push({ name: filename, content, score });
-    }
-    
+    const parsedFiles = parseCombinedCode(code || '');
     console.log(`📊 Parsed ${parsedFiles.length} files from repository`);
+    const prefetchKey = getPrefetchKeyForRequest(repositoryInfo ?? null, code || '');
+    const prefetchedEntry = getPrefetchedChunks(prefetchKey);
+    const prefetchedChunks = prefetchedEntry?.chunks ?? [];
 
     // Select plugins per requested types
     const availablePlugins: Record<string, unknown> = {
@@ -294,165 +282,123 @@ export async function POST(request: NextRequest) {
       let counter = 0;
       const stream = new ReadableStream<Uint8Array>({
         start: async (controller) => {
+          const processChunkBatch = async (
+            batchChunks: string[],
+            sourceLabel: string,
+            targetOverride?: number
+          ) => {
+            if (batchChunks.length === 0) return;
+            const remaining = desiredTotal - questionsGenerated;
+            if (remaining <= 0) return;
+
+            const estimate = Math.max(1, Math.ceil(desiredTotal * (batchChunks.length / 8)));
+            const target = Math.min(remaining, targetOverride ?? estimate);
+
+            if (target <= 0) return;
+
+            console.log(`🎯 Streaming ${target} questions from ${sourceLabel} (${batchChunks.length} chunks)`);            
+
+            await orchestrateGeneration({
+              chunks: batchChunks,
+              plugins: selectedPlugins,
+              numQuestions: target,
+              settings,
+              apiKey: openaiApiKey,
+              options: { difficulty: difficulty || 'medium' },
+              onQuestion: async (q) => {
+                let ui;
+                try {
+                  ui = mapToUi(q, counter);
+                } catch (mapError) {
+                  console.error('❌ mapToUi failed during streaming:', mapError);
+                  return;
+                }
+                if (ui.variants && ui.variants.length > 0) {
+                  ui.variants = shuffleVariants(ui.variants);
+                  ui.variants = balanceVariantVerbosity(ui.variants);
+                }
+                counter += 1;
+                questionsGenerated += 1;
+                console.log(`📤 Streaming question ${counter} from ${sourceLabel}`);
+                try {
+                  const jsonString = JSON.stringify({ type: 'question', question: ui });
+                  controller.enqueue(encoder.encode(jsonString + '\n'));
+                } catch (error) {
+                  console.error('❌ Error in onQuestion callback:', error);
+                }
+              }
+            });
+          };
+
+          let questionsGenerated = 0;
+          let batchCount = 0;
+          const allChunks: string[] = [];
+          let totalExtractedFunctions = 0;
+
           try {
             // Emit meta first
             const meta = { type: 'meta', expectedTotal: desiredTotal };
             controller.enqueue(encoder.encode(JSON.stringify(meta) + '\n'));
 
-            console.log('⚡ FAST MODE: Starting streaming function extraction...');
-            
-            // Create async generator for function extraction
-            const functionGenerator = extractFunctionsFromFilesStreaming(parsedFiles, openaiApiKey, 8);
-            
-            const allChunks: string[] = [];
-            let batchCount = 0;
-            let questionsGenerated = 0;
-            
-            // Process each batch of functions as they arrive
-            for await (const batchFunctions of functionGenerator) {
-              batchCount++;
-              const batchChunks = functionsToChunks(batchFunctions);
-              allChunks.push(...batchChunks);
-              
-              console.log(`⚡ Batch ${batchCount}: Got ${batchFunctions.length} functions (${batchChunks.length} chunks), total chunks: ${allChunks.length}`);
-              
-              // Start generating questions immediately after first batch
-              if (batchCount === 1 && batchChunks.length > 0) {
-                console.log(`🚀 FIRST QUESTIONS INCOMING! Starting question generation with ${batchChunks.length} initial chunks...`);
-              }
-              
-              // Generate questions from this batch's chunks
-              // Use a portion of the target based on available chunks
-              const targetForThisBatch = Math.min(
-                Math.ceil(desiredTotal * (batchChunks.length / 8)), // Estimate based on chunks
-                desiredTotal - questionsGenerated
-              );
-              
-              if (targetForThisBatch > 0 && batchChunks.length > 0) {
-                await orchestrateGeneration({
-                  chunks: batchChunks, // Only use this batch's chunks for variety
-                  plugins: selectedPlugins,
-                  numQuestions: targetForThisBatch,
-                  settings,
-                  apiKey: openaiApiKey,
-                  options: { difficulty: difficulty || 'medium' },
-                  onQuestion: async (q) => {
-                  let ui;
-                  try {
-                    ui = mapToUi(q, counter);
-                  } catch (mapError) {
-                    console.error('❌ mapToUi failed during streaming:', mapError);
-                    return;
-                  }
-                  // Shuffle variants if present and balance
-                  if (ui.variants && ui.variants.length > 0) {
-                    ui.variants = shuffleVariants(ui.variants);
-                    ui.variants = balanceVariantVerbosity(ui.variants);
-                  }
-                    counter += 1;
-                    questionsGenerated += 1;
-                    console.log(`📤 Streaming question ${counter} from batch ${batchCount}`);
-                    try {
-                      const jsonString = JSON.stringify({ type: 'question', question: ui });
-                      controller.enqueue(encoder.encode(jsonString + '\n'));
-                    } catch (error) {
-                      console.error('❌ Error in onQuestion callback:', error);
-                      // Skip this question if JSON encoding fails
-                    }
-                  }
-                });
-              }
-              
-              // Stop if we've generated enough questions
-              if (questionsGenerated >= desiredTotal) {
-                console.log(`✅ Generated ${questionsGenerated} questions, stopping early`);
-                break;
+            if (prefetchedChunks.length > 0) {
+              batchCount += 1;
+              allChunks.push(...prefetchedChunks);
+              totalExtractedFunctions = prefetchedEntry?.functionsCount ?? prefetchedChunks.length;
+              console.log(`⚡ FAST MODE: Using ${prefetchedChunks.length} prefetched chunks for streaming`);
+              await processChunkBatch(prefetchedChunks, 'prefetch-cache', desiredTotal);
+            } else {
+              console.log('⚡ FAST MODE: Starting streaming function extraction...');
+              const functionGenerator = extractFunctionsFromFilesStreaming(parsedFiles, openaiApiKey, 8);
+
+              for await (const batchFunctions of functionGenerator) {
+                batchCount += 1;
+                const batchChunks = functionsToChunks(batchFunctions);
+                allChunks.push(...batchChunks);
+                totalExtractedFunctions += batchFunctions.length;
+
+                console.log(`⚡ Batch ${batchCount}: Got ${batchFunctions.length} functions (${batchChunks.length} chunks), total chunks: ${allChunks.length}`);
+
+                if (batchCount === 1 && batchChunks.length > 0) {
+                  console.log(`🚀 FIRST QUESTIONS INCOMING! Starting question generation with ${batchChunks.length} initial chunks...`);
+                }
+
+                await processChunkBatch(batchChunks, `batch-${batchCount}`);
+
+                if (questionsGenerated >= desiredTotal) {
+                  console.log(`✅ Generated ${questionsGenerated} questions, stopping early`);
+                  break;
+                }
               }
             }
-            
-            // Fallback: If no functions were extracted, use raw code chunks
+
             if (allChunks.length === 0 && questionsGenerated === 0) {
               console.log('🔄 No functions extracted, falling back to raw code chunks...');
-              
-              // Create chunks from raw file content
+
               const rawChunks = parsedFiles
-                .slice(0, 5) // Take first 5 files
+                .slice(0, 5)
                 .map(file => {
-                  // Truncate very long files
-                  const content = file.content.length > 2000 
+                  const content = file.content.length > 2000
                     ? file.content.substring(0, 2000) + '\n// ... (truncated)'
                     : file.content;
                   return `// File: ${file.name}\n${content}`;
                 });
-              
+
               if (rawChunks.length > 0) {
-                console.log(`📦 Created ${rawChunks.length} raw code chunks as fallback`);
-                await orchestrateGeneration({
-                  chunks: rawChunks,
-                  plugins: selectedPlugins,
-                  numQuestions: desiredTotal,
-                  settings,
-                  apiKey: openaiApiKey,
-                  options: { difficulty: difficulty || 'medium' },
-                  onQuestion: async (q) => {
-                    let ui;
-                    try {
-                      ui = mapToUi(q, counter);
-                    } catch (mapError) {
-                      console.error('❌ mapToUi failed during fallback streaming:', mapError);
-                      return;
-                    }
-                    if (ui.variants && ui.variants.length > 0) {
-                      ui.variants = shuffleVariants(ui.variants);
-                      ui.variants = balanceVariantVerbosity(ui.variants);
-                    }
-                    counter += 1;
-                    questionsGenerated += 1;
-                    try {
-                      const jsonString = JSON.stringify({ type: 'question', question: ui });
-                      controller.enqueue(encoder.encode(jsonString + '\n'));
-                    } catch (error) {
-                      console.error('❌ Error in fallback onQuestion callback:', error);
-                    }
-                  }
-                });
+                await processChunkBatch(rawChunks, 'raw-code-fallback', desiredTotal);
               }
             }
-            
-            // If we still need more questions, generate from all chunks
+
             if (questionsGenerated < desiredTotal && allChunks.length > 0) {
-              console.log(`🔄 Generating remaining ${desiredTotal - questionsGenerated} questions from all ${allChunks.length} chunks`);
-              await orchestrateGeneration({
-                chunks: allChunks,
-                plugins: selectedPlugins,
-                numQuestions: desiredTotal - questionsGenerated,
-                settings,
-                apiKey: openaiApiKey,
-                options: { difficulty: difficulty || 'medium' },
-                onQuestion: async (q) => {
-                  let ui;
-                  try {
-                    ui = mapToUi(q, counter);
-                  } catch (mapError) {
-                    console.error('❌ mapToUi failed during remaining streaming:', mapError);
-                    return;
-                  }
-                  if (ui.variants && ui.variants.length > 0) {
-                    ui.variants = shuffleVariants(ui.variants);
-                    ui.variants = balanceVariantVerbosity(ui.variants);
-                  }
-                  counter += 1;
-                  try {
-                    const jsonString = JSON.stringify({ type: 'question', question: ui });
-                    controller.enqueue(encoder.encode(jsonString + '\n'));
-                  } catch (error) {
-                    console.error('❌ Error in onQuestion callback:', error);
-                    // Skip this question if JSON encoding fails
-                  }
-                }
-              });
+              const remaining = desiredTotal - questionsGenerated;
+              console.log(`🔄 Generating remaining ${remaining} questions from all ${allChunks.length} chunks`);
+              await processChunkBatch(allChunks, 'all-chunks', remaining);
             }
-            
+
+            if (prefetchKey && (totalExtractedFunctions > 0 || prefetchedChunks.length > 0)) {
+              const functionsCount = totalExtractedFunctions || prefetchedEntry?.functionsCount || prefetchedChunks.length;
+              storePrefetchedChunks(prefetchKey, allChunks, functionsCount);
+            }
+
             try {
               controller.enqueue(encoder.encode(JSON.stringify({ type: 'done', count: counter }) + '\n'));
               console.log(`🎉 Streaming complete! Generated ${counter} questions from ${batchCount} batches`);
@@ -477,16 +423,29 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Non-streaming path: Extract all functions first, then generate
-    console.log('🔍 Step 2: Extracting complete functions from top files...');
-    const extractedFunctions = await extractFunctionsFromFiles(parsedFiles, openaiApiKey, 8);
-    
-    console.log(`✅ Extracted ${extractedFunctions.length} complete functions`);
-    
-    // Convert extracted functions to chunks (one function per chunk)
-    const chunks = functionsToChunks(extractedFunctions);
-    
-    console.log(`📦 Created ${chunks.length} function-based chunks (all complete)`);
+    // Non-streaming path: Use prefetched chunks when available, otherwise extract now
+    console.log('🔍 Step 2: Preparing function chunks for non-streaming mode...');
+    let chunks: string[] = [];
+    let extractedFunctionsCount = 0;
+    const usingPrefetch = prefetchedChunks.length > 0;
+
+    if (usingPrefetch) {
+      chunks = prefetchedChunks.slice();
+      extractedFunctionsCount = prefetchedEntry?.functionsCount ?? prefetchedChunks.length;
+      console.log(`♻️ Using ${chunks.length} prefetched chunks (functions: ${extractedFunctionsCount})`);
+      if (prefetchKey) {
+        storePrefetchedChunks(prefetchKey, chunks, extractedFunctionsCount);
+      }
+    } else {
+      const extractedFunctions = await extractFunctionsFromFiles(parsedFiles, openaiApiKey, 8);
+      extractedFunctionsCount = extractedFunctions.length;
+      console.log(`✅ Extracted ${extractedFunctionsCount} complete functions`);
+      chunks = functionsToChunks(extractedFunctions);
+      console.log(`📦 Created ${chunks.length} function-based chunks (fresh extraction)`);
+      if (prefetchKey && extractedFunctionsCount > 0) {
+        storePrefetchedChunks(prefetchKey, chunks, extractedFunctionsCount);
+      }
+    }
 
     let rawGenerated = await orchestrateGeneration({
       chunks,

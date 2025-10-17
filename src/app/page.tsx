@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import LoadingScreen from '@/components/LoadingScreen';
 import { generateQuizFromRepository } from '@/lib/quiz-service';
@@ -16,6 +16,50 @@ interface GitHubRepo {
   owner: string;
   repo: string;
 }
+
+const EXTENSION_LANGUAGE_MAP: Record<string, string> = {
+  '.cs': 'C#',
+  '.js': 'JavaScript',
+  '.ts': 'TypeScript',
+  '.jsx': 'JavaScript',
+  '.tsx': 'TypeScript',
+  '.py': 'Python',
+  '.java': 'Java',
+  '.cpp': 'C++',
+  '.cc': 'C++',
+  '.cxx': 'C++',
+  '.c': 'C',
+  '.h': 'C',
+  '.go': 'Go',
+  '.rs': 'Rust',
+  '.php': 'PHP',
+  '.rb': 'Ruby',
+  '.swift': 'Swift',
+  '.kt': 'Kotlin',
+  '.scala': 'Scala',
+  '.clj': 'Clojure',
+  '.hs': 'Haskell',
+  '.ml': 'OCaml',
+  '.fs': 'F#',
+  '.vb': 'VB.NET',
+  '.sh': 'Shell',
+  '.ps1': 'PowerShell',
+  '.bat': 'Batch',
+  '.sql': 'SQL',
+  '.html': 'HTML',
+  '.css': 'CSS',
+  '.scss': 'SCSS',
+  '.sass': 'Sass',
+  '.less': 'Less',
+  '.xml': 'XML',
+  '.json': 'JSON',
+  '.yaml': 'YAML',
+  '.yml': 'YAML',
+  '.toml': 'TOML',
+  '.ini': 'INI',
+  '.cfg': 'Config',
+  '.conf': 'Config'
+};
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -57,6 +101,8 @@ export default function Home() {
     monthResetDate?: Date;
   } | null>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const prefetchSignatureRef = useRef<string | null>(null);
+  const prefetchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const displayedCachedQuestionCount = hidePassedQuestions && user ? cachedQuestionCountFiltered : cachedQuestionCountAll;
   const hiddenQuestionDelta = Math.max(0, cachedQuestionCountAll - cachedQuestionCountFiltered);
@@ -78,6 +124,14 @@ export default function Home() {
       setQuizLimit(null);
     }
   }, [user]);
+
+  useEffect(() => {
+    return () => {
+      if (prefetchTimeoutRef.current) {
+        clearTimeout(prefetchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Handle payment success (fallback for when webhook doesn't fire in test mode)
   useEffect(() => {
@@ -192,6 +246,7 @@ export default function Home() {
     setAvailableLanguages([]);
     setSelectedLanguages([]);
     setRepositoryFiles([]);
+    prefetchSignatureRef.current = null;
     
     // Switch to GitHub tab when selecting from curated repos
     setActiveTab('github');
@@ -229,27 +284,40 @@ export default function Home() {
       // Store repository files for later use
       setRepositoryFiles(repoData.repositoryInfo.files || []);
       
-      // Use language data from backend (GitHub-style analysis)
+      let detectedLanguages: Array<{ name: string; percentage: number; fileCount: number }> = [];
+
       if (repoData.repositoryInfo.languagePercentages && repoData.repositoryInfo.languageCounts) {
-        const detectedLanguages = Object.entries(repoData.repositoryInfo.languagePercentages)
+        detectedLanguages = Object.entries(repoData.repositoryInfo.languagePercentages)
           .map(([language, percentage]) => ({
             name: language,
             percentage: percentage as number,
             fileCount: (repoData.repositoryInfo.languageCounts as { [key: string]: number })[language] || 0
           }))
-          .sort((a, b) => (b.percentage as number) - (a.percentage as number));        
-        setAvailableLanguages(detectedLanguages);
-        setSelectedLanguages(detectedLanguages.map(lang => lang.name)); // Default to all languages
-        
-        console.log("🎯 Using backend language analysis:", detectedLanguages);
+          .sort((a, b) => (b.percentage as number) - (a.percentage as number));
+        console.log('🎯 Using backend language analysis:', detectedLanguages);
       } else {
-        // Fallback to local detection if backend data not available
-        const detectedLanguages = detectLanguagesFromFiles(repoData.repositoryInfo.files);
-        setAvailableLanguages(detectedLanguages);
-        setSelectedLanguages(detectedLanguages.map(lang => lang.name));
-        
-        console.log("🔍 Fallback to local language detection:", detectedLanguages);
-      }      
+        detectedLanguages = detectLanguagesFromFiles(repoData.repositoryInfo.files);
+        console.log('🔍 Fallback to local language detection:', detectedLanguages);
+      }
+
+      setAvailableLanguages(detectedLanguages);
+      const defaultLanguageNames = detectedLanguages.map(lang => lang.name);
+      setSelectedLanguages(defaultLanguageNames);
+
+      const { code: initialCombinedCode, includedFiles } = buildCombinedCode(
+        repoData.repositoryInfo.files || [],
+        defaultLanguageNames
+      );
+
+      console.log('🧩 Combined code prepared for prefetch:', {
+        includedFiles,
+        hasCode: initialCombinedCode.length > 0
+      });
+
+      if (initialCombinedCode) {
+        queuePrefetch(initialCombinedCode, 'repository-processed', defaultLanguageNames);
+      }
+
       return repoData;
     } catch (error) {
       console.error('❌ Error processing repository:', error);
@@ -326,6 +394,123 @@ export default function Home() {
       .sort((a, b) => b.percentage - a.percentage);
   };
 
+  const buildCombinedCode = useCallback((files: any[], languages: string[]): { code: string; includedFiles: number } => {
+    if (!Array.isArray(files) || files.length === 0) {
+      return { code: '', includedFiles: 0 };
+    }
+
+    const includeAll = languages.length === 0;
+    const languageSet = new Set(languages);
+    const chunks: string[] = [];
+    let includedFiles = 0;
+
+    files.forEach((file) => {
+      if (!file || typeof file.path !== 'string' || typeof file.content !== 'string') return;
+
+      if (!includeAll) {
+        const ext = `.${file.path.split('.').pop()?.toLowerCase() || ''}`;
+        const mappedLanguage = EXTENSION_LANGUAGE_MAP[ext];
+        if (!mappedLanguage || !languageSet.has(mappedLanguage)) {
+          return;
+        }
+      }
+
+      chunks.push(`// ${file.path}\n${file.content}`);
+      includedFiles += 1;
+    });
+
+    return { code: chunks.join('\n\n'), includedFiles };
+  }, []);
+
+  const triggerPrefetch = useCallback(
+    async (code: string, reason: string, languagesForSignature: string[]) => {
+      if (!githubRepo.owner || !githubRepo.repo) {
+        console.warn('⚠️ [Prefetch] Skipping prefetch - repository info missing');
+        return;
+      }
+      if (!code || code.trim().length === 0) {
+        console.warn('⚠️ [Prefetch] Skipping prefetch - empty code payload');
+        return;
+      }
+
+      try {
+        console.log(`🚀 [Prefetch] Scheduling quiz prefetch (${reason})`);
+        const response = await fetch('/api/prefetchQuiz', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            code,
+            repositoryInfo: {
+              owner: githubRepo.owner,
+              repo: githubRepo.repo,
+              branch: selectedBranch || 'main'
+            },
+            questionTypes: ['function-variant', 'multiple-choice', 'order-sequence', 'true-false', 'select-all'],
+            difficulty: 'medium',
+            numQuestions: 15,
+            languages: languagesForSignature
+          })
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('❌ [Prefetch] Failed to schedule prefetch:', errorText);
+          return;
+        }
+
+        const data = await response.json();
+        console.log('✅ [Prefetch] Prefetch queued:', data);
+      } catch (error) {
+        console.error('❌ [Prefetch] Error scheduling quiz prefetch:', error);
+      }
+    },
+    [githubRepo.owner, githubRepo.repo, selectedBranch]
+  );
+
+  const queuePrefetch = useCallback(
+    (code: string, reason: string, languagesOverride?: string[]) => {
+      if (!code || code.trim().length === 0) return;
+      if (!githubRepo.owner || !githubRepo.repo) return;
+
+      const languages = (languagesOverride ?? selectedLanguages).slice().sort();
+      const signature = `${githubRepo.owner}/${githubRepo.repo}@${selectedBranch || 'main'}|${languages.join(',')}|${code.length}`;
+
+      if (prefetchSignatureRef.current === signature) {
+        console.log(`♻️ [Prefetch] Skipping duplicate prefetch (${reason})`);
+        return;
+      }
+
+      prefetchSignatureRef.current = signature;
+
+      if (prefetchTimeoutRef.current) {
+        clearTimeout(prefetchTimeoutRef.current);
+      }
+
+      prefetchTimeoutRef.current = setTimeout(() => {
+        triggerPrefetch(code, reason, languages).finally(() => {
+          prefetchTimeoutRef.current = null;
+        });
+      }, 250);
+    },
+    [githubRepo.owner, githubRepo.repo, selectedBranch, selectedLanguages, triggerPrefetch]
+  );
+
+  useEffect(() => {
+    if (!githubRepo.owner || !githubRepo.repo) return;
+    if (repositoryFiles.length === 0) return;
+    const { code } = buildCombinedCode(repositoryFiles, selectedLanguages);
+    if (!code) return;
+    queuePrefetch(code, 'language-selection');
+  }, [
+    githubRepo.owner,
+    githubRepo.repo,
+    selectedBranch,
+    repositoryFiles,
+    selectedLanguages,
+    buildCombinedCode,
+    queuePrefetch
+  ]);
+
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     setSelectedFiles(files);
@@ -338,6 +523,7 @@ export default function Home() {
     setQuizSession(null);
     setShowLoadingOverlay(false);
     setIsLoading(false);
+    prefetchSignatureRef.current = null;
     
     // Extract owner and repo from any GitHub URL format using regex
     // Handles: github.com/owner/repo, github.com/owner/repo/tree/main, github.com/owner/repo/blob/main/file.js, etc.
@@ -587,28 +773,14 @@ export default function Home() {
           console.log('⚡ No cached questions found - generating all from scratch');
         }
         
-        // Use stored repository files and filter by selected languages
-        const filteredFiles = repositoryFiles.filter((file: any) => {
-          if (selectedLanguages.length === 0) return true; // If no languages selected, include all
-          
-          const ext = file.path.split('.').pop()?.toLowerCase();
-          const languageMap: { [key: string]: string } = {
-            '.cs': 'C#', '.js': 'JavaScript', '.ts': 'TypeScript', '.jsx': 'JavaScript', '.tsx': 'TypeScript',
-            '.py': 'Python', '.java': 'Java', '.cpp': 'C++', '.cc': 'C++', '.cxx': 'C++', '.c': 'C', '.h': 'C',
-            '.go': 'Go', '.rs': 'Rust', '.php': 'PHP', '.rb': 'Ruby', '.swift': 'Swift', '.kt': 'Kotlin'
-          };
-          
-          const fileLanguage = languageMap[`.${ext}`];
-          return fileLanguage && selectedLanguages.includes(fileLanguage);
-        });
-        
-        console.log(`📊 Filtered ${filteredFiles.length} files for selected languages:`, selectedLanguages);
-        
-        // Generate quiz from filtered files
-        const combinedCode = filteredFiles.map((file: any) => 
-          `// ${file.path}\n${file.content}`
-        ).join('\n\n');
-        
+        const { code: combinedCode, includedFiles } = buildCombinedCode(repositoryFiles, selectedLanguages);
+        console.log(`📊 Filtered ${includedFiles} files for selected languages:`, selectedLanguages);
+
+        if (!combinedCode) {
+          throw new Error('No repository files matched the selected languages. Please adjust your selection and try again.');
+        }
+
+        queuePrefetch(combinedCode, 'generate-quiz');
         console.log('📤 Streaming quiz request with code length:', combinedCode.length);
         
         const quizResponse = await fetch('/api/generateQuiz?stream=1', {
