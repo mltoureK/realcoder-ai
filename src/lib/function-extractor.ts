@@ -293,28 +293,89 @@ export async function* extractFunctionsFromFilesStreaming(
 
   console.log(`📦 Created ${batches.length} extraction batches (concatenating small files for efficiency)`);
 
-  // Extract functions from each batch and yield immediately
-  for (let i = 0; i < batches.length; i++) {
-    const batch = batches[i];
-    console.log(`⚡ Extracting batch ${i + 1}/${batches.length} (${batch.files.length} files, ${batch.totalChars} chars)...`);
-    
-    // Concatenate files in this batch
+  if (batches.length === 0) {
+    console.log('⚠️ No batches to extract after filtering');
+    return;
+  }
+
+  const maxConcurrencyEnv = Number(process.env.OPENAI_FUNCTION_EXTRACTOR_CONCURRENCY ?? 3);
+  const maxConcurrentBatches = Math.max(1, Math.min(maxConcurrencyEnv, batches.length));
+  console.log(`🧵 Using parallel extraction with concurrency=${maxConcurrentBatches}`);
+
+  type BatchResult = {
+    batchIndex: number;
+    functions: ExtractedFunction[];
+    batchLabel: string;
+  };
+
+  const makeBatchPromise = (batchIndex: number): Promise<BatchResult> => {
+    const batch = batches[batchIndex];
+    console.log(`⚡ Dispatching batch ${batchIndex + 1}/${batches.length} (${batch.files.length} files, ${batch.totalChars} chars)...`);
+
     const concatenatedContent = batch.files
       .map(f => `// File: ${f.name}\n${f.content}\n\n`)
       .join('\n\n');
-    
-    const batchName = batch.files.length === 1 
-      ? batch.files[0].name 
+
+    const batchName = batch.files.length === 1
+      ? batch.files[0].name
       : `[${batch.files.length} files: ${batch.files.map(f => f.name.split('/').pop()).join(', ')}]`;
-    
-    const functions = await extractFunctionsFromFile(concatenatedContent, batchName, apiKey);
-    
-    if (functions.length > 0) {
-      console.log(`✅ Batch ${i + 1} extracted ${functions.length} functions - yielding immediately!`);
-      yield functions; // Yield immediately so questions can start generating
+
+    return extractFunctionsFromFile(concatenatedContent, batchName, apiKey)
+      .then(functions => ({
+        batchIndex,
+        functions,
+        batchLabel: batchName
+      }))
+      .catch(error => {
+        console.error(`❌ Batch ${batchIndex + 1} failed during extraction:`, error);
+        return {
+          batchIndex,
+          functions: [],
+          batchLabel: batchName
+        };
+      });
+  };
+
+  const inFlight: Array<{ promise: Promise<BatchResult> }> = [];
+  let nextBatchToStart = 0;
+
+  const startNextBatch = () => {
+    if (nextBatchToStart >= batches.length) return;
+    const promise = makeBatchPromise(nextBatchToStart);
+    inFlight.push({ promise });
+    nextBatchToStart++;
+  };
+
+  // Prime initial concurrency window
+  while (inFlight.length < maxConcurrentBatches && nextBatchToStart < batches.length) {
+    startNextBatch();
+  }
+
+  // Drain batches, yielding as soon as each completes
+  while (inFlight.length > 0) {
+    const raceResult = await Promise.race(
+      inFlight.map(item =>
+        item.promise.then(result => ({ item, result }))
+      )
+    );
+
+    const { item, result } = raceResult;
+    const index = inFlight.indexOf(item);
+    if (index !== -1) {
+      inFlight.splice(index, 1);
     }
-    
-    // No delay needed - we want speed!
+
+    if (result.functions.length > 0) {
+      console.log(`✅ Batch ${result.batchIndex + 1} (${result.batchLabel}) extracted ${result.functions.length} functions - yielding immediately!`);
+      yield result.functions;
+    } else {
+      console.log(`⚠️ Batch ${result.batchIndex + 1} (${result.batchLabel}) returned no functions`);
+    }
+
+    // Refill concurrency window
+    if (nextBatchToStart < batches.length) {
+      startNextBatch();
+    }
   }
 
   console.log(`🎉 Streaming extraction complete!`);
