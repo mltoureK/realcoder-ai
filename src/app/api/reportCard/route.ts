@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { analyzeResults, computeRepoIQ, generateStrengthsWeaknesses, type QuestionResult, type FailedQuestion, type Analysis, type RepoIQ, type StrengthsWeaknesses } from '@/lib/report-card';
 
 type Ticket = {
@@ -21,72 +21,118 @@ type Ticket = {
   };
 };
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const { results, failedQuestions } = (await req.json()) as { results: QuestionResult[]; failedQuestions: FailedQuestion[] };
+  const streamParam = req.nextUrl?.searchParams?.get('stream');
   const analysis: Analysis = analyzeResults(results || []);
   const repoIQ: RepoIQ = computeRepoIQ(analysis);
-  const tickets = await generateTicketsFromFailedQuestions(failedQuestions || []);
-  
   // Return with static fallback strengths/weaknesses to avoid API calls
   const strengthsWeaknesses: StrengthsWeaknesses = {
     strengths: ['Solid programming fundamentals and problem-solving skills'],
     weaknesses: ['Continue practicing to identify specific improvement areas']
   };
+
+  if (streamParam === '1') {
+    const encoder = new TextEncoder();
+    const safeFailedQuestions = Array.isArray(failedQuestions) ? failedQuestions : [];
+    const stream = new ReadableStream<Uint8Array>({
+      start: async (controller) => {
+        const send = (payload: unknown) => {
+          try {
+            controller.enqueue(encoder.encode(JSON.stringify(payload) + '\n'));
+          } catch (enqueueError) {
+            console.error('❌ Failed to enqueue report card payload:', enqueueError);
+          }
+        };
+        try {
+          send({ type: 'analysis', analysis });
+          send({ type: 'repoIQ', repoIQ });
+          send({ type: 'strengthsWeaknesses', strengthsWeaknesses });
+          send({ type: 'meta', ticketsPlanned: Math.min(safeFailedQuestions.length, 3) });
+
+          for await (const ticket of generateTicketsStream(safeFailedQuestions)) {
+            send({ type: 'ticket', ticket });
+          }
+
+          send({ type: 'done' });
+        } catch (error) {
+          console.error('❌ Report card streaming error:', error);
+          send({ type: 'error', message: 'report-card-stream-failed' });
+        } finally {
+          controller.close();
+        }
+      }
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'application/x-ndjson',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive'
+      }
+    });
+  }
+
+  const tickets = await generateTicketsFromFailedQuestions(failedQuestions || []);
   
   return NextResponse.json({ analysis, repoIQ, strengthsWeaknesses, tickets });
 }
 
 async function generateTicketsFromFailedQuestions(failedQuestions: FailedQuestion[]): Promise<Ticket[]> {
-  console.log('🔍 generateTicketsFromFailedQuestions called with:', failedQuestions.length, 'failed questions');
+  const tickets: Ticket[] = [];
+  for await (const ticket of generateTicketsStream(failedQuestions)) {
+    tickets.push(ticket);
+  }
+  console.log('✅ Generated', tickets.length, 'tickets:', tickets.map(t => t.id));
+  return tickets;
+}
 
-  // Take up to 3 failed questions to generate tickets from
+async function* generateTicketsStream(failedQuestions: FailedQuestion[]): AsyncGenerator<Ticket, void, void> {
+  console.log('🔍 generateTicketsStream called with:', failedQuestions.length, 'failed questions');
+
   const questionsToProcess = failedQuestions.slice(0, 3);
   console.log('🎫 Generating tickets for:', questionsToProcess.length, 'failed questions');
 
   if (questionsToProcess.length === 0) {
-    console.log('⚠️ No failed questions, returning empty tickets array');
-    return [];
+    console.log('⚠️ No failed questions, returning empty tickets sequence');
+    return;
   }
 
-  // Generate all tickets in parallel for maximum speed
-  const ticketPromises = questionsToProcess.map(async (failedQuestion, i) => {
-    // Determine language from the failed question
+  for (let i = 0; i < questionsToProcess.length; i++) {
+    const failedQuestion = questionsToProcess[i];
     const language = detectLanguageFromFailedQuestion(failedQuestion);
 
-    // Generate both title/description and buggy code in parallel
-    const [titleDescriptionResult, bugResult] = await Promise.all([
-      generateEngagingTicketTitleAndDescription(failedQuestion, language),
-      generateBugFromFailedQuestion(failedQuestion, language)
-    ]);
+    try {
+      const [titleDescriptionResult, bugResult] = await Promise.all([
+        generateEngagingTicketTitleAndDescription(failedQuestion, language),
+        generateBugFromFailedQuestion(failedQuestion, language)
+      ]);
 
-    // Create ticket based on the specific failed question
-    const ticket: Ticket = {
-      id: `ticket-${failedQuestion.type}-${i + 1}`,
-      title: titleDescriptionResult.title,
-      description: titleDescriptionResult.description,
-      language: language,
-      buggyCode: bugResult.buggyCode,
-      solutionCode: bugResult.solutionCode,
-      explanation: bugResult.explanation,
-      tests: [{ name: 'correct behavior', code: '// test based on failed question concept' }],
-      difficulty: 'medium' as const,
-      sourceQuestion: {
-        type: failedQuestion.type,
-        question: failedQuestion.question,
-        codeContext: failedQuestion.codeContext,
-        userAnswer: failedQuestion.selectedAnswers.join(', ') || 'No answer provided',
-        correctAnswer: failedQuestion.correctAnswers.join(', ') || 'Correct answer not available'
-      }
-    };
+      const ticket: Ticket = {
+        id: `ticket-${failedQuestion.type}-${i + 1}`,
+        title: titleDescriptionResult.title,
+        description: titleDescriptionResult.description,
+        language: language,
+        buggyCode: bugResult.buggyCode,
+        solutionCode: bugResult.solutionCode,
+        explanation: bugResult.explanation,
+        tests: [{ name: 'correct behavior', code: '// test based on failed question concept' }],
+        difficulty: 'medium' as const,
+        sourceQuestion: {
+          type: failedQuestion.type,
+          question: failedQuestion.question,
+          codeContext: failedQuestion.codeContext,
+          userAnswer: failedQuestion.selectedAnswers.join(', ') || 'No answer provided',
+          correctAnswer: failedQuestion.correctAnswers.join(', ') || 'Correct answer not available'
+        }
+      };
 
-    return ticket;
-  });
-
-  // Wait for all tickets to be generated in parallel
-  const tickets = await Promise.all(ticketPromises);
-
-  console.log('✅ Generated', tickets.length, 'tickets:', tickets.map(t => t.id));
-  return tickets;
+      console.log(`✅ Generated ticket ${ticket.id}`);
+      yield ticket;
+    } catch (error) {
+      console.error(`❌ Failed to generate ticket for ${failedQuestion.type} question:`, error);
+    }
+  }
 }
 
 async function generateEngagingTicketTitleAndDescription(failedQuestion: FailedQuestion, language: 'javascript'|'typescript'|'python'|'java'): Promise<{ title: string; description: string }> {
@@ -266,5 +312,3 @@ function detectLanguageFromFailedQuestion(question: FailedQuestion): 'javascript
   // Default to JavaScript
   return 'javascript';
 }
-
-

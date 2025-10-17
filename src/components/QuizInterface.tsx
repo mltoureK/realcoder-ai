@@ -78,6 +78,9 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   const [questionRatings, setQuestionRatings] = useState<Record<string, 'up' | 'down'>>({});
   const [pollUpdatedQuestions, setPollUpdatedQuestions] = useState<Set<string>>(new Set());
   const [hasSavedResults, setHasSavedResults] = useState(false);
+  const [reportRequestId, setReportRequestId] = useState<number | null>(null);
+  const [isTicketStreamPending, setIsTicketStreamPending] = useState(false);
+  const [ticketStreamPlanned, setTicketStreamPlanned] = useState<number | null>(null);
 
   // Timers: per-question and overall (increase as questions stream in)
   const [questionTimeTotal, setQuestionTimeTotal] = useState(0);
@@ -88,30 +91,115 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
   // Drive the loading bar and fetch when generating (must be before any early returns)
   useEffect(() => {
-    if (!isGeneratingReport) return;
+    if (!reportRequestId) return;
+
     let pct = 0;
     const id = setInterval(() => {
       pct = Math.min(95, pct + Math.random() * 12);
       setLoadingPct(Math.round(pct));
     }, 250);
-    (async () => {
+
+    const abortController = new AbortController();
+    let cancelled = false;
+    const ticketsBuffer: any[] = [];
+
+    setGeneratedTickets([]);
+    setIsTicketStreamPending(true);
+    setTicketStreamPlanned(null);
+
+    const handleLine = (line: string) => {
+      if (cancelled) return;
       try {
-        console.log('🚀 Calling /api/reportCard with', results.length, 'results');
-        const res = await fetch('/api/reportCard', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ results, failedQuestions }) });
-        const data = await res.json();
-        console.log('📊 Report card API response:', data);
-        console.log('🎫 Generated tickets:', data.tickets?.length || 0);
-        setGeneratedTickets(data.tickets || []);
+        const event = JSON.parse(line);
+        if (event.type === 'ticket' && event.ticket) {
+          ticketsBuffer.push(event.ticket);
+          setGeneratedTickets([...ticketsBuffer]);
+        } else if (event.type === 'meta' && typeof event.ticketsPlanned === 'number') {
+          setTicketStreamPlanned(event.ticketsPlanned);
+        } else if (event.type === 'error') {
+          throw new Error(event.message || 'report-card-stream-error');
+        }
+      } catch (error) {
+        console.error('❌ Failed to process report card stream line:', error, line);
+      }
+    };
+
+    const processBuffer = (decoderState: { buffer: string; done: boolean }, flush = false) => {
+      const { done } = decoderState;
+      let { buffer } = decoderState;
+      let newlineIndex = buffer.indexOf('\n');
+      while (newlineIndex >= 0) {
+        const line = buffer.slice(0, newlineIndex).trim();
+        buffer = buffer.slice(newlineIndex + 1);
+        if (line) handleLine(line);
+        newlineIndex = buffer.indexOf('\n');
+      }
+      if ((flush || done) && buffer.trim().length > 0) {
+        handleLine(buffer.trim());
+        buffer = '';
+      }
+      decoderState.buffer = buffer;
+    };
+
+    (async () => {
+      const decoderState = { buffer: '', done: false };
+      const decoder = new TextDecoder();
+      try {
+        console.log(`🚀 Streaming /api/reportCard request ${reportRequestId} with`, results.length, 'results');
+        const res = await fetch('/api/reportCard?stream=1', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ results, failedQuestions }),
+          signal: abortController.signal
+        });
+
+        if (!res.ok || !res.body) {
+          const errorText = await res.text().catch(() => '');
+          throw new Error(`Report card request failed: ${res.status} ${errorText}`);
+        }
+
+        const reader = res.body.getReader();
+        setShowResults(true);
+        setIsGeneratingReport(false);
+
+        while (true) {
+          const { value, done } = await reader.read();
+          decoderState.done = done;
+          if (value) {
+            decoderState.buffer += decoder.decode(value, { stream: !done });
+            processBuffer(decoderState);
+          }
+          if (done) break;
+        }
+
+        // Flush any remaining buffered content
+        decoderState.buffer += decoder.decode(new Uint8Array(), { stream: false });
+        processBuffer(decoderState, true);
+
+        if (!cancelled) {
+          setGeneratedTickets([...ticketsBuffer]);
+        }
       } catch (e) {
+        if ((e as Error)?.name === 'AbortError') return;
         console.error('reportCard error', e);
       } finally {
-        setLoadingPct(100);
-        setIsGeneratingReport(false);
-        setShowResults(true);
+        if (!cancelled) {
+          setLoadingPct(100);
+          setIsGeneratingReport(false);
+          setShowResults(true);
+          setReportRequestId(null);
+          setIsTicketStreamPending(false);
+          setTicketStreamPlanned(null);
+        }
       }
     })();
-    return () => clearInterval(id);
-  }, [isGeneratingReport, results]);
+
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+      abortController.abort();
+    };
+  }, [reportRequestId, results, failedQuestions]);
 
   const totalQuestions = Array.isArray(quizSession.questions) ? quizSession.questions.length : 0;
   const hasQuestion = totalQuestions > 0 && currentQuestionIndex < totalQuestions;
@@ -1247,7 +1335,15 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
   if (showResults) {
     return (
-      <ReportCard results={results} failedQuestions={failedQuestions} onRetry={handleRetry} onClose={onClose} initialTickets={generatedTickets} />
+      <ReportCard
+        results={results}
+        failedQuestions={failedQuestions}
+        onRetry={handleRetry}
+        onClose={onClose}
+        initialTickets={generatedTickets}
+        ticketsLoading={isTicketStreamPending}
+        ticketsPlanned={ticketStreamPlanned}
+      />
     );
   }
 
@@ -1267,9 +1363,12 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             <div className="mt-6 grid grid-cols-2 gap-3 w-full">
               <button
                 className="py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
-                onClick={async () => {
+                onClick={() => {
                   setIsGeneratingReport(true);
                   setShowReportPrompt(false);
+                  setReportRequestId(Date.now());
+                  setIsTicketStreamPending(true);
+                  setTicketStreamPlanned(null);
                 }}
               >
                 Yes
@@ -1281,6 +1380,8 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                   setGeneratedTickets([]);
                   setShowReportPrompt(false);
                   setShowResults(true);
+                  setIsTicketStreamPending(false);
+                  setTicketStreamPlanned(null);
                 }}
               >
                 No

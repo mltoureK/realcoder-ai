@@ -48,9 +48,19 @@ type Props = {
   onClose: () => void;
   onRetry: () => void;
   initialTickets?: Ticket[];
+  ticketsLoading?: boolean;
+  ticketsPlanned?: number | null;
 };
 
-export default function ReportCard({ results, failedQuestions = [], onClose, onRetry, initialTickets }: Props) {
+export default function ReportCard({
+  results,
+  failedQuestions = [],
+  onClose,
+  onRetry,
+  initialTickets,
+  ticketsLoading = false,
+  ticketsPlanned = null
+}: Props) {
   const analysis = analyzeResults(results);
   const recs = generateRecommendations(analysis);
   const repoIQ = computeRepoIQ(analysis);
@@ -271,6 +281,15 @@ useEffect(() => {
   const passed = percentage >= 70;
   const numDone = tickets.filter((t) => t.done).length;
   const allHandled = tickets.length === 0 || tickets.every((t) => t.done);
+  let pendingSkeletonCount = 0;
+  if (ticketsLoading) {
+    if (typeof ticketsPlanned === 'number') {
+      pendingSkeletonCount = Math.max(ticketsPlanned - tickets.length, 0);
+    } else if (tickets.length === 0) {
+      pendingSkeletonCount = 1;
+    }
+  }
+  const showEmptyTicketsState = tickets.length === 0 && pendingSkeletonCount === 0;
 
   async function reviewTickets() {
     if (!allHandled) return;
@@ -591,62 +610,69 @@ useEffect(() => {
                 <div className="text-xs font-medium text-slate-500 dark:text-slate-400">
                   {numDone}/{tickets.length} completed
                 </div>
+                {ticketsLoading && (
+                  <div className="flex items-center gap-2 text-xs font-semibold text-indigo-600 dark:text-indigo-300">
+                    <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-indigo-500 dark:bg-indigo-300" />
+                    <span>Generating tickets…</span>
+                  </div>
+                )}
               </div>
             </div>
-            {tickets.length === 0 ? (
+            {showEmptyTicketsState ? (
               <div className="rounded-xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
                 No tickets yet - add one from a failed question or pull a sample to keep your reps moving.
               </div>
             ) : (
               <div className="space-y-4">
-                <AnimatePresence initial={false}>
-                  {tickets.map((t) => {
-                    const codeValue = userCodeById[t.id] ?? getDefaultFixSnippet(t);
-                    const isFullscreen = fullscreenTicketId === t.id;
-                    const languageLabel = (t.language || 'javascript').toUpperCase();
-                    const isCollapsed = collapsedTickets[t.id] ?? true;
-                    return (
-                      <motion.div
-                        key={t.id}
-                        layout
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -8 }}
-                        transition={{ type: 'spring', stiffness: 200, damping: 24 }}
-                        className={`rounded-2xl border p-4 sm:p-5 shadow-sm ${
-                          t.done
-                            ? 'border-emerald-300/70 bg-emerald-50/40 dark:border-emerald-700/70 dark:bg-emerald-900/20'
-                            : 'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900'
-                        }`}
-                      >
-                        <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between">
-                          <div className="min-w-0">
-                            <div
-                              className={`text-sm font-semibold ${
-                                t.done
-                                  ? 'text-emerald-700 line-through decoration-emerald-400/70 dark:text-emerald-300'
-                                  : 'text-slate-800 dark:text-slate-100'
-                              }`}
-                            >
-                              {t.title}
+                {tickets.length > 0 && (
+                  <AnimatePresence initial={false}>
+                    {tickets.map((t) => {
+                      const codeValue = userCodeById[t.id] ?? getDefaultFixSnippet(t);
+                      const isFullscreen = fullscreenTicketId === t.id;
+                      const languageLabel = (t.language || 'javascript').toUpperCase();
+                      const isCollapsed = collapsedTickets[t.id] ?? true;
+                      return (
+                        <motion.div
+                          key={t.id}
+                          layout
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -8 }}
+                          transition={{ type: 'spring', stiffness: 200, damping: 24 }}
+                          className={`rounded-2xl border p-4 sm:p-5 shadow-sm ${
+                            t.done
+                              ? 'border-emerald-300/70 bg-emerald-50/40 dark:border-emerald-700/70 dark:bg-emerald-900/20'
+                              : 'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900'
+                          }`}
+                        >
+                          <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between">
+                            <div className="min-w-0">
+                              <div
+                                className={`text-sm font-semibold ${
+                                  t.done
+                                    ? 'text-emerald-700 line-through decoration-emerald-400/70 dark:text-emerald-300'
+                                    : 'text-slate-800 dark:text-slate-100'
+                                }`}
+                              >
+                                {t.title}
+                              </div>
+                              <p
+                                className={`mt-1 text-xs text-slate-500 dark:text-slate-400 ${
+                                  t.done ? 'line-through decoration-slate-400/60' : ''
+                                }`}
+                              >
+                                {t.description}
+                              </p>
                             </div>
-                            <p
-                              className={`mt-1 text-xs text-slate-500 dark:text-slate-400 ${
-                                t.done ? 'line-through decoration-slate-400/60' : ''
-                              }`}
-                            >
-                              {t.description}
-                            </p>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <button
+                                onClick={() => toggleCollapsed(t.id)}
+                                className="rounded-lg border border-slate-200 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                              >
+                                {isCollapsed ? 'Expand' : 'Collapse'}
+                              </button>
+                            </div>
                           </div>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <button
-                              onClick={() => toggleCollapsed(t.id)}
-                              className="rounded-lg border border-slate-200 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-                            >
-                              {isCollapsed ? 'Expand' : 'Collapse'}
-                            </button>
-                          </div>
-                        </div>
 
                         <AnimatePresence initial={false}>
                           {!isCollapsed && (
@@ -834,7 +860,25 @@ useEffect(() => {
                     );
                   })}
                 </AnimatePresence>
-
+                )}
+                {pendingSkeletonCount > 0 && (
+                  <div className="space-y-3">
+                    {Array.from({ length: pendingSkeletonCount }).map((_, idx) => (
+                      <div
+                        key={`ticket-skeleton-${idx}`}
+                        className="rounded-2xl border border-dashed border-slate-300/80 bg-slate-50 p-4 shadow-sm dark:border-slate-700/60 dark:bg-slate-900/40"
+                      >
+                        <div className="flex flex-col gap-3 animate-pulse">
+                          <div className="h-3 w-3/5 rounded bg-slate-200 dark:bg-slate-700" />
+                          <div className="h-3 w-4/5 rounded bg-slate-200/80 dark:bg-slate-800" />
+                          <div className="flex h-28 items-center justify-center rounded-xl border border-dashed border-slate-300/70 bg-white/80 text-[11px] font-semibold uppercase tracking-wide text-slate-400 dark:border-slate-700/60 dark:bg-slate-900/50 dark:text-slate-500">
+                            Generating ticket…
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
             <div className="flex flex-col gap-3 rounded-2xl border border-dashed border-slate-300 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5 dark:border-slate-700">
