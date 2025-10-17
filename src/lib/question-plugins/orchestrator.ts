@@ -33,6 +33,31 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
   // Create scheduled tasks with custom allocation
   const budgetedTasks: Array<{ plugin: QuestionPlugin; chunk: string }> = [];
   const shuffledChunks = shuffleVariants(chunks);
+
+  // Maintain a rotating queue of chunks so consecutive calls use different functions when possible
+  let chunkQueue = [...shuffledChunks];
+  let lastAssignedChunk: string | null = null;
+  const getNextChunk = (): string => {
+    if (chunkQueue.length === 0) {
+      // Refill with fresh shuffle to avoid repeating the same ordering pattern
+      chunkQueue = shuffleVariants(chunks);
+    }
+
+    let nextChunk = chunkQueue.shift() as string;
+
+    if (
+      chunkQueue.length > 0 && // we have alternatives to swap with
+      nextChunk === lastAssignedChunk
+    ) {
+      // Pull an alternate chunk to prevent back-to-back duplicates
+      const alternateChunk = chunkQueue.shift() as string;
+      chunkQueue.push(nextChunk);
+      nextChunk = alternateChunk;
+    }
+
+    lastAssignedChunk = nextChunk;
+    return nextChunk;
+  };
   
   // Use configured distribution (15 API calls: 5 FV, 5 SA, 2 OS, 2 TF, 1 MCQ)
   const totalCalls = getTotalApiCalls();
@@ -55,7 +80,7 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
     }
     for (let call = 1; call <= calls; call++) {
       // Pick next unique chunk (function) to ensure no duplicates
-      const chunk = shuffledChunks[chunkIndex % shuffledChunks.length];
+      const chunk = shuffledChunks.length === 1 ? shuffledChunks[0] : getNextChunk();
       budgetedTasks.push({ plugin, chunk });
       console.log(`🎯 Scheduled: ${plugin.type} call ${call}/${calls} (function ${chunkIndex + 1})`);
       chunkIndex++;
@@ -236,5 +261,4 @@ export async function orchestrateGeneration(args: OrchestrateArgs): Promise<RawQ
 
   return finalResults;
 }
-
 

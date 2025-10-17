@@ -14,6 +14,10 @@ export interface ExtractedFunction {
   description?: string;
 }
 
+const MIN_TIMEOUT_MS = Number(process.env.OPENAI_FUNCTION_EXTRACTOR_MIN_TIMEOUT_MS ?? 15000);
+const MAX_TIMEOUT_MS = Number(process.env.OPENAI_FUNCTION_EXTRACTOR_MAX_TIMEOUT_MS ?? 45000);
+const TIMEOUT_PER_KB_MS = Number(process.env.OPENAI_FUNCTION_EXTRACTOR_TIMEOUT_PER_KB_MS ?? 80);
+
 /**
  * Extract all complete functions from a file using GPT
  */
@@ -23,18 +27,30 @@ export async function extractFunctionsFromFile(
   apiKey: string
 ): Promise<ExtractedFunction[]> {
   console.log(`🔍 Extracting functions from ${fileName}...`);
+  const startTime = Date.now();
+  const logDuration = (status: string): void => {
+    const durationMs = Date.now() - startTime;
+    const seconds = (durationMs / 1000).toFixed(2);
+    console.log(`⏱️ ${fileName}: ${status} after ${seconds}s`);
+  };
+
+  const totalChars = fileContent.length;
+  const fileLineCount = fileContent.split('\n').length;
+  const fileSizeKb = Math.max(1, Math.round(totalChars / 1024));
 
   // Skip extremely large files to prevent timeouts
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB limit (much more reasonable)
-  if (fileContent.length > MAX_FILE_SIZE) {
-    console.log(`⚠️ Skipping ${fileName} - too large (${Math.round(fileContent.length / 1024 / 1024)}MB > ${Math.round(MAX_FILE_SIZE / 1024 / 1024)}MB limit)`);
+  if (totalChars > MAX_FILE_SIZE) {
+    console.log(`⚠️ Skipping ${fileName} - too large (${Math.round(totalChars / 1024 / 1024)}MB > ${Math.round(MAX_FILE_SIZE / 1024 / 1024)}MB limit, ${totalChars} chars, ${fileLineCount} lines)`);
+    logDuration('skipped (too large)');
     return [];
   }
 
   // Skip minified files (they're hard to parse and not useful for questions)
   if (fileName.includes('.min.') || fileName.includes('.minified') || 
-      (fileContent.length > 1000 && fileContent.split('\n').length < 10)) {
-    console.log(`⚠️ Skipping ${fileName} - appears to be minified code`);
+      (totalChars > 1000 && fileLineCount < 10)) {
+    console.log(`⚠️ Skipping ${fileName} - appears to be minified code (${totalChars} chars, ${fileLineCount} lines)`);
+    logDuration('skipped (minified)');
     return [];
   }
 
@@ -48,10 +64,11 @@ export async function extractFunctionsFromFile(
   };
 
   try {
-    // More generous timeout for OpenAI API calls - 30-90 seconds
-    const timeoutMs = Math.min(90000, Math.max(30000, fileContent.length / 200)); // 30-90 seconds based on file size
+    // Compute OpenAI timeout based on file size, with configurable bounds
+    const estimatedTimeout = MIN_TIMEOUT_MS + fileSizeKb * TIMEOUT_PER_KB_MS;
+    const timeoutMs = Math.min(MAX_TIMEOUT_MS, estimatedTimeout);
     timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-    console.log(`⏱️ Using ${timeoutMs/1000}s timeout for ${Math.round(fileContent.length / 1024)}KB file`);
+    console.log(`⏱️ Using ${(timeoutMs/1000).toFixed(2)}s timeout for ${fileName} (${fileSizeKb}KB, ${fileLineCount} lines, ${totalChars} chars)`);
     
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -96,6 +113,7 @@ Skip: stubs, simple returns, empty functions, <5 lines, <100 chars.`
 
     if (!response.ok) {
       console.error(`❌ Function extraction failed for ${fileName}: ${response.status}`);
+      logDuration(`failed (HTTP ${response.status})`);
       return [];
     }
 
@@ -123,6 +141,7 @@ Skip: stubs, simple returns, empty functions, <5 lines, <100 chars.`
 
     if (!Array.isArray(parsed)) {
       console.error(`❌ Invalid response format for ${fileName}`);
+      logDuration('failed (invalid format)');
       return [];
     }
 
@@ -166,6 +185,7 @@ Skip: stubs, simple returns, empty functions, <5 lines, <100 chars.`
       logger.logFunctionExtraction(fileName, functionSummary);
     }
 
+    logDuration(`completed (${validFunctions.length} functions)`);
     return validFunctions;
 
   } catch (error) {
@@ -173,11 +193,13 @@ Skip: stubs, simple returns, empty functions, <5 lines, <100 chars.`
     controller.abort();
     
     if (error && typeof error === 'object' && 'name' in error && error.name === 'AbortError') {
-      console.warn(`⏰ Timeout extracting functions from ${fileName} - file may be too large or complex`);
+      console.warn(`⏰ Timeout extracting functions from ${fileName} (${fileSizeKb}KB, ${fileLineCount} lines) - file may be too large or complex`);
+      logDuration('timed out');
       return [];
     }
     
     console.error(`❌ Error extracting functions from ${fileName}:`, error);
+    logDuration('failed (exception)');
     return [];
   }
 }

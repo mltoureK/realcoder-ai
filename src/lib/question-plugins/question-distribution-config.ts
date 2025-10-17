@@ -12,25 +12,22 @@ export interface QuestionTypeConfig {
 
 /**
  * QUESTION DISTRIBUTION (15 API calls per quiz)
- * 
- * Current breakdown:
- * - 5 Function Variant (FV) - Deep code understanding
- * - 5 Select All (SA) - Complex multi-answer questions  
- * - 2 Order Sequence (OS) - Code step ordering
- * - 2 True/False (TF) - Quick comprehension checks
- * - 1 Multiple Choice (MCQ) - Single correct answer
- * 
+ *
+ * Temporary debug breakdown:
+ * - 15 Function Variant (FV) - Force every call to generate variant questions
+ * - 0 for all other plugins so they are skipped during scheduling
+ *
  * Total: 15 API calls
- * 
- * To change: Modify the count for each type below.
+ *
+ * To change (e.g. restore mixed question set), modify the count for each type below.
  * The sum of all counts = total API calls per quiz.
  */
 export const QUESTION_DISTRIBUTION: QuestionTypeConfig[] = [
-  { type: 'function-variant', count: 5 },
-  { type: 'select-all', count: 5 },
-  { type: 'order-sequence', count: 2 },
-  { type: 'true-false', count: 2 },
-  { type: 'multiple-choice', count: 1 },
+  { type: 'function-variant', count: 15 },
+  { type: 'select-all', count: 0 },
+  { type: 'order-sequence', count: 0 },
+  { type: 'true-false', count: 0 },
+  { type: 'multiple-choice', count: 0 },
 ];
 
 /**
@@ -72,4 +69,3 @@ export function validateDistribution(expectedTotal: number): boolean {
   }
   return true;
 }
-

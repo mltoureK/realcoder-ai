@@ -80,8 +80,8 @@ export async function POST(request: NextRequest) {
       'true-false': trueFalsePlugin,
       'select-all': selectAllPlugin
     };
-    // Enable all 5 question types (select-all first to ensure it runs before hitting target)
-    const defaultQuestionTypes = ['select-all', 'function-variant', 'order-sequence', 'true-false', 'multiple-choice'];
+    // Debug mode: focus exclusively on function-variant questions (see docs/QUIZ_GENERATION.md)
+    const defaultQuestionTypes = ['function-variant'];
     const requestedTypes = defaultQuestionTypes;
     
     const selectedPlugins = requestedTypes
@@ -96,11 +96,11 @@ export async function POST(request: NextRequest) {
       // Reduce overall API calls for faster testing
       maxCalls: Number(process.env.OPENAI_MAX_CALLS_PER_REQUEST ?? 10),
       timeouts: {
-        'function-variant': Number(process.env.OPENAI_TIMEOUT_FUNCTION_VARIANT_MS ?? 30000),
-        'multiple-choice': Number(process.env.OPENAI_TIMEOUT_MCQ_MS ?? 20000),
-        'true-false': Number(process.env.OPENAI_TIMEOUT_TRUE_FALSE_MS ?? 25000),
-        'select-all': Number(process.env.OPENAI_TIMEOUT_SELECT_ALL_MS ?? 60000),
-        'order-sequence': Number(process.env.OPENAI_TIMEOUT_ORDER_SEQUENCE_MS ?? 25000)
+        'function-variant': Number(process.env.OPENAI_TIMEOUT_FUNCTION_VARIANT_MS ?? 45000),
+        'multiple-choice': Number(process.env.OPENAI_TIMEOUT_MCQ_MS ?? 10000),
+        'true-false': Number(process.env.OPENAI_TIMEOUT_TRUE_FALSE_MS ?? 12500),
+        'select-all': Number(process.env.OPENAI_TIMEOUT_SELECT_ALL_MS ?? 30000),
+        'order-sequence': Number(process.env.OPENAI_TIMEOUT_ORDER_SEQUENCE_MS ?? 12500)
       },
       retries: { attempts: 3, backoffBaseMs: 500 }
     };
@@ -111,7 +111,14 @@ export async function POST(request: NextRequest) {
       const questionData = (q as Record<string, unknown>)?.quiz as Record<string, unknown>;
       
       // Create deterministic ID based on content hash to ensure consistency
-      const contentHash = btoa(JSON.stringify(q)).slice(0, 8);
+      let contentHash = '';
+      try {
+        const serialized = JSON.stringify(q);
+        contentHash = Buffer.from(serialized, 'utf8').toString('base64').replace(/=+$/, '').slice(0, 8);
+      } catch (hashError) {
+        console.warn('⚠️ Failed to create content hash, using timestamp fallback:', hashError);
+        contentHash = Date.now().toString(36).slice(-8);
+      }
       
       if (questionData.type === 'function-variant') {
         const variantsValue = (questionData as { variants?: unknown }).variants;
@@ -330,12 +337,18 @@ export async function POST(request: NextRequest) {
                   apiKey: openaiApiKey,
                   options: { difficulty: difficulty || 'medium' },
                   onQuestion: async (q) => {
-                    const ui = mapToUi(q, counter);
-                    // Shuffle variants if present and balance
-                    if (ui.variants && ui.variants.length > 0) {
-                      ui.variants = shuffleVariants(ui.variants);
-                      ui.variants = balanceVariantVerbosity(ui.variants);
-                    }
+                  let ui;
+                  try {
+                    ui = mapToUi(q, counter);
+                  } catch (mapError) {
+                    console.error('❌ mapToUi failed during streaming:', mapError);
+                    return;
+                  }
+                  // Shuffle variants if present and balance
+                  if (ui.variants && ui.variants.length > 0) {
+                    ui.variants = shuffleVariants(ui.variants);
+                    ui.variants = balanceVariantVerbosity(ui.variants);
+                  }
                     counter += 1;
                     questionsGenerated += 1;
                     console.log(`📤 Streaming question ${counter} from batch ${batchCount}`);
@@ -382,7 +395,13 @@ export async function POST(request: NextRequest) {
                   apiKey: openaiApiKey,
                   options: { difficulty: difficulty || 'medium' },
                   onQuestion: async (q) => {
-                    const ui = mapToUi(q, counter);
+                    let ui;
+                    try {
+                      ui = mapToUi(q, counter);
+                    } catch (mapError) {
+                      console.error('❌ mapToUi failed during fallback streaming:', mapError);
+                      return;
+                    }
                     if (ui.variants && ui.variants.length > 0) {
                       ui.variants = shuffleVariants(ui.variants);
                       ui.variants = balanceVariantVerbosity(ui.variants);
@@ -411,7 +430,13 @@ export async function POST(request: NextRequest) {
                 apiKey: openaiApiKey,
                 options: { difficulty: difficulty || 'medium' },
                 onQuestion: async (q) => {
-                  const ui = mapToUi(q, counter);
+                  let ui;
+                  try {
+                    ui = mapToUi(q, counter);
+                  } catch (mapError) {
+                    console.error('❌ mapToUi failed during remaining streaming:', mapError);
+                    return;
+                  }
                   if (ui.variants && ui.variants.length > 0) {
                     ui.variants = shuffleVariants(ui.variants);
                     ui.variants = balanceVariantVerbosity(ui.variants);

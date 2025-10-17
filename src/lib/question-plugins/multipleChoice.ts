@@ -8,7 +8,7 @@ const MAX_TOKENS = 2500;
 const SYSTEM_PROMPT = 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.';
 
 function createUserPrompt(chunk: string): string {
-  return `Generate 3 multiple-choice questions based on this function to test understanding:
+  return `Generate 1 multiple-choice question based on this function to test understanding:
 
 ${chunk}
 
