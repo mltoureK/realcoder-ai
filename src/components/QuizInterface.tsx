@@ -1637,7 +1637,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                               </SyntaxHighlighter>
                             </div>
                           </div>
-                          <p className={`text-sm ${
+                          <p className={`text-sm leading-relaxed break-words whitespace-pre-wrap ${
                             isCorrect
                               ? 'text-green-700 dark:text-green-300'
                               : 'text-red-700 dark:text-red-300'
