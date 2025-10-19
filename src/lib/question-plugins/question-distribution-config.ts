@@ -26,9 +26,9 @@ export interface QuestionTypeConfig {
  * The sum of all counts = total API calls per quiz.
  */
 export const QUESTION_DISTRIBUTION: QuestionTypeConfig[] = [
-  { type: 'function-variant', count: 5 },
-  { type: 'select-all', count: 5 },
-  { type: 'order-sequence', count: 2 },
+  { type: 'function-variant', count: 4 },
+  { type: 'select-all', count: 4 },
+  { type: 'order-sequence', count: 4 },
   { type: 'true-false', count: 2 },
   { type: 'multiple-choice', count: 1 },
 ];

@@ -1,0 +1,1083 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1760895112622
+Started: 2025-10-19T17:31:52.622Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:31:52.624Z
+File: pallets-flask-88a65bb/src/flask/config.py
+Functions Extracted: 7
+
+
+Function 1: from_envvar
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+def from_envvar(self, variable_name: str, silent: bool = False) -> bool:
+        rv = os.environ.get(variable_name)
+        if not rv:
+            if silent:
+                return False
+            raise RuntimeError(
+                f"The environment variable {variable_name!r} is not set"
+                " and as such configuration could not be loaded. Set"
+                " this variable and make it point to a configuration"
+                " file"
+            )
+        return self.from_pyfile(rv, silent=silent)
+--------------------------------------------------------------------------------
+
+
+Function 2: from_prefixed_env
+Language: Python
+Lines: 18
+Full Code:
+--------------------------------------------------------------------------------
+def from_prefixed_env(self, prefix: str = "FLASK", *, loads: t.Callable[[str], t.Any] = json.loads) -> bool:
+        prefix = f"{prefix}_"
+
+        for key in sorted(os.environ):
+            if not key.startswith(prefix):
+                continue
+
+            value = os.environ[key]
+            key = key.removeprefix(prefix)
+
+            try:
+                value = loads(value)
+            except Exception:
+                pass
+
+            if "__" not in key:
+                self[key] = value
+                continue
+
+            current = self
+            *parts, tail = key.split("__")
+
+            for part in parts:
+                if part not in current:
+                    current[part] = {}
+
+                current = current[part]
+
+            current[tail] = value
+
+        return True
+--------------------------------------------------------------------------------
+
+
+Function 3: from_pyfile
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+def from_pyfile(self, filename: str | os.PathLike[str], silent: bool = False) -> bool:
+        filename = os.path.join(self.root_path, filename)
+        d = types.ModuleType("config")
+        d.__file__ = filename
+        try:
+            with open(filename, mode="rb") as config_file:
+                exec(compile(config_file.read(), filename, "exec"), d.__dict__)
+        except OSError as e:
+            if silent and e.errno in (errno.ENOENT, errno.EISDIR, errno.ENOTDIR):
+                return False
+            e.strerror = f"Unable to load configuration file ({e.strerror})"
+            raise
+        self.from_object(d)
+        return True
+--------------------------------------------------------------------------------
+
+
+Function 4: from_object
+Language: Python
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+def from_object(self, obj: object | str) -> None:
+        if isinstance(obj, str):
+            obj = import_string(obj)
+        for key in dir(obj):
+            if key.isupper():
+                self[key] = getattr(obj, key)
+--------------------------------------------------------------------------------
+
+
+Function 5: from_file
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+def from_file(self, filename: str | os.PathLike[str], load: t.Callable[[t.IO[t.Any]], t.Mapping[str, t.Any]], silent: bool = False, text: bool = True) -> bool:
+        filename = os.path.join(self.root_path, filename)
+
+        try:
+            with open(filename, "r" if text else "rb") as f:
+                obj = load(f)
+        except OSError as e:
+            if silent and e.errno in (errno.ENOENT, errno.EISDIR):
+                return False
+
+            e.strerror = f"Unable to load configuration file ({e.strerror})"
+            raise
+
+        return self.from_mapping(obj)
+--------------------------------------------------------------------------------
+
+
+Function 6: from_mapping
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+def from_mapping(self, mapping: t.Mapping[str, t.Any] | None = None, **kwargs: t.Any) -> bool:
+        mappings: dict[str, t.Any] = {}
+        if mapping is not None:
+            mappings.update(mapping)
+        mappings.update(kwargs)
+        for key, value in mappings.items():
+            if key.isupper():
+                self[key] = value
+        return True
+--------------------------------------------------------------------------------
+
+
+Function 7: get_namespace
+Language: Python
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+def get_namespace(self, namespace: str, lowercase: bool = True, trim_namespace: bool = True) -> dict[str, t.Any]:
+        rv = {}
+        for k, v in self.items():
+            if not k.startswith(namespace):
+                continue
+            if trim_namespace:
+                key = k[len(namespace) :]
+            else:
+                key = k
+            if lowercase:
+                key = key.lower()
+            rv[key] = v
+        return rv
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:31:58.626Z
+Question Type: select-all
+Function: get_namespace
+Function Size: 591 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: get_namespace (Python)\n// Returns a dictionary containing a subset of configuration options that match the specified namespace.\n\ndef get_namespace(self, namespace: str, lowercase: bool = True, trim_namespace: bool = True) -> dict[str, t.Any]:\n        rv = {}\n        for k, v in self.ite
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:31:58.812Z
+Question Type: select-all
+Function: from_pyfile
+Function Size: 739 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from_pyfile (Python)\n// Updates the values in the config from a Python file.\n\ndef from_pyfile(self, filename: str | os.PathLike[str], silent: bool = False) -> bool:\n        filename = os.path.join(self.root_path, filename)\n        d = types.ModuleType("config")\n        d.__file__ = file
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:32:01.762Z
+Question Type: order-sequence
+Function: from_file
+Function Size: 712 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from_file (Python)\n// Update the values in the config from a file that is loaded using the specified load function.\n\ndef from_file(self, filename: str | os.PathLike[str], load: t.Callable[[t.IO[t.Any]], t.Mapping[str, t.Any]], silent: bool = False, text: bool = True) -> bool:\n        fi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:32:06.007Z
+Question Type: order-sequence
+Function: from_mapping
+Function Size: 460 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from_mapping (Python)\n// Updates the config by ignoring items with non-upper keys.\n\ndef from_mapping(self, mapping: t.Mapping[str, t.Any] | None = None, **kwargs: t.Any) -> bool:\n        mappings: dict[str, t.Any] = {}\n        if mapping is not None:\n            mappings.update(mapping)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:32:07.470Z
+Question Type: function-variant
+Function: from_prefixed_env
+Function Size: 943 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from_prefixed_env (Python)\n// Load any environment variables that start with a specified prefix, converting values as needed.\n\ndef from_prefixed_env(self, prefix: str = "FLASK", *, loads: t.Callable[[str], t.Any] = json.loads) -> bool:\n        prefix = f"{prefix}_"\n\n        for key in s
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:32:09.172Z
+Question Type: order-sequence
+Function: get_namespace
+Function Size: 591 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: get_namespace (Python)\n// Returns a dictionary containing a subset of configuration options that match the specified namespace.\n\ndef get_namespace(self, namespace: str, lowercase: bool = True, trim_namespace: bool = True) -> dict[str, t.Any]:\n        rv = {}\n        for k, v in self.ite
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:32:09.516Z
+Question Type: function-variant
+Function: from_mapping
+Function Size: 460 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from_mapping (Python)\n// Updates the config by ignoring items with non-upper keys.\n\ndef from_mapping(self, mapping: t.Mapping[str, t.Any] | None = None, **kwargs: t.Any) -> bool:\n        mappings: dict[str, t.Any] = {}\n        if mapping is not None:\n            mappings.update(mapping)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:32:10.764Z
+Question Type: multiple-choice
+Function: from_envvar
+Function Size: 643 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from_envvar (Python)\n// Loads a configuration from an environment variable pointing to a configuration file.\n\ndef from_envvar(self, variable_name: str, silent: bool = False) -> bool:\n        rv = os.environ.get(variable_name)\n        if not rv:\n            if silent:\n                ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:32:14.015Z
+Question Type: select-all
+Function: from_envvar
+Function Size: 643 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from_envvar (Python)\n// Loads a configuration from an environment variable pointing to a configuration file.\n\ndef from_envvar(self, variable_name: str, silent: bool = False) -> bool:\n        rv = os.environ.get(variable_name)\n        if not rv:\n            if silent:\n                ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:32:14.377Z
+Question Type: true-false
+Function: from_pyfile
+Function Size: 739 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from_pyfile (Python)\n// Updates the values in the config from a Python file.\n\ndef from_pyfile(self, filename: str | os.PathLike[str], silent: bool = False) -> bool:\n        filename = os.path.join(self.root_path, filename)\n        d = types.ModuleType("config")\n        d.__file__ = file
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:32:14.577Z
+Question Type: function-variant
+Function: from_object
+Function Size: 339 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from_object (Python)\n// Updates the values from the given object, loading only uppercase attributes.\n\ndef from_object(self, obj: object | str) -> None:\n        if isinstance(obj, str):\n            obj = import_string(obj)\n        for key in dir(obj):\n            if key.isupper():\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:32:19.251Z
+Question Type: order-sequence
+Function: from_envvar
+Function Size: 643 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from_envvar (Python)\n// Loads a configuration from an environment variable pointing to a configuration file.\n\ndef from_envvar(self, variable_name: str, silent: bool = False) -> bool:\n        rv = os.environ.get(variable_name)\n        if not rv:\n            if silent:\n                ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:32:19.588Z
+Question Type: true-false
+Function: from_prefixed_env
+Function Size: 943 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from_prefixed_env (Python)\n// Load any environment variables that start with a specified prefix, converting values as needed.\n\ndef from_prefixed_env(self, prefix: str = "FLASK", *, loads: t.Callable[[str], t.Any] = json.loads) -> bool:\n        prefix = f"{prefix}_"\n\n        for key in s
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:32:20.988Z
+Question Type: select-all
+Function: from_file
+Function Size: 712 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from_file (Python)\n// Update the values in the config from a file that is loaded using the specified load function.\n\ndef from_file(self, filename: str | os.PathLike[str], load: t.Callable[[t.IO[t.Any]], t.Mapping[str, t.Any]], silent: bool = False, text: bool = True) -> bool:\n        fi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:32:23.067Z
+Question Type: function-variant
+Function: from_object
+Function Size: 339 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from_object (Python)\n// Updates the values from the given object, loading only uppercase attributes.\n\ndef from_object(self, obj: object | str) -> None:\n        if isinstance(obj, str):\n            obj = import_string(obj)\n        for key in dir(obj):\n            if key.isupper():\n      
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760895112622
+Repository: Unknown
+Total Questions Generated: 14
+Total Chunks Processed: 7
+Ended: 2025-10-19T17:32:23.068Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:32:40.126Z
+File: pallets-flask-88a65bb/src/flask/sansio/scaffold.py
+Functions Extracted: 4
+
+
+Function 1: setupmethod
+Language: Python
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+def setupmethod(f: F) -> F:
+    f_name = f.__name__
+
+    def wrapper_func(self: Scaffold, *args: t.Any, **kwargs: t.Any) -> t.Any:
+        self._check_setup_finished(f_name)
+        return f(self, *args, **kwargs)
+
+    return t.cast(F, update_wrapper(wrapper_func, f))
+--------------------------------------------------------------------------------
+
+
+Function 2: __init__
+Language: Python
+Lines: 37
+Full Code:
+--------------------------------------------------------------------------------
+def __init__(
+        self,
+        import_name: str,
+        static_folder: str | os.PathLike[str] | None = None,
+        static_url_path: str | None = None,
+        template_folder: str | os.PathLike[str] | None = None,
+        root_path: str | None = None,
+    ):
+        self.import_name = import_name
+        self.static_folder = static_folder
+        self.static_url_path = static_url_path
+        self.template_folder = template_folder
+        if root_path is None:
+            root_path = get_root_path(self.import_name)
+        self.root_path = root_path
+        self.view_functions: dict[str, ft.RouteCallable] = {}
+        self.error_handler_spec: dict[
+            ft.AppOrBlueprintKey,
+            dict[int | None, dict[type[Exception], ft.ErrorHandlerCallable]],
+        ] = defaultdict(lambda: defaultdict(dict))
+        self.before_request_funcs: dict[
+            ft.AppOrBlueprintKey, list[ft.BeforeRequestCallable]
+        ] = defaultdict(list)
+        self.after_request_funcs: dict[
+            ft.AppOrBlueprintKey, list[ft.AfterRequestCallable[t.Any]]
+        ] = defaultdict(list)
+        self.teardown_request_funcs: dict[
+            ft.AppOrBlueprintKey, list[ft.TeardownCallable]
+        ] = defaultdict(list)
+        self.template_context_processors: dict[
+            ft.AppOrBlueprintKey, list[ft.TemplateContextProcessorCallable]
+        ] = defaultdict(list, {None: [_default_template_ctx_processor]})
+        self.url_value_preprocessors: dict[
+            ft.AppOrBlueprintKey,
+            list[ft.URLValuePreprocessorCallable],
+        ] = defaultdict(list)
+        self.url_default_functions: dict[
+            ft.AppOrBlueprintKey, list[ft.URLDefaultCallable]
+        ] = defaultdict(list)
+--------------------------------------------------------------------------------
+
+
+Function 3: route
+Language: Python
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+def route(self, rule: str, **options: t.Any) -> t.Callable[[T_route], T_route]:
+        def decorator(f: T_route) -> T_route:
+            endpoint = options.pop("endpoint", None)
+            self.add_url_rule(rule, endpoint, f, **options)
+            return f
+
+        return decorator
+--------------------------------------------------------------------------------
+
+
+Function 4: errorhandler
+Language: Python
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+def errorhandler(
+        self, code_or_exception: type[Exception] | int
+    ) -> t.Callable[[T_error_handler], T_error_handler]:
+        def decorator(f: T_error_handler) -> T_error_handler:
+            self.register_error_handler(code_or_exception, f)
+            return f
+
+        return decorator
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:32:45.952Z
+Question Type: order-sequence
+Function: route
+Function Size: 397 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: route (Python)\n// Decorates a view function to register it with a specified URL rule and options.\n\ndef route(self, rule: str, **options: t.Any) -> t.Callable[[T_route], T_route]:\n        def decorator(f: T_route) -> T_route:\n            endpoint = options.pop("endpoint", None)\n         
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:32:45.966Z
+Question Type: select-all
+Function: setupmethod
+Function Size: 380 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setupmethod (Python)\n// A decorator that ensures a method is only called after setup is complete.\n\ndef setupmethod(f: F) -> F:\n    f_name = f.__name__\n\n    def wrapper_func(self: Scaffold, *args: t.Any, **kwargs: t.Any) -> t.Any:\n        self._check_setup_finished(f_name)\n        return
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:32:48.311Z
+Question Type: order-sequence
+Function: __init__
+Function Size: 1871 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: __init__ (Python)\n// Initializes a Scaffold instance with various parameters for routing, error handling, and request processing.\n\ndef __init__(\n        self,\n        import_name: str,\n        static_folder: str | os.PathLike[str] | None = None,\n        static_url_path: str | None = Non
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:32:48.902Z
+Question Type: function-variant
+Function: errorhandler
+Function Size: 430 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: errorhandler (Python)\n// Registers a function to handle errors based on the provided error code or exception class.\n\ndef errorhandler(\n        self, code_or_exception: type[Exception] | int\n    ) -> t.Callable[[T_error_handler], T_error_handler]:\n        def decorator(f: T_error_handler
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:32:52.513Z
+Question Type: true-false
+Function: errorhandler
+Function Size: 430 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: errorhandler (Python)\n// Registers a function to handle errors based on the provided error code or exception class.\n\ndef errorhandler(\n        self, code_or_exception: type[Exception] | int\n    ) -> t.Callable[[T_error_handler], T_error_handler]:\n        def decorator(f: T_error_handler
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760895112622
+Repository: Unknown
+Total Questions Generated: 5
+Total Chunks Processed: 4
+Ended: 2025-10-19T17:32:52.529Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:32:58.646Z
+File: pallets-flask-88a65bb/tests/test_basic.py
+Functions Extracted: 6
+
+
+Function 1: test_options_work
+Language: Python
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+def test_options_work(app, client):
+    @app.route("/", methods=["GET", "POST"])
+    def index():
+        return "Hello World"
+
+    rv = client.open("/", method="OPTIONS")
+    assert sorted(rv.allow) == ["GET", "HEAD", "OPTIONS", "POST"]
+    assert rv.data == b""
+--------------------------------------------------------------------------------
+
+
+Function 2: test_method_route
+Language: Python
+Lines: 11
+Full Code:
+--------------------------------------------------------------------------------
+@pytest.mark.parametrize("method", ["get", "post", "put", "delete", "patch"])
+def test_method_route(app, client, method):
+    method_route = getattr(app, method)
+    client_method = getattr(client, method)
+
+    @method_route("/")
+    def hello():
+        return "Hello"
+
+    assert client_method("/").data == b"Hello"
+--------------------------------------------------------------------------------
+
+
+Function 3: test_provide_automatic_options_kwarg
+Language: Python
+Lines: 27
+Full Code:
+--------------------------------------------------------------------------------
+def test_provide_automatic_options_kwarg(app, client):
+    def index():
+        return flask.request.method
+
+    def more():
+        return flask.request.method
+
+    app.add_url_rule("/", view_func=index, provide_automatic_options=False)
+    app.add_url_rule(
+        "/more",
+        view_func=more,
+        methods=["GET", "POST"],
+        provide_automatic_options=False,
+    )
+    assert client.get("/").data == b"GET"
+
+    rv = client.post("/")
+    assert rv.status_code == 405
+    assert sorted(rv.allow) == ["GET", "HEAD"]
+
+    rv = client.open("/", method="OPTIONS")
+    assert rv.status_code == 405
+
+    rv = client.head("/")
+    assert rv.status_code == 200
+    assert not rv.data  # head truncates
+    assert client.post("/more").data == b"POST"
+    assert client.get("/more").data == b"GET"
+
+    rv = client.delete("/more")
+    assert rv.status_code == 405
+    assert sorted(rv.allow) == ["GET", "HEAD", "POST"]
+
+    rv = client.open("/more", method="OPTIONS")
+    assert rv.status_code == 405
+--------------------------------------------------------------------------------
+
+
+Function 4: test_session_using_application_root
+Language: Python
+Lines: 19
+Full Code:
+--------------------------------------------------------------------------------
+def test_session_using_application_root(app, client):
+    class PrefixPathMiddleware:
+        def __init__(self, app, prefix):
+            self.app = app
+            self.prefix = prefix
+
+        def __call__(self, environ, start_response):
+            environ["SCRIPT_NAME"] = self.prefix
+            return self.app(environ, start_response)
+
+    app.wsgi_app = PrefixPathMiddleware(app.wsgi_app, "/bar")
+    app.config.update(APPLICATION_ROOT="/bar")
+
+    @app.route("/")
+    def index():
+        flask.session["testing"] = 42
+        return "Hello World"
+
+    rv = client.get("/", "http://example.com:8080/")
+    assert "path=/bar" in rv.headers["set-cookie"].lower()
+--------------------------------------------------------------------------------
+
+
+Function 5: test_session_expiration
+Language: Python
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+def test_session_expiration(app, client):
+    permanent = True
+
+    @app.route("/")
+    def index():
+        flask.session["test"] = 42
+        flask.session.permanent = permanent
+        return ""
+
+    @app.route("/test")
+    def test():
+        return str(flask.session.permanent)
+
+    rv = client.get("/")
+    assert "set-cookie" in rv.headers
+    match = re.search(r"(?i)\bexpires=([^;]+)", rv.headers["set-cookie"])
+    expires = parse_date(match.group())
+    expected = datetime.now(timezone.utc) + app.permanent_session_lifetime
+    assert expires.year == expected.year
+    assert expires.month == expected.month
+    assert expires.day == expected.day
+
+    rv = client.get("/test")
+    assert rv.data == b"True"
+
+    permanent = False
+    rv = client.get("/")
+    assert "set-cookie" in rv.headers
+    match = re.search(r"\bexpires=([^;]+)", rv.headers["set-cookie"])
+    assert match is None
+--------------------------------------------------------------------------------
+
+
+Function 6: test_error_handling
+Language: Python
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+def test_error_handling(app, client):
+    app.testing = False
+
+    @app.errorhandler(404)
+    def not_found(e):
+        return "not found", 404
+
+    @app.errorhandler(500)
+    def internal_server_error(e):
+        return "internal server error", 500
+
+    @app.errorhandler(Forbidden)
+    def forbidden(e):
+        return "forbidden", 403
+
+    @app.route("/")
+    def index():
+        flask.abort(404)
+
+    @app.route("/error")
+    def error():
+        raise ZeroDivisionError
+
+    @app.route("/forbidden")
+    def error2():
+        flask.abort(403)
+
+    rv = client.get("/")
+    assert rv.status_code == 404
+    assert rv.data == b"not found"
+    rv = client.get("/error")
+    assert rv.status_code == 500
+    assert b"internal server error" == rv.data
+    rv = client.get("/forbidden")
+    assert rv.status_code == 403
+    assert b"forbidden" == rv.data
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:35:48.697Z
+File: [4 files: Any other update combination is invalid., If we end up here, there was no work store or work unit store present., This function has to be called initially., stack trace.]
+Functions Extracted: 7
+
+
+Function 1: emitIssues
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function emitIssues() {
+  const issues = []
+  const deduplicationSet = new Set()
+
+  for (const [_, chunkIssues] of chunksWithIssues) {
+    for (const chunkIssue of chunkIssues) {
+      if (deduplicationSet.has(chunkIssue.formatted)) continue
+
+      issues.push(chunkIssue)
+      deduplicationSet.add(chunkIssue.formatted)
+    }
+  }
+
+  sortIssues(issues)
+
+  hooks.issues(issues)
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: handleIssues
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function handleIssues(msg: ServerMessage): boolean {
+  const key = resourceKey(msg.resource)
+  let hasCriticalIssues = false
+
+  for (const issue of msg.issues) {
+    if (CRITICAL.includes(issue.severity)) {
+      hasCriticalIssues = true
+    }
+  }
+
+  if (msg.issues.length > 0) {
+    chunksWithIssues.set(key, msg.issues)
+  } else if (chunksWithIssues.has(key)) {
+    chunksWithIssues.delete(key)
+  }
+
+  emitIssues()
+
+  return hasCriticalIssues
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: sortIssues
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function sortIssues(issues: Issue[]) {
+  issues.sort((a, b) => {
+    const first = compareByList(SEVERITY_ORDER, a.severity, b.severity)
+    if (first !== 0) return first
+    return compareByList(CATEGORY_ORDER, a.category, b.category)
+  })
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: makeHangingCookies
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function makeHangingCookies(
+  workStore: WorkStore,
+  prerenderStore: PrerenderStoreModern
+): Promise<ReadonlyRequestCookies> {
+  const cachedPromise = CachedCookies.get(prerenderStore)
+  if (cachedPromise) {
+    return cachedPromise
+  }
+
+  const promise = makeHangingPromise<ReadonlyRequestCookies>(
+    prerenderStore.renderSignal,
+    workStore.route,
+    '`cookies()`'
+  )
+  CachedCookies.set(prerenderStore, promise)
+
+  return promise
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: instrumentCookiesPromiseWithDevWarnings
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function instrumentCookiesPromiseWithDevWarnings(
+  promise: Promise<ReadonlyRequestCookies>,
+  route: string | undefined
+) {
+  Object.defineProperties(promise, {
+    [Symbol.iterator]: replaceableWarningDescriptorForSymbolIterator(
+      promise,
+      route
+    ),
+    size: replaceableWarningDescriptor(promise, 'size', route),
+    get: replaceableWarningDescriptor(promise, 'get', route),
+    getAll: replaceableWarningDescriptor(promise, 'getAll', route),
+    has: replaceableWarningDescriptor(promise, 'has', route),
+    set: replaceableWarningDescriptor(promise, 'set', route),
+    delete: replaceableWarningDescriptor(promise, 'delete', route),
+    clear: replaceableWarningDescriptor(promise, 'clear', route),
+    toString: replaceableWarningDescriptor(promise, 'toString', route),
+  })
+  return promise
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: createPrerenderInterruptedError
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function createPrerenderInterruptedError(message: string): Error {
+  const error = new Error(message)
+  ;(error as any).digest = NEXT_PRERENDER_INTERRUPTED
+  return error
+}
+--------------------------------------------------------------------------------
+
+
+Function 7: isPrerenderInterruptedError
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+export function isPrerenderInterruptedError(
+  error: unknown
+): error is DigestError {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    (error as any).digest === NEXT_PRERENDER_INTERRUPTED &&
+    'name' in error &&
+    'message' in error &&
+    error instanceof Error
+  )
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:35:52.332Z
+Question Type: true-false
+Function: handleIssues
+Function Size: 564 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleIssues (JavaScript)\n// Handles incoming issues from a server message and updates the issue store.\n\nfunction handleIssues(msg: ServerMessage): boolean {\n  const key = resourceKey(msg.resource)\n  let hasCriticalIssues = false\n\n  for (const issue of msg.issues) {\n    if (CRITICAL.inc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:35:54.655Z
+Question Type: select-all
+Function: makeHangingCookies
+Function Size: 559 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeHangingCookies (TypeScript)\n// Creates hanging cookies for a given work store and prerender store.\n\nfunction makeHangingCookies(\n  workStore: WorkStore,\n  prerenderStore: PrerenderStoreModern\n): Promise<ReadonlyRequestCookies> {\n  const cachedPromise = CachedCookies.get(prerenderSto
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:35:57.013Z
+Question Type: order-sequence
+Function: isPrerenderInterruptedError
+Function Size: 406 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isPrerenderInterruptedError (TypeScript)\n// Checks if an error is a prerender interrupted error.\n\nexport function isPrerenderInterruptedError(\n  error: unknown\n): error is DigestError {\n  return (\n    typeof error === 'object' &&\n    error !== null &&\n    (error as any).digest === NEXT_
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:36:00.909Z
+Question Type: function-variant
+Function: emitIssues
+Function Size: 476 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: emitIssues (JavaScript)\n// Collects and emits unique issues from chunksWithIssues.\n\nfunction emitIssues() {\n  const issues = []\n  const deduplicationSet = new Set()\n\n  for (const [_, chunkIssues] of chunksWithIssues) {\n    for (const chunkIssue of chunkIssues) {\n      if (deduplicationS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:36:02.121Z
+Question Type: order-sequence
+Function: sortIssues
+Function Size: 328 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sortIssues (JavaScript)\n// Sorts issues based on severity and category.\n\nfunction sortIssues(issues: Issue[]) {\n  issues.sort((a, b) => {\n    const first = compareByList(SEVERITY_ORDER, a.severity, b.severity)\n    if (first !== 0) return first\n    return compareByList(CATEGORY_ORDER, a.
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:36:03.829Z
+Question Type: select-all
+Function: sortIssues
+Function Size: 328 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sortIssues (JavaScript)\n// Sorts issues based on severity and category.\n\nfunction sortIssues(issues: Issue[]) {\n  issues.sort((a, b) => {\n    const first = compareByList(SEVERITY_ORDER, a.severity, b.severity)\n    if (first !== 0) return first\n    return compareByList(CATEGORY_ORDER, a.
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:36:08.607Z
+Question Type: true-false
+Function: instrumentCookiesPromiseWithDevWarnings
+Function Size: 965 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: instrumentCookiesPromiseWithDevWarnings (TypeScript)\n// Instruments a promise with warnings for synchronous access to cookie properties.\n\nfunction instrumentCookiesPromiseWithDevWarnings(\n  promise: Promise<ReadonlyRequestCookies>,\n  route: string | undefined\n) {\n  Object.defineProperti
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:36:10.937Z
+Question Type: function-variant
+Function: createPrerenderInterruptedError
+Function Size: 302 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createPrerenderInterruptedError (TypeScript)\n// Creates an error indicating that prerendering has been interrupted.\n\nfunction createPrerenderInterruptedError(message: string): Error {\n  const error = new Error(message)\n  ;(error as any).digest = NEXT_PRERENDER_INTERRUPTED\n  return error
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:36:12.700Z
+Question Type: function-variant
+Function: instrumentCookiesPromiseWithDevWarnings
+Function Size: 965 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: instrumentCookiesPromiseWithDevWarnings (TypeScript)\n// Instruments a promise with warnings for synchronous access to cookie properties.\n\nfunction instrumentCookiesPromiseWithDevWarnings(\n  promise: Promise<ReadonlyRequestCookies>,\n  route: string | undefined\n) {\n  Object.defineProperti
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:36:13.418Z
+Question Type: select-all
+Function: handleIssues
+Function Size: 564 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: handleIssues (JavaScript)\n// Handles incoming issues from a server message and updates the issue store.\n\nfunction handleIssues(msg: ServerMessage): boolean {\n  const key = resourceKey(msg.resource)\n  let hasCriticalIssues = false\n\n  for (const issue of msg.issues) {\n    if (CRITICAL.inc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:36:14.854Z
+Question Type: function-variant
+Function: makeHangingCookies
+Function Size: 559 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeHangingCookies (TypeScript)\n// Creates hanging cookies for a given work store and prerender store.\n\nfunction makeHangingCookies(\n  workStore: WorkStore,\n  prerenderStore: PrerenderStoreModern\n): Promise<ReadonlyRequestCookies> {\n  const cachedPromise = CachedCookies.get(prerenderSto
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:36:15.683Z
+Question Type: multiple-choice
+Function: emitIssues
+Function Size: 476 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: emitIssues (JavaScript)\n// Collects and emits unique issues from chunksWithIssues.\n\nfunction emitIssues() {\n  const issues = []\n  const deduplicationSet = new Set()\n\n  for (const [_, chunkIssues] of chunksWithIssues) {\n    for (const chunkIssue of chunkIssues) {\n      if (deduplicationS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:36:17.699Z
+Question Type: order-sequence
+Function: createPrerenderInterruptedError
+Function Size: 302 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createPrerenderInterruptedError (TypeScript)\n// Creates an error indicating that prerendering has been interrupted.\n\nfunction createPrerenderInterruptedError(message: string): Error {\n  const error = new Error(message)\n  ;(error as any).digest = NEXT_PRERENDER_INTERRUPTED\n  return error
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:36:20.378Z
+Question Type: order-sequence
+Function: emitIssues
+Function Size: 476 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: emitIssues (JavaScript)\n// Collects and emits unique issues from chunksWithIssues.\n\nfunction emitIssues() {\n  const issues = []\n  const deduplicationSet = new Set()\n\n  for (const [_, chunkIssues] of chunksWithIssues) {\n    for (const chunkIssue of chunkIssues) {\n      if (deduplicationS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:36:20.935Z
+Question Type: select-all
+Function: isPrerenderInterruptedError
+Function Size: 406 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isPrerenderInterruptedError (TypeScript)\n// Checks if an error is a prerender interrupted error.\n\nexport function isPrerenderInterruptedError(\n  error: unknown\n): error is DigestError {\n  return (\n    typeof error === 'object' &&\n    error !== null &&\n    (error as any).digest === NEXT_
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760895112622
+Repository: Unknown
+Total Questions Generated: 14
+Total Chunks Processed: 7
+Ended: 2025-10-19T17:36:20.936Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:36:26.434Z
+Question Type: select-all
+Function: handleIssues
+Function Size: 564 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleIssues (JavaScript)\n// Handles incoming issues from a server message and updates the issue store.\n\nfunction handleIssues(msg: ServerMessage): boolean {\n  const key = resourceKey(msg.resource)\n  let hasCriticalIssues = false\n\n  for (const issue of msg.issues) {\n    if (CRITICAL.inc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:36:27.344Z
+Question Type: order-sequence
+Function: createPrerenderInterruptedError
+Function Size: 302 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createPrerenderInterruptedError (TypeScript)\n// Creates an error indicating that prerendering has been interrupted.\n\nfunction createPrerenderInterruptedError(message: string): Error {\n  const error = new Error(message)\n  ;(error as any).digest = NEXT_PRERENDER_INTERRUPTED\n  return error
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:36:27.760Z
+Question Type: select-all
+Function: sortIssues
+Function Size: 328 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sortIssues (JavaScript)\n// Sorts issues based on severity and category.\n\nfunction sortIssues(issues: Issue[]) {\n  issues.sort((a, b) => {\n    const first = compareByList(SEVERITY_ORDER, a.severity, b.severity)\n    if (first !== 0) return first\n    return compareByList(CATEGORY_ORDER, a.
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:36:28.875Z
+Question Type: order-sequence
+Function: instrumentCookiesPromiseWithDevWarnings
+Function Size: 965 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: instrumentCookiesPromiseWithDevWarnings (TypeScript)\n// Instruments a promise with warnings for synchronous access to cookie properties.\n\nfunction instrumentCookiesPromiseWithDevWarnings(\n  promise: Promise<ReadonlyRequestCookies>,\n  route: string | undefined\n) {\n  Object.defineProperti
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:36:32.792Z
+Question Type: true-false
+Function: isPrerenderInterruptedError
+Function Size: 406 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isPrerenderInterruptedError (TypeScript)\n// Checks if an error is a prerender interrupted error.\n\nexport function isPrerenderInterruptedError(\n  error: unknown\n): error is DigestError {\n  return (\n    typeof error === 'object' &&\n    error !== null &&\n    (error as any).digest === NEXT_
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:36:36.564Z
+Question Type: true-false
+Function: sortIssues
+Function Size: 328 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sortIssues (JavaScript)\n// Sorts issues based on severity and category.\n\nfunction sortIssues(issues: Issue[]) {\n  issues.sort((a, b) => {\n    const first = compareByList(SEVERITY_ORDER, a.severity, b.severity)\n    if (first !== 0) return first\n    return compareByList(CATEGORY_ORDER, a.
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:36:37.711Z
+Question Type: function-variant
+Function: isPrerenderInterruptedError
+Function Size: 406 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isPrerenderInterruptedError (TypeScript)\n// Checks if an error is a prerender interrupted error.\n\nexport function isPrerenderInterruptedError(\n  error: unknown\n): error is DigestError {\n  return (\n    typeof error === 'object' &&\n    error !== null &&\n    (error as any).digest === NEXT_
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760895112622
+Repository: Unknown
+Total Questions Generated: 7
+Total Chunks Processed: 7
+Ended: 2025-10-19T17:36:37.754Z
+================================================================================
+

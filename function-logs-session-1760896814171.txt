@@ -1,0 +1,932 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1760896814171
+Started: 2025-10-19T18:00:14.171Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T18:00:14.172Z
+File: the API is ~stable, so this should be fine
+Functions Extracted: 3
+
+
+Function 1: isBubbledError
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function isBubbledError(error: unknown): error is BubbledError {
+  if (typeof error !== 'object' || error === null) return false
+  return error instanceof BubbledError
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: closeSpanWithError
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+const closeSpanWithError = (span: Span, error?: Error) => {
+  if (isBubbledError(error) && error.bubble) {
+    span.setAttribute('next.bubble', true)
+  } else {
+    if (error) {
+      span.recordException(error)
+      span.setAttribute('error.type', error.name)
+    }
+    span.setStatus({ code: SpanStatusCode.ERROR, message: error?.message })
+  }
+  span.end()
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: getTracePropagationData
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+public getTracePropagationData(): ClientTraceDataEntry[] {
+    const activeContext = context.active()
+    const entries: ClientTraceDataEntry[] = []
+    propagation.inject(activeContext, entries, clientTraceDataSetter)
+    return entries
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:00:20.406Z
+Question Type: select-all
+Function: isBubbledError
+Function Size: 282 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isBubbledError (TypeScript)\n// Checks if the provided error is an instance of BubbledError.\n\nexport function isBubbledError(error: unknown): error is BubbledError {\n  if (typeof error !== 'object' || error === null) return false\n  return error instanceof BubbledError\n}
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T18:00:23.679Z
+File: [3 files: If we end up here, there was no work store or work unit store present., load-manifest.external.ts, find-page-file.ts]
+Functions Extracted: 5
+
+
+Function 1: makeHangingCookies
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function makeHangingCookies(
+  workStore: WorkStore,
+  prerenderStore: PrerenderStoreModern
+): Promise<ReadonlyRequestCookies> {
+  const cachedPromise = CachedCookies.get(prerenderStore);
+  if (cachedPromise) {
+    return cachedPromise;
+  }
+
+  const promise = makeHangingPromise<ReadonlyRequestCookies>(
+    prerenderStore.renderSignal,
+    workStore.route,
+    '`cookies()`'
+  );
+  CachedCookies.set(prerenderStore, promise);
+
+  return promise;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: makeUntrackedCookiesWithDevWarnings
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+function makeUntrackedCookiesWithDevWarnings(
+  requestStore: RequestStore,
+  underlyingCookies: ReadonlyRequestCookies,
+  route?: string
+): Promise<ReadonlyRequestCookies> {
+  if (requestStore.asyncApiPromises) {
+    let promise: Promise<ReadonlyRequestCookies>;
+    if (underlyingCookies === requestStore.mutableCookies) {
+      promise = requestStore.asyncApiPromises.mutableCookies;
+    } else if (underlyingCookies === requestStore.cookies) {
+      promise = requestStore.asyncApiPromises.cookies;
+    } else {
+      throw new InvariantError(
+        'Received an underlying cookies object that does not match either `cookies` or `mutableCookies`'
+      );
+    }
+    return instrumentCookiesPromiseWithDevWarnings(promise, route);
+  }
+
+  const cachedCookies = CachedCookies.get(underlyingCookies);
+  if (cachedCookies) {
+    return cachedCookies;
+  }
+
+  const promise = makeDevtoolsIOAwarePromise(
+    underlyingCookies,
+    requestStore,
+    RenderStage.Runtime
+  );
+
+  const proxiedPromise = instrumentCookiesPromiseWithDevWarnings(promise, route);
+
+  CachedCookies.set(underlyingCookies, proxiedPromise);
+
+  return proxiedPromise;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: loadManifest
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+export function loadManifest<T extends object>(
+  path: string,
+  shouldCache: boolean = true,
+  cache = sharedCache,
+  skipParse = false
+): T {
+  const cached = shouldCache && cache.get(path);
+  if (cached) {
+    return cached as T;
+  }
+
+  let manifest: any = readFileSync(/* turbopackIgnore: true */ path, 'utf8');
+
+  if (!skipParse) {
+    manifest = JSON.parse(manifest);
+  }
+  // Additional logic to freeze and return the manifest
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: findPageFile
+Language: TypeScript
+Lines: 25
+Full Code:
+--------------------------------------------------------------------------------
+export async function findPageFile(
+  pagesDir: string,
+  normalizedPagePath: string,
+  pageExtensions: PageExtensions,
+  isAppDir: boolean
+): Promise<string | null> {
+  const pagePaths = getPagePaths(normalizedPagePath, pageExtensions, isAppDir);
+  const [existingPath, ...others] = (
+    await Promise.all(
+      pagePaths.map(async (path) => {
+        const filePath = join(pagesDir, path);
+        try {
+          return (await fileExists(filePath)) ? path : null;
+        } catch (err: any) {
+          if (!err?.code?.includes('ENOTDIR')) throw err;
+        }
+        return null;
+      })
+    )
+  ).filter(nonNullable);
+
+  if (!existingPath) {
+    return null;
+  }
+
+  if (!(await isTrueCasePagePath(existingPath, pagesDir))) {
+    return null;
+  }
+
+  if (others.length > 0) {
+    warn(
+      `Duplicate page detected. ${cyan(join('pages', existingPath))} and ${cyan(
+        join('pages', others[0])
+      )} both resolve to ${cyan(normalizedPagePath)}.`
+    );
+  }
+
+  return existingPath;
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: createValidFileMatcher
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function createValidFileMatcher(
+  pageExtensions: PageExtensions,
+  appDirPath: string | undefined
+) {
+  const getExtensionRegexString = (extensions: string[]) =>
+    `(?:${extensions.join('|')})`;
+
+  const validExtensionFileRegex = new RegExp(
+    '\.' + getExtensionRegexString(pageExtensions) + '$'
+  );
+  const leafOnlyPageFileRegex = new RegExp(
+    `(^(page|route)|[\\/](page|route))\.${getExtensionRegexString(
+      pageExtensions
+    )}$`
+  );
+  // Additional regex patterns and logic
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:00:23.762Z
+Question Type: select-all
+Function: closeSpanWithError
+Function Size: 490 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: closeSpanWithError (TypeScript)\n// Closes a span and records an error if present, setting appropriate attributes.\n\nconst closeSpanWithError = (span: Span, error?: Error) => {\n  if (isBubbledError(error) && error.bubble) {\n    span.setAttribute('next.bubble', true)\n  } else {\n    if (err
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:00:24.396Z
+Question Type: true-false
+Function: isBubbledError
+Function Size: 282 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isBubbledError (TypeScript)\n// Checks if the provided error is an instance of BubbledError.\n\nexport function isBubbledError(error: unknown): error is BubbledError {\n  if (typeof error !== 'object' || error === null) return false\n  return error instanceof BubbledError\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:00:24.974Z
+Question Type: function-variant
+Function: isBubbledError
+Function Size: 282 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isBubbledError (TypeScript)\n// Checks if the provided error is an instance of BubbledError.\n\nexport function isBubbledError(error: unknown): error is BubbledError {\n  if (typeof error !== 'object' || error === null) return false\n  return error instanceof BubbledError\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:00:26.464Z
+Question Type: function-variant
+Function: isBubbledError
+Function Size: 282 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isBubbledError (TypeScript)\n// Checks if the provided error is an instance of BubbledError.\n\nexport function isBubbledError(error: unknown): error is BubbledError {\n  if (typeof error !== 'object' || error === null) return false\n  return error instanceof BubbledError\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:00:26.800Z
+Question Type: multiple-choice
+Function: getTracePropagationData
+Function Size: 358 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getTracePropagationData (TypeScript)\n// Returns trace propagation data for the currently active context.\n\npublic getTracePropagationData(): ClientTraceDataEntry[] {\n    const activeContext = context.active()\n    const entries: ClientTraceDataEntry[] = []\n    propagation.inject(activeCon
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 3
+Ended: 2025-10-19T18:00:26.850Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:00:32.644Z
+Question Type: order-sequence
+Function: makeHangingCookies
+Function Size: 575 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeHangingCookies (TypeScript)\n// Creates a promise for hanging cookies, caching the result if already computed.\n\nfunction makeHangingCookies(\n  workStore: WorkStore,\n  prerenderStore: PrerenderStoreModern\n): Promise<ReadonlyRequestCookies> {\n  const cachedPromise = CachedCookies.get(p
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:00:34.692Z
+Question Type: multiple-choice
+Function: findPageFile
+Function Size: 1118 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: findPageFile (TypeScript)\n// Finds a page file based on the provided parameters, checking for duplicates.\n\nexport async function findPageFile(\n  pagesDir: string,\n  normalizedPagePath: string,\n  pageExtensions: PageExtensions,\n  isAppDir: boolean\n): Promise<string | null> {\n  const page
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:00:35.965Z
+Question Type: select-all
+Function: loadManifest
+Function Size: 545 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: loadManifest (TypeScript)\n// Loads a manifest file from the filesystem, optionally caching it.\n\nexport function loadManifest<T extends object>(\n  path: string,\n  shouldCache: boolean = true,\n  cache = sharedCache,\n  skipParse = false\n): T {\n  const cached = shouldCache && cache.get(path
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:00:39.361Z
+Question Type: order-sequence
+Function: loadManifest
+Function Size: 545 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: loadManifest (TypeScript)\n// Loads a manifest file from the filesystem, optionally caching it.\n\nexport function loadManifest<T extends object>(\n  path: string,\n  shouldCache: boolean = true,\n  cache = sharedCache,\n  skipParse = false\n): T {\n  const cached = shouldCache && cache.get(path
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:00:39.964Z
+Question Type: true-false
+Function: createValidFileMatcher
+Function Size: 621 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createValidFileMatcher (TypeScript)\n// Creates a matcher for valid file types based on page extensions.\n\nexport function createValidFileMatcher(\n  pageExtensions: PageExtensions,\n  appDirPath: string | undefined\n) {\n  const getExtensionRegexString = (extensions: string[]) =>\n    `(?:${e
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:00:40.774Z
+Question Type: function-variant
+Function: loadManifest
+Function Size: 545 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: loadManifest (TypeScript)\n// Loads a manifest file from the filesystem, optionally caching it.\n\nexport function loadManifest<T extends object>(\n  path: string,\n  shouldCache: boolean = true,\n  cache = sharedCache,\n  skipParse = false\n): T {\n  const cached = shouldCache && cache.get(path
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:00:44.805Z
+Question Type: select-all
+Function: findPageFile
+Function Size: 1118 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: findPageFile (TypeScript)\n// Finds a page file based on the provided parameters, checking for duplicates.\n\nexport async function findPageFile(\n  pagesDir: string,\n  normalizedPagePath: string,\n  pageExtensions: PageExtensions,\n  isAppDir: boolean\n): Promise<string | null> {\n  const page
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:00:45.608Z
+Question Type: select-all
+Function: makeHangingCookies
+Function Size: 575 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeHangingCookies (TypeScript)\n// Creates a promise for hanging cookies, caching the result if already computed.\n\nfunction makeHangingCookies(\n  workStore: WorkStore,\n  prerenderStore: PrerenderStoreModern\n): Promise<ReadonlyRequestCookies> {\n  const cachedPromise = CachedCookies.get(p
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:00:52.404Z
+Question Type: select-all
+Function: createValidFileMatcher
+Function Size: 621 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createValidFileMatcher (TypeScript)\n// Creates a matcher for valid file types based on page extensions.\n\nexport function createValidFileMatcher(\n  pageExtensions: PageExtensions,\n  appDirPath: string | undefined\n) {\n  const getExtensionRegexString = (extensions: string[]) =>\n    `(?:${e
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:00:56.959Z
+Question Type: function-variant
+Function: makeUntrackedCookiesWithDevWarnings
+Function Size: 1279 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeUntrackedCookiesWithDevWarnings (TypeScript)\n// Creates untracked cookies with development warnings, caching the result.\n\nfunction makeUntrackedCookiesWithDevWarnings(\n  requestStore: RequestStore,\n  underlyingCookies: ReadonlyRequestCookies,\n  route?: string\n): Promise<ReadonlyRequ
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 5
+Ended: 2025-10-19T18:00:56.994Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T18:07:29.637Z
+File: nathom-streamrip-b6c578a/streamrip/progress.py
+Functions Extracted: 3
+
+
+Function 1: get_callback
+Language: Python
+Lines: 13
+Full Code:
+--------------------------------------------------------------------------------
+def get_callback(self, total: int, desc: str):
+        if not self.started:
+            self.live.start()
+            self.started = True
+
+        task = self.progress.add_task(f"[cyan]{desc}", total=total)
+
+        def _callback_update(x: int):
+            self.progress.update(task, advance=x)
+            self.live.update(Group(self.get_title_text(), self.progress))
+
+        def _callback_done():
+            self.progress.update(task, visible=False)
+
+        return Handle(_callback_update, _callback_done)
+--------------------------------------------------------------------------------
+
+
+Function 2: gen_title_text
+Language: Python
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+def gen_title_text(self) -> Rule:
+        titles = ", ".join(self.task_titles[:3])
+        if len(self.task_titles) > 3:
+            titles += "..."
+        t = self.prefix + Text(titles)
+        return Rule(t)
+--------------------------------------------------------------------------------
+
+
+Function 3: get_progress_callback
+Language: Python
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+def get_progress_callback(enabled: bool, total: int, desc: str) -> Handle:
+    global _p
+    if not enabled:
+        return Handle(lambda _: None, lambda: None)
+    return _p.get_callback(total, desc)
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:07:33.465Z
+Question Type: true-false
+Function: gen_title_text
+Function Size: 311 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: gen_title_text (Python)\n// Generates a Rule object containing the titles of the tasks.\n\ndef gen_title_text(self) -> Rule:\n        titles = ", ".join(self.task_titles[:3])\n        if len(self.task_titles) > 3:\n            titles += "..."\n        t = self.prefix + Text(titles)\n        ret
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T18:07:36.809Z
+File: nathom-streamrip-b6c578a/streamrip/client/downloadable.py
+Functions Extracted: 5
+
+
+Function 1: fast_async_download
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+async def fast_async_download(path, url, headers, callback):
+    chunk_size: int = 2**17  # 131 KB
+    counter = 0
+    yield_every = 8  # 1 MB
+    with open(path, "wb") as file:  # noqa: ASYNC101
+        with requests.get(  # noqa: ASYNC100
+            url,
+            headers=headers,
+            allow_redirects=True,
+            stream=True,
+        ) as resp:
+            for chunk in resp.iter_content(chunk_size=chunk_size):
+                file.write(chunk)
+                callback(len(chunk))
+                if counter % yield_every == 0:
+                    await asyncio.sleep(0)
+                counter += 1
+--------------------------------------------------------------------------------
+
+
+Function 2: _download
+Language: Python
+Lines: 40
+Full Code:
+--------------------------------------------------------------------------------
+async def _download(self, path: str, callback):
+        async with self.session.get(self.url, allow_redirects=True) as resp:
+            resp.raise_for_status()
+            self._size = int(resp.headers.get("Content-Length", 0))
+            if self._size < 20000 and not self.url.endswith(".jpg"):
+                try:
+                    info = await resp.json()
+                    try:
+                        raise NonStreamableError(f"{info['error']} - {info['message']}")
+                    except KeyError:
+                        raise NonStreamableError(info)
+                except json.JSONDecodeError:
+                    raise NonStreamableError("File not found.")
+
+            if self.is_encrypted.search(self.url) is None:
+                await fast_async_download(path, self.url, self.session.headers, callback)
+            else:
+                blowfish_key = self._generate_blowfish_key(self.id)
+                buf = bytearray()
+                async for data, _ in resp.content.iter_chunks():
+                    buf += data
+                    callback(len(data))
+
+                encrypt_chunk_size = 3 * 2048
+                async with aiofiles.open(path, "wb") as audio:
+                    buflen = len(buf)
+                    for i in range(0, buflen, encrypt_chunk_size):
+                        data = buf[i : min(i + encrypt_chunk_size, buflen)]
+                        if len(data) >= 2048:
+                            decrypted_chunk = (
+                                self._decrypt_chunk(blowfish_key, data[:2048])
+                                + data[2048:]
+                            )
+                        else:
+                            decrypted_chunk = data
+                        await audio.write(decrypted_chunk)
+--------------------------------------------------------------------------------
+
+
+Function 3: _download
+Language: Python
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+async def _download(self, path: str, callback):
+        await self.downloadable._download(path, callback)
+        if self.enc_key is not None:
+            dec_bytes = await self._decrypt_mqa_file(path, self.enc_key)
+            async with aiofiles.open(path, "wb") as audio:
+                await audio.write(dec_bytes)
+--------------------------------------------------------------------------------
+
+
+Function 4: _download_mp3
+Language: Python
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+async def _download_mp3(self, path: str, callback):
+        async with self.session.get(self.url) as resp:
+            content = await resp.text("utf-8")
+
+        parsed_m3u = m3u8.loads(content)
+        self._size = len(parsed_m3u.segments)
+        tasks = [
+            asyncio.create_task(self._download_segment(segment.uri))
+            for segment in parsed_m3u.segments
+        ]
+
+        segment_paths = []
+        for coro in asyncio.as_completed(tasks):
+            segment_paths.append(await coro)
+            callback(1)
+
+        await concat_audio_files(segment_paths, path, "mp3")
+--------------------------------------------------------------------------------
+
+
+Function 5: concat_audio_files
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+async def concat_audio_files(paths: list[str], out: str, ext: str, max_files_open=128):
+    if shutil.which("ffmpeg") is None:
+        raise Exception("FFmpeg must be installed.")
+
+    if len(paths) == 1:
+        shutil.move(paths[0], out)
+        return
+
+    it = iter(paths)
+    num_batches = len(paths)
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:07:38.324Z
+Question Type: function-variant
+Function: gen_title_text
+Function Size: 311 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: gen_title_text (Python)\n// Generates a Rule object containing the titles of the tasks.\n\ndef gen_title_text(self) -> Rule:\n        titles = ", ".join(self.task_titles[:3])\n        if len(self.task_titles) > 3:\n            titles += "..."\n        t = self.prefix + Text(titles)\n        ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:07:38.579Z
+Question Type: order-sequence
+Function: gen_title_text
+Function Size: 311 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: gen_title_text (Python)\n// Generates a Rule object containing the titles of the tasks.\n\ndef gen_title_text(self) -> Rule:\n        titles = ", ".join(self.task_titles[:3])\n        if len(self.task_titles) > 3:\n            titles += "..."\n        t = self.prefix + Text(titles)\n        ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:07:40.434Z
+Question Type: order-sequence
+Function: get_progress_callback
+Function Size: 311 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: get_progress_callback (Python)\n// Returns a progress callback Handle based on the enabled state.\n\ndef get_progress_callback(enabled: bool, total: int, desc: str) -> Handle:\n    global _p\n    if not enabled:\n        return Handle(lambda _: None, lambda: None)\n    return _p.get_callback(t
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:07:45.204Z
+Question Type: order-sequence
+Function: get_callback
+Function Size: 627 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: get_callback (Python)\n// Starts the progress live display and returns a Handle for updating progress.\n\ndef get_callback(self, total: int, desc: str):\n        if not self.started:\n            self.live.start()\n            self.started = True\n\n        task = self.progress.add_task(f"[cyan
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:07:45.980Z
+Question Type: select-all
+Function: gen_title_text
+Function Size: 311 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: gen_title_text (Python)\n// Generates a Rule object containing the titles of the tasks.\n\ndef gen_title_text(self) -> Rule:\n        titles = ", ".join(self.task_titles[:3])\n        if len(self.task_titles) > 3:\n            titles += "..."\n        t = self.prefix + Text(titles)\n        ret
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 3
+Ended: 2025-10-19T18:07:46.019Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:07:53.289Z
+Question Type: true-false
+Function: _download
+Function Size: 1883 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _download (Python)\n// Handles the download of Deezer files, including decryption for encrypted streams.\n\nasync def _download(self, path: str, callback):\n        async with self.session.get(self.url, allow_redirects=True) as resp:\n            resp.raise_for_status()\n            self._siz
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:07:56.393Z
+Question Type: order-sequence
+Function: fast_async_download
+Function Size: 746 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: fast_async_download (Python)\n// Downloads a file in chunks, yielding control every 1MB read to avoid blocking.\n\nasync def fast_async_download(path, url, headers, callback):\n    chunk_size: int = 2**17  # 131 KB\n    counter = 0\n    yield_every = 8  # 1 MB\n    with open(path, "wb") as fil
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:07:58.954Z
+Question Type: select-all
+Function: _download
+Function Size: 429 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _download (Python)\n// Downloads Tidal files and decrypts them if an encryption key is provided.\n\nasync def _download(self, path: str, callback):\n        await self.downloadable._download(path, callback)\n        if self.enc_key is not None:\n            dec_bytes = await self._decrypt_mqa
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:08:01.626Z
+Question Type: true-false
+Function: _download_mp3
+Function Size: 714 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _download_mp3 (Python)\n// Downloads MP3 files from Soundcloud by fetching segments and concatenating them.\n\nasync def _download_mp3(self, path: str, callback):\n        async with self.session.get(self.url) as resp:\n            content = await resp.text("utf-8")\n\n        parsed_m3u = m3u
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:08:02.986Z
+Question Type: function-variant
+Function: fast_async_download
+Function Size: 746 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: fast_async_download (Python)\n// Downloads a file in chunks, yielding control every 1MB read to avoid blocking.\n\nasync def fast_async_download(path, url, headers, callback):\n    chunk_size: int = 2**17  # 131 KB\n    counter = 0\n    yield_every = 8  # 1 MB\n    with open(path, "wb") as fil
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:08:06.681Z
+Question Type: function-variant
+Function: _download
+Function Size: 1883 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _download (Python)\n// Handles the download of Deezer files, including decryption for encrypted streams.\n\nasync def _download(self, path: str, callback):\n        async with self.session.get(self.url, allow_redirects=True) as resp:\n            resp.raise_for_status()\n            self._siz
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:08:06.772Z
+Question Type: select-all
+Function: _download
+Function Size: 1883 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _download (Python)\n// Handles the download of Deezer files, including decryption for encrypted streams.\n\nasync def _download(self, path: str, callback):\n        async with self.session.get(self.url, allow_redirects=True) as resp:\n            resp.raise_for_status()\n            self._siz
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:08:12.689Z
+Question Type: function-variant
+Function: _download
+Function Size: 429 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _download (Python)\n// Downloads Tidal files and decrypts them if an encryption key is provided.\n\nasync def _download(self, path: str, callback):\n        await self.downloadable._download(path, callback)\n        if self.enc_key is not None:\n            dec_bytes = await self._decrypt_mqa
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:08:13.580Z
+Question Type: select-all
+Function: _download_mp3
+Function Size: 714 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _download_mp3 (Python)\n// Downloads MP3 files from Soundcloud by fetching segments and concatenating them.\n\nasync def _download_mp3(self, path: str, callback):\n        async with self.session.get(self.url) as resp:\n            content = await resp.text("utf-8")\n\n        parsed_m3u = m3u
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 5
+Ended: 2025-10-19T18:08:13.593Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:11:45.378Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 2095 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: SanekxArcs-love-notes-7e46be5/src/app/(dashboard)/profile/page.tsx\n"use client";\n\nimport { useState, useEffect } from "react";\nimport { useSession } from "next-auth/react";\nimport { Button } from "@/components/ui/button";\nimport { Card, CardContent} from "@/components/ui/card";\nimport { Inp
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:11:46.518Z
+Question Type: true-false
+Function: Unknown
+Function Size: 303 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Define character sets\nconst lowercase = "abcdefghijklmnopqrstuvwxyz";\n      const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";\n      const numbers = "0123456789";\n      const special = "!@#$%^&*()_-+=<>?";\n\n      const allChars = lowercase + uppercase + numbers + special;\n      let password = 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:11:50.073Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2062 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Reset partner name if ID is empty\nif (!partnerId || partnerId.trim() === "") {\n        setPartnerName(null);\n        return;\n      }\n\n      try {\n        setLoadingPartner(true);\n        const response = await fetch(\n          `/api/users/partner-info?partnerId=${partnerId}`\n        );\n\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:11:51.204Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2067 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Generate a password with 12 characters\nfor (let i = 0; i < 12; i++) {\n        const randomIndex = Math.floor(Math.random() * allChars.length);\n        password += allChars[randomIndex];\n      }\n\n      setUserData((prev) => (prev ? { ...prev, password } : null));\n\n      toast.success("Новий 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:11:52.668Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2095 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: SanekxArcs-love-notes-7e46be5/src/app/(dashboard)/profile/page.tsx\n"use client";\n\nimport { useState, useEffect } from "react";\nimport { useSession } from "next-auth/react";\nimport { Button } from "@/components/ui/button";\nimport { Card, CardContent} from "@/components/ui/card";\nimport { Inp
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:11:55.729Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2067 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Generate a password with 12 characters\nfor (let i = 0; i < 12; i++) {\n        const randomIndex = Math.floor(Math.random() * allChars.length);\n        password += allChars[randomIndex];\n      }\n\n      setUserData((prev) => (prev ? { ...prev, password } : null));\n\n      toast.success("Новий 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:11:58.316Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2062 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Reset partner name if ID is empty\nif (!partnerId || partnerId.trim() === "") {\n        setPartnerName(null);\n        return;\n      }\n\n      try {\n        setLoadingPartner(true);\n        const response = await fetch(\n          `/api/users/partner-info?partnerId=${partnerId}`\n        );\n\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:12:01.754Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 303 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Define character sets\nconst lowercase = "abcdefghijklmnopqrstuvwxyz";\n      const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";\n      const numbers = "0123456789";\n      const special = "!@#$%^&*()_-+=<>?";\n\n      const allChars = lowercase + uppercase + numbers + special;\n      let password = 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:12:02.338Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2097 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: SanekxArcs-love-notes-7e46be5/src/app/api/settings/messages/route.ts\nimport { NextResponse } from "next/server";\nimport { auth } from "@/auth";\nimport { sanityClient } from "@/lib/sanity";\n\nexport async function GET() {\n  try {\n    const session = await auth();\n    \n    if (!session?.user?.
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:12:04.106Z
+Question Type: select-all
+Function: Unknown
+Function Size: 303 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Define character sets\nconst lowercase = "abcdefghijklmnopqrstuvwxyz";\n      const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";\n      const numbers = "0123456789";\n      const special = "!@#$%^&*()_-+=<>?";\n\n      const allChars = lowercase + uppercase + numbers + special;\n      let password = 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:12:08.956Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2067 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Generate a password with 12 characters\nfor (let i = 0; i < 12; i++) {\n        const randomIndex = Math.floor(Math.random() * allChars.length);\n        password += allChars[randomIndex];\n      }\n\n      setUserData((prev) => (prev ? { ...prev, password } : null));\n\n      toast.success("Новий 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:12:10.443Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2095 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: SanekxArcs-love-notes-7e46be5/src/app/(dashboard)/profile/page.tsx\n"use client";\n\nimport { useState, useEffect } from "react";\nimport { useSession } from "next-auth/react";\nimport { Button } from "@/components/ui/button";\nimport { Card, CardContent} from "@/components/ui/card";\nimport { Inp
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:12:15.528Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2097 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: SanekxArcs-love-notes-7e46be5/src/app/api/settings/messages/route.ts\nimport { NextResponse } from "next/server";\nimport { auth } from "@/auth";\nimport { sanityClient } from "@/lib/sanity";\n\nexport async function GET() {\n  try {\n    const session = await auth();\n    \n    if (!session?.user?.
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:12:16.331Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2097 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: SanekxArcs-love-notes-7e46be5/src/app/api/settings/messages/route.ts\nimport { NextResponse } from "next/server";\nimport { auth } from "@/auth";\nimport { sanityClient } from "@/lib/sanity";\n\nexport async function GET() {\n  try {\n    const session = await auth();\n    \n    if (!session?.user?.
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T18:12:21.624Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2062 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Reset partner name if ID is empty\nif (!partnerId || partnerId.trim() === "") {\n        setPartnerName(null);\n        return;\n      }\n\n      try {\n        setLoadingPartner(true);\n        const response = await fetch(\n          `/api/users/partner-info?partnerId=${partnerId}`\n        );\n\n   
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 15
+Total Chunks Processed: 5
+Ended: 2025-10-19T18:12:21.627Z
+================================================================================
+

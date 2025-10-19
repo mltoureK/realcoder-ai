@@ -133,7 +133,9 @@ Format:\n[\n  {\n    \"snippet\": \"show complete function(and code)  that the q
               
               question.quiz.variants = shuffleVariants(question.quiz.variants);
               question.quiz.variants.forEach((variant: any) => {
-                if (variant && variant.code) variant.code = removeComments(variant.code);
+                if (variant && typeof variant.code === 'string') {
+                  variant.code = variant.code.trimEnd();
+                }
               });
               question.quiz.variants = balanceVariantVerbosity(question.quiz.variants);
             }
@@ -150,5 +152,4 @@ Format:\n[\n  {\n    \"snippet\": \"show complete function(and code)  that the q
     return generated;
   }
 };
-
 

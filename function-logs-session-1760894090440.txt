@@ -2523,3 +2523,2168 @@ Total Chunks Processed: 7
 Ended: 2025-10-19T17:22:29.156Z
 ================================================================================
 
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:35:45.983Z
+File: <reference path="../../runtime/base/dev-extensions.ts" />
+Functions Extracted: 4
+
+
+Function 1: connect
+Language: TypeScript
+Lines: 42
+Full Code:
+--------------------------------------------------------------------------------
+export function connect({
+  addMessageListener,
+  sendMessage,
+  onUpdateError = console.error,
+}: ClientOptions) {
+  addMessageListener((msg) => {
+    switch (msg.type) {
+      case 'turbopack-connected':
+        handleSocketConnected(sendMessage)
+        break
+      default:
+        try {
+          if (Array.isArray(msg.data)) {
+            for (let i = 0; i < msg.data.length; i++) {
+              handleSocketMessage(msg.data[i] as ServerMessage)
+            }
+          } else {
+            handleSocketMessage(msg.data as ServerMessage)
+          }
+          applyAggregatedUpdates()
+        } catch (e: unknown) {
+          console.warn(
+            '[Fast Refresh] performing full reload\n\n' +
+              "Fast Refresh will perform a full reload when you edit a file that's imported by modules outside of the React rendering tree.\n" +
+              'You might have a file which exports a React component but also exports a value that is imported by a non-React component file.\n' +
+              'Consider migrating the non-React component export to a separate file and importing it into both files.\n\n' +
+              'It is also possible the parent component of the component you edited is a class component, which disables Fast Refresh.\n' +
+              'Fast Refresh requires at least one parent function component in your React tree.'
+          )
+          onUpdateError(e)
+          location.reload()
+        }
+        break
+    }
+  })
+
+  const queued = globalThis.TURBOPACK_CHUNK_UPDATE_LISTENERS
+  if (queued != null && !Array.isArray(queued)) {
+    throw new Error('A separate HMR handler was already registered')
+  }
+  globalThis.TURBOPACK_CHUNK_UPDATE_LISTENERS = {
+    push: ([chunkPath, callback]: [ChunkListPath, UpdateCallback]) => {
+      subscribeToChunkUpdate(chunkPath, sendMessage, callback)
+    },
+  }
+
+  if (Array.isArray(queued)) {
+    for (const [chunkPath, callback] of queued) {
+      subscribeToChunkUpdate(chunkPath, sendMessage, callback)
+    }
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: resourceKey
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function resourceKey(resource: ResourceIdentifier): ResourceKey {
+  return JSON.stringify({
+    path: resource.path,
+    headers: resource.headers || null,
+  })
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: subscribeToUpdates
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function subscribeToUpdates(
+  sendMessage: SendMessage,
+  resource: ResourceIdentifier
+): () => void {
+  sendJSON(sendMessage, {
+    type: 'turbopack-subscribe',
+    ...resource,
+  })
+
+  return () => {
+    sendJSON(sendMessage, {
+      type: 'turbopack-unsubscribe',
+      ...resource,
+    })
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: handleSocketConnected
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function handleSocketConnected(sendMessage: SendMessage) {
+  for (const key of updateCallbackSets.keys()) {
+    subscribeToUpdates(sendMessage, JSON.parse(key))
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:35:47.509Z
+File: [3 files: Any other update combination is invalid., action-handler.ts, find-page-file.ts]
+Functions Extracted: 5
+
+
+Function 1: emitIssues
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function emitIssues() {
+  const issues = []
+  const deduplicationSet = new Set()
+
+  for (const [_, chunkIssues] of chunksWithIssues) {
+    for (const chunkIssue of chunkIssues) {
+      if (deduplicationSet.has(chunkIssue.formatted)) continue
+
+      issues.push(chunkIssue)
+      deduplicationSet.add(chunkIssue.formatted)
+    }
+  }
+
+  sortIssues(issues)
+
+  hooks.issues(issues)
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: handleIssues
+Language: TypeScript
+Lines: 13
+Full Code:
+--------------------------------------------------------------------------------
+function handleIssues(msg: ServerMessage): boolean {
+  const key = resourceKey(msg.resource)
+  let hasCriticalIssues = false
+
+  for (const issue of msg.issues) {
+    if (CRITICAL.includes(issue.severity)) {
+      hasCriticalIssues = true
+    }
+  }
+
+  if (msg.issues.length > 0) {
+    chunksWithIssues.set(key, msg.issues)
+  } else if (chunksWithIssues.has(key)) {
+    chunksWithIssues.delete(key)
+  }
+
+  emitIssues()
+
+  return hasCriticalIssues
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: sortIssues
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function sortIssues(issues: Issue[]) {
+  issues.sort((a, b) => {
+    const first = compareByList(SEVERITY_ORDER, a.severity, b.severity)
+    if (first !== 0) return first
+    return compareByList(CATEGORY_ORDER, a.category, b.category)
+  })
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: findPageFile
+Language: TypeScript
+Lines: 28
+Full Code:
+--------------------------------------------------------------------------------
+export async function findPageFile(
+  pagesDir: string,
+  normalizedPagePath: string,
+  pageExtensions: PageExtensions,
+  isAppDir: boolean
+): Promise<string | null> {
+  const pagePaths = getPagePaths(normalizedPagePath, pageExtensions, isAppDir)
+  const [existingPath, ...others] = (
+    await Promise.all(
+      pagePaths.map(async (path) => {
+        const filePath = join(pagesDir, path)
+        try {
+          return (await fileExists(filePath)) ? path : null
+        } catch (err: any) {
+          if (!err?.code?.includes('ENOTDIR')) throw err
+        }
+        return null
+      })
+    )
+  ).filter(nonNullable)
+
+  if (!existingPath) {
+    return null
+  }
+
+  if (!(await isTrueCasePagePath(existingPath, pagesDir))) {
+    return null
+  }
+
+  if (others.length > 0) {
+    warn(
+      `Duplicate page detected. ${cyan(join('pages', existingPath))} and ${cyan(
+        join('pages', others[0])
+      )} both resolve to ${cyan(normalizedPagePath)}.`
+    )
+  }
+
+  return existingPath
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: createValidFileMatcher
+Language: TypeScript
+Lines: 35
+Full Code:
+--------------------------------------------------------------------------------
+export function createValidFileMatcher(
+  pageExtensions: PageExtensions,
+  appDirPath: string | undefined
+) {
+  const getExtensionRegexString = (extensions: string[]) =>
+    `(?:${extensions.join('|')})`
+
+  const validExtensionFileRegex = new RegExp(
+    '\.' + getExtensionRegexString(pageExtensions) + '$'
+  )
+  const leafOnlyPageFileRegex = new RegExp(
+    `(^(page|route)|[\\/](page|route))\.${getExtensionRegexString(
+      pageExtensions
+    )}$`
+  )
+
+  const leafOnlyRouteFileRegex = new RegExp(
+    `(^route|[\\/]route)\.${getExtensionRegexString(pageExtensions)}$`
+  )
+  const leafOnlyLayoutFileRegex = new RegExp(
+    `(^(layout)|[\\/](layout))\.${getExtensionRegexString(pageExtensions)}$`
+  )
+  const rootNotFoundFileRegex = new RegExp(
+    `^not-found\.${getExtensionRegexString(pageExtensions)}$`
+  )
+  const leafOnlyDefaultFileRegex = new RegExp(
+    `(^(default)|[\\/](default))\.${getExtensionRegexString(pageExtensions)}$`
+  )
+
+  function isMetadataFile(filePath: string) {
+    const appDirRelativePath = appDirPath
+      ? filePath.replace(appDirPath, '')
+      : filePath
+
+    return isMetadataRouteFile(appDirRelativePath, pageExtensions, true)
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:35:47.571Z
+File: [3 files: stack trace., context.ts, This keeps autocompletion working for static routes.]
+Functions Extracted: 6
+
+
+Function 1: createPostponeReason
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function createPostponeReason(route: string, expression: string) {
+  return (
+    `Route ${route} needs to bail out of prerendering at this point because it used ${expression}. ` +
+    `React throws this special object to indicate where. It should not be caught by ` +
+    `your own try/catch. Learn more: https://nextjs.org/docs/messages/ppr-caught-error`
+  )
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: isDynamicPostpone
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+export function isDynamicPostpone(err: unknown) {
+  if (
+    typeof err === 'object' &&
+    err !== null &&
+    typeof (err as any).message === 'string'
+  ) {
+    return isDynamicPostponeReason((err as any).message)
+  }
+  return false
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: isDynamicPostponeReason
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function isDynamicPostponeReason(reason: string) {
+  return (
+    reason.includes(
+      'needs to bail out of prerendering at this point because it used'
+    ) &&
+    reason.includes(
+      'Learn more: https://nextjs.org/docs/messages/ppr-caught-error'
+    )
+  )
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: createPrerenderInterruptedError
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function createPrerenderInterruptedError(message: string): Error {
+  const error = new Error(message)
+  ;(error as any).digest = NEXT_PRERENDER_INTERRUPTED
+  return error
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: isPrerenderInterruptedError
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+export function isPrerenderInterruptedError(
+  error: unknown
+): error is DigestError {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    (error as any).digest === NEXT_PRERENDER_INTERRUPTED &&
+    'name' in error &&
+    'message' in error &&
+    error instanceof Error
+  )
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: clearModuleContext
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+export async function clearModuleContext(path: string) {
+  intervalsManager.removeAll()
+  timeoutsManager.removeAll()
+
+  const handleContext = (
+    key: string,
+    cache: ReturnType<(typeof moduleContexts)['get']>,
+    context: typeof moduleContexts | typeof pendingModuleCaches
+  ) => {
+    if (cache?.paths.has(path)) {
+      context.delete(key)
+    }
+  }
+
+  for (const [key, cache] of moduleContexts) {
+    handleContext(key, cache, moduleContexts)
+  }
+  for (const [key, cache] of pendingModuleCaches) {
+    handleContext(key, await cache, pendingModuleCaches)
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:35:52.581Z
+File: If we end up here, there was no work store or work unit store present.
+Functions Extracted: 4
+
+
+Function 1: makeHangingHeaders
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function makeHangingHeaders(
+  workStore: WorkStore,
+  prerenderStore: PrerenderStoreModern
+): Promise<ReadonlyHeaders> {
+  const cachedHeaders = CachedHeaders.get(prerenderStore);
+  if (cachedHeaders) {
+    return cachedHeaders;
+  }
+
+  const promise = makeHangingPromise<ReadonlyHeaders>(
+    prerenderStore.renderSignal,
+    workStore.route,
+    '`headers()`'
+  );
+  CachedHeaders.set(prerenderStore, promise);
+
+  return promise;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: makeUntrackedHeadersWithDevWarnings
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function makeUntrackedHeadersWithDevWarnings(
+  underlyingHeaders: ReadonlyHeaders,
+  route: string | undefined,
+  requestStore: RequestStore
+): Promise<ReadonlyHeaders> {
+  if (requestStore.asyncApiPromises) {
+    const promise = requestStore.asyncApiPromises.headers;
+    return instrumentHeadersPromiseWithDevWarnings(promise, route);
+  }
+
+  const cachedHeaders = CachedHeaders.get(underlyingHeaders);
+  if (cachedHeaders) {
+    return cachedHeaders;
+  }
+
+  const promise = makeDevtoolsIOAwarePromise(
+    underlyingHeaders,
+    requestStore,
+    RenderStage.Runtime
+  );
+
+  const proxiedPromise = instrumentHeadersPromiseWithDevWarnings(promise, route);
+
+  CachedHeaders.set(underlyingHeaders, proxiedPromise);
+
+  return proxiedPromise;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: instrumentHeadersPromiseWithDevWarnings
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function instrumentHeadersPromiseWithDevWarnings(
+  promise: Promise<ReadonlyHeaders>,
+  route: string | undefined
+) {
+  Object.defineProperties(promise, {
+    [Symbol.iterator]: replaceableWarningDescriptorForSymbolIterator(
+      promise,
+      route
+    ),
+    append: replaceableWarningDescriptor(promise, 'append', route),
+    delete: replaceableWarningDescriptor(promise, 'delete', route),
+    get: replaceableWarningDescriptor(promise, 'get', route),
+    has: replaceableWarningDescriptor(promise, 'has', route),
+    set: replaceableWarningDescriptor(promise, 'set', route),
+    getSetCookie: replaceableWarningDescriptor(promise, 'getSetCookie', route),
+    forEach: replaceableWarningDescriptor(promise, 'forEach', route),
+    keys: replaceableWarningDescriptor(promise, 'keys', route),
+    values: replaceableWarningDescriptor(promise, 'values', route),
+    entries: replaceableWarningDescriptor(promise, 'entries', route),
+  });
+  return promise;
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: createHeadersAccessError
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function createHeadersAccessError(
+  route: string | undefined,
+  expression: string
+) {
+  const prefix = route ? `Route "${route}" ` : 'This route ';
+  return new Error(
+    `${prefix}used ${expression}. ` +
+      `\`headers()\` returns a Promise and must be unwrapped with \`await\` or \`React.use()\` before accessing its properties. ` +
+      `Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis`
+  );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T18:00:16.318Z
+File: [2 files: the API is ~stable, so this should be fine, find-page-file.ts]
+Functions Extracted: 3
+
+
+Function 1: isTrueCasePagePath
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+async function isTrueCasePagePath(pagePath: string, pagesDir: string) {
+  const pageSegments = normalize(pagePath).split(sep).filter(Boolean);
+  const segmentExistsPromises = pageSegments.map(async (segment, i) => {
+    const segmentParentDir = join(pagesDir, ...pageSegments.slice(0, i));
+    const parentDirEntries = await fsPromises.readdir(segmentParentDir);
+    return parentDirEntries.includes(segment);
+  });
+
+  return (await Promise.all(segmentExistsPromises)).every(Boolean);
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: findPageFile
+Language: TypeScript
+Lines: 24
+Full Code:
+--------------------------------------------------------------------------------
+export async function findPageFile(
+  pagesDir: string,
+  normalizedPagePath: string,
+  pageExtensions: PageExtensions,
+  isAppDir: boolean
+): Promise<string | null> {
+  const pagePaths = getPagePaths(normalizedPagePath, pageExtensions, isAppDir);
+  const [existingPath, ...others] = (
+    await Promise.all(
+      pagePaths.map(async (path) => {
+        const filePath = join(pagesDir, path);
+        try {
+          return (await fileExists(filePath)) ? path : null;
+        } catch (err: any) {
+          if (!err?.code?.includes('ENOTDIR')) throw err;
+        }
+        return null;
+      })
+    )
+  ).filter(nonNullable);
+
+  if (!existingPath) {
+    return null;
+  }
+
+  if (!(await isTrueCasePagePath(existingPath, pagesDir))) {
+    return null;
+  }
+
+  if (others.length > 0) {
+    warn(
+      `Duplicate page detected. ${cyan(join('pages', existingPath))} and ${cyan(
+        join('pages', others[0])
+      )} both resolve to ${cyan(normalizedPagePath)}.`
+    );
+  }
+
+  return existingPath;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: createValidFileMatcher
+Language: TypeScript
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+export function createValidFileMatcher(
+  pageExtensions: PageExtensions,
+  appDirPath: string | undefined
+) {
+  const getExtensionRegexString = (extensions: string[]) =>
+    `(?:${extensions.join('|')})`;
+
+  const validExtensionFileRegex = new RegExp(
+    '\.' + getExtensionRegexString(pageExtensions) + '$'
+  );
+  const leafOnlyPageFileRegex = new RegExp(
+    `(^(page|route)|[\\/](page|route))\.${getExtensionRegexString(
+      pageExtensions
+    )}$`
+  );
+
+  const leafOnlyRouteFileRegex = new RegExp(
+    `(^route|[\\/]route)\.${getExtensionRegexString(pageExtensions)}$`
+  );
+  const leafOnlyLayoutFileRegex = new RegExp(
+    `(^(layout)|[\\/](layout))\.${getExtensionRegexString(pageExtensions)}$`
+  );
+  const rootNotFoundFileRegex = new RegExp(
+    `^not-found\.${getExtensionRegexString(pageExtensions)}$`
+  );
+  const leafOnlyDefaultFileRegex = new RegExp(
+    `(^(default)|[\\/](default))\.${getExtensionRegexString(pageExtensions)}$`
+  );
+
+  function isMetadataFile(filePath: string) {
+    const appDirRelativePath = appDirPath
+      ? filePath.replace(appDirPath, '')
+      : filePath;
+
+    return isMetadataRouteFile(appDirRelativePath, pageExtensions, true);
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T18:07:19.175Z
+File: [2 files: This keeps autocompletion working for static routes., This function has to be called initially.]
+Functions Extracted: 3
+
+
+Function 1: init
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+export function init(opts: {
+  ts: TypeScript
+  info: tsModule.server.PluginCreateInfo
+}) {
+  const projectDir = opts.info.project.getCurrentDirectory()
+  ts = opts.ts
+  info = opts.info
+  appDirRegExp = new RegExp(
+    '^' + (projectDir + '(/src)?/app').replace(/[\\/]/g, '[\\/]')
+  )
+
+  log('Initialized Next.js TypeScript plugin: ' + projectDir)
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: getTypeChecker
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export function getTypeChecker() {
+  const program = info.languageService.getProgram()
+  if (!program) {
+    log('Failed to get program while while running getTypeChecker.')
+    return
+  }
+  const typeChecker = program.getTypeChecker()
+  if (!typeChecker) {
+    log('Failed to get type checker while running getTypeChecker.')
+    return
+  }
+  return typeChecker
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: getSource
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+export function getSource(fileName: string) {
+  const program = info.languageService.getProgram()
+  if (!program) {
+    log('Failed to get program while running getSource for: ' + fileName)
+    return
+  }
+
+  const sourceFile = program.getSourceFile(fileName)
+  if (!sourceFile) {
+    log('Failed to get source file while running getSource for: ' + fileName)
+    return
+  }
+
+  return sourceFile
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T18:07:20.555Z
+File: [2 files: the API is ~stable, so this should be fine, Any other update combination is invalid.]
+Functions Extracted: 4
+
+
+Function 1: closeSpanWithError
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+const closeSpanWithError = (span: Span, error?: Error) => {
+  if (isBubbledError(error) && error.bubble) {
+    span.setAttribute('next.bubble', true)
+  } else {
+    if (error) {
+      span.recordException(error)
+      span.setAttribute('error.type', error.name)
+    }
+    span.setStatus({ code: SpanStatusCode.ERROR, message: error?.message })
+  }
+  span.end()
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: emitIssues
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function emitIssues() {
+  const issues = []
+  const deduplicationSet = new Set()
+
+  for (const [_, chunkIssues] of chunksWithIssues) {
+    for (const chunkIssue of chunkIssues) {
+      if (deduplicationSet.has(chunkIssue.formatted)) continue
+
+      issues.push(chunkIssue)
+      deduplicationSet.add(chunkIssue.formatted)
+    }
+  }
+
+  sortIssues(issues)
+
+  hooks.issues(issues)
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: handleIssues
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function handleIssues(msg: ServerMessage): boolean {
+  const key = resourceKey(msg.resource)
+  let hasCriticalIssues = false
+
+  for (const issue of msg.issues) {
+    if (CRITICAL.includes(issue.severity)) {
+      hasCriticalIssues = true
+    }
+  }
+
+  if (msg.issues.length > 0) {
+    chunksWithIssues.set(key, msg.issues)
+  } else if (chunksWithIssues.has(key)) {
+    chunksWithIssues.delete(key)
+  }
+
+  emitIssues()
+
+  return hasCriticalIssues
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: sortIssues
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function sortIssues(issues: Issue[]) {
+  issues.sort((a, b) => {
+    const first = compareByList(SEVERITY_ORDER, a.severity, b.severity)
+    if (first !== 0) return first
+    return compareByList(CATEGORY_ORDER, a.category, b.category)
+  })
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T18:07:22.292Z
+File: [2 files: the API is ~stable, so this should be fine, This function has to be called initially.]
+Functions Extracted: 4
+
+
+Function 1: init
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export function init(opts: {
+  ts: TypeScript
+  info: tsModule.server.PluginCreateInfo
+}) {
+  const projectDir = opts.info.project.getCurrentDirectory()
+  ts = opts.ts
+  info = opts.info
+  appDirRegExp = new RegExp(
+    '^' + (projectDir + '(/src)?/app').replace(/[\\/]/g, '[\\/]')
+  )
+
+  log('Initialized Next.js TypeScript plugin: ' + projectDir)
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: getTypeChecker
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export function getTypeChecker() {
+  const program = info.languageService.getProgram()
+  if (!program) {
+    log('Failed to get program while while running getTypeChecker.')
+    return
+  }
+  const typeChecker = program.getTypeChecker()
+  if (!typeChecker) {
+    log('Failed to get type checker while running getTypeChecker.')
+    return
+  }
+  return typeChecker
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: getSource
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+export function getSource(fileName: string) {
+  const program = info.languageService.getProgram()
+  if (!program) {
+    log('Failed to get program while running getSource for: ' + fileName)
+    return
+  }
+
+  const sourceFile = program.getSourceFile(fileName)
+  if (!sourceFile) {
+    log('Failed to get source file while running getSource for: ' + fileName)
+    return
+  }
+
+  return sourceFile
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: isDefaultFunctionExport
+Language: TypeScript
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+export const isDefaultFunctionExport = (
+  node: tsModule.Node
+): node is tsModule.FunctionDeclaration => {
+  if (ts.isFunctionDeclaration(node)) {
+    let hasExportKeyword = false
+    let hasDefaultKeyword = false
+
+    if (node.modifiers) {
+      for (const modifier of node.modifiers) {
+        if (modifier.kind === ts.SyntaxKind.ExportKeyword) {
+          hasExportKeyword = true
+        } else if (modifier.kind === ts.SyntaxKind.DefaultKeyword) {
+          hasDefaultKeyword = true
+        }
+      }
+    }
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T18:07:29.467Z
+File: [2 files: context.ts, If we end up here, there was no work store or work unit store present.]
+Functions Extracted: 4
+
+
+Function 1: clearModuleContext
+Language: TypeScript
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+export async function clearModuleContext(path: string) {
+  intervalsManager.removeAll()
+  timeoutsManager.removeAll()
+
+  const handleContext = (
+    key: string,
+    cache: ReturnType<(typeof moduleContexts)['get']>,
+    context: typeof moduleContexts | typeof pendingModuleCaches
+  ) => {
+    if (cache?.paths.has(path)) {
+      context.delete(key)
+    }
+  }
+
+  for (const [key, cache] of moduleContexts) {
+    handleContext(key, cache, moduleContexts)
+  }
+  for (const [key, cache] of pendingModuleCaches) {
+    handleContext(key, await cache, pendingModuleCaches)
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: makeHangingCookies
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function makeHangingCookies(
+  workStore: WorkStore,
+  prerenderStore: PrerenderStoreModern
+): Promise<ReadonlyRequestCookies> {
+  const cachedPromise = CachedCookies.get(prerenderStore)
+  if (cachedPromise) {
+    return cachedPromise
+  }
+
+  const promise = makeHangingPromise<ReadonlyRequestCookies>(
+    prerenderStore.renderSignal,
+    workStore.route,
+    '`cookies()`'
+  )
+  CachedCookies.set(prerenderStore, promise)
+
+  return promise
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: makeUntrackedCookiesWithDevWarnings
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+function makeUntrackedCookiesWithDevWarnings(
+  requestStore: RequestStore,
+  underlyingCookies: ReadonlyRequestCookies,
+  route?: string
+): Promise<ReadonlyRequestCookies> {
+  if (requestStore.asyncApiPromises) {
+    let promise: Promise<ReadonlyRequestCookies>
+    if (underlyingCookies === requestStore.mutableCookies) {
+      promise = requestStore.asyncApiPromises.mutableCookies
+    } else if (underlyingCookies === requestStore.cookies) {
+      promise = requestStore.asyncApiPromises.cookies
+    } else {
+      throw new InvariantError(
+        'Received an underlying cookies object that does not match either `cookies` or `mutableCookies`'
+      )
+    }
+    return instrumentCookiesPromiseWithDevWarnings(promise, route)
+  }
+
+  const cachedCookies = CachedCookies.get(underlyingCookies)
+  if (cachedCookies) {
+    return cachedCookies
+  }
+
+  const promise = makeDevtoolsIOAwarePromise(
+    underlyingCookies,
+    requestStore,
+    RenderStage.Runtime
+  )
+
+  const proxiedPromise = instrumentCookiesPromiseWithDevWarnings(promise, route)
+
+  CachedCookies.set(underlyingCookies, proxiedPromise)
+
+  return proxiedPromise
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: instrumentCookiesPromiseWithDevWarnings
+Language: TypeScript
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+function instrumentCookiesPromiseWithDevWarnings(
+  promise: Promise<ReadonlyRequestCookies>,
+  route: string | undefined
+) {
+  Object.defineProperties(promise, {
+    [Symbol.iterator]: replaceableWarningDescriptorForSymbolIterator(
+      promise,
+      route
+    ),
+    size: replaceableWarningDescriptor(promise, 'size', route),
+    get: replaceableWarningDescriptor(promise, 'get', route),
+    getAll: replaceableWarningDescriptor(promise, 'getAll', route),
+    has: replaceableWarningDescriptor(promise, 'has', route),
+    set: replaceableWarningDescriptor(promise, 'set', route),
+    delete: replaceableWarningDescriptor(promise, 'delete', route),
+    clear: replaceableWarningDescriptor(promise, 'clear', route),
+    toString: replaceableWarningDescriptor(promise, 'toString', route),
+  })
+  return promise
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T18:07:30.994Z
+File: vercel-next.js-f8f24aa/packages/next/src/server/lib/find-page-file.ts
+Functions Extracted: 3
+
+
+Function 1: isTrueCasePagePath
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+async function isTrueCasePagePath(pagePath: string, pagesDir: string) {
+  const pageSegments = normalize(pagePath).split(sep).filter(Boolean);
+  const segmentExistsPromises = pageSegments.map(async (segment, i) => {
+    const segmentParentDir = join(pagesDir, ...pageSegments.slice(0, i));
+    const parentDirEntries = await fsPromises.readdir(segmentParentDir);
+    return parentDirEntries.includes(segment);
+  });
+
+  return (await Promise.all(segmentExistsPromises)).every(Boolean);
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: findPageFile
+Language: TypeScript
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+export async function findPageFile(
+  pagesDir: string,
+  normalizedPagePath: string,
+  pageExtensions: PageExtensions,
+  isAppDir: boolean
+): Promise<string | null> {
+  const pagePaths = getPagePaths(normalizedPagePath, pageExtensions, isAppDir);
+  const [existingPath, ...others] = (
+    await Promise.all(
+      pagePaths.map(async (path) => {
+        const filePath = join(pagesDir, path);
+        try {
+          return (await fileExists(filePath)) ? path : null;
+        } catch (err: any) {
+          if (!err?.code?.includes('ENOTDIR')) throw err;
+        }
+        return null;
+      })
+    )
+  ).filter(nonNullable);
+
+  if (!existingPath) {
+    return null;
+  }
+
+  if (!(await isTrueCasePagePath(existingPath, pagesDir))) {
+    return null;
+  }
+
+  if (others.length > 0) {
+    warn(
+      `Duplicate page detected. ${cyan(join('pages', existingPath))} and ${cyan(
+        join('pages', others[0])
+      )} both resolve to ${cyan(normalizedPagePath)}.`
+    );
+  }
+
+  return existingPath;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: createValidFileMatcher
+Language: TypeScript
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+export function createValidFileMatcher(
+  pageExtensions: PageExtensions,
+  appDirPath: string | undefined
+) {
+  const getExtensionRegexString = (extensions: string[]) =>
+    `(?:${extensions.join('|')})`;
+
+  const validExtensionFileRegex = new RegExp(
+    '\.' + getExtensionRegexString(pageExtensions) + '$'
+  );
+  const leafOnlyPageFileRegex = new RegExp(
+    `(^(page|route)|[\\/](page|route))\.${getExtensionRegexString(
+      pageExtensions
+    )}$`
+  );
+
+  const leafOnlyRouteFileRegex = new RegExp(
+    `(^route|[\\/]route)\.${getExtensionRegexString(pageExtensions)}$`
+  );
+  const leafOnlyLayoutFileRegex = new RegExp(
+    `(^(layout)|[\\/](layout))\.${getExtensionRegexString(pageExtensions)}$`
+  );
+  const rootNotFoundFileRegex = new RegExp(
+    `^not-found\.${getExtensionRegexString(pageExtensions)}$`
+  );
+  const leafOnlyDefaultFileRegex = new RegExp(
+    `(^(default)|[\\/](default))\.${getExtensionRegexString(pageExtensions)}$`
+  );
+
+  function isMetadataFile(filePath: string) {
+    const appDirRelativePath = appDirPath
+      ? filePath.replace(appDirPath, '')
+      : filePath;
+
+    return isMetadataRouteFile(appDirRelativePath, pageExtensions, true);
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T18:07:43.886Z
+File: nathom-streamrip-b6c578a/streamrip/db.py
+Functions Extracted: 5
+
+
+Function 1: create
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+def create(self):
+        """Create a database."""
+        with sqlite3.connect(self.path) as conn:
+            params = ", ".join(
+                f"{key} {' '.join(map(str.upper, props))} NOT NULL"
+                for key, props in self.structure.items()
+            )
+            command = f"CREATE TABLE {self.name} ({params})"
+
+            logger.debug("executing %s", command)
+
+            conn.execute(command)
+--------------------------------------------------------------------------------
+
+
+Function 2: contains
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+def contains(self, **items) -> bool:
+        """Check whether items matches an entry in the table.
+
+        :param items: a dict of column-name + expected value
+        :rtype: bool
+        """
+        allowed_keys = set(self.structure.keys())
+        assert all(
+            key in allowed_keys for key in items.keys()
+        ), f"Invalid key. Valid keys: {allowed_keys}"
+
+        items = {k: str(v) for k, v in items.items()}
+
+        with sqlite3.connect(self.path) as conn:
+            conditions = " AND ".join(f"{key}=?" for key in items.keys())
+            command = f"SELECT EXISTS(SELECT 1 FROM {self.name} WHERE {conditions})"
+
+            logger.debug("Executing %s", command)
+
+            return bool(conn.execute(command, tuple(items.values())).fetchone()[0])
+--------------------------------------------------------------------------------
+
+
+Function 3: add
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+def add(self, items: tuple[str]):
+        """Add a row to the table.
+
+        :param items: Column-name + value. Values must be provided for all cols.
+        :type items: Tuple[str]
+        """
+        assert len(items) == len(self.structure)
+
+        params = ", ".join(self.structure.keys())
+        question_marks = ", ".join("?" for _ in items)
+        command = f"INSERT INTO {self.name} ({params}) VALUES ({question_marks})"
+
+        logger.debug("Executing %s", command)
+        logger.debug("Items to add: %s", items)
+
+        with sqlite3.connect(self.path) as conn:
+            try:
+                conn.execute(command, tuple(items))
+            except sqlite3.IntegrityError as e:
+                # tried to insert an item that was already there
+                logger.debug(e)
+--------------------------------------------------------------------------------
+
+
+Function 4: remove
+Language: Python
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+def remove(self, **items):
+        """Remove items from a table.
+
+        Warning: NOT TESTED!
+
+        :param items:
+        """
+        conditions = " AND ".join(f"{key}=?" for key in items.keys())
+        command = f"DELETE FROM {self.name} WHERE {conditions}"
+
+        with sqlite3.connect(self.path) as conn:
+            logger.debug(command)
+            conn.execute(command, tuple(items.values()))
+--------------------------------------------------------------------------------
+
+
+Function 5: all
+Language: Python
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+def all(self):
+        """Iterate through the rows of the table."""
+        with sqlite3.connect(self.path) as conn:
+            return list(conn.execute(f"SELECT * FROM {self.name}"))
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T18:11:16.084Z
+File: [3 files: Adjust the padding for floating and inset variants., form.tsx, breadcrumb.tsx]
+Functions Extracted: 4
+
+
+Function 1: SidebarTrigger
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
+  const { toggleSidebar } = useSidebar();
+
+  return (
+    <Button
+      data-sidebar="trigger"
+      data-slot="sidebar-trigger"
+      variant="ghost"
+      size="icon"
+      className={cn("h-7 w-7", className)}
+      onClick={(event) => {
+        onClick?.(event);
+        toggleSidebar();
+      }}
+      {...props}
+    >
+      <PanelLeftIcon />
+      <span className="sr-only">Toggle Sidebar</span>
+    </Button>
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: FormField
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+const FormField = <TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,>({ ...props }: ControllerProps<TFieldValues, TName>) => {
+  return (
+    <FormFieldContext.Provider value={{ name: props.name }}>
+      <Controller {...props} />
+    </FormFieldContext.Provider>
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: FormItem
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function FormItem({ className, ...props }: React.ComponentProps<"div">) {
+  const id = React.useId();
+
+  return (
+    <FormItemContext.Provider value={{ id }}>
+      <div
+        data-slot="form-item"
+        className={cn("grid gap-2", className)}
+        {...props}
+      />
+    </FormItemContext.Provider>
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: BreadcrumbList
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
+  return (
+    <ol
+      data-slot="breadcrumb-list"
+      className={cn(
+        "text-muted-foreground flex flex-wrap items-center gap-1.5 text-sm break-words sm:gap-2.5",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T18:11:17.688Z
+File: nathom-streamrip-b6c578a/streamrip/media/album.py
+Functions Extracted: 3
+
+
+Function 1: download
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+async def download(self):
+        async def _resolve_and_download(pending: Pending):
+            try:
+                track = await pending.resolve()
+                if track is None:
+                    return
+                await track.rip()
+            except Exception as e:
+                logger.error(f"Error downloading track: {e}")
+
+        results = await asyncio.gather(
+            *[_resolve_and_download(p) for p in self.tracks], return_exceptions=True
+        )
+
+        for result in results:
+            if isinstance(result, Exception):
+                logger.error(f"Album track processing error: {result}")
+--------------------------------------------------------------------------------
+
+
+Function 2: resolve
+Language: Python
+Lines: 38
+Full Code:
+--------------------------------------------------------------------------------
+async def resolve(self) -> Album | None:
+        try:
+            resp = await self.client.get_metadata(self.id, "album")
+        except NonStreamableError as e:
+            logger.error(
+                f"Album {self.id} not available to stream on {self.client.source} ({e})",
+            )
+            return None
+
+        try:
+            meta = AlbumMetadata.from_album_resp(resp, self.client.source)
+        except Exception as e:
+            logger.error(f"Error building album metadata for {id=}: {e}")
+            return None
+
+        if meta is None:
+            logger.error(
+                f"Album {self.id} not available to stream on {self.client.source}",
+            )
+            return None
+
+        tracklist = get_album_track_ids(self.client.source, resp)
+        folder = self.config.session.downloads.folder
+        album_folder = self._album_folder(folder, meta)
+        os.makedirs(album_folder, exist_ok=True)
+        embed_cover, _ = await download_artwork(
+            self.client.session,
+            album_folder,
+            meta.covers,
+            self.config.session.artwork,
+            for_playlist=False,
+        )
+        pending_tracks = [
+            PendingTrack(
+                id,
+                album=meta,
+                client=self.client,
+                config=self.config,
+                folder=album_folder,
+                db=self.db,
+                cover_path=embed_cover,
+            )
+            for id in tracklist
+        ]
+        logger.debug("Pending tracks: %s", pending_tracks)
+        return Album(meta, pending_tracks, self.config, album_folder, self.db)
+--------------------------------------------------------------------------------
+
+
+Function 3: _album_folder
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+def _album_folder(self, parent: str, meta: AlbumMetadata) -> str:
+        config = self.config.session
+        if config.downloads.source_subdirectories:
+            parent = os.path.join(parent, self.client.source.capitalize())
+        formatter = config.filepaths.folder_format
+        folder = clean_filepath(
+            meta.format_folder_path(formatter), config.filepaths.restrict_characters
+        )
+
+        return os.path.join(parent, folder)
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T18:11:19.985Z
+File: nathom-streamrip-b6c578a/streamrip/config.py
+Functions Extracted: 3
+
+
+Function 1: from_toml
+Language: Python
+Lines: 31
+Full Code:
+--------------------------------------------------------------------------------
+    @classmethod
+    def from_toml(cls, toml_str: str):
+        toml = parse(toml_str)
+        if (v := toml["misc"]["version"]) != CURRENT_CONFIG_VERSION:  # type: ignore
+            raise OutdatedConfigError(
+                f"Need to update config from {v} to {CURRENT_CONFIG_VERSION}",
+            )
+
+        downloads = DownloadsConfig(**toml["downloads"])  # type: ignore
+        qobuz = QobuzConfig(**toml["qobuz"])  # type: ignore
+        tidal = TidalConfig(**toml["tidal"])  # type: ignore
+        deezer = DeezerConfig(**toml["deezer"])  # type: ignore
+        soundcloud = SoundcloudConfig(**toml["soundcloud"])  # type: ignore
+        youtube = YoutubeConfig(**toml["youtube"])  # type: ignore
+        lastfm = LastFmConfig(**toml["lastfm"])  # type: ignore
+        artwork = ArtworkConfig(**toml["artwork"])  # type: ignore
+        filepaths = FilepathsConfig(**toml["filepaths"])  # type: ignore
+        metadata = MetadataConfig(**toml["metadata"])  # type: ignore
+        qobuz_filters = QobuzDiscographyFilterConfig(**toml["qobuz_filters"])  # type: ignore
+        cli = CliConfig(**toml["cli"])  # type: ignore
+        database = DatabaseConfig(**toml["database"])  # type: ignore
+        conversion = ConversionConfig(**toml["conversion"])  # type: ignore
+        misc = MiscConfig(**toml["misc"])  # type: ignore
+
+        return cls(
+            toml=toml,
+            downloads=downloads,
+            qobuz=qobuz,
+            tidal=tidal,
+            deezer=deezer,
+            soundcloud=soundcloud,
+            youtube=youtube,
+            lastfm=lastfm,
+            artwork=artwork,
+            filepaths=filepaths,
+            metadata=metadata,
+            qobuz_filters=qobuz_filters,
+            cli=cli,
+            database=database,
+            conversion=conversion,
+            misc=misc,
+        )
+--------------------------------------------------------------------------------
+
+
+Function 2: update_toml
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+    def update_toml(self):
+        update_toml_section_from_config(self.toml["downloads"], self.downloads)
+        update_toml_section_from_config(self.toml["qobuz"], self.qobuz)
+        update_toml_section_from_config(self.toml["tidal"], self.tidal)
+        update_toml_section_from_config(self.toml["deezer"], self.deezer)
+        update_toml_section_from_config(self.toml["soundcloud"], self.soundcloud)
+        update_toml_section_from_config(self.toml["youtube"], self.youtube)
+        update_toml_section_from_config(self.toml["lastfm"], self.lastfm)
+        update_toml_section_from_config(self.toml["artwork"], self.artwork)
+        update_toml_section_from_config(self.toml["filepaths"], self.filepaths)
+        update_toml_section_from_config(self.toml["metadata"], self.metadata)
+        update_toml_section_from_config(self.toml["qobuz_filters"], self.qobuz_filters)
+        update_toml_section_from_config(self.toml["cli"], self.cli)
+        update_toml_section_from_config(self.toml["database"], self.database)
+        update_toml_section_from_config(self.toml["conversion"], self.conversion)
+--------------------------------------------------------------------------------
+
+
+Function 3: update_config
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+def update_config(old_with_data: dict, new_without_data: dict):
+    old_keys = _get_dict_keys_r(old_with_data)
+    new_keys = _get_dict_keys_r(new_without_data)
+    common = old_keys.intersection(new_keys)
+    common.discard(("misc", "version"))
+
+    for k in common:
+        old_val = _nested_get(old_with_data, *k)
+        _nested_set(new_without_data, *k, val=old_val)
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T18:11:22.014Z
+File: nathom-streamrip-b6c578a/streamrip/config.py
+Functions Extracted: 4
+
+
+Function 1: from_toml
+Language: Python
+Lines: 34
+Full Code:
+--------------------------------------------------------------------------------
+    @classmethod
+    def from_toml(cls, toml_str: str):
+        toml = parse(toml_str)
+        if (v := toml["misc"]["version"]) != CURRENT_CONFIG_VERSION:  # type: ignore
+            raise OutdatedConfigError(
+                f"Need to update config from {v} to {CURRENT_CONFIG_VERSION}",
+            )
+
+        downloads = DownloadsConfig(**toml["downloads"])  # type: ignore
+        qobuz = QobuzConfig(**toml["qobuz"])  # type: ignore
+        tidal = TidalConfig(**toml["tidal"])  # type: ignore
+        deezer = DeezerConfig(**toml["deezer"])  # type: ignore
+        soundcloud = SoundcloudConfig(**toml["soundcloud"])  # type: ignore
+        youtube = YoutubeConfig(**toml["youtube"])  # type: ignore
+        lastfm = LastFmConfig(**toml["lastfm"])  # type: ignore
+        artwork = ArtworkConfig(**toml["artwork"])  # type: ignore
+        filepaths = FilepathsConfig(**toml["filepaths"])  # type: ignore
+        metadata = MetadataConfig(**toml["metadata"])  # type: ignore
+        qobuz_filters = QobuzDiscographyFilterConfig(**toml["qobuz_filters"])  # type: ignore
+        cli = CliConfig(**toml["cli"])  # type: ignore
+        database = DatabaseConfig(**toml["database"])  # type: ignore
+        conversion = ConversionConfig(**toml["conversion"])  # type: ignore
+        misc = MiscConfig(**toml["misc"])  # type: ignore
+
+        return cls(
+            toml=toml,
+            downloads=downloads,
+            qobuz=qobuz,
+            tidal=tidal,
+            deezer=deezer,
+            soundcloud=soundcloud,
+            youtube=youtube,
+            lastfm=lastfm,
+            artwork=artwork,
+            filepaths=filepaths,
+            metadata=metadata,
+            qobuz_filters=qobuz_filters,
+            cli=cli,
+            database=database,
+            conversion=conversion,
+            misc=misc,
+        )
+--------------------------------------------------------------------------------
+
+
+Function 2: update_toml
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+    def update_toml(self):
+        update_toml_section_from_config(self.toml["downloads"], self.downloads)
+        update_toml_section_from_config(self.toml["qobuz"], self.qobuz)
+        update_toml_section_from_config(self.toml["tidal"], self.tidal)
+        update_toml_section_from_config(self.toml["deezer"], self.deezer)
+        update_toml_section_from_config(self.toml["soundcloud"], self.soundcloud)
+        update_toml_section_from_config(self.toml["youtube"], self.youtube)
+        update_toml_section_from_config(self.toml["lastfm"], self.lastfm)
+        update_toml_section_from_config(self.toml["artwork"], self.artwork)
+        update_toml_section_from_config(self.toml["filepaths"], self.filepaths)
+        update_toml_section_from_config(self.toml["metadata"], self.metadata)
+        update_toml_section_from_config(self.toml["qobuz_filters"], self.qobuz_filters)
+        update_toml_section_from_config(self.toml["cli"], self.cli)
+        update_toml_section_from_config(self.toml["database"], self.database)
+        update_toml_section_from_config(self.toml["conversion"], self.conversion)
+--------------------------------------------------------------------------------
+
+
+Function 3: set_user_defaults
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+def set_user_defaults(path: str, /):
+    """Update the TOML file at the path with user-specific default values."""
+    shutil.copy(BLANK_CONFIG_PATH, path)
+
+    with open(path) as f:
+        toml = parse(f.read())
+
+    toml_set_user_defaults(toml)
+
+    with open(path, "w") as f:
+        f.write(dumps(toml))
+--------------------------------------------------------------------------------
+
+
+Function 4: update_config
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+def update_config(old_with_data: dict, new_without_data: dict):
+    """Used to update config when a new config version is detected.
+
+    All data associated with keys that are shared between the old and
+    new configs are copied from old to new. The remaining keep their default value.
+
+    Assumes that new_without_data contains default config values of the
+    latest version.
+    """
+    old_keys = _get_dict_keys_r(old_with_data)
+    new_keys = _get_dict_keys_r(new_without_data)
+    common = old_keys.intersection(new_keys)
+    common.discard(("misc", "version"))
+
+    for k in common:
+        old_val = _nested_get(old_with_data, *k)
+        _nested_set(new_without_data, *k, val=old_val)
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T18:11:22.084Z
+File: [2 files: drawer.tsx, navigation-menu.tsx]
+Functions Extracted: 4
+
+
+Function 1: DrawerContent
+Language: TypeScript
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+function DrawerContent({ className, children, ...props }: React.ComponentProps<typeof DrawerPrimitive.Content>) {
+  return (
+    <DrawerPortal data-slot="drawer-portal">
+      <DrawerOverlay />
+      <DrawerPrimitive.Content
+        data-slot="drawer-content"
+        className={cn(
+          "group/drawer-content bg-background fixed z-50 flex h-auto flex-col",
+          "data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-[80vh] data-[vaul-drawer-direction=top]:rounded-b-lg",
+          "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[80vh] data-[vaul-drawer-direction=bottom]:rounded-t-lg",
+          "data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:w-3/4 data-[vaul-drawer-direction=right]:sm:max-w-sm",
+          "data-[vaul-drawer-direction=left]:inset-y-0 data-[vaul-drawer-direction=left]:left-0 data-[vaul-drawer-direction=left]:w-3/4 data-[vaul-drawer-direction=left]:sm:max-w-sm",
+          className
+        )}
+        {...props}
+      >
+        <div className="bg-muted mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
+        {children}
+      </DrawerPrimitive.Content>
+    </DrawerPortal>
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: NavigationMenu
+Language: TypeScript
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+function NavigationMenu({ className, children, viewport = true, ...props }: React.ComponentProps<typeof NavigationMenuPrimitive.Root> & { viewport?: boolean }) {
+  return (
+    <NavigationMenuPrimitive.Root
+      data-slot="navigation-menu"
+      data-viewport={viewport}
+      className={cn(
+        "group/navigation-menu relative flex max-w-max flex-1 items-center justify-center",
+        className
+      )}
+      {...props}
+    >
+      {children}
+      {viewport && <NavigationMenuViewport />}
+    </NavigationMenuPrimitive.Root>
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: NavigationMenuTrigger
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function NavigationMenuTrigger({ className, children, ...props }: React.ComponentProps<typeof NavigationMenuPrimitive.Trigger>) {
+  return (
+    <NavigationMenuPrimitive.Trigger
+      data-slot="navigation-menu-trigger"
+      className={cn(navigationMenuTriggerStyle(), "group", className)}
+      {...props}
+    >
+      {children} {" "}
+      <ChevronDownIcon
+        className="relative top-[1px] ml-1 size-3 transition duration-300 group-data-[state=open]:rotate-180"
+        aria-hidden="true"
+      />
+    </NavigationMenuPrimitive.Trigger>
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: NavigationMenuContent
+Language: TypeScript
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+function NavigationMenuContent({ className, ...props }: React.ComponentProps<typeof NavigationMenuPrimitive.Content>) {
+  return (
+    <NavigationMenuPrimitive.Content
+      data-slot="navigation-menu-content"
+      className={cn(
+        "data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52 top-0 left-0 w-full p-2 pr-2.5 md:absolute md:w-auto",
+        "group-data-[viewport=false]/navigation-menu:bg-popover group-data-[viewport=false]/navigation-menu:text-popover-foreground group-data-[viewport=false]/navigation-menu:data-[state=open]:animate-in group-data-[viewport=false]/navigation-menu:data-[state=closed]:animate-out group-data-[viewport=false]/navigation-menu:data-[state=closed]:zoom-out-95 group-data-[viewport=false]/navigation-menu:data-[state=open]:zoom-in-95 group-data-[viewport=false]/navigation-menu:data-[state=open]:fade-in-0 group-data-[viewport=false]/navigation-menu:data-[state=closed]:fade-out-0 group-data-[viewport=false]/navigation-menu:top-full group-data-[viewport=false]/navigation-menu:mt-1.5 group-data-[viewport=false]/navigation-menu:overflow-hidden group-data-[viewport=false]/navigation-menu:rounded-md group-data-[viewport=false]/navigation-menu:border group-data-[viewport=false]/navigation-menu:shadow group-data-[viewport=false]/navigation-menu:duration-200 **:data-[slot=navigation-menu-link]:focus:ring-0 **:data-[slot=navigation-menu-link]:focus:outline-none",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T18:11:28.154Z
+File: [2 files: label.py, exceptions.py]
+Functions Extracted: 4
+
+
+Function 1: download
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+async def download(self):
+        album_resolve_chunk_size = 10
+
+        async def _resolve_download(item: PendingAlbum):
+            album = await item.resolve()
+            if album is None:
+                return
+            await album.rip()
+
+        batches = self.batch(
+            [_resolve_download(album) for album in self.albums],
+            album_resolve_chunk_size,
+        )
+        for batch in batches:
+            await asyncio.gather(*batch)
+--------------------------------------------------------------------------------
+
+
+Function 2: resolve
+Language: Python
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+async def resolve(self) -> Label | None:
+        try:
+            resp = await self.client.get_metadata(self.id, "label")
+        except NonStreamableError as e:
+            logger.error(f"Error resolving Label: {e}")
+            return None
+        try:
+            meta = LabelMetadata.from_resp(resp, self.client.source)
+        except Exception as e:
+            logger.error(f"Error resolving Label: {e}")
+            return None
+        albums = [
+            PendingAlbum(album_id, self.client, self.config, self.db)
+            for album_id in meta.album_ids()
+        ]
+        return Label(meta.name, albums, self.client, self.config)
+--------------------------------------------------------------------------------
+
+
+Function 3: print
+Language: Python
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+def print(self, item):
+        """Print a readable version of the exception.
+
+        :param item:
+        """
+        echo(self.print_msg(item))
+--------------------------------------------------------------------------------
+
+
+Function 4: print_msg
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+def print_msg(self, item) -> str:
+        """Return a generic readable message.
+
+        :param item:
+        :type item: Media
+        :rtype: str
+        """
+        base_msg = [style(f"Unable to stream {item!s}.", fg="yellow")]
+        if self.message:
+            base_msg.extend(
+                (
+                    style("Message:", fg="yellow"),
+                    style(self.message, fg="red"),
+                ),
+            )
+
+        return " ".join(base_msg)
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T18:11:34.672Z
+File: nathom-streamrip-b6c578a/streamrip/converter.py
+Functions Extracted: 4
+
+
+Function 1: __init__
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+def __init__(
+        self,
+        filename: str,
+        ffmpeg_arg: Optional[str] = None,
+        sampling_rate: Optional[int] = None,
+        bit_depth: Optional[int] = None,
+        copy_art: bool = True,
+        remove_source: bool = False,
+        show_progress: bool = False,
+    ):
+--------------------------------------------------------------------------------
+
+
+Function 2: convert
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+async def convert(self, custom_fn: Optional[str] = None):
+        if custom_fn:
+            self.final_fn = custom_fn
+
+        self.command = self._gen_command()
+        process = await asyncio.create_subprocess_exec(
+            *self.command,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        out, err = await process.communicate()
+        if process.returncode == 0 and os.path.isfile(self.tempfile):
+            if self.remove_source:
+                os.remove(self.filename)
+            shutil.move(self.tempfile, self.final_fn)
+        else:
+            raise ConversionError(f"FFmpeg output:\n{out, err}")
+--------------------------------------------------------------------------------
+
+
+Function 3: _gen_command
+Language: Python
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+def _gen_command(self):
+        command = [
+            "ffmpeg",
+            "-i",
+            self.filename,
+        ]
+        command.extend(('-loglevel', 'panic'))
+        command.extend(('-c:a', self.codec_lib))
+        if self.show_progress:
+            command.append("-stats")
+        if self.copy_art:
+            command.extend(["-c:v", "copy"])
+        if self.ffmpeg_arg:
+            command.extend(self.ffmpeg_arg.split())
+        if self.lossless:
+            aformat = []
+            if isinstance(self.sampling_rate, int):
+                sample_rates = "|".join(
+                    str(rate) for rate in SAMPLING_RATES if rate <= self.sampling_rate
+                )
+                aformat.append(f"sample_rates={sample_rates}")
+            if isinstance(self.bit_depth, int):
+                bit_depths = ["s16p", "s16"]
+                if self.bit_depth in (24, 32):
+                    bit_depths.extend(["s32p", "s32"])
+                sample_fmts = "|".join(bit_depths)
+                aformat.append(f"sample_fmts={sample_fmts}")
+            if aformat:
+                aformat_params = ":".join(aformat)
+                command.extend(["-af", f"aformat={aformat_params}"])
+        command.extend(["-y", self.tempfile])
+        return command
+--------------------------------------------------------------------------------
+
+
+Function 4: get
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+def get(codec: str) -> type[Converter]:
+    converter_classes = {
+        "FLAC": FLAC,
+        "ALAC": ALAC,
+        "MP3": LAME,
+        "OPUS": OPUS,
+        "OGG": Vorbis,
+        "VORBIS": Vorbis,
+        "AAC": AAC,
+        "M4A": AAC,
+    }
+    return converter_classes[codec.upper()]
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T18:11:49.466Z
+File: [2 files: track.py, exceptions.py]
+Functions Extracted: 6
+
+
+Function 1: preprocess
+Language: Python
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+async def preprocess(self):
+        self._set_download_path()
+        os.makedirs(self.folder, exist_ok=True)
+        if self.is_single:
+            add_title(self.meta.title)
+--------------------------------------------------------------------------------
+
+
+Function 2: download
+Language: Python
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+async def download(self):
+        async with global_download_semaphore(self.config.session.downloads):
+            with get_progress_callback(
+                self.config.session.cli.progress_bars,
+                await self.downloadable.size(),
+                f"Track {self.meta.tracknumber}",
+            ) as callback:
+                try:
+                    await self.downloadable.download(self.download_path, callback)
+                    retry = False
+                except Exception as e:
+                    logger.error(
+                        f"Error downloading track '{self.meta.title}', retrying: {e}"
+                    )
+                    retry = True
+
+            if not retry:
+                return
+
+            with get_progress_callback(
+                self.config.session.cli.progress_bars,
+                await self.downloadable.size(),
+                f"Track {self.meta.tracknumber} (retry)",
+            ) as callback:
+                try:
+                    await self.downloadable.download(self.download_path, callback)
+                except Exception as e:
+                    logger.error(
+                        f"Persistent error downloading track '{self.meta.title}', skipping: {e}"
+                    )
+                    self.db.set_failed(
+                        self.downloadable.source, "track", self.meta.info.id
+                    )
+--------------------------------------------------------------------------------
+
+
+Function 3: postprocess
+Language: Python
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+async def postprocess(self):
+        if self.is_single:
+            remove_title(self.meta.title)
+
+        await tag_file(self.download_path, self.meta, self.cover_path)
+        if self.config.session.conversion.enabled:
+            await self._convert()
+
+        self.db.set_downloaded(self.meta.info.id)
+--------------------------------------------------------------------------------
+
+
+Function 4: _convert
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+async def _convert(self):
+        c = self.config.session.conversion
+        engine_class = converter.get(c.codec)
+        engine = engine_class(
+            filename=self.download_path,
+            sampling_rate=c.sampling_rate,
+            bit_depth=c.bit_depth,
+            remove_source=True,  # always going to delete the old file
+        )
+        await engine.convert()
+        self.download_path = engine.final_fn  # because the extension changed
+--------------------------------------------------------------------------------
+
+
+Function 5: resolve
+Language: Python
+Lines: 38
+Full Code:
+--------------------------------------------------------------------------------
+async def resolve(self) -> Track | None:
+        if self.db.downloaded(self.id):
+            logger.info(
+                f"Skipping track {self.id}. Marked as downloaded in the database.",
+            )
+            return None
+
+        source = self.client.source
+        try:
+            resp = await self.client.get_metadata(self.id, "track")
+        except NonStreamableError as e:
+            logger.error(f"Track {self.id} not available for stream on {source}: {e}")
+            return None
+
+        try:
+            meta = TrackMetadata.from_resp(self.album, source, resp)
+        except Exception as e:
+            logger.error(f"Error building track metadata for {self.id}: {e}")
+            return None
+
+        if meta is None:
+            logger.error(f"Track {self.id} not available for stream on {source}")
+            self.db.set_failed(source, "track", self.id)
+            return None
+
+        quality = self.config.session.get_source(source).quality
+        try:
+            downloadable = await self.client.get_downloadable(self.id, quality)
+        except NonStreamableError as e:
+            logger.error(
+                f"Error getting downloadable data for track {meta.tracknumber} [{self.id}]: {e}"
+            )
+            return None
+
+        downloads_config = self.config.session.downloads
+        if downloads_config.disc_subdirectories and self.album.disctotal > 1:
+            folder = os.path.join(self.folder, f"Disc {meta.discnumber}")
+        else:
+            folder = self.folder
+
+        return Track(
+            meta,
+            downloadable,
+            self.config,
+            folder,
+            self.cover_path,
+            self.db,
+        )
+--------------------------------------------------------------------------------
+
+
+Function 6: _format_folder
+Language: Python
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+def _format_folder(self, meta: AlbumMetadata) -> str:
+        c = self.config.session
+        parent = c.downloads.folder
+        formatter = c.filepaths.folder_format
+        if c.downloads.source_subdirectories:
+            parent = os.path.join(parent, self.client.source.capitalize())
+
+        return os.path.join(parent, meta.format_folder_path(formatter))
+--------------------------------------------------------------------------------
+
+================================================================================

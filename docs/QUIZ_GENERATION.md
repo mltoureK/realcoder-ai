@@ -86,6 +86,14 @@ Once function-variant generation is validated:
 
 ---
 
+## Plugin Quality Notes (Order Sequence & Function Variant)
+
+- **Order Sequence** now enforces 5–10 core steps before shuffling into the UI. The plugin keeps up to three distractors and sanitizes `correctOrder`, `acceptableOrders`, and `constraints` so every ID matches the surviving steps. This lets you include entire call sequences without losing context.
+- Correct steps retain full code (including function calls) until the final shuffle, so the quiz bank can show realistic execution flows instead of abridged snippets.
+- **Function Variant** responses preserve comments in the code variants. Deduplication now ignores comment-only differences to filter out duplicate variants while keeping the source comment guidance visible in the UI.
+
+---
+
 ## Useful Commands / Tips
 
 - **Tail Next.js API logs** during a quiz run to watch plugin output: `yarn dev` (or your PM2 setup) provides the console entries described above.

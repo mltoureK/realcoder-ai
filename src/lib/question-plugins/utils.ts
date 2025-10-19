@@ -361,12 +361,11 @@ export function removeDuplicateVariants(variants: any[]): any[] | null {
 }
 
 function normalizeCodeForComparison(code: string): string {
-  return code
+  return removeComments(String(code || ''))
     .replace(/\s+/g, ' ')
     .replace(/[{}();,]/g, '')
     .trim()
     .toLowerCase();
 }
-
 
 

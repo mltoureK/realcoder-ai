@@ -26,7 +26,7 @@ AUTOMATIC LOW RATINGS FOR ORDER-SEQUENCE:
 - AMBIGUOUS ORDERING: Multiple valid orders exist without clear criteria (AUTOMATIC 4/10)
 - ARBITRARY STEPS: Steps that don't represent meaningful programming concepts (AUTOMATIC 3/10)
 - INSUFFICIENT CONTEXT: Not enough information to determine the correct order (AUTOMATIC 4/10)
-- TOO MANY STEPS: More than 6 steps makes the question confusing (AUTOMATIC 3/10)
+- TOO MANY STEPS: More than 10 steps makes the question confusing (AUTOMATIC 3/10)
 - TRIVIAL ORDERING: Steps that are obviously in the correct order without testing understanding (AUTOMATIC 2/10)`;
   }
 }
