@@ -899,6 +899,7 @@ export default function Home() {
                     return {
                       ...prev,
                       isStreaming: false,
+                      completed: true,  // ← ADD THIS LINE
                       title: 'Community Reviewed + AI Quiz'
                     };
                   });
@@ -1029,6 +1030,16 @@ export default function Home() {
                 });
               } else if (evt.type === 'done') {
                 console.log('✅ Stream done:', evt.count);
+                
+                // Handle completion for normal (non-cached) case
+                setQuizSession((prev: any) => {
+                  if (!prev) return prev;
+                  return {
+                    ...prev,
+                    completed: true,
+                    isStreaming: false
+                  };
+                });
               } else if (evt.type === 'error') {
                 console.warn('⚠️ Stream error event');
               }

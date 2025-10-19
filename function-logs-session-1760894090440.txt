@@ -1,0 +1,2525 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1760894090440
+Started: 2025-10-19T17:14:50.440Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:14:50.442Z
+File: [2 files: This function has to be called initially., index.d.ts]
+Functions Extracted: 4
+
+
+Function 1: init
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export function init(opts: {
+  ts: TypeScript
+  info: tsModule.server.PluginCreateInfo
+}) {
+  const projectDir = opts.info.project.getCurrentDirectory()
+  ts = opts.ts
+  info = opts.info
+  appDirRegExp = new RegExp(
+    '^' + (projectDir + '(/src)?/app').replace(/[\\/]/g, '[\\/]')
+  )
+
+  log('Initialized Next.js TypeScript plugin: ' + projectDir)
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: getTypeChecker
+Language: TypeScript
+Lines: 11
+Full Code:
+--------------------------------------------------------------------------------
+export function getTypeChecker() {
+  const program = info.languageService.getProgram()
+  if (!program) {
+    log('Failed to get program while while running getTypeChecker.')
+    return
+  }
+  const typeChecker = program.getTypeChecker()
+  if (!typeChecker) {
+    log('Failed to get type checker while running getTypeChecker.')
+    return
+  }
+  return typeChecker
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: getSource
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+export function getSource(fileName: string) {
+  const program = info.languageService.getProgram()
+  if (!program) {
+    log('Failed to get program while running getSource for: ' + fileName)
+    return
+  }
+
+  const sourceFile = program.getSourceFile(fileName)
+  if (!sourceFile) {
+    log('Failed to get source file while running getSource for: ' + fileName)
+    return
+  }
+
+  return sourceFile
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: isDefaultFunctionExport
+Language: TypeScript
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+export const isDefaultFunctionExport = (
+  node: tsModule.Node
+): node is tsModule.FunctionDeclaration => {
+  if (ts.isFunctionDeclaration(node)) {
+    let hasExportKeyword = false
+    let hasDefaultKeyword = false
+
+    if (node.modifiers) {
+      for (const modifier of node.modifiers) {
+        if (modifier.kind === ts.SyntaxKind.ExportKeyword) {
+          hasExportKeyword = true
+        } else if (modifier.kind === ts.SyntaxKind.DefaultKeyword) {
+          hasDefaultKeyword = true
+        }
+      }
+    }
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:14:50.548Z
+File: [4 files: connection.ts, Any other update combination is invalid., >, If we end up here, there was no work store or work unit store present.]
+Functions Extracted: 4
+
+
+Function 1: connection
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function connection(): Promise<void> {
+  const callingExpression = 'connection';
+  const workStore = workAsyncStorage.getStore();
+  const workUnitStore = workUnitAsyncStorage.getStore();
+
+  if (workStore) {
+    if (
+      workUnitStore &&
+      workUnitStore.phase === 'after' &&
+      !isRequestAPICallableInsideAfter()
+    ) {
+      throw new Error(
+        `Route ${workStore.route} used \`connection()\` inside \`after()\`. The \`connection()\` function is used to indicate the subsequent code must only run when there is an actual Request, but \`after()\` executes after the request, so this function is not allowed in this scope. See more info here: https://nextjs.org/docs/canary/app/api-reference/functions/after`
+      );
+    }
+
+    if (workStore.forceStatic) {
+      // ...
+    }
+  }
+  throwForMissingRequestStore(callingExpression);
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: handleIssues
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function handleIssues(msg: ServerMessage): boolean {
+  const key = resourceKey(msg.resource);
+  let hasCriticalIssues = false;
+
+  for (const issue of msg.issues) {
+    if (CRITICAL.includes(issue.severity)) {
+      hasCriticalIssues = true;
+    }
+  }
+
+  if (msg.issues.length > 0) {
+    chunksWithIssues.set(key, msg.issues);
+  } else if (chunksWithIssues.has(key)) {
+    chunksWithIssues.delete(key);
+  }
+
+  emitIssues();
+
+  return hasCriticalIssues;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: sortIssues
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function sortIssues(issues: Issue[]) {
+  issues.sort((a, b) => {
+    const first = compareByList(SEVERITY_ORDER, a.severity, b.severity);
+    if (first !== 0) return first;
+    return compareByList(CATEGORY_ORDER, a.category, b.category);
+  });
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: connect
+Language: TypeScript
+Lines: 40
+Full Code:
+--------------------------------------------------------------------------------
+export function connect({
+  addMessageListener,
+  sendMessage,
+  onUpdateError = console.error,
+}: ClientOptions) {
+  addMessageListener((msg) => {
+    switch (msg.type) {
+      case 'turbopack-connected':
+        handleSocketConnected(sendMessage);
+        break;
+      default:
+        try {
+          if (Array.isArray(msg.data)) {
+            for (let i = 0; i < msg.data.length; i++) {
+              handleSocketMessage(msg.data[i] as ServerMessage);
+            }
+          } else {
+            handleSocketMessage(msg.data as ServerMessage);
+          }
+          applyAggregatedUpdates();
+        } catch (e: unknown) {
+          console.warn(
+            '[Fast Refresh] performing full reload\n\n' +
+              "Fast Refresh will perform a full reload when you edit a file that's imported by modules outside of the React rendering tree.\n" +
+              'You might have a file which exports a React component but also exports a value that is imported by a non-React component file.\n' +
+              'Consider migrating the non-React component export to a separate file and importing it into both files.\n\n' +
+              'It is also possible the parent component of the component you edited is a class component, which disables Fast Refresh.\n' +
+              'Fast Refresh requires at least one parent function component in your React tree.'
+          );
+          onUpdateError(e);
+          location.reload();
+        }
+        break;
+    }
+  });
+
+  const queued = globalThis.TURBOPACK_CHUNK_UPDATE_LISTENERS;
+  if (queued != null && !Array.isArray(queued)) {
+    throw new Error('A separate HMR handler was already registered');
+  }
+  globalThis.TURBOPACK_CHUNK_UPDATE_LISTENERS = {
+    push: ([chunkPath, callback]: [ChunkListPath, UpdateCallback]) => {
+      subscribeToChunkUpdate(chunkPath, sendMessage, callback);
+    },
+  };
+
+  if (Array.isArray(queued)) {
+    for (const [chunkPath, callback] of queued) {
+      subscribeToChunkUpdate(chunkPath, sendMessage, callback);
+    }
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:14:53.202Z
+Question Type: multiple-choice
+Function: isDefaultFunctionExport
+Function Size: 624 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: isDefaultFunctionExport (TypeScript)\n// Checks if a given node is a default function export.\n\nexport const isDefaultFunctionExport = (\n  node: tsModule.Node\n): node is tsModule.FunctionDeclaration => {\n  if (ts.isFunctionDeclaration(node)) {\n    let hasExportKeyword = false\n    let hasD
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:14:54.596Z
+Question Type: true-false
+Function: init
+Function Size: 451 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: init (TypeScript)\n// Initializes the Next.js TypeScript plugin with the given options.\n\nexport function init(opts: {\n  ts: TypeScript\n  info: tsModule.server.PluginCreateInfo\n}) {\n  const projectDir = opts.info.project.getCurrentDirectory()\n  ts = opts.ts\n  info = opts.info\n  appDirRegE
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:14:57.135Z
+File: vercel-next.js-553f2b6/packages/next/src/server/load-manifest.external.ts
+Functions Extracted: 1
+
+
+Function 1: loadManifest
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function loadManifest<T extends object>(
+  path: string,
+  shouldCache: boolean = true,
+  cache = sharedCache,
+  skipParse = false
+): T {
+  const cached = shouldCache && cache.get(path)
+  if (cached) {
+    return cached as T
+  }
+
+  let manifest: any = readFileSync(/* turbopackIgnore: true */ path, 'utf8')
+
+  if (!skipParse) {
+    manifest = JSON.parse(manifest)
+  }
+  const frozenManifest = deepFreeze(manifest)
+  if (shouldCache) {
+    cache.set(path, frozenManifest)
+  }
+  return frozenManifest
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:14:58.484Z
+Question Type: order-sequence
+Function: isDefaultFunctionExport
+Function Size: 624 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isDefaultFunctionExport (TypeScript)\n// Checks if a given node is a default function export.\n\nexport const isDefaultFunctionExport = (\n  node: tsModule.Node\n): node is tsModule.FunctionDeclaration => {\n  if (ts.isFunctionDeclaration(node)) {\n    let hasExportKeyword = false\n    let hasD
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:14:58.830Z
+Question Type: order-sequence
+Function: getSource
+Function Size: 519 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getSource (TypeScript)\n// Fetches the source file from the TypeScript program based on the provided filename.\n\nexport function getSource(fileName: string) {\n  const program = info.languageService.getProgram()\n  if (!program) {\n    log('Failed to get program while running getSource for: 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:14:59.842Z
+Question Type: select-all
+Function: init
+Function Size: 451 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: init (TypeScript)\n// Initializes the Next.js TypeScript plugin with the given options.\n\nexport function init(opts: {\n  ts: TypeScript\n  info: tsModule.server.PluginCreateInfo\n}) {\n  const projectDir = opts.info.project.getCurrentDirectory()\n  ts = opts.ts\n  info = opts.info\n  appDirRegE
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:15:03.006Z
+Question Type: true-false
+Function: getTypeChecker
+Function Size: 473 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getTypeChecker (TypeScript)\n// Retrieves the TypeScript type checker from the language service.\n\nexport function getTypeChecker() {\n  const program = info.languageService.getProgram()\n  if (!program) {\n    log('Failed to get program while while running getTypeChecker.')\n    return\n  }\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:15:05.873Z
+Question Type: function-variant
+Function: init
+Function Size: 451 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: init (TypeScript)\n// Initializes the Next.js TypeScript plugin with the given options.\n\nexport function init(opts: {\n  ts: TypeScript\n  info: tsModule.server.PluginCreateInfo\n}) {\n  const projectDir = opts.info.project.getCurrentDirectory()\n  ts = opts.ts\n  info = opts.info\n  appDirRegE
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:15:06.687Z
+Question Type: select-all
+Function: getTypeChecker
+Function Size: 473 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getTypeChecker (TypeScript)\n// Retrieves the TypeScript type checker from the language service.\n\nexport function getTypeChecker() {\n  const program = info.languageService.getProgram()\n  if (!program) {\n    log('Failed to get program while while running getTypeChecker.')\n    return\n  }\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:15:09.321Z
+Question Type: select-all
+Function: getTypeChecker
+Function Size: 473 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getTypeChecker (TypeScript)\n// Retrieves the TypeScript type checker from the language service.\n\nexport function getTypeChecker() {\n  const program = info.languageService.getProgram()\n  if (!program) {\n    log('Failed to get program while while running getTypeChecker.')\n    return\n  }\n 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760894090440
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 4
+Ended: 2025-10-19T17:15:09.404Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:15:32.790Z
+Question Type: order-sequence
+Function: init
+Function Size: 451 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: init (TypeScript)\n// Initializes the Next.js TypeScript plugin with the given options.\n\nexport function init(opts: {\n  ts: TypeScript\n  info: tsModule.server.PluginCreateInfo\n}) {\n  const projectDir = opts.info.project.getCurrentDirectory()\n  ts = opts.ts\n  info = opts.info\n  appDirRegE
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:15:36.853Z
+Question Type: function-variant
+Function: getSource
+Function Size: 519 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getSource (TypeScript)\n// Fetches the source file from the TypeScript program based on the provided filename.\n\nexport function getSource(fileName: string) {\n  const program = info.languageService.getProgram()\n  if (!program) {\n    log('Failed to get program while running getSource for: 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:15:39.109Z
+Question Type: function-variant
+Function: getSource
+Function Size: 519 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getSource (TypeScript)\n// Fetches the source file from the TypeScript program based on the provided filename.\n\nexport function getSource(fileName: string) {\n  const program = info.languageService.getProgram()\n  if (!program) {\n    log('Failed to get program while running getSource for: 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:15:40.029Z
+Question Type: select-all
+Function: isDefaultFunctionExport
+Function Size: 624 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isDefaultFunctionExport (TypeScript)\n// Checks if a given node is a default function export.\n\nexport const isDefaultFunctionExport = (\n  node: tsModule.Node\n): node is tsModule.FunctionDeclaration => {\n  if (ts.isFunctionDeclaration(node)) {\n    let hasExportKeyword = false\n    let hasD
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:15:45.514Z
+Question Type: function-variant
+Function: isDefaultFunctionExport
+Function Size: 624 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isDefaultFunctionExport (TypeScript)\n// Checks if a given node is a default function export.\n\nexport const isDefaultFunctionExport = (\n  node: tsModule.Node\n): node is tsModule.FunctionDeclaration => {\n  if (ts.isFunctionDeclaration(node)) {\n    let hasExportKeyword = false\n    let hasD
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:15:46.022Z
+Question Type: select-all
+Function: getSource
+Function Size: 519 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getSource (TypeScript)\n// Fetches the source file from the TypeScript program based on the provided filename.\n\nexport function getSource(fileName: string) {\n  const program = info.languageService.getProgram()\n  if (!program) {\n    log('Failed to get program while running getSource for: 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:15:46.771Z
+Question Type: select-all
+Function: init
+Function Size: 451 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: init (TypeScript)\n// Initializes the Next.js TypeScript plugin with the given options.\n\nexport function init(opts: {\n  ts: TypeScript\n  info: tsModule.server.PluginCreateInfo\n}) {\n  const projectDir = opts.info.project.getCurrentDirectory()\n  ts = opts.ts\n  info = opts.info\n  appDirRegE
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:15:47.743Z
+Question Type: function-variant
+Function: getTypeChecker
+Function Size: 473 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getTypeChecker (TypeScript)\n// Retrieves the TypeScript type checker from the language service.\n\nexport function getTypeChecker() {\n  const program = info.languageService.getProgram()\n  if (!program) {\n    log('Failed to get program while while running getTypeChecker.')\n    return\n  }\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:15:48.341Z
+Question Type: multiple-choice
+Function: isDefaultFunctionExport
+Function Size: 624 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isDefaultFunctionExport (TypeScript)\n// Checks if a given node is a default function export.\n\nexport const isDefaultFunctionExport = (\n  node: tsModule.Node\n): node is tsModule.FunctionDeclaration => {\n  if (ts.isFunctionDeclaration(node)) {\n    let hasExportKeyword = false\n    let hasD
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:15:49.795Z
+Question Type: true-false
+Function: init
+Function Size: 451 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: init (TypeScript)\n// Initializes the Next.js TypeScript plugin with the given options.\n\nexport function init(opts: {\n  ts: TypeScript\n  info: tsModule.server.PluginCreateInfo\n}) {\n  const projectDir = opts.info.project.getCurrentDirectory()\n  ts = opts.ts\n  info = opts.info\n  appDirRegE
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760894090440
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 4
+Ended: 2025-10-19T17:15:49.823Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:20:13.360Z
+File: [3 files: This function has to be called initially., load-manifest.external.ts, This keeps autocompletion working for static routes.]
+Functions Extracted: 3
+
+
+Function 1: init
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+export function init(opts: {
+  ts: TypeScript
+  info: tsModule.server.PluginCreateInfo
+}) {
+  const projectDir = opts.info.project.getCurrentDirectory()
+  ts = opts.ts
+  info = opts.info
+  appDirRegExp = new RegExp(
+    '^' + (projectDir + '(/src)?/app').replace(/[\/]/g, '[\/]')
+  )
+
+  log('Initialized Next.js TypeScript plugin: ' + projectDir)
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: loadManifest
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+export function loadManifest<T extends object>(
+  path: string,
+  shouldCache: boolean = true,
+  cache = sharedCache,
+  skipParse = false
+): T {
+  const cached = shouldCache && cache.get(path)
+  if (cached) {
+    return cached as T
+  }
+
+  let manifest: any = readFileSync(/* turbopackIgnore: true */ path, 'utf8')
+
+  if (!skipParse) {
+    manifest = JSON.parse(manifest)
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: generateValidatorFile
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export function generateValidatorFile(
+  routesManifest: RouteTypesManifest
+): string {
+  const generateValidations = (
+    paths: string[],
+    type:
+      | 'AppPageConfig'
+      | 'PagesPageConfig'
+      | 'LayoutConfig'
+      | 'RouteHandlerConfig'
+      | 'ApiRouteConfig',
+    pathToRouteMap?: Map<string, string>
+  ) =>
+    paths
+      .sort()
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:20:19.840Z
+File: [3 files: inject.decorator.ts, app.module.ts, If module's name is well defined]
+Functions Extracted: 2
+
+
+Function 1: Inject
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+export function Inject(
+  token?: InjectionToken | ForwardReference,
+): PropertyDecorator & ParameterDecorator {
+  const injectCallHasArguments = arguments.length > 0;
+
+  return (target: object, key: string | symbol | undefined, index?: number) => {
+    let type = token || Reflect.getMetadata('design:type', target, key!);
+    // Additional logic here
+  };
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: createClientOptions
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+createClientOptions(): Promise<ClientOptions> | ClientOptions {
+    return {
+      transport: this.configService.get('transport'),
+      options: {
+        tlsOptions: { ca: caCert },
+      },
+    };
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:20:21.681Z
+File: [2 files: If we end up here, there was no work store or work unit store present., resolves.]
+Functions Extracted: 6
+
+
+Function 1: makeHangingHeaders
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function makeHangingHeaders(
+  workStore: WorkStore,
+  prerenderStore: PrerenderStoreModern
+): Promise<ReadonlyHeaders> {
+  const cachedHeaders = CachedHeaders.get(prerenderStore);
+  if (cachedHeaders) {
+    return cachedHeaders;
+  }
+
+  const promise = makeHangingPromise<ReadonlyHeaders>(
+    prerenderStore.renderSignal,
+    workStore.route,
+    '`headers()`'
+  );
+  CachedHeaders.set(prerenderStore, promise);
+
+  return promise;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: makeUntrackedHeadersWithDevWarnings
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function makeUntrackedHeadersWithDevWarnings(
+  underlyingHeaders: ReadonlyHeaders,
+  route: string | undefined,
+  requestStore: RequestStore
+): Promise<ReadonlyHeaders> {
+  if (requestStore.asyncApiPromises) {
+    const promise = requestStore.asyncApiPromises.headers;
+    return instrumentHeadersPromiseWithDevWarnings(promise, route);
+  }
+
+  const cachedHeaders = CachedHeaders.get(underlyingHeaders);
+  if (cachedHeaders) {
+    return cachedHeaders;
+  }
+
+  const promise = makeDevtoolsIOAwarePromise(
+    underlyingHeaders,
+    requestStore,
+    RenderStage.Runtime
+  );
+
+  const proxiedPromise = instrumentHeadersPromiseWithDevWarnings(promise, route);
+
+  CachedHeaders.set(underlyingHeaders, proxiedPromise);
+
+  return proxiedPromise;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: instrumentHeadersPromiseWithDevWarnings
+Language: TypeScript
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+function instrumentHeadersPromiseWithDevWarnings(
+  promise: Promise<ReadonlyHeaders>,
+  route: string | undefined
+) {
+  Object.defineProperties(promise, {
+    [Symbol.iterator]: replaceableWarningDescriptorForSymbolIterator(
+      promise,
+      route
+    ),
+    append: replaceableWarningDescriptor(promise, 'append', route),
+    delete: replaceableWarningDescriptor(promise, 'delete', route),
+    get: replaceableWarningDescriptor(promise, 'get', route),
+    has: replaceableWarningDescriptor(promise, 'has', route),
+    set: replaceableWarningDescriptor(promise, 'set', route),
+    getSetCookie: replaceableWarningDescriptor(promise, 'getSetCookie', route),
+    forEach: replaceableWarningDescriptor(promise, 'forEach', route),
+    keys: replaceableWarningDescriptor(promise, 'keys', route),
+    values: replaceableWarningDescriptor(promise, 'values', route),
+    entries: replaceableWarningDescriptor(promise, 'entries', route),
+  });
+  return promise;
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: createRuntimePrerenderParams
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function createRuntimePrerenderParams(
+  underlyingParams: Params,
+  workUnitStore: PrerenderStoreModernRuntime
+): Promise<Params> {
+  return delayUntilRuntimeStage(
+    workUnitStore,
+    makeUntrackedParams(underlyingParams)
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: createRenderParamsInDev
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function createRenderParamsInDev(
+  underlyingParams: Params,
+  devFallbackParams: OpaqueFallbackRouteParams | null | undefined,
+  workStore: WorkStore,
+  requestStore: RequestStore
+): Promise<Params> {
+  let hasFallbackParams = false;
+  if (devFallbackParams) {
+    for (let key in underlyingParams) {
+      if (devFallbackParams.has(key)) {
+        hasFallbackParams = true;
+        break;
+      }
+    }
+  }
+
+  return makeDynamicallyTrackedParamsWithDevWarnings(
+    underlyingParams,
+    hasFallbackParams,
+    workStore,
+    requestStore
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: makeHangingParams
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function makeHangingParams(
+  underlyingParams: Params,
+  workStore: WorkStore,
+  prerenderStore: StaticPrerenderStoreModern
+): Promise<Params> {
+  const cachedParams = CachedParams.get(underlyingParams);
+  if (cachedParams) {
+    return cachedParams;
+  }
+
+  const promise = new Proxy(
+    makeHangingPromise<Params>(
+      prerenderStore.renderSignal,
+      workStore.route,
+      '`params`'
+    ),
+    fallbackParamsProxyHandler
+  );
+
+  CachedParams.set(underlyingParams, promise);
+
+  return promise;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:20:22.256Z
+File: [3 files: nest-express-application.interface.ts, apply-decorators.spec.ts, nest-application-context.spec.ts]
+Functions Extracted: 1
+
+
+Function 1: testHelper
+Language: TypeScript
+Lines: 24
+Full Code:
+--------------------------------------------------------------------------------
+async function testHelper(
+  injectionKey: InjectionToken,
+  scope: Scope,
+  additionalProviders: Array<Provider> = [],
+): Promise<NestApplicationContext> {
+  const nestContainer = new NestContainer();
+  const injector = new Injector();
+  const instanceLoader = new InstanceLoader(
+    nestContainer,
+    injector,
+    new GraphInspector(nestContainer),
+  );
+  const { moduleRef } = (await nestContainer.addModule(class T {}, []))!;
+
+  nestContainer.addProvider(
+    {
+      provide: injectionKey,
+      useClass: A,
+      scope,
+    },
+    moduleRef.token,
+  );
+
+  for (const provider of additionalProviders) {
+    nestContainer.addProvider(provider, moduleRef.token);
+  }
+
+  nestContainer.addInjectable(
+    {
+      provide: injectionKey,
+      useClass: A,
+      scope,
+    },
+    moduleRef.token,
+    'interceptor',
+  );
+
+  const modules = nestContainer.getModules();
+  await instanceLoader.createInstancesOfDependencies(modules);
+
+  const applicationContext = new NestApplicationContext(nestContainer);
+  return applicationContext;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:20:24.379Z
+File: [3 files: nest-express-application.interface.ts, app.module.ts, If module's name is well defined]
+Functions Extracted: 1
+
+
+Function 1: createClientOptions
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+createClientOptions(): Promise<ClientOptions> | ClientOptions {
+    return {
+      transport: this.configService.get('transport'),
+      options: {
+        tlsOptions: { ca: caCert },
+      },
+    };
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:20:24.699Z
+File: [2 files: injectable.decorator.ts, reflector.service.ts]
+Functions Extracted: 3
+
+
+Function 1: Injectable
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+export function Injectable(options?: InjectableOptions): ClassDecorator {
+  return (target: object) => {
+    Reflect.defineMetadata(INJECTABLE_WATERMARK, true, target);
+    Reflect.defineMetadata(SCOPE_OPTIONS_METADATA, options, target);
+  };
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: createDecorator
+Language: TypeScript
+Lines: 13
+Full Code:
+--------------------------------------------------------------------------------
+static createDecorator<TParam, TTransformed = TParam>(
+    options: CreateDecoratorOptions<TParam, TTransformed> = {},
+  ): ReflectableDecorator<TParam, TTransformed> {
+    const metadataKey = options.key ?? uid(21);
+    const decoratorFn =
+      (metadataValue: TParam) =>
+      (target: object | Function, key?: string | symbol, descriptor?: any) => {
+        const value = options.transform
+          ? options.transform(metadataValue)
+          : metadataValue;
+        SetMetadata(metadataKey, value ?? {})(target, key!, descriptor);
+      };
+
+    decoratorFn.KEY = metadataKey;
+    return decoratorFn as ReflectableDecorator<TParam, TTransformed>;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: getAllAndMerge
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+public getAllAndMerge<TResult extends any[] | object = any[], TKey = any>(
+    metadataKeyOrDecorator: TKey,
+    targets: (Type<any> | Function)[],
+  ): TResult {
+    const metadataCollection = this.getAll<any[], TKey>(
+      metadataKeyOrDecorator,
+      targets,
+    ).filter(item => item !== undefined);
+
+    if (isEmpty(metadataCollection)) {
+      return metadataCollection as TResult;
+    }
+    if (metadataCollection.length === 1) {
+      const value = metadataCollection[0];
+      if (isObject(value)) {
+        return value as TResult;
+      }
+      return metadataCollection as TResult;
+    }
+    return metadataCollection.reduce((a, b) => {
+      if (Array.isArray(a)) {
+        return a.concat(b);
+      }
+      if (isObject(a) && isObject(b)) {
+        return {
+          ...a,
+          ...b,
+        };
+      }
+      return [a, b];
+    });
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:20:27.486Z
+File: [2 files: reflector.service.ts, app.module.ts]
+Functions Extracted: 3
+
+
+Function 1: createDecorator
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+static createDecorator<TParam, TTransformed = TParam>(options: CreateDecoratorOptions<TParam, TTransformed> = {}): ReflectableDecorator<TParam, TTransformed> {
+    const metadataKey = options.key ?? uid(21);
+    const decoratorFn =
+      (metadataValue: TParam) =>
+      (target: object | Function, key?: string | symbol, descriptor?: any) => {
+        const value = options.transform
+          ? options.transform(metadataValue)
+          : metadataValue;
+        SetMetadata(metadataKey, value ?? {})(target, key!, descriptor);
+      };
+
+    decoratorFn.KEY = metadataKey;
+    return decoratorFn as ReflectableDecorator<TParam, TTransformed>;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: getAllAndMerge
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+public getAllAndMerge<TResult extends any[] | object = any[], TKey = any>(metadataKeyOrDecorator: TKey, targets: (Type<any> | Function)[]): TResult {
+    const metadataCollection = this.getAll<any[], TKey>(
+      metadataKeyOrDecorator,
+      targets,
+    ).filter(item => item !== undefined);
+
+    if (isEmpty(metadataCollection)) {
+      return metadataCollection as TResult;
+    }
+    if (metadataCollection.length === 1) {
+      const value = metadataCollection[0];
+      if (isObject(value)) {
+        return value as TResult;
+      }
+      return metadataCollection as TResult;
+    }
+    return metadataCollection.reduce((a, b) => {
+      if (Array.isArray(a)) {
+        return a.concat(b);
+      }
+      if (isObject(a) && isObject(b)) {
+        return {
+          ...a,
+          ...b,
+        };
+      }
+      return [a, b];
+    });
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: createClientOptions
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+createClientOptions(): Promise<ClientOptions> | ClientOptions {
+    return {
+      transport: this.configService.get('transport'),
+      options: {},
+    };
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:20:27.834Z
+File: [3 files: on-app-boostrap.spec.ts, apply-decorators.spec.ts, request-mapping.decorator.spec.ts]
+Functions Extracted: 2
+
+
+Function 1: testDecorator1
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function testDecorator1(param: number) {
+    return (target: any) => {
+      target.myParam = param;
+    };
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: testDecorator2
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function testDecorator2(param1: number, param2: number) {
+    return (target: any) => {
+      target.myParam = (target.myParam || 0) + param1;
+      target.myParam2 = param2;
+    };
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:20:27.839Z
+Question Type: true-false
+Function: createClientOptions
+Function Size: 330 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createClientOptions (TypeScript)\n// Creates client options for the microservice using the configuration service.\n\ncreateClientOptions(): Promise<ClientOptions> | ClientOptions {\n    return {\n      transport: this.configService.get('transport'),\n      options: {\n        tlsOptions: { ca:
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:20:31.421Z
+Question Type: select-all
+Function: createClientOptions
+Function Size: 330 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createClientOptions (TypeScript)\n// Creates client options for the microservice using the configuration service.\n\ncreateClientOptions(): Promise<ClientOptions> | ClientOptions {\n    return {\n      transport: this.configService.get('transport'),\n      options: {\n        tlsOptions: { ca:
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:20:31.474Z
+Question Type: select-all
+Function: createClientOptions
+Function Size: 330 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createClientOptions (TypeScript)\n// Creates client options for the microservice using the configuration service.\n\ncreateClientOptions(): Promise<ClientOptions> | ClientOptions {\n    return {\n      transport: this.configService.get('transport'),\n      options: {\n        tlsOptions: { ca:
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:20:34.100Z
+Question Type: select-all
+Function: createClientOptions
+Function Size: 330 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createClientOptions (TypeScript)\n// Creates client options for the microservice using the configuration service.\n\ncreateClientOptions(): Promise<ClientOptions> | ClientOptions {\n    return {\n      transport: this.configService.get('transport'),\n      options: {\n        tlsOptions: { ca:
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:20:34.934Z
+Question Type: function-variant
+Function: createClientOptions
+Function Size: 330 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createClientOptions (TypeScript)\n// Creates client options for the microservice using the configuration service.\n\ncreateClientOptions(): Promise<ClientOptions> | ClientOptions {\n    return {\n      transport: this.configService.get('transport'),\n      options: {\n        tlsOptions: { ca:
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760894090440
+Repository: Unknown
+Total Questions Generated: 4
+Total Chunks Processed: 1
+Ended: 2025-10-19T17:20:34.969Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:20:41.048Z
+Question Type: function-variant
+Function: createClientOptions
+Function Size: 295 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createClientOptions (TypeScript)\n// Creates client options for the microservices client using the configuration service.\n\ncreateClientOptions(): Promise<ClientOptions> | ClientOptions {\n    return {\n      transport: this.configService.get('transport'),\n      options: {},\n    };\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:20:42.204Z
+Question Type: order-sequence
+Function: createClientOptions
+Function Size: 295 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createClientOptions (TypeScript)\n// Creates client options for the microservices client using the configuration service.\n\ncreateClientOptions(): Promise<ClientOptions> | ClientOptions {\n    return {\n      transport: this.configService.get('transport'),\n      options: {},\n    };\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:20:43.922Z
+Question Type: select-all
+Function: getAllAndMerge
+Function Size: 991 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getAllAndMerge (TypeScript)\n// Retrieve metadata for a specified key or decorator for a specified set of targets and merge results.\n\npublic getAllAndMerge<TResult extends any[] | object = any[], TKey = any>(metadataKeyOrDecorator: TKey, targets: (Type<any> | Function)[]): TResult {\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:20:48.209Z
+Question Type: select-all
+Function: createClientOptions
+Function Size: 295 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createClientOptions (TypeScript)\n// Creates client options for the microservices client using the configuration service.\n\ncreateClientOptions(): Promise<ClientOptions> | ClientOptions {\n    return {\n      transport: this.configService.get('transport'),\n      options: {},\n    };\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:20:48.419Z
+Question Type: select-all
+Function: createDecorator
+Function Size: 778 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createDecorator (TypeScript)\n// Creates a decorator that can be used to decorate classes and methods with metadata.\n\nstatic createDecorator<TParam, TTransformed = TParam>(options: CreateDecoratorOptions<TParam, TTransformed> = {}): ReflectableDecorator<TParam, TTransformed> {\n    const 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:20:53.752Z
+Question Type: true-false
+Function: createDecorator
+Function Size: 778 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createDecorator (TypeScript)\n// Creates a decorator that can be used to decorate classes and methods with metadata.\n\nstatic createDecorator<TParam, TTransformed = TParam>(options: CreateDecoratorOptions<TParam, TTransformed> = {}): ReflectableDecorator<TParam, TTransformed> {\n    const 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:20:53.763Z
+Question Type: order-sequence
+Function: createDecorator
+Function Size: 778 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createDecorator (TypeScript)\n// Creates a decorator that can be used to decorate classes and methods with metadata.\n\nstatic createDecorator<TParam, TTransformed = TParam>(options: CreateDecoratorOptions<TParam, TTransformed> = {}): ReflectableDecorator<TParam, TTransformed> {\n    const 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760894090440
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 3
+Ended: 2025-10-19T17:20:53.796Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:20:59.690Z
+Question Type: select-all
+Function: testDecorator2
+Function Size: 333 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: testDecorator2 (TypeScript)\n// A decorator that modifies the target by adding param1 to 'myParam' and setting 'myParam2' with param2.\n\nfunction testDecorator2(param1: number, param2: number) {\n    return (target: any) => {\n      target.myParam = (target.myParam || 0) + param1;\n      tar
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:21:00.172Z
+Question Type: select-all
+Function: testDecorator2
+Function Size: 333 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: testDecorator2 (TypeScript)\n// A decorator that modifies the target by adding param1 to 'myParam' and setting 'myParam2' with param2.\n\nfunction testDecorator2(param1: number, param2: number) {\n    return (target: any) => {\n      target.myParam = (target.myParam || 0) + param1;\n      tar
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:21:01.025Z
+Question Type: order-sequence
+Function: testDecorator2
+Function Size: 333 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: testDecorator2 (TypeScript)\n// A decorator that modifies the target by adding param1 to 'myParam' and setting 'myParam2' with param2.\n\nfunction testDecorator2(param1: number, param2: number) {\n    return (target: any) => {\n      target.myParam = (target.myParam || 0) + param1;\n      tar
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:21:02.237Z
+Question Type: function-variant
+Function: testDecorator2
+Function Size: 333 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: testDecorator2 (TypeScript)\n// A decorator that modifies the target by adding param1 to 'myParam' and setting 'myParam2' with param2.\n\nfunction testDecorator2(param1: number, param2: number) {\n    return (target: any) => {\n      target.myParam = (target.myParam || 0) + param1;\n      tar
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:21:05.164Z
+Question Type: true-false
+Function: testDecorator1
+Function Size: 242 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: testDecorator1 (TypeScript)\n// A decorator that sets a property 'myParam' on the target with the provided parameter.\n\nfunction testDecorator1(param: number) {\n    return (target: any) => {\n      target.myParam = param;\n    };\n  }
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760894090440
+Repository: Unknown
+Total Questions Generated: 5
+Total Chunks Processed: 2
+Ended: 2025-10-19T17:21:05.198Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:21:35.457Z
+File: pallets-flask-88a65bb/src/flask/sessions.py
+Functions Extracted: 3
+
+
+Function 1: __init__
+Language: Python
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+def __init__(self, initial: c.Mapping[str, t.Any] | c.Iterable[tuple[str, t.Any]] | None = None) -> None:
+        def on_update(self: te.Self) -> None:
+            self.modified = True
+            self.accessed = True
+
+        super().__init__(initial, on_update)
+--------------------------------------------------------------------------------
+
+
+Function 2: open_session
+Language: Python
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+def open_session(self, app: Flask, request: Request) -> SecureCookieSession | None:
+        s = self.get_signing_serializer(app)
+        if s is None:
+            return None
+        val = request.cookies.get(self.get_cookie_name(app))
+        if not val:
+            return self.session_class()
+        max_age = int(app.permanent_session_lifetime.total_seconds())
+        try:
+            data = s.loads(val, max_age=max_age)
+            return self.session_class(data)
+        except BadSignature:
+            return self.session_class()
+--------------------------------------------------------------------------------
+
+
+Function 3: save_session
+Language: Python
+Lines: 25
+Full Code:
+--------------------------------------------------------------------------------
+def save_session(self, app: Flask, session: SessionMixin, response: Response) -> None:
+        name = self.get_cookie_name(app)
+        domain = self.get_cookie_domain(app)
+        path = self.get_cookie_path(app)
+        secure = self.get_cookie_secure(app)
+        partitioned = self.get_cookie_partitioned(app)
+        samesite = self.get_cookie_samesite(app)
+        httponly = self.get_cookie_httponly(app)
+
+        if session.accessed:
+            response.vary.add("Cookie")
+
+        if not session:
+            if session.modified:
+                response.delete_cookie(
+                    name,
+                    domain=domain,
+                    path=path,
+                    secure=secure,
+                    partitioned=partitioned,
+                    samesite=samesite,
+                    httponly=httponly,
+                )
+                response.vary.add("Cookie")
+
+            return
+
+        if not self.should_set_cookie(app, session):
+            return
+
+        expires = self.get_expiration_time(app, session)
+        val = self.get_signing_serializer(app).dumps(dict(session))
+        response.set_cookie(
+            name,
+            val,
+            expires=expires,
+            httponly=httponly,
+            domain=domain,
+            path=path,
+            secure=secure,
+            partitioned=partitioned,
+            samesite=samesite,
+        )
+        response.vary.add("Cookie")
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:21:39.226Z
+File: pallets-flask-88a65bb/src/flask/config.py
+Functions Extracted: 7
+
+
+Function 1: from_envvar
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+def from_envvar(self, variable_name: str, silent: bool = False) -> bool:
+        rv = os.environ.get(variable_name)
+        if not rv:
+            if silent:
+                return False
+            raise RuntimeError(
+                f"The environment variable {variable_name!r} is not set"
+                " and as such configuration could not be loaded. Set"
+                " this variable and make it point to a configuration"
+                " file"
+            )
+        return self.from_pyfile(rv, silent=silent)
+--------------------------------------------------------------------------------
+
+
+Function 2: from_prefixed_env
+Language: Python
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+def from_prefixed_env(self, prefix: str = "FLASK", *, loads: t.Callable[[str], t.Any] = json.loads) -> bool:
+        prefix = f"{prefix}_"
+
+        for key in sorted(os.environ):
+            if not key.startswith(prefix):
+                continue
+
+            value = os.environ[key]
+            key = key.removeprefix(prefix)
+
+            try:
+                value = loads(value)
+            except Exception:
+                pass
+
+            if "__" not in key:
+                self[key] = value
+                continue
+
+            current = self
+            *parts, tail = key.split("__")
+
+            for part in parts:
+                if part not in current:
+                    current[part] = {}
+
+                current = current[part]
+
+            current[tail] = value
+
+        return True
+--------------------------------------------------------------------------------
+
+
+Function 3: from_pyfile
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+def from_pyfile(self, filename: str | os.PathLike[str], silent: bool = False) -> bool:
+        filename = os.path.join(self.root_path, filename)
+        d = types.ModuleType("config")
+        d.__file__ = filename
+        try:
+            with open(filename, mode="rb") as config_file:
+                exec(compile(config_file.read(), filename, "exec"), d.__dict__)
+        except OSError as e:
+            if silent and e.errno in (errno.ENOENT, errno.EISDIR, errno.ENOTDIR):
+                return False
+            e.strerror = f"Unable to load configuration file ({e.strerror})"
+            raise
+        self.from_object(d)
+        return True
+--------------------------------------------------------------------------------
+
+
+Function 4: from_object
+Language: Python
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+def from_object(self, obj: object | str) -> None:
+        if isinstance(obj, str):
+            obj = import_string(obj)
+        for key in dir(obj):
+            if key.isupper():
+                self[key] = getattr(obj, key)
+--------------------------------------------------------------------------------
+
+
+Function 5: from_file
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+def from_file(self, filename: str | os.PathLike[str], load: t.Callable[[t.IO[t.Any]], t.Mapping[str, t.Any]], silent: bool = False, text: bool = True) -> bool:
+        filename = os.path.join(self.root_path, filename)
+
+        try:
+            with open(filename, "r" if text else "rb") as f:
+                obj = load(f)
+        except OSError as e:
+            if silent and e.errno in (errno.ENOENT, errno.EISDIR):
+                return False
+
+            e.strerror = f"Unable to load configuration file ({e.strerror})"
+            raise
+
+        return self.from_mapping(obj)
+--------------------------------------------------------------------------------
+
+
+Function 6: from_mapping
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+def from_mapping(self, mapping: t.Mapping[str, t.Any] | None = None, **kwargs: t.Any) -> bool:
+        mappings: dict[str, t.Any] = {}
+        if mapping is not None:
+            mappings.update(mapping)
+        mappings.update(kwargs)
+        for key, value in mappings.items():
+            if key.isupper():
+                self[key] = value
+        return True
+--------------------------------------------------------------------------------
+
+
+Function 7: get_namespace
+Language: Python
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+def get_namespace(self, namespace: str, lowercase: bool = True, trim_namespace: bool = True) -> dict[str, t.Any]:
+        rv = {}
+        for k, v in self.items():
+            if not k.startswith(namespace):
+                continue
+            if trim_namespace:
+                key = k[len(namespace):]
+            else:
+                key = k
+            if lowercase:
+                key = key.lower()
+            rv[key] = v
+        return rv
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:21:40.488Z
+File: pallets-flask-88a65bb/tests/test_basic.py
+Functions Extracted: 5
+
+
+Function 1: test_options_work
+Language: Python
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+def test_options_work(app, client):
+    @app.route("/", methods=["GET", "POST"])
+    def index():
+        return "Hello World"
+
+    rv = client.open("/", method="OPTIONS")
+    assert sorted(rv.allow) == ["GET", "HEAD", "OPTIONS", "POST"]
+    assert rv.data == b""
+--------------------------------------------------------------------------------
+
+
+Function 2: test_method_route
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+@pytest.mark.parametrize("method", ["get", "post", "put", "delete", "patch"])
+def test_method_route(app, client, method):
+    method_route = getattr(app, method)
+    client_method = getattr(client, method)
+
+    @method_route("/")
+    def hello():
+        return "Hello"
+
+    assert client_method("/").data == b"Hello"
+--------------------------------------------------------------------------------
+
+
+Function 3: test_provide_automatic_options_kwarg
+Language: Python
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+def test_provide_automatic_options_kwarg(app, client):
+    def index():
+        return flask.request.method
+
+    def more():
+        return flask.request.method
+
+    app.add_url_rule("/", view_func=index, provide_automatic_options=False)
+    app.add_url_rule(
+        "/more",
+        view_func=more,
+        methods=["GET", "POST"],
+        provide_automatic_options=False,
+    )
+    assert client.get("/").data == b"GET"
+
+    rv = client.post("/")
+    assert rv.status_code == 405
+    assert sorted(rv.allow) == ["GET", "HEAD"]
+
+    rv = client.open("/", method="OPTIONS")
+    assert rv.status_code == 405
+
+    rv = client.head("/")
+    assert rv.status_code == 200
+    assert not rv.data  # head truncates
+    assert client.post("/more").data == b"POST"
+    assert client.get("/more").data == b"GET"
+
+    rv = client.delete("/more")
+    assert rv.status_code == 405
+    assert sorted(rv.allow) == ["GET", "HEAD", "POST"]
+
+    rv = client.open("/more", method="OPTIONS")
+    assert rv.status_code == 405
+--------------------------------------------------------------------------------
+
+
+Function 4: test_session
+Language: Python
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+def test_session(app, client):
+    @app.route("/set", methods=["POST"])
+    def set():
+        assert not flask.session.accessed
+        assert not flask.session.modified
+        flask.session["value"] = flask.request.form["value"]
+        assert flask.session.accessed
+        assert flask.session.modified
+        return "value set"
+
+    @app.route("/get")
+    def get():
+        assert not flask.session.accessed
+        assert not flask.session.modified
+        v = flask.session.get("value", "None")
+        assert flask.session.accessed
+        assert not flask.session.modified
+        return v
+
+    assert client.post("/set", data={"value": "42"}).data == b"value set"
+    assert client.get("/get").data == b"42"
+--------------------------------------------------------------------------------
+
+
+Function 5: test_error_handling
+Language: Python
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+def test_error_handling(app, client):
+    app.testing = False
+
+    @app.errorhandler(404)
+    def not_found(e):
+        return "not found", 404
+
+    @app.errorhandler(500)
+    def internal_server_error(e):
+        return "internal server error", 500
+
+    @app.route("/")
+    def index():
+        flask.abort(404)
+
+    @app.route("/error")
+    def error():
+        raise ZeroDivisionError
+
+    @app.route("/forbidden")
+    def error2():
+        flask.abort(403)
+
+    rv = client.get("/")
+    assert rv.status_code == 404
+    assert rv.data == b"not found"
+    rv = client.get("/error")
+    assert rv.status_code == 500
+    assert b"internal server error" == rv.data
+    rv = client.get("/forbidden")
+    assert rv.status_code == 403
+    assert b"forbidden" == rv.data
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:21:45.106Z
+Question Type: multiple-choice
+Function: save_session
+Function Size: 1548 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: save_session (Python)\n// Saves the session data to a cookie, handling various configurations and conditions.\n\ndef save_session(self, app: Flask, session: SessionMixin, response: Response) -> None:\n        name = self.get_cookie_name(app)\n        domain = self.get_cookie_domain(app)\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:21:49.199Z
+Question Type: function-variant
+Function: open_session
+Function Size: 647 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: open_session (Python)\n// Opens a session by retrieving and deserializing the session cookie.\n\ndef open_session(self, app: Flask, request: Request) -> SecureCookieSession | None:\n        s = self.get_signing_serializer(app)\n        if s is None:\n            return None\n        val = requ
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:21:49.532Z
+Question Type: function-variant
+Function: __init__
+Function Size: 366 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: __init__ (Python)\n// Initializes the SecureCookieSession, setting up an update callback.\n\ndef __init__(self, initial: c.Mapping[str, t.Any] | c.Iterable[tuple[str, t.Any]] | None = None) -> None:\n        def on_update(self: te.Self) -> None:\n            self.modified = True\n            
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:21:50.829Z
+Question Type: function-variant
+Function: save_session
+Function Size: 1548 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: save_session (Python)\n// Saves the session data to a cookie, handling various configurations and conditions.\n\ndef save_session(self, app: Flask, session: SessionMixin, response: Response) -> None:\n        name = self.get_cookie_name(app)\n        domain = self.get_cookie_domain(app)\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:21:52.828Z
+Question Type: select-all
+Function: open_session
+Function Size: 647 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: open_session (Python)\n// Opens a session by retrieving and deserializing the session cookie.\n\ndef open_session(self, app: Flask, request: Request) -> SecureCookieSession | None:\n        s = self.get_signing_serializer(app)\n        if s is None:\n            return None\n        val = requ
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:21:53.870Z
+Question Type: true-false
+Function: __init__
+Function Size: 366 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: __init__ (Python)\n// Initializes the SecureCookieSession, setting up an update callback.\n\ndef __init__(self, initial: c.Mapping[str, t.Any] | c.Iterable[tuple[str, t.Any]] | None = None) -> None:\n        def on_update(self: te.Self) -> None:\n            self.modified = True\n            
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760894090440
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 3
+Ended: 2025-10-19T17:21:53.909Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:21:59.173Z
+File: pallets-flask-88a65bb/src/flask/app.py
+Functions Extracted: 4
+
+
+Function 1: __init__
+Language: Python
+Lines: 42
+Full Code:
+--------------------------------------------------------------------------------
+def __init__(
+        self,
+        import_name: str,
+        static_url_path: str | None = None,
+        static_folder: str | os.PathLike[str] | None = "static",
+        static_host: str | None = None,
+        host_matching: bool = False,
+        subdomain_matching: bool = False,
+        template_folder: str | os.PathLike[str] | None = "templates",
+        instance_path: str | None = None,
+        instance_relative_config: bool = False,
+        root_path: str | None = None,
+    ):
+        super().__init__(
+            import_name=import_name,
+            static_url_path=static_url_path,
+            static_folder=static_folder,
+            static_host=static_host,
+            host_matching=host_matching,
+            subdomain_matching=subdomain_matching,
+            template_folder=template_folder,
+            instance_path=instance_path,
+            instance_relative_config=instance_relative_config,
+            root_path=root_path,
+        )
+
+        self.cli = cli.AppGroup()
+        self.cli.name = self.name
+
+        if self.has_static_folder:
+            assert bool(static_host) == host_matching, (
+                "Invalid static_host/host_matching combination"
+            )
+            self_ref = weakref.ref(self)
+            self.add_url_rule(
+                f"{self.static_url_path}/<path:filename>",
+                endpoint="static",
+                host=static_host,
+                view_func=lambda **kw: self_ref().send_static_file(**kw),  # type: ignore # noqa: B950
+            )
+--------------------------------------------------------------------------------
+
+
+Function 2: full_dispatch_request
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+def full_dispatch_request(self) -> Response:
+        self._got_first_request = True
+
+        try:
+            request_started.send(self, _async_wrapper=self.ensure_sync)
+            rv = self.preprocess_request()
+            if rv is None:
+                rv = self.dispatch_request()
+        except Exception as e:
+            rv = self.handle_user_exception(e)
+        return self.finalize_request(rv)
+--------------------------------------------------------------------------------
+
+
+Function 3: make_response
+Language: Python
+Lines: 42
+Full Code:
+--------------------------------------------------------------------------------
+def make_response(self, rv: ft.ResponseReturnValue) -> Response:
+        status: int | None = None
+        headers: HeadersValue | None = None
+
+        if isinstance(rv, tuple):
+            len_rv = len(rv)
+
+            if len_rv == 3:
+                rv, status, headers = rv  # type: ignore[misc]
+            elif len_rv == 2:
+                if isinstance(rv[1], (Headers, dict, tuple, list)):
+                    rv, headers = rv  # pyright: ignore
+                else:
+                    rv, status = rv  # type: ignore[assignment,misc]
+            else:
+                raise TypeError(
+                    "The view function did not return a valid response tuple."
+                )
+
+        if rv is None:
+            raise TypeError(
+                f"The view function for {request.endpoint!r} did not"
+                " return a valid response."
+            )
+
+        if not isinstance(rv, self.response_class):
+            if isinstance(rv, (str, bytes, bytearray)) or isinstance(rv, cabc.Iterator):
+                rv = self.response_class(
+                    rv,
+                    status=status,
+                    headers=headers,
+                )
+                status = headers = None
+            elif isinstance(rv, (dict, list)):
+                rv = self.json.response(rv)
+            elif isinstance(rv, BaseResponse) or callable(rv):
+                try:
+                    rv = self.response_class.force_type(
+                        rv,
+                        request.environ,
+                    )
+                except TypeError as e:
+                    raise TypeError(
+                        f"{e}
+The view function did not return a valid"
+                    ) from None
+            else:
+                raise TypeError(
+                    "The view function did not return a valid"
+                )
+
+        rv = t.cast(Response, rv)
+        if status is not None:
+            if isinstance(status, (str, bytes, bytearray)):
+                rv.status = status
+            else:
+                rv.status_code = status
+
+        if headers:
+            rv.headers.update(headers)
+
+        return rv
+--------------------------------------------------------------------------------
+
+
+Function 4: handle_exception
+Language: Python
+Lines: 29
+Full Code:
+--------------------------------------------------------------------------------
+def handle_exception(self, e: Exception) -> Response:
+        exc_info = sys.exc_info()
+        got_request_exception.send(self, _async_wrapper=self.ensure_sync, exception=e)
+        propagate = self.config["PROPAGATE_EXCEPTIONS"]
+
+        if propagate is None:
+            propagate = self.testing or self.debug
+
+        if propagate:
+            if exc_info[1] is e:
+                raise
+            raise e
+
+        self.log_exception(exc_info)
+        server_error: InternalServerError | ft.ResponseReturnValue
+        server_error = InternalServerError(original_exception=e)
+        handler = self._find_error_handler(server_error, request.blueprints)
+
+        if handler is not None:
+            server_error = self.ensure_sync(handler)(server_error)
+
+        return self.finalize_request(server_error, from_error_handler=True)
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:22:07.904Z
+File: pallets-flask-88a65bb/src/flask/sansio/app.py
+Functions Extracted: 4
+
+
+Function 1: __init__
+Language: Python
+Lines: 46
+Full Code:
+--------------------------------------------------------------------------------
+def __init__(
+        self,
+        import_name: str,
+        static_url_path: str | None = None,
+        static_folder: str | os.PathLike[str] | None = "static",
+        static_host: str | None = None,
+        host_matching: bool = False,
+        subdomain_matching: bool = False,
+        template_folder: str | os.PathLike[str] | None = "templates",
+        instance_path: str | None = None,
+        instance_relative_config: bool = False,
+        root_path: str | None = None,
+    ) -> None:
+        super().__init__(
+            import_name=import_name,
+            static_folder=static_folder,
+            static_url_path=static_url_path,
+            template_folder=template_folder,
+            root_path=root_path,
+        )
+
+        if instance_path is None:
+            instance_path = self.auto_find_instance_path()
+        elif not os.path.isabs(instance_path):
+            raise ValueError(
+                "If an instance path is provided it must be absolute."
+                " A relative path was given instead."
+            )
+
+        self.instance_path = instance_path
+
+        self.config = self.make_config(instance_relative_config)
+
+        self.aborter = self.make_aborter()
+
+        self.json: JSONProvider = self.json_provider_class(self)
+
+        self.url_build_error_handlers: list[
+            t.Callable[[Exception, str, dict[str, t.Any]], str]
+        ] = []
+
+        self.teardown_appcontext_funcs: list[ft.TeardownCallable] = []
+
+        self.shell_context_processors: list[ft.ShellContextProcessorCallable] = []
+
+        self.blueprints: dict[str, Blueprint] = {}
+
+        self.extensions: dict[str, t.Any] = {}
+
+        self.url_map = self.url_map_class(host_matching=host_matching)
+
+        self.subdomain_matching = subdomain_matching
+
+        self._got_first_request = False
+--------------------------------------------------------------------------------
+
+
+Function 2: make_config
+Language: Python
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+def make_config(self, instance_relative: bool = False) -> Config:
+        root_path = self.root_path
+        if instance_relative:
+            root_path = self.instance_path
+        defaults = dict(self.default_config)
+        defaults["DEBUG"] = get_debug_flag()
+        return self.config_class(root_path, defaults)
+--------------------------------------------------------------------------------
+
+
+Function 3: redirect
+Language: Python
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+def redirect(self, location: str, code: int = 302) -> BaseResponse:
+        return _wz_redirect(
+            location,
+            code=code,
+            Response=self.response_class,  # type: ignore[arg-type]
+        )
+--------------------------------------------------------------------------------
+
+
+Function 4: handle_url_build_error
+Language: Python
+Lines: 13
+Full Code:
+--------------------------------------------------------------------------------
+def handle_url_build_error(
+        self, error: BuildError, endpoint: str, values: dict[str, t.Any]
+    ) -> str:
+        for handler in self.url_build_error_handlers:
+            try:
+                rv = handler(error, endpoint, values)
+            except BuildError as e:
+                error = e
+            else:
+                if rv is not None:
+                    return rv
+
+        if error is sys.exc_info()[1]:
+            raise
+
+        raise error
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:22:08.594Z
+File: pallets-flask-88a65bb/src/flask/config.py
+Functions Extracted: 7
+
+
+Function 1: from_envvar
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+def from_envvar(self, variable_name: str, silent: bool = False) -> bool:
+        rv = os.environ.get(variable_name)
+        if not rv:
+            if silent:
+                return False
+            raise RuntimeError(
+                f"The environment variable {variable_name!r} is not set"
+                " and as such configuration could not be loaded. Set"
+                " this variable and make it point to a configuration"
+                " file"
+            )
+        return self.from_pyfile(rv, silent=silent)
+--------------------------------------------------------------------------------
+
+
+Function 2: from_prefixed_env
+Language: Python
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+def from_prefixed_env(self, prefix: str = "FLASK", *, loads: t.Callable[[str], t.Any] = json.loads) -> bool:
+        prefix = f"{prefix}_"
+
+        for key in sorted(os.environ):
+            if not key.startswith(prefix):
+                continue
+
+            value = os.environ[key]
+            key = key.removeprefix(prefix)
+
+            try:
+                value = loads(value)
+            except Exception:
+                pass
+
+            if "__" not in key:
+                self[key] = value
+                continue
+
+            current = self
+            *parts, tail = key.split("__")
+
+            for part in parts:
+                if part not in current:
+                    current[part] = {}
+
+                current = current[part]
+
+            current[tail] = value
+
+        return True
+--------------------------------------------------------------------------------
+
+
+Function 3: from_pyfile
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+def from_pyfile(self, filename: str | os.PathLike[str], silent: bool = False) -> bool:
+        filename = os.path.join(self.root_path, filename)
+        d = types.ModuleType("config")
+        d.__file__ = filename
+        try:
+            with open(filename, mode="rb") as config_file:
+                exec(compile(config_file.read(), filename, "exec"), d.__dict__)
+        except OSError as e:
+            if silent and e.errno in (errno.ENOENT, errno.EISDIR, errno.ENOTDIR):
+                return False
+            e.strerror = f"Unable to load configuration file ({e.strerror})"
+            raise
+        self.from_object(d)
+        return True
+--------------------------------------------------------------------------------
+
+
+Function 4: from_object
+Language: Python
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+def from_object(self, obj: object | str) -> None:
+        if isinstance(obj, str):
+            obj = import_string(obj)
+        for key in dir(obj):
+            if key.isupper():
+                self[key] = getattr(obj, key)
+--------------------------------------------------------------------------------
+
+
+Function 5: from_file
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+def from_file(self, filename: str | os.PathLike[str], load: t.Callable[[t.IO[t.Any]], t.Mapping[str, t.Any]], silent: bool = False, text: bool = True) -> bool:
+        filename = os.path.join(self.root_path, filename)
+
+        try:
+            with open(filename, "r" if text else "rb") as f:
+                obj = load(f)
+        except OSError as e:
+            if silent and e.errno in (errno.ENOENT, errno.EISDIR):
+                return False
+
+            e.strerror = f"Unable to load configuration file ({e.strerror})"
+            raise
+
+        return self.from_mapping(obj)
+--------------------------------------------------------------------------------
+
+
+Function 6: from_mapping
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+def from_mapping(self, mapping: t.Mapping[str, t.Any] | None = None, **kwargs: t.Any) -> bool:
+        mappings: dict[str, t.Any] = {}
+        if mapping is not None:
+            mappings.update(mapping)
+        mappings.update(kwargs)
+        for key, value in mappings.items():
+            if key.isupper():
+                self[key] = value
+        return True
+--------------------------------------------------------------------------------
+
+
+Function 7: get_namespace
+Language: Python
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+def get_namespace(self, namespace: str, lowercase: bool = True, trim_namespace: bool = True) -> dict[str, t.Any]:
+        rv = {}
+        for k, v in self.items():
+            if not k.startswith(namespace):
+                continue
+            if trim_namespace:
+                key = k[len(namespace) :]
+            else:
+                key = k
+            if lowercase:
+                key = key.lower()
+            rv[key] = v
+        return rv
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:22:09.346Z
+File: pallets-flask-88a65bb/src/flask/sansio/scaffold.py
+Functions Extracted: 4
+
+
+Function 1: setupmethod
+Language: Python
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+def setupmethod(f: F) -> F:
+    f_name = f.__name__
+
+    def wrapper_func(self: Scaffold, *args: t.Any, **kwargs: t.Any) -> t.Any:
+        self._check_setup_finished(f_name)
+        return f(self, *args, **kwargs)
+
+    return t.cast(F, update_wrapper(wrapper_func, f))
+--------------------------------------------------------------------------------
+
+
+Function 2: __init__
+Language: Python
+Lines: 17
+Full Code:
+--------------------------------------------------------------------------------
+def __init__(self, import_name: str, static_folder: str | os.PathLike[str] | None = None, static_url_path: str | None = None, template_folder: str | os.PathLike[str] | None = None, root_path: str | None = None):
+        self.import_name = import_name
+        self.static_folder = static_folder
+        self.static_url_path = static_url_path
+        self.template_folder = template_folder
+        if root_path is None:
+            root_path = get_root_path(self.import_name)
+        self.root_path = root_path
+        self.view_functions: dict[str, ft.RouteCallable] = {}
+        self.error_handler_spec: dict[ft.AppOrBlueprintKey, dict[int | None, dict[type[Exception], ft.ErrorHandlerCallable]]] = defaultdict(lambda: defaultdict(dict))
+        self.before_request_funcs: dict[ft.AppOrBlueprintKey, list[ft.BeforeRequestCallable]] = defaultdict(list)
+        self.after_request_funcs: dict[ft.AppOrBlueprintKey, list[ft.AfterRequestCallable[t.Any]]] = defaultdict(list)
+        self.teardown_request_funcs: dict[ft.AppOrBlueprintKey, list[ft.TeardownCallable]] = defaultdict(list)
+        self.template_context_processors: dict[ft.AppOrBlueprintKey, list[ft.TemplateContextProcessorCallable]] = defaultdict(list, {None: [_default_template_ctx_processor]})
+        self.url_value_preprocessors: dict[ft.AppOrBlueprintKey, list[ft.URLValuePreprocessorCallable]] = defaultdict(list)
+        self.url_default_functions: dict[ft.AppOrBlueprintKey, list[ft.URLDefaultCallable]] = defaultdict(list)
+--------------------------------------------------------------------------------
+
+
+Function 3: route
+Language: Python
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+def route(self, rule: str, **options: t.Any) -> t.Callable[[T_route], T_route]:
+        def decorator(f: T_route) -> T_route:
+            endpoint = options.pop("endpoint", None)
+            self.add_url_rule(rule, endpoint, f, **options)
+            return f
+
+        return decorator
+--------------------------------------------------------------------------------
+
+
+Function 4: errorhandler
+Language: Python
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+def errorhandler(self, code_or_exception: type[Exception] | int) -> t.Callable[[T_error_handler], T_error_handler]:
+        def decorator(f: T_error_handler) -> T_error_handler:
+            self.register_error_handler(code_or_exception, f)
+            return f
+
+        return decorator
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T17:22:11.810Z
+File: pallets-flask-88a65bb/tests/test_helpers.py
+Functions Extracted: 6
+
+
+Function 1: test_send_file
+Language: Python
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+def test_send_file(self, app, req_ctx):
+        rv = flask.send_file("static/index.html")
+        assert rv.direct_passthrough
+        assert rv.mimetype == "text/html"
+
+        with app.open_resource("static/index.html") as f:
+            rv.direct_passthrough = False
+            assert rv.data == f.read()
+
+        rv.close()
+--------------------------------------------------------------------------------
+
+
+Function 2: test_static_file
+Language: Python
+Lines: 17
+Full Code:
+--------------------------------------------------------------------------------
+def test_static_file(self, app, req_ctx):
+        rv = app.send_static_file("index.html")
+        assert rv.cache_control.max_age is None
+        rv.close()
+
+        rv = flask.send_file("static/index.html")
+        assert rv.cache_control.max_age is None
+        rv.close()
+
+        app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 3600
+
+        rv = app.send_static_file("index.html")
+        assert rv.cache_control.max_age == 3600
+        rv.close()
+
+        rv = flask.send_file("static/index.html")
+        assert rv.cache_control.max_age == 3600
+        rv.close()
+
+        rv = app.send_static_file(FakePath("index.html"))
+        assert rv.cache_control.max_age == 3600
+        rv.close()
+--------------------------------------------------------------------------------
+
+
+Function 3: test_send_from_directory
+Language: Python
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+def test_send_from_directory(self, app, req_ctx):
+        app.root_path = os.path.join(
+            os.path.dirname(__file__), "test_apps", "subdomaintestmodule"
+        )
+        rv = flask.send_from_directory("static", "hello.txt")
+        rv.direct_passthrough = False
+        assert rv.data.strip() == b"Hello Subdomain"
+        rv.close()
+--------------------------------------------------------------------------------
+
+
+Function 4: test_streaming_with_context
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+def test_streaming_with_context(self, app, client):
+        @app.route("/")
+        def index():
+            def generate():
+                yield "Hello "
+                yield flask.request.args["name"]
+                yield "!"
+
+            return flask.Response(flask.stream_with_context(generate()))
+
+        rv = client.get("/?name=World")
+        assert rv.data == b"Hello World!"
+--------------------------------------------------------------------------------
+
+
+Function 5: test_streaming_with_context_and_custom_close
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+def test_streaming_with_context_and_custom_close(self, app, client):
+        called = []
+
+        class Wrapper:
+            def __init__(self, gen):
+                self._gen = gen
+
+            def __iter__(self):
+                return self
+
+            def close(self):
+                called.append(42)
+
+            def __next__(self):
+                return next(self._gen)
+
+            next = __next__
+
+        @app.route("/")
+        def index():
+            def generate():
+                yield "Hello "
+                yield flask.request.args["name"]
+                yield "!"
+
+            return flask.Response(flask.stream_with_context(Wrapper(generate())))
+
+        rv = client.get("/?name=World")
+        assert rv.data == b"Hello World!"
+        assert called == [42]
+--------------------------------------------------------------------------------
+
+
+Function 6: test_make_response
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+def test_make_response(self):
+        app = flask.Flask(__name__)
+        with app.test_request_context():
+            rv = flask.helpers.make_response()
+            assert rv.status_code == 200
+            assert rv.mimetype == "text/html"
+
+            rv = flask.helpers.make_response("Hello")
+            assert rv.status_code == 200
+            assert rv.data == b"Hello"
+            assert rv.mimetype == "text/html"
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:22:13.691Z
+Question Type: select-all
+Function: from_mapping
+Function Size: 469 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from_mapping (Python)\n// Updates the config like update ignoring items with non-upper keys.\n\ndef from_mapping(self, mapping: t.Mapping[str, t.Any] | None = None, **kwargs: t.Any) -> bool:\n        mappings: dict[str, t.Any] = {}\n        if mapping is not None:\n            mappings.update
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:22:15.845Z
+Question Type: select-all
+Function: from_file
+Function Size: 710 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from_file (Python)\n// Update the values in the config from a file that is loaded using a specified load function.\n\ndef from_file(self, filename: str | os.PathLike[str], load: t.Callable[[t.IO[t.Any]], t.Mapping[str, t.Any]], silent: bool = False, text: bool = True) -> bool:\n        file
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:22:17.030Z
+Question Type: select-all
+Function: from_envvar
+Function Size: 643 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from_envvar (Python)\n// Loads a configuration from an environment variable pointing to a configuration file.\n\ndef from_envvar(self, variable_name: str, silent: bool = False) -> bool:\n        rv = os.environ.get(variable_name)\n        if not rv:\n            if silent:\n                ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:22:17.716Z
+Question Type: multiple-choice
+Function: from_mapping
+Function Size: 469 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from_mapping (Python)\n// Updates the config like update ignoring items with non-upper keys.\n\ndef from_mapping(self, mapping: t.Mapping[str, t.Any] | None = None, **kwargs: t.Any) -> bool:\n        mappings: dict[str, t.Any] = {}\n        if mapping is not None:\n            mappings.update
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:22:18.872Z
+Question Type: true-false
+Function: from_envvar
+Function Size: 643 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from_envvar (Python)\n// Loads a configuration from an environment variable pointing to a configuration file.\n\ndef from_envvar(self, variable_name: str, silent: bool = False) -> bool:\n        rv = os.environ.get(variable_name)\n        if not rv:\n            if silent:\n                ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:22:24.664Z
+Question Type: function-variant
+Function: from_pyfile
+Function Size: 739 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from_pyfile (Python)\n// Updates the values in the config from a Python file.\n\ndef from_pyfile(self, filename: str | os.PathLike[str], silent: bool = False) -> bool:\n        filename = os.path.join(self.root_path, filename)\n        d = types.ModuleType("config")\n        d.__file__ = file
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:22:27.477Z
+Question Type: function-variant
+Function: from_object
+Function Size: 339 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from_object (Python)\n// Updates the values from the given object, loading only uppercase attributes.\n\ndef from_object(self, obj: object | str) -> None:\n        if isinstance(obj, str):\n            obj = import_string(obj)\n        for key in dir(obj):\n            if key.isupper():\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:22:28.361Z
+Question Type: order-sequence
+Function: from_mapping
+Function Size: 469 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: from_mapping (Python)\n// Updates the config like update ignoring items with non-upper keys.\n\ndef from_mapping(self, mapping: t.Mapping[str, t.Any] | None = None, **kwargs: t.Any) -> bool:\n        mappings: dict[str, t.Any] = {}\n        if mapping is not None:\n            mappings.update
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T17:22:29.130Z
+Question Type: function-variant
+Function: get_namespace
+Function Size: 591 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: get_namespace (Python)\n// Returns a dictionary containing a subset of configuration options that match the specified namespace.\n\ndef get_namespace(self, namespace: str, lowercase: bool = True, trim_namespace: bool = True) -> dict[str, t.Any]:\n        rv = {}\n        for k, v in self.ite
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760894090440
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 7
+Ended: 2025-10-19T17:22:29.156Z
+================================================================================
+
