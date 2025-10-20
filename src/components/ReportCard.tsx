@@ -82,7 +82,7 @@ export default function ReportCard({
   useEffect(() => {
     const generateSW = async () => {
       try {
-        const strengthsWeaknesses = await generateStrengthsWeaknesses(analysis, results, failedQuestions);
+        const strengthsWeaknesses = await generateStrengthsWeaknesses(analysis, results, failedQuestions, totalStreamedQuestions);
         setSw(strengthsWeaknesses);
       } catch (error) {
         console.error('Error generating strengths and weaknesses:', error);
@@ -90,14 +90,7 @@ export default function ReportCard({
       }
     };
     generateSW();
-  }, [analysis, results, failedQuestions]);
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem('rc_tickets');
-      if (raw) setTickets(JSON.parse(raw));
-    } catch (_) {}
-  }, []);
+  }, [analysis, results, failedQuestions, totalStreamedQuestions]);
 
   useEffect(() => {
     if (!initialTickets || initialTickets.length === 0) return;
@@ -131,12 +124,6 @@ export default function ReportCard({
       return merged;
     });
   }, [initialTickets && initialTickets.length]);
-
-useEffect(() => {
-  try {
-    localStorage.setItem('rc_tickets', JSON.stringify(tickets));
-  } catch (_) {}
-}, [tickets]);
 
   useEffect(() => {
     setCollapsedTickets((prev) => {
@@ -268,6 +255,16 @@ useEffect(() => {
       delete next[id];
       return next;
     });
+  }
+
+  function clearAllTickets() {
+    setTickets([]);
+    setUserCodeById({});
+    setUserExplanationById({});
+    setGradeResultsById({});
+    setCollapsedTickets({});
+    setFullscreenTicketId(null);
+    setOpenResultTicketId(null);
   }
 
   async function copyTicket(id: string) {
@@ -610,6 +607,14 @@ useEffect(() => {
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-3">
+                {tickets.length > 0 && (
+                  <button
+                    onClick={clearAllTickets}
+                    className="inline-flex items-center justify-center rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
+                  >
+                    Clear All
+                  </button>
+                )}
                 <button
                   onClick={addBugTicketRandom}
                   className="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-3 py-2 text-xs font-semibold text-white shadow hover:bg-indigo-500"
@@ -720,6 +725,11 @@ useEffect(() => {
                                     >
                                       <div className="flex items-center justify-between border-b border-white/5 bg-[#161b22] px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-slate-300">
                                         <div className="flex items-center gap-2">
+                                          <span className="hidden items-center gap-1.5 pr-3 text-xs text-slate-500 sm:flex">
+                                            <span className="h-2.5 w-2.5 rounded-full bg-rose-400"></span>
+                                            <span className="h-2.5 w-2.5 rounded-full bg-amber-400"></span>
+                                            <span className="h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
+                                          </span>
                                           <span>Your Fix</span>
                                           <span className="rounded bg-white/10 px-2 py-0.5 text-[10px] font-medium text-slate-200">
                                             {languageLabel}
@@ -735,9 +745,10 @@ useEffect(() => {
                                         </div>
                                       </div>
                                       <textarea
-                                        className="h-48 w-full resize-y bg-transparent px-4 py-3 font-mono text-xs leading-relaxed text-slate-100 placeholder-slate-500 outline-none focus:ring-0 sm:text-sm"
+                                        className="h-56 w-full resize-y bg-[#0d1117] px-4 py-4 font-mono text-sm leading-relaxed text-slate-100 placeholder:text-slate-500 caret-emerald-400 outline-none border-t border-white/5 focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-400/60 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]"
                                         value={codeValue}
                                         onChange={(e) => setUserCodeById((prev) => ({ ...prev, [t.id]: e.target.value }))}
+                                        spellCheck={false}
                                       />
                                       <div className="flex items-center justify-between border-t border-white/5 bg-[#161b22] px-4 py-2 text-[11px] text-slate-400">
                                         <span>Spaces: 2</span>
@@ -749,10 +760,11 @@ useEffect(() => {
                                         Written Explanation
                                       </div>
                                       <textarea
-                                        className="h-24 w-full resize-y rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-700 dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-200"
+                                        className="h-28 w-full resize-y rounded-xl border border-slate-300/60 bg-[#0d1117] p-3 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:border-indigo-400/70 focus:ring-2 focus:ring-indigo-500/30 dark:border-slate-700"
                                         placeholder="Explain what was wrong and why your change fixes it."
                                         value={userExplanationById[t.id] ?? ''}
                                         onChange={(e) => setUserExplanationById((prev) => ({ ...prev, [t.id]: e.target.value }))}
+                                        spellCheck={false}
                                       />
                                     </div>
                                   </div>
@@ -958,7 +970,7 @@ useEffect(() => {
               </div>
               <textarea
                 autoFocus
-                className="flex-1 w-full resize-none bg-transparent px-6 py-5 font-mono text-sm leading-relaxed text-slate-100 outline-none focus:ring-0"
+                className="flex-1 w-full resize-none bg-[#0d1117] px-6 py-5 font-mono text-sm leading-relaxed text-slate-100 caret-emerald-400 outline-none focus:ring-2 focus:ring-indigo-500/40 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]"
                 value={fullscreenValue}
                 onChange={(e) =>
                   setUserCodeById((prev) => ({
@@ -966,6 +978,7 @@ useEffect(() => {
                     [fullscreenTicket.id]: e.target.value,
                   }))
                 }
+                spellCheck={false}
               />
               <div className="flex items-center justify-between border-t border-slate-700 bg-[#161b22] px-5 py-3 text-xs text-slate-400">
                 <span>Esc to exit full screen</span>

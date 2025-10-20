@@ -64,11 +64,16 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     'Fact: await Promise.all is faster than serial awaits.',
     'Tip: Prefer === over == unless you love surprises.',
     'Fact: map + filter beats pushing in for-loops for clarity.',
-    'Tip: In Python, default args are evaluated once—beware lists.',
+    'Tip: In Python, default args are evaluated once, beware lists.',
     'Fact: In Java, put constants on the left: "foo".equals(x).',
     'Tip: Throttle for rate limits; debounce for noisy inputs.',
     'Fact: NaN !== NaN. But Number.isNaN(NaN) is true.',
   ];
+
+  const sanitizeExplanation = useCallback((text?: string | null) => {
+    if (!text) return text ?? '';
+    return text.replace(/—/g, ',');
+  }, []);
 
   // ALL HOOKS MUST BE DECLARED BEFORE ANY CONDITIONAL RETURNS
   const [score, setScore] = useState(0);
@@ -484,6 +489,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     // Record result for this question
     const qId = (currentQuestion.id && String(currentQuestion.id)) || String(currentQuestionIndex + 1);
     const lang = currentQuestion.language || null;
+    const sanitizedExplanation = sanitizeExplanation(currentQuestion.explanation);
     const resultEntry: QuestionResult = {
       questionId: qId,
       type: currentQuestion.type,
@@ -507,7 +513,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         codeContext: currentQuestion.codeContext,
         selectedAnswers: [...selectedAnswers],
         correctAnswers: correctAnswersResolved.filter(Boolean),
-        explanation: currentQuestion.explanation,
+        explanation: sanitizedExplanation,
         variants: currentQuestion.variants,
         steps: currentQuestion.steps,
         options: currentQuestion.options
@@ -872,6 +878,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                     minWidth: '100%'
                   }}
                   showLineNumbers={true}
+                  wrapLongLines={true}
                 >
                   {currentVariant.code}
                 </SyntaxHighlighter>
@@ -1008,7 +1015,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                         setSelectedAnswers(prev => [...prev, step.id]);
                       }}
                     >
-                      <div className="flex items-start space-x-3">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:space-x-3 space-y-3 sm:space-y-0">
                         <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium ${
                           showExplanations && step.isDistractor 
                             ? 'bg-orange-200 dark:bg-orange-800 text-orange-700 dark:text-orange-300' 
@@ -1016,7 +1023,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                         }`}>
                           {showExplanations && step.isDistractor ? '⚠️' : (isAlreadySelected ? '✓' : '+')}
                         </div>
-                        <div className="flex-1 min-w-0">
+                        <div className="flex-1 min-w-0 w-full">
                           <div className="overflow-x-auto">
                             <pre className="text-sm font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">
                               {step.code}
@@ -1028,7 +1035,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                               ? 'text-orange-600 dark:text-orange-400' 
                               : 'text-gray-500 dark:text-gray-400'
                           }`}>
-                            {step.explanation}
+                            {sanitizeExplanation(step.explanation)}
                           </p>
                         )}
                         {showExplanations && step.isDistractor && (
@@ -1224,7 +1231,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                                 <pre className="text-sm font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">{step.code}</pre>
                               </div>
                               {step.explanation && (
-                                <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">{step.explanation}</p>
+                                <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">{sanitizeExplanation(step.explanation)}</p>
                               )}
                               {!userMatchedPosition && userIndex >= 0 && (
                                 <p className="text-xs mt-1 text-yellow-700 dark:text-yellow-300">You placed this at position {userIndex + 1}.</p>
@@ -1241,7 +1248,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
                   {currentQuestion.explanation && (
                     <div className="mt-4 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-                      <p className="text-sm text-blue-800 dark:text-blue-200"><strong>Overall Explanation:</strong> {currentQuestion.explanation}</p>
+                      <p className="text-sm text-blue-800 dark:text-blue-200"><strong>Overall Explanation:</strong> {sanitizeExplanation(currentQuestion.explanation)}</p>
                     </div>
                   )}
                 </div>
@@ -1676,6 +1683,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                       minWidth: '100%'
                     }}
                     showLineNumbers={true}
+                    wrapLongLines={true}
                   >
                     {currentQuestion.codeContext}
                   </SyntaxHighlighter>
@@ -1704,7 +1712,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                   return (
                     <div
                       key={variant.id}
-                      className={`p-4 rounded-lg border-2 ${
+                      className={`p-4 rounded-lg border-2 max-w-full overflow-hidden w-full ${
                         isCorrect
                           ? 'border-green-200 bg-green-50 dark:bg-green-900/20'
                           : 'border-red-200 bg-red-50 dark:bg-red-900/20'
@@ -1720,7 +1728,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                             {isCorrect ? '✓' : '✗'}
                           </span>
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <div className="flex items-center space-x-2 mb-2">
                             <span className="font-semibold text-gray-900 dark:text-white">
                               Option {index + 1}
@@ -1735,7 +1743,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                               </span>
                             )}
                           </div>
-                          <div className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 mb-3">
+                          <div className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 mb-3 w-full">
                             <div className="flex items-center justify-between px-4 py-2 bg-[#1e1e1e] border-b border-gray-700">
                               <span className="text-xs text-gray-400 font-medium">Code</span>
                               {currentQuestion.language && (
@@ -1744,7 +1752,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                                 </span>
                               )}
                             </div>
-                            <div className="overflow-x-auto">
+                            <div className="overflow-x-auto w-full">
                               <SyntaxHighlighter
                                 language={getHighlighterLanguage(currentQuestion.language || 'JavaScript')}
                                 style={vscDarkPlus}
@@ -1757,6 +1765,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                                   minWidth: '100%'
                                 }}
                                 showLineNumbers={true}
+                                wrapLongLines={true}
                               >
                                 {variant.code}
                               </SyntaxHighlighter>
@@ -1767,7 +1776,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                               ? 'text-green-700 dark:text-green-300'
                               : 'text-red-700 dark:text-red-300'
                           }`}>
-                            {variant.explanation}
+                            {sanitizeExplanation(variant.explanation)}
                           </p>
                         </div>
                       </div>
@@ -1839,7 +1848,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                           ? 'text-green-700 dark:text-green-300'
                           : 'text-red-700 dark:text-red-300'
                       }`}>
-                        {currentQuestion.explanation}
+                        {sanitizeExplanation(currentQuestion.explanation)}
                       </p>
                     </div>
                   </div>
@@ -1891,7 +1900,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                           ? 'text-green-700 dark:text-green-300'
                           : 'text-red-700 dark:text-red-300'
                       }`}>
-                        {currentQuestion.explanation}
+                        {sanitizeExplanation(currentQuestion.explanation)}
                       </p>
                     </div>
                   </div>
@@ -1978,7 +1987,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 {/* Overall explanation */}
                 <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                   <p className="text-sm text-blue-800 dark:text-blue-200">
-                    <strong>Overall Explanation:</strong> {currentQuestion.explanation}
+                    <strong>Overall Explanation:</strong> {sanitizeExplanation(currentQuestion.explanation)}
                   </p>
                 </div>
               </div>
@@ -2113,6 +2122,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                       minWidth: '100%'
                     }}
                     showLineNumbers={true}
+                    wrapLongLines={true}
                   >
                     {currentQuestion.codeContext}
                   </SyntaxHighlighter>

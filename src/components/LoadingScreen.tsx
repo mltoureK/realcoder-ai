@@ -19,14 +19,14 @@ const funTips = [
   "⚡ Fact: await Promise.all() is faster than serial awaits.",
   "🎯 Tip: Prefer === over == unless you love surprises.",
   "🔥 Fact: map + filter beats pushing in for-loops for clarity.",
-  "🐍 Tip: In Python, default args are evaluated once—beware lists.",
+  "🐍 Tip: In Python, default args are evaluated once, beware lists.",
   "☕ Fact: In Java, put constants on the left: \"foo\".equals(x).",
   "⏱️ Tip: Throttle for rate limits; debounce for noisy inputs.",
   "🤯 Fact: NaN !== NaN. But Number.isNaN(NaN) is true.",
   "🚀 Tip: Async/await makes asynchronous code look synchronous.",
   "📦 Fact: Destructuring can make your code cleaner and more readable.",
   "🔧 Tip: Use const by default, let when reassignment is needed.",
-  "💾 Fact: Strings in JavaScript are immutable—methods return new strings.",
+  "💾 Fact: Strings in JavaScript are immutable, methods return new strings.",
 ];
 
 export function LoadingScreen({ 
@@ -289,5 +289,4 @@ export function LoadingScreen({
 }
 
 export default LoadingScreen;
-
 
