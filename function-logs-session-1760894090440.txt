@@ -4688,3 +4688,3636 @@ def _format_folder(self, meta: AlbumMetadata) -> str:
 --------------------------------------------------------------------------------
 
 ================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T19:40:56.907Z
+File: lfnovo-open-notebook-df0986c/api/models.py
+Functions Extracted: 1
+
+
+Function 1: validate_notebook_fields
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+    @model_validator(mode="after")
+    def validate_notebook_fields(self):
+        # Ensure only one of notebook_id or notebooks is provided
+        if self.notebook_id is not None and self.notebooks is not None:
+            raise ValueError(
+                "Cannot specify both 'notebook_id' and 'notebooks'. Use 'notebooks' for multi-notebook support."
+            )
+
+        # Convert single notebook_id to notebooks array for internal processing
+        if self.notebook_id is not None:
+            self.notebooks = [self.notebook_id]
+            # Keep notebook_id for backward compatibility in response
+
+        # Set empty array if no notebooks specified (allow sources without notebooks)
+        if self.notebooks is None:
+            self.notebooks = []
+
+        return self
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T19:41:07.957Z
+File: [2 files: dialog.tsx, card.tsx]
+Functions Extracted: 8
+
+
+Function 1: DialogContent
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function DialogContent({ className, children, showCloseButton = true, ...props }: React.ComponentProps<typeof DialogPrimitive.Content> & { showCloseButton?: boolean }) {
+  return (
+    <DialogPortal data-slot="dialog-portal">
+      <DialogOverlay />
+      <DialogPrimitive.Content
+        data-slot="dialog-content"
+        className={cn(
+          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-[calc(100%-2rem)]",
+          className
+        )}
+        {...props}
+      >
+        {children}
+        {showCloseButton && (
+          <DialogPrimitive.Close
+            data-slot="dialog-close"
+            className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+          >
+            <XIcon />
+            <span className="sr-only">Close</span>
+          </DialogPrimitive.Close>
+        )}
+      </DialogPrimitive.Content>
+    </DialogPortal>
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: Card
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+function Card({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card"
+      className={cn(
+        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: CardHeader
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-header"
+      className={cn(
+        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: CardTitle
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-title"
+      className={cn("leading-none font-semibold", className)}
+      {...props}
+    />
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: CardDescription
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-description"
+      className={cn("text-muted-foreground text-sm", className)}
+      {...props}
+    />
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: CardAction
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function CardAction({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-action"
+      className={cn(
+        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 7: CardContent
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function CardContent({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-content"
+      className={cn("px-6", className)}
+      {...props}
+    />
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 8: CardFooter
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-footer"
+      className={cn("flex items-center px-6 [.border-t]:pt-6", className)}
+      {...props}
+    />
+  );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T21:34:23.426Z
+File: the API is ~stable, so this should be fine
+Functions Extracted: 3
+
+
+Function 1: isBubbledError
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function isBubbledError(error: unknown): error is BubbledError {
+  if (typeof error !== 'object' || error === null) return false
+  return error instanceof BubbledError
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: closeSpanWithError
+Language: TypeScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+const closeSpanWithError = (span: Span, error?: Error) => {
+  if (isBubbledError(error) && error.bubble) {
+    span.setAttribute('next.bubble', true)
+  } else {
+    if (error) {
+      span.recordException(error)
+      span.setAttribute('error.type', error.name)
+    }
+    span.setStatus({ code: SpanStatusCode.ERROR, message: error?.message })
+  }
+  span.end()
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: getTracePropagationData
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+public getTracePropagationData(): ClientTraceDataEntry[] {
+  const activeContext = context.active()
+  const entries: ClientTraceDataEntry[] = []
+  propagation.inject(activeContext, entries, clientTraceDataSetter)
+  return entries
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T21:34:23.697Z
+File: [2 files: index.d.ts, load-manifest.external.ts]
+Functions Extracted: 1
+
+
+Function 1: loadManifest
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function loadManifest<T extends object>(
+  path: string,
+  shouldCache: boolean = true,
+  cache = sharedCache,
+  skipParse = false
+): T {
+  const cached = shouldCache && cache.get(path)
+  if (cached) {
+    return cached as T
+  }
+
+  let manifest: any = readFileSync(/* turbopackIgnore: true */ path, 'utf8')
+
+  if (!skipParse) {
+    manifest = JSON.parse(manifest)
+  }
+  const frozenManifest = deepFreeze(manifest)
+  if (shouldCache) {
+    cache.set(path, frozenManifest)
+  }
+  return frozenManifest
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:05:07.950Z
+File: [3 files: context.ts, Any other update combination is invalid., load-manifest.external.ts]
+Functions Extracted: 4
+
+
+Function 1: clearModuleContext
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+export async function clearModuleContext(path: string) {
+  intervalsManager.removeAll()
+  timeoutsManager.removeAll()
+
+  const handleContext = (
+    key: string,
+    cache: ReturnType<(typeof moduleContexts)['get']>,
+    context: typeof moduleContexts | typeof pendingModuleCaches
+  ) => {
+    if (cache?.paths.has(path)) {
+      context.delete(key)
+    }
+  }
+
+  for (const [key, cache] of moduleContexts) {
+    handleContext(key, cache, moduleContexts)
+  }
+  for (const [key, cache] of pendingModuleCaches) {
+    handleContext(key, await cache, pendingModuleCaches)
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: loadManifest
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+export function loadManifest<T extends object>(
+  path: string,
+  shouldCache: boolean = true,
+  cache = sharedCache,
+  skipParse = false
+): T {
+  const cached = shouldCache && cache.get(path)
+  if (cached) {
+    return cached as T
+  }
+
+  let manifest: any = readFileSync(/* turbopackIgnore: true */ path, 'utf8')
+
+  if (!skipParse) {
+    manifest = JSON.parse(manifest)
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: emitIssues
+Language: TypeScript
+Lines: 11
+Full Code:
+--------------------------------------------------------------------------------
+function emitIssues() {
+  const issues = []
+  const deduplicationSet = new Set()
+
+  for (const [_, chunkIssues] of chunksWithIssues) {
+    for (const chunkIssue of chunkIssues) {
+      if (deduplicationSet.has(chunkIssue.formatted)) continue
+
+      issues.push(chunkIssue)
+      deduplicationSet.add(chunkIssue.formatted)
+    }
+  }
+
+  sortIssues(issues)
+
+  hooks.issues(issues)
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: sortIssues
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function sortIssues(issues: Issue[]) {
+  issues.sort((a, b) => {
+    const first = compareByList(SEVERITY_ORDER, a.severity, b.severity)
+    if (first !== 0) return first
+    return compareByList(CATEGORY_ORDER, a.category, b.category)
+  })
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:05:11.599Z
+File: [3 files: production.js, test.js, custom.js]
+Functions Extracted: 2
+
+
+Function 1: resizeGridItem
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function resizeGridItem(item) {
+  grid = document.getElementsByClassName("grid")[0];
+  rowHeight = parseInt(
+    window.getComputedStyle(grid).getPropertyValue("grid-auto-rows")
+  );
+  rowGap = parseInt(
+    window.getComputedStyle(grid).getPropertyValue("grid-row-gap")
+  );
+  rowSpan = Math.ceil(
+    (item.querySelector(".content").getBoundingClientRect().height + rowGap) /
+      (rowHeight + rowGap)
+  );
+  item.style.gridRowEnd = "span " + rowSpan;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: resizeAllGridItems
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function resizeAllGridItems() {
+  allItems = document.getElementsByClassName("item");
+  for (x = 0; x < allItems.length; x++) {
+    resizeGridItem(allItems[x]);
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:05:11.934Z
+File: [4 files: connection.rb, postcss.config.js, environment.js, font.rb]
+Functions Extracted: 3
+
+
+Function 1: module.exports
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+module.exports = {
+  plugins: [
+    require('postcss-import'),
+    require('postcss-flexbugs-fixes'),
+    require('postcss-preset-env')({
+      autoprefixer: {
+        flexbox: 'no-2009'
+      },
+      stage: 3
+    })
+  ]
+};
+--------------------------------------------------------------------------------
+
+
+Function 2: environment
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+const { environment } = require("@rails/webpacker");
+
+const webpack = require("webpack");
+environment.plugins.prepend(
+  "Provide",
+  new webpack.ProvidePlugin({
+    $: "jquery",
+    jQuery: "jquery",
+    Popper: ["popper.js", "default"],
+  })
+);
+
+module.exports = environment;
+--------------------------------------------------------------------------------
+
+
+Function 3: Font
+Language: Ruby
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+class Font < ApplicationRecord
+  has_many :articles
+
+  validates :name, presence: true
+  validates :origin_name, presence: true
+end
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:05:12.985Z
+File: [4 files: environment.js, postcss.config.js, sessions_controller.rb, production.js]
+Functions Extracted: 2
+
+
+Function 1: create
+Language: Ruby
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+def create
+    name = params[:session][:name].downcase
+    user = User.find_by(name: name)
+    if user
+      session[:user_id] = user.id
+      flash[:success] = 'Successfully Login'
+    else
+      flash[:info] = "new username #{name} is registered. "
+      user = User.create(name: name)
+      session[:user_id] = user.id
+    end
+    redirect_to root_path
+  end
+--------------------------------------------------------------------------------
+
+
+Function 2: module.exports
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+module.exports = {
+  plugins: [
+    require('postcss-import'),
+    require('postcss-flexbugs-fixes'),
+    require('postcss-preset-env')({
+      autoprefixer: {
+        flexbox: 'no-2009'
+      },
+      stage: 3
+    })
+  ]
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:05:13.613Z
+File: @ts-expect-error - Argument of type 'Buffer<ArrayBufferLike>' is not assignable to parameter of type 'BufferSource'.
+Functions Extracted: 4
+
+
+Function 1: buildEnvironmentVariablesFrom
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function buildEnvironmentVariablesFrom(
+  injectedEnvironments: Record<string, string>
+): Record<string, string | undefined> {
+  const pairs = Object.keys(process.env).map((key) => [key, process.env[key]])
+  const env = Object.fromEntries(pairs)
+  for (const key of Object.keys(injectedEnvironments)) {
+    env[key] = injectedEnvironments[key]
+  }
+  env.NEXT_RUNTIME = 'edge'
+  return env
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: throwUnsupportedAPIError
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function throwUnsupportedAPIError(name: string) {
+  const error =
+    new Error(`A Node.js API is used (${name}) which is not supported in the Edge Runtime.
+Learn more: https://nextjs.org/docs/api-reference/edge-runtime`)
+  decorateServerError(error, COMPILER_NAMES.edgeServer)
+  throw error
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: createProcessPolyfill
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function createProcessPolyfill(env: Record<string, string>) {
+  const processPolyfill = { env: buildEnvironmentVariablesFrom(env) }
+  const overriddenValue: Record<string, any> = {}
+
+  for (const key of Object.keys(process)) {
+    if (key === 'env') continue
+    Object.defineProperty(processPolyfill, key, {
+      get() {
+        if (overriddenValue[key] !== undefined) {
+          return overriddenValue[key]
+        }
+        if (typeof (process as any)[key] === 'function') {
+          return () => throwUnsupportedAPIError(`process.${key}`)
+        }
+        return undefined
+      },
+      set(value) {
+        overriddenValue[key] = value
+      },
+      enumerable: false,
+    })
+  }
+  return processPolyfill
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: createModuleContext
+Language: TypeScript
+Lines: 34
+Full Code:
+--------------------------------------------------------------------------------
+async function createModuleContext(options: ModuleContextOptions) {
+  const warnedEvals = new Set<string>()
+  const warnedWasmCodegens = new Set<string>()
+  const { edgeFunctionEntry } = options
+  const wasm = await loadWasm(edgeFunctionEntry.wasm ?? [])
+  const runtime = new EdgeRuntime({
+    codeGeneration:
+      process.env.NODE_ENV !== 'production'
+        ? { strings: true, wasm: true }
+        : undefined,
+    extend: (context) => {
+      context.process = createProcessPolyfill(edgeFunctionEntry.env)
+
+      Object.defineProperty(context, 'require', {
+        enumerable: false,
+        value: (id: string) => {
+          const value = NativeModuleMap.get(id)
+          if (!value) {
+            throw TypeError('Native module not found: ' + id)
+          }
+          return value
+        },
+      })
+
+      if (process.env.NODE_ENV !== 'production') {
+        context.__next_log_error__ = function (err: unknown) {
+          options.onError(err)
+        }
+      }
+
+      context.__next_eval__ = function __next_eval__(fn: Function) {
+        const key = fn.toString()
+        if (!warnedEvals.has(key)) {
+          const warning = getServerError(
+            new Error(
+              `Dynamic Code Evaluation (e. g. 'eval', 'new Function') not allowed in Edge Runtime
+Learn More: https://nextjs.org/docs/messages/edge-dynamic-code-evaluation`
+            ),
+            COMPILER_NAMES.edgeServer
+          )
+          warning.name = 'DynamicCodeEvaluationWarning'
+          Error.captureStackTrace(warning, __next_eval__)
+          warnedEvals.add(key)
+          options.onWarning(warning)
+        }
+        return fn()
+      }
+
+      context.__next_webassembly_compile__ =
+        function __next_webassembly_compile__(fn: Function) {
+          const key = fn.toString()
+          if (!warnedWasmCodegens.has(key)) {
+            const warning = getServerError(
+              new Error(`Dynamic WASM code generation (e. g. 'WebAssembly.compile') not allowed in Edge Runtime.
+Learn More: https://nextjs.org/docs/messages/edge-dynamic-code-evaluation`),
+              COMPILER_NAMES.edgeServer
+            )
+            warning.name = 'DynamicWasmCodeGenerationWarning'
+            Error.captureStackTrace(warning, __next_webassembly_compile__)
+            warnedWasmCodegens.add(key)
+            options.onWarning(warning)
+          }
+          return fn()
+        }
+
+      context.__next_webassembly_instantiate__ =
+        async function __next_webassembly_instantiate__(fn: Function) {
+          const result = await fn()
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:05:13.783Z
+File: [8 files: postcss.config.js, babel.config.js, environment.js, production.js, manifest.js, development.js, custom.js, 20200404212103_create_categories.rb]
+Functions Extracted: 3
+
+
+Function 1: resizeGridItem
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function resizeGridItem(item) {
+  grid = document.getElementsByClassName("grid")[0];
+  rowHeight = parseInt(
+    window.getComputedStyle(grid).getPropertyValue("grid-auto-rows")
+  );
+  rowGap = parseInt(
+    window.getComputedStyle(grid).getPropertyValue("grid-row-gap")
+  );
+  rowSpan = Math.ceil(
+    (item.querySelector(".content").getBoundingClientRect().height + rowGap) /
+      (rowHeight + rowGap)
+  );
+  item.style.gridRowEnd = "span " + rowSpan;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: resizeAllGridItems
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function resizeAllGridItems() {
+  allItems = document.getElementsByClassName("item");
+  for (x = 0; x < allItems.length; x++) {
+    resizeGridItem(allItems[x]);
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: change
+Language: Ruby
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+def change
+    create_table :categories do |t|
+      t.string :name
+      t.integer :priority
+
+      t.timestamps
+    end
+  end
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:05:14.688Z
+File: [8 files: production.js, postcss.config.js, test.js, development.js, babel.config.js, manifest.js, production.rb, font.rb]
+Functions Extracted: 2
+
+
+Function 1: babel.config.js
+Language: JavaScript
+Lines: 36
+Full Code:
+--------------------------------------------------------------------------------
+module.exports = function(api) {
+  var validEnv = ['development', 'test', 'production']
+  var currentEnv = api.env()
+  var isDevelopmentEnv = api.env('development')
+  var isProductionEnv = api.env('production')
+  var isTestEnv = api.env('test')
+
+  if (!validEnv.includes(currentEnv)) {
+    throw new Error(
+      'Please specify a valid `NODE_ENV` or ' +
+        '`BABEL_ENV` environment variables. Valid values are "development", ' +
+        '"test", and "production". Instead, received: ' +
+        JSON.stringify(currentEnv) +
+        '.
+    ')
+  }
+
+  return {
+    presets: [
+      isTestEnv && [
+        '@babel/preset-env',
+        {
+          targets: {
+            node: 'current'
+          }
+        }
+      ],
+      (isProductionEnv || isDevelopmentEnv) && [
+        '@babel/preset-env',
+        {
+          forceAllTransforms: true,
+          useBuiltIns: 'entry',
+          corejs: 3,
+          modules: false,
+          exclude: ['transform-typeof-symbol']
+        }
+      ]
+    ].filter(Boolean),
+    plugins: [
+      'babel-plugin-macros',
+      '@babel/plugin-syntax-dynamic-import',
+      isTestEnv && 'babel-plugin-dynamic-import-node',
+      '@babel/plugin-transform-destructuring',
+      [
+        '@babel/plugin-proposal-class-properties',
+        {
+          loose: true
+        }
+      ],
+      [
+        '@babel/plugin-proposal-object-rest-spread',
+        {
+          useBuiltIns: true
+        }
+      ],
+      [
+        '@babel/plugin-transform-runtime',
+        {
+          helpers: false,
+          regenerator: true,
+          corejs: false
+        }
+      ],
+      [
+        '@babel/plugin-transform-regenerator',
+        {
+          async: false
+        }
+      ]
+    ].filter(Boolean)
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: Font
+Language: Ruby
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+class Font < ApplicationRecord
+  has_many :articles
+
+  validates :name, presence: true
+  validates :origin_name, presence: true
+end
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:05:15.755Z
+File: [8 files: babel.config.js, production.js, postcss.config.js, application_record.rb, production.rb, test.js, 20200404212241_create_images.rb, custom.js]
+Functions Extracted: 2
+
+
+Function 1: module.exports
+Language: JavaScript
+Lines: 41
+Full Code:
+--------------------------------------------------------------------------------
+module.exports = function(api) {
+  var validEnv = ['development', 'test', 'production']
+  var currentEnv = api.env()
+  var isDevelopmentEnv = api.env('development')
+  var isProductionEnv = api.env('production')
+  var isTestEnv = api.env('test')
+
+  if (!validEnv.includes(currentEnv)) {
+    throw new Error(
+      'Please specify a valid `NODE_ENV` or ' +
+        '`BABEL_ENV` environment variables. Valid values are "development", ' +
+        '"test", and "production". Instead, received: ' +
+        JSON.stringify(currentEnv) +
+        '.'
+    )
+  }
+
+  return {
+    presets: [
+      isTestEnv && [
+        '@babel/preset-env',
+        {
+          targets: {
+            node: 'current'
+          }
+        }
+      ],
+      (isProductionEnv || isDevelopmentEnv) && [
+        '@babel/preset-env',
+        {
+          forceAllTransforms: true,
+          useBuiltIns: 'entry',
+          corejs: 3,
+          modules: false,
+          exclude: ['transform-typeof-symbol']
+        }
+      ]
+    ].filter(Boolean),
+    plugins: [
+      'babel-plugin-macros',
+      '@babel/plugin-syntax-dynamic-import',
+      isTestEnv && 'babel-plugin-dynamic-import-node',
+      '@babel/plugin-transform-destructuring',
+      [
+        '@babel/plugin-proposal-class-properties',
+        {
+          loose: true
+        }
+      ],
+      [
+        '@babel/plugin-proposal-object-rest-spread',
+        {
+          useBuiltIns: true
+        }
+      ],
+      [
+        '@babel/plugin-transform-runtime',
+        {
+          helpers: false,
+          regenerator: true,
+          corejs: false
+        }
+      ],
+      [
+        '@babel/plugin-transform-regenerator',
+        {
+          async: false
+        }
+      ]
+    ].filter(Boolean)
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: change
+Language: Ruby
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+def change
+    create_table :images do |t|
+      t.string :name
+      t.string :image_url
+
+      t.timestamps
+    end
+  end
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:05:15.972Z
+File: [8 files: babel.config.js, test.js, production.js, environment.js, custom.js, You can generate new channels where WebSocket features live using the `rails generate channel` command., custom.js, development.js]
+Functions Extracted: 2
+
+
+Function 1: resizeGridItem
+Language: JavaScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+function resizeGridItem(item) {
+  grid = document.getElementsByClassName("grid")[0];
+  rowHeight = parseInt(
+    window.getComputedStyle(grid).getPropertyValue("grid-auto-rows")
+  );
+  rowGap = parseInt(
+    window.getComputedStyle(grid).getPropertyValue("grid-row-gap")
+  );
+  rowSpan = Math.ceil(
+    (item.querySelector(".content").getBoundingClientRect().height + rowGap) /
+      (rowHeight + rowGap)
+  );
+  item.style.gridRowEnd = "span " + rowSpan;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: resizeAllGridItems
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function resizeAllGridItems() {
+  allItems = document.getElementsByClassName("item");
+  for (x = 0; x < allItems.length; x++) {
+    resizeGridItem(allItems[x]);
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:05:18.300Z
+File: [3 files: This function has to be called initially., If we end up here, there was no work store or work unit store present., load-manifest.external.ts]
+Functions Extracted: 3
+
+
+Function 1: init
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+export function init(opts: {
+  ts: TypeScript
+  info: tsModule.server.PluginCreateInfo
+}) {
+  const projectDir = opts.info.project.getCurrentDirectory()
+  ts = opts.ts
+  info = opts.info
+  appDirRegExp = new RegExp(
+    '^' + (projectDir + '(/src)?/app').replace(/[\\/]/g, '[\\/]')
+  )
+
+  log('Initialized Next.js TypeScript plugin: ' + projectDir)
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: getTypeChecker
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export function getTypeChecker() {
+  const program = info.languageService.getProgram()
+  if (!program) {
+    log('Failed to get program while while running getTypeChecker.')
+    return
+  }
+  const typeChecker = program.getTypeChecker()
+  if (!typeChecker) {
+    log('Failed to get type checker while running getTypeChecker.')
+    return
+  }
+  return typeChecker
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: loadManifest
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+export function loadManifest<T extends object>(
+  path: string,
+  shouldCache: boolean = true,
+  cache = sharedCache,
+  skipParse = false
+): T {
+  const cached = shouldCache && cache.get(path)
+  if (cached) {
+    return cached as T
+  }
+
+  let manifest: any = readFileSync(/* turbopackIgnore: true */ path, 'utf8')
+
+  if (!skipParse) {
+    manifest = JSON.parse(manifest)
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:05:18.614Z
+File: [3 files: custom.js, 20200404212203_create_fonts.rb, babel.config.js]
+Functions Extracted: 3
+
+
+Function 1: resizeGridItem
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function resizeGridItem(item) {
+  grid = document.getElementsByClassName("grid")[0];
+  rowHeight = parseInt(
+    window.getComputedStyle(grid).getPropertyValue("grid-auto-rows")
+  );
+  rowGap = parseInt(
+    window.getComputedStyle(grid).getPropertyValue("grid-row-gap")
+  );
+  rowSpan = Math.ceil(
+    (item.querySelector(".content").getBoundingClientRect().height + rowGap) /
+      (rowHeight + rowGap)
+  );
+  item.style.gridRowEnd = "span " + rowSpan;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: resizeAllGridItems
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function resizeAllGridItems() {
+  allItems = document.getElementsByClassName("item");
+  for (x = 0; x < allItems.length; x++) {
+    resizeGridItem(allItems[x]);
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: module.exports
+Language: JavaScript
+Lines: 43
+Full Code:
+--------------------------------------------------------------------------------
+module.exports = function(api) {
+  var validEnv = ['development', 'test', 'production']
+  var currentEnv = api.env()
+  var isDevelopmentEnv = api.env('development')
+  var isProductionEnv = api.env('production')
+  var isTestEnv = api.env('test')
+
+  if (!validEnv.includes(currentEnv)) {
+    throw new Error(
+      'Please specify a valid `NODE_ENV` or ' +
+        '`BABEL_ENV` environment variables. Valid values are "development", ' +
+        '"test", and "production". Instead, received: ' +
+        JSON.stringify(currentEnv) +
+        '.'
+    )
+  }
+
+  return {
+    presets: [
+      isTestEnv && [
+        '@babel/preset-env',
+        {
+          targets: {
+            node: 'current'
+          }
+        }
+      ],
+      (isProductionEnv || isDevelopmentEnv) && [
+        '@babel/preset-env',
+        {
+          forceAllTransforms: true,
+          useBuiltIns: 'entry',
+          corejs: 3,
+          modules: false,
+          exclude: ['transform-typeof-symbol']
+        }
+      ]
+    ].filter(Boolean),
+    plugins: [
+      'babel-plugin-macros',
+      '@babel/plugin-syntax-dynamic-import',
+      isTestEnv && 'babel-plugin-dynamic-import-node',
+      '@babel/plugin-transform-destructuring',
+      [
+        '@babel/plugin-proposal-class-properties',
+        {
+          loose: true
+        }
+      ],
+      [
+        '@babel/plugin-proposal-object-rest-spread',
+        {
+          useBuiltIns: true
+        }
+      ],
+      [
+        '@babel/plugin-transform-runtime',
+        {
+          helpers: false,
+          regenerator: true,
+          corejs: false
+        }
+      ],
+      [
+        '@babel/plugin-transform-regenerator',
+        {
+          async: false
+        }
+      ]
+    ].filter(Boolean)
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:21:47.855Z
+File: [2 files: This function has to be called initially., find-page-file.ts]
+Functions Extracted: 5
+
+
+Function 1: init
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export function init(opts: {
+  ts: TypeScript
+  info: tsModule.server.PluginCreateInfo
+}) {
+  const projectDir = opts.info.project.getCurrentDirectory()
+  ts = opts.ts
+  info = opts.info
+  appDirRegExp = new RegExp(
+    '^' + (projectDir + '(/src)?/app').replace(/[\\/]/g, '[\\/]')
+  )
+
+  log('Initialized Next.js TypeScript plugin: ' + projectDir)
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: getTypeChecker
+Language: TypeScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+export function getTypeChecker() {
+  const program = info.languageService.getProgram()
+  if (!program) {
+    log('Failed to get program while while running getTypeChecker.')
+    return
+  }
+  const typeChecker = program.getTypeChecker()
+  if (!typeChecker) {
+    log('Failed to get type checker while running getTypeChecker.')
+    return
+  }
+  return typeChecker
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: getSource
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export function getSource(fileName: string) {
+  const program = info.languageService.getProgram()
+  if (!program) {
+    log('Failed to get program while running getSource for: ' + fileName)
+    return
+  }
+
+  const sourceFile = program.getSourceFile(fileName)
+  if (!sourceFile) {
+    log('Failed to get source file while running getSource for: ' + fileName)
+    return
+  }
+
+  return sourceFile
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: findPageFile
+Language: TypeScript
+Lines: 27
+Full Code:
+--------------------------------------------------------------------------------
+export async function findPageFile(
+  pagesDir: string,
+  normalizedPagePath: string,
+  pageExtensions: PageExtensions,
+  isAppDir: boolean
+): Promise<string | null> {
+  const pagePaths = getPagePaths(normalizedPagePath, pageExtensions, isAppDir)
+  const [existingPath, ...others] = (
+    await Promise.all(
+      pagePaths.map(async (path) => {
+        const filePath = join(pagesDir, path)
+        try {
+          return (await fileExists(filePath)) ? path : null
+        } catch (err: any) {
+          if (!err?.code?.includes('ENOTDIR')) throw err
+        }
+        return null
+      })
+    )
+  ).filter(nonNullable)
+
+  if (!existingPath) {
+    return null
+  }
+
+  if (!(await isTrueCasePagePath(existingPath, pagesDir))) {
+    return null
+  }
+
+  if (others.length > 0) {
+    warn(
+      `Duplicate page detected. ${cyan(join('pages', existingPath))} and ${cyan(
+        join('pages', others[0])
+      )} both resolve to ${cyan(normalizedPagePath)}.`
+    )
+  }
+
+  return existingPath
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: createValidFileMatcher
+Language: TypeScript
+Lines: 27
+Full Code:
+--------------------------------------------------------------------------------
+export function createValidFileMatcher(
+  pageExtensions: PageExtensions,
+  appDirPath: string | undefined
+) {
+  const getExtensionRegexString = (extensions: string[]) =>
+    `(?:${extensions.join('|')})`
+
+  const validExtensionFileRegex = new RegExp(
+    '\.' + getExtensionRegexString(pageExtensions) + '$'
+  )
+  const leafOnlyPageFileRegex = new RegExp(
+    `(^(page|route)|[\\/](page|route))\.${getExtensionRegexString(
+      pageExtensions
+    )}$`
+  )
+
+  const leafOnlyRouteFileRegex = new RegExp(
+    `(^route|[\\/]route)\.${getExtensionRegexString(pageExtensions)}$`
+  )
+  const leafOnlyLayoutFileRegex = new RegExp(
+    `(^(layout)|[\\/](layout))\.${getExtensionRegexString(pageExtensions)}$`
+  )
+  const rootNotFoundFileRegex = new RegExp(
+    `^not-found\.${getExtensionRegexString(pageExtensions)}$`
+  )
+  const leafOnlyDefaultFileRegex = new RegExp(
+    `(^(default)|[\\/](default))\.${getExtensionRegexString(pageExtensions)}$`
+  )
+
+  function isMetadataFile(filePath: string) {
+    const appDirRelativePath = appDirPath
+      ? filePath.replace(appDirPath, '')
+      : filePath
+
+    return isMetadataRouteFile(appDirRelativePath, pageExtensions, true)
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:21:58.499Z
+File: If we end up here, there was no work store or work unit store present.
+Functions Extracted: 4
+
+
+Function 1: makeHangingCookies
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function makeHangingCookies(
+  workStore: WorkStore,
+  prerenderStore: PrerenderStoreModern
+): Promise<ReadonlyRequestCookies> {
+  const cachedPromise = CachedCookies.get(prerenderStore)
+  if (cachedPromise) {
+    return cachedPromise
+  }
+
+  const promise = makeHangingPromise<ReadonlyRequestCookies>(
+    prerenderStore.renderSignal,
+    workStore.route,
+    '`cookies()`'
+  )
+  CachedCookies.set(prerenderStore, promise)
+
+  return promise
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: makeUntrackedCookiesWithDevWarnings
+Language: TypeScript
+Lines: 21
+Full Code:
+--------------------------------------------------------------------------------
+function makeUntrackedCookiesWithDevWarnings(
+  requestStore: RequestStore,
+  underlyingCookies: ReadonlyRequestCookies,
+  route?: string
+): Promise<ReadonlyRequestCookies> {
+  if (requestStore.asyncApiPromises) {
+    let promise: Promise<ReadonlyRequestCookies>
+    if (underlyingCookies === requestStore.mutableCookies) {
+      promise = requestStore.asyncApiPromises.mutableCookies
+    } else if (underlyingCookies === requestStore.cookies) {
+      promise = requestStore.asyncApiPromises.cookies
+    } else {
+      throw new InvariantError(
+        'Received an underlying cookies object that does not match either `cookies` or `mutableCookies`'
+      )
+    }
+    return instrumentCookiesPromiseWithDevWarnings(promise, route)
+  }
+
+  const cachedCookies = CachedCookies.get(underlyingCookies)
+  if (cachedCookies) {
+    return cachedCookies
+  }
+
+  const promise = makeDevtoolsIOAwarePromise(
+    underlyingCookies,
+    requestStore,
+    RenderStage.Runtime
+  )
+
+  const proxiedPromise = instrumentCookiesPromiseWithDevWarnings(promise, route)
+
+  CachedCookies.set(underlyingCookies, proxiedPromise)
+
+  return proxiedPromise
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: instrumentCookiesPromiseWithDevWarnings
+Language: TypeScript
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+function instrumentCookiesPromiseWithDevWarnings(
+  promise: Promise<ReadonlyRequestCookies>,
+  route: string | undefined
+) {
+  Object.defineProperties(promise, {
+    [Symbol.iterator]: replaceableWarningDescriptorForSymbolIterator(
+      promise,
+      route
+    ),
+    size: replaceableWarningDescriptor(promise, 'size', route),
+    get: replaceableWarningDescriptor(promise, 'get', route),
+    getAll: replaceableWarningDescriptor(promise, 'getAll', route),
+    has: replaceableWarningDescriptor(promise, 'has', route),
+    set: replaceableWarningDescriptor(promise, 'set', route),
+    delete: replaceableWarningDescriptor(promise, 'delete', route),
+    clear: replaceableWarningDescriptor(promise, 'clear', route),
+    toString: replaceableWarningDescriptor(promise, 'toString', route),
+  })
+  return promise
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: createCookiesAccessError
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function createCookiesAccessError(
+  route: string | undefined,
+  expression: string
+) {
+  const prefix = route ? `Route "${route}" ` : 'This route '
+  return new Error(
+    `${prefix}used ${expression}. ` +
+      `\`cookies()\` returns a Promise and must be unwrapped with \`await\` or \`React.use()\` before accessing its properties. ` +
+      `Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis`
+  )
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:28:27.472Z
+File: Matching BufferAttribute constructor, do not normalize the array.
+Functions Extracted: 3
+
+
+Function 1: getComponent
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+getComponent( index, component ) {
+	let value = this.array[ index * this.itemSize + component ];
+	if ( this.normalized ) value = denormalize( value, this.array );
+	return value;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: setComponent
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+setComponent( index, component, value ) {
+	if ( this.normalized ) value = normalize( value, this.array );
+	this.array[ index * this.itemSize + component ] = value;
+	return this;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: toJSON
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+toJSON() {
+	const data = {
+		itemSize: this.itemSize,
+		type: this.array.constructor.name,
+		array: Array.from( this.array ),
+		normalized: this.normalized
+	};
+	if ( this.name !== '' ) data.name = this.name;
+	if ( this.usage !== StaticDrawUsage ) data.usage = this.usage;
+	return data;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:28:28.063Z
+File: Work around fat-arrow-detection complication for detecting typescript typed arrow params
+Functions Extracted: 5
+
+
+Function 1: getterSetter
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function getterSetter(type) {
+    if (type != "variable") return pass(afterprop);
+    cx.marked = "property";
+    return cont(functiondef);
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: commasep
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function commasep(what, end, sep) {
+    function proceed(type, value) {
+        if (sep ? sep.indexOf(type) > -1 : type == ",") {
+            var lex = cx.state.lexical;
+            if (lex.info == "call") lex.pos = (lex.pos || 0) + 1;
+            return cont(function(type, value) {
+                if (type == end || value == end) return pass();
+                return pass(what);
+            }, proceed);
+        }
+        if (type == end || value == end) return cont();
+        if (sep && sep.indexOf(";") > -1) return pass(what);
+        return cont(expect(end));
+    }
+    return function(type, value) {
+        if (type == end || value == end) return cont();
+        return pass(what, proceed);
+    };
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: typeexpr
+Language: JavaScript
+Lines: 19
+Full Code:
+--------------------------------------------------------------------------------
+function typeexpr(type, value) {
+    if (value == "keyof" || value == "typeof" || value == "infer" || value == "readonly") {
+        cx.marked = "keyword";
+        return cont(value == "typeof" ? expressionNoComma : typeexpr);
+    }
+    if (type == "variable" || value == "void") {
+        cx.marked = "type";
+        return cont(afterType);
+    }
+    if (value == "|" || value == "&") return cont(typeexpr);
+    if (type == "string" || type == "number" || type == "atom") return cont(afterType);
+    if (type == "[") return cont(pushlex("]"), commasep(typeexpr, "]", ","), poplex, afterType);
+    if (type == "{") return cont(pushlex("}"), typeprops, poplex, afterType);
+    if (type == "(") return cont(commasep(typearg, ")"), maybeReturnType, afterType);
+    if (type == "<") return cont(commasep(typeexpr, ">"), typeexpr);
+    if (type == "quasi") { return pass(quasiType, afterType); }
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: functiondef
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function functiondef(type, value) {
+    if (value == "*") {cx.marked = "keyword"; return cont(functiondef);}
+    if (type == "variable") {register(value); return cont(functiondef);}
+    if (type == "(") return cont(pushcontext, pushlex(")"), commasep(funarg, ")"), poplex, mayberettype, statement, popcontext);
+    if (isTS && value == "<") return cont(pushlex(">"), commasep(typeparam, ">"), poplex, functiondef);
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: vardef
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function vardef(_, value) {
+    if (value == "enum") {cx.marked = "keyword"; return cont(enumdef);}
+    return pass(pattern, maybetype, maybeAssign, vardefCont);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:28:28.756Z
+File: [2 files: FunctionNode.js, NodeLibrary.js]
+Functions Extracted: 3
+
+
+Function 1: getNodeFunction
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+getNodeFunction( builder ) {
+	const nodeData = builder.getDataFromNode( this );
+	let nodeFunction = nodeData.nodeFunction;
+
+	if ( nodeFunction === undefined ) {
+		nodeFunction = builder.parser.parseFunction( this.code );
+		nodeData.nodeFunction = nodeFunction;
+	}
+
+	return nodeFunction;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: fromMaterial
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+fromMaterial( material ) {
+	if ( material.isNodeMaterial ) return material;
+
+	let nodeMaterial = null;
+
+	const nodeMaterialClass = this.getMaterialNodeClass( material.type );
+
+	if ( nodeMaterialClass !== null ) {
+		nodeMaterial = new nodeMaterialClass();
+
+		for ( const key in material ) {
+			nodeMaterial[ key ] = material[ key ];
+		}
+	}
+
+	return nodeMaterial;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: addType
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+addType( nodeClass, type, library ) {
+	if ( library.has( type ) ) {
+		warn( `Redefinition of node ${ type }` );
+		return;
+	}
+
+	if ( typeof nodeClass !== 'function' ) throw new Error( `Node class ${ nodeClass.name } is not a class.` );
+	if ( typeof type === 'function' || typeof type === 'object' ) throw new Error( `Base class ${ type } is not a class.` );
+
+	library.set( type, nodeClass );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:28:40.102Z
+File: Work around fat-arrow-detection complication for detecting typescript typed arrow params
+Functions Extracted: 5
+
+
+Function 1: getterSetter
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function getterSetter(type) {
+    if (type != "variable") return pass(afterprop);
+    cx.marked = "property";
+    return cont(functiondef);
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: commasep
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function commasep(what, end, sep) {
+    function proceed(type, value) {
+        if (sep ? sep.indexOf(type) > -1 : type == ",") {
+            var lex = cx.state.lexical;
+            if (lex.info == "call") lex.pos = (lex.pos || 0) + 1;
+            return cont(function(type, value) {
+                if (type == end || value == end) return pass()
+                return pass(what)
+            }, proceed);
+        }
+        if (type == end || value == end) return cont();
+        if (sep && sep.indexOf(";") > -1) return pass(what)
+        return cont(expect(end));
+    }
+    return function(type, value) {
+        if (type == end || value == end) return cont();
+        return pass(what, proceed);
+    };
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: typeexpr
+Language: JavaScript
+Lines: 17
+Full Code:
+--------------------------------------------------------------------------------
+function typeexpr(type, value) {
+    if (value == "keyof" || value == "typeof" || value == "infer" || value == "readonly") {
+        cx.marked = "keyword"
+        return cont(value == "typeof" ? expressionNoComma : typeexpr)
+    }
+    if (type == "variable" || value == "void") {
+        cx.marked = "type"
+        return cont(afterType)
+    }
+    if (value == "|" || value == "&") return cont(typeexpr)
+    if (type == "string" || type == "number" || type == "atom") return cont(afterType);
+    if (type == "[") return cont(pushlex("]"), commasep(typeexpr, "]", ","), poplex, afterType)
+    if (type == "{") return cont(pushlex("}"), typeprops, poplex, afterType)
+    if (type == "(") return cont(commasep(typearg, ")"), maybeReturnType, afterType)
+    if (type == "<") return cont(commasep(typeexpr, ">"), typeexpr)
+    if (type == "quasi") { return pass(quasiType, afterType); }
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: functiondef
+Language: JavaScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+function functiondef(type, value) {
+    if (value == "*") {cx.marked = "keyword"; return cont(functiondef);}
+    if (type == "variable") {register(value); return cont(functiondef);}
+    if (type == "(") return cont(pushcontext, pushlex(")"), commasep(funarg, ")"), poplex, mayberettype, statement, popcontext);
+    if (isTS && value == "<") return cont(pushlex(">"), commasep(typeparam, ">"), poplex, functiondef)
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: vardef
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function vardef(_, value) {
+    if (value == "enum") {cx.marked = "keyword"; return cont(enumdef)}
+    return pass(pattern, maybetype, maybeAssign, vardefCont);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:33:12.664Z
+File: WordPress-WordPress-a81ae76/wp-includes/sodium_compat/lib/sodium_compat.php
+Functions Extracted: 6
+
+
+Function 1: crypto_aead_aes256gcm_decrypt
+Language: PHP
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function crypto_aead_aes256gcm_decrypt(
+        $message,
+        $assocData,
+        $nonce,
+        #[\SensitiveParameter]
+        $key
+    ) {
+        try {
+            return ParagonIE_Sodium_Compat::crypto_aead_aes256gcm_decrypt($message, $assocData, $nonce, $key);
+        } catch (\TypeError $ex) {
+            return false;
+        } catch (\SodiumException $ex) {
+            return false;
+        }
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: crypto_aead_chacha20poly1305_decrypt
+Language: PHP
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function crypto_aead_chacha20poly1305_decrypt(
+        $message,
+        $assocData,
+        $nonce,
+        #[\SensitiveParameter]
+        $key
+    ) {
+        try {
+            return ParagonIE_Sodium_Compat::crypto_aead_chacha20poly1305_decrypt($message, $assocData, $nonce, $key);
+        } catch (\TypeError $ex) {
+            return false;
+        } catch (\SodiumException $ex) {
+            return false;
+        }
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: crypto_aead_chacha20poly1305_encrypt
+Language: PHP
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+function crypto_aead_chacha20poly1305_encrypt(
+        #[\SensitiveParameter]
+        $message,
+        $assocData,
+        $nonce,
+        #[\SensitiveParameter]
+        $key
+    ) {
+        return ParagonIE_Sodium_Compat::crypto_aead_chacha20poly1305_encrypt($message, $assocData, $nonce, $key);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 4: crypto_auth_verify
+Language: PHP
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function crypto_auth_verify(
+        $mac,
+        $message,
+        #[\SensitiveParameter]
+        $key
+    ) {
+        return ParagonIE_Sodium_Compat::crypto_auth_verify($mac, $message, $key);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 5: crypto_sign_open
+Language: PHP
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function crypto_sign_open($signedMessage, $pk)
+{
+    try {
+        return ParagonIE_Sodium_Compat::crypto_sign_open($signedMessage, $pk);
+    } catch (\TypeError $ex) {
+        return false;
+    } catch (\SodiumException $ex) {
+        return false;
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: crypto_sign_verify_detached
+Language: PHP
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function crypto_sign_verify_detached($signature, $message, $pk)
+{
+    return ParagonIE_Sodium_Compat::crypto_sign_verify_detached($signature, $message, $pk);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:33:19.781Z
+File: [2 files: ristretto255.php, We also only do that when the whitespace is followed by `<`, so that we do not break e.g. UTF-16LE encoded whitespace like `\n\x00` in half.]
+Functions Extracted: 11
+
+
+Function 1: sodium_crypto_core_ristretto255_add
+Language: PHP
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_core_ristretto255_add(
+        #[\SensitiveParameter]
+        $p,
+        #[\SensitiveParameter]
+        $q
+    ) {
+        return ParagonIE_Sodium_Compat::ristretto255_add($p, $q, true);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: sodium_crypto_core_ristretto255_from_hash
+Language: PHP
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_core_ristretto255_from_hash(
+        #[\SensitiveParameter]
+        $s
+    ) {
+        return ParagonIE_Sodium_Compat::ristretto255_from_hash($s, true);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: sodium_crypto_core_ristretto255_is_valid_point
+Language: PHP
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_core_ristretto255_is_valid_point(
+        #[\SensitiveParameter]
+        $s
+    ) {
+        return ParagonIE_Sodium_Compat::ristretto255_is_valid_point($s, true);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 4: sodium_crypto_core_ristretto255_scalar_add
+Language: PHP
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_core_ristretto255_scalar_add(
+        #[\SensitiveParameter]
+        $x,
+        #[\SensitiveParameter]
+        $y
+    ) {
+        return ParagonIE_Sodium_Compat::ristretto255_scalar_add($x, $y, true);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 5: sodium_crypto_core_ristretto255_scalar_mul
+Language: PHP
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_core_ristretto255_scalar_mul(
+        #[\SensitiveParameter]
+        $x,
+        #[\SensitiveParameter]
+        $y
+    ) {
+        return ParagonIE_Sodium_Compat::ristretto255_scalar_mul($x, $y, true);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 6: sodium_crypto_scalarmult_ristretto255
+Language: PHP
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_scalarmult_ristretto255(
+        #[\SensitiveParameter]
+        $n,
+        #[\SensitiveParameter]
+        $p
+    ) {
+        return ParagonIE_Sodium_Compat::scalarmult_ristretto255($n, $p, true);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 7: sodium_crypto_scalarmult_ristretto255_base
+Language: PHP
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_scalarmult_ristretto255_base(
+        #[\SensitiveParameter]
+        $n
+    ) {
+        return ParagonIE_Sodium_Compat::scalarmult_ristretto255_base($n, true);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 8: maybe_update_headers
+Language: PHP
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+private function maybe_update_headers(): void {
+        if ($this->headers !== $this->last_headers) {
+            $this->parsed_headers = array_map(
+                function (string $header_line): array {
+                    if (strpos($header_line, ',') === false) {
+                        return [$header_line];
+                    } else {
+                        return array_map('trim', explode(',', $header_line));
+                    }
+                },
+                $this->headers
+            );
+        }
+        $this->last_headers = $this->headers;
+    }
+--------------------------------------------------------------------------------
+
+
+Function 9: set_headers
+Language: PHP
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+private function set_headers(array $headers): void {
+        $this->parsed_headers = $headers;
+        $this->headers = self::flatten_headers($headers);
+        $this->last_headers = $this->headers;
+    }
+--------------------------------------------------------------------------------
+
+
+Function 10: flatten_headers
+Language: PHP
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+private function flatten_headers(array $headers): array {
+        return array_map(function (array $values): string {
+            return implode(',', $values);
+        }, $headers);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 11: fromResponse
+Language: PHP
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+final public static function fromResponse(Response $response): self {
+        $headers = [];
+
+        foreach ($response->get_headers() as $name => $header) {
+            $headers[$name] = implode(', ', $header);
+        }
+
+        /** @var File */
+        $file = (new \ReflectionClass(File::class))->newInstanceWithoutConstructor();
+
+        $file->url = $response->get_final_requested_uri();
+        $file->useragent = null;
+        $file->headers = $headers;
+        $file->body = $response->get_body_content();
+        $file->status_code = $response->get_status_code();
+        $file->permanent_url = $response->get_permanent_uri();
+
+        return $file;
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:33:20.329Z
+File: [2 files: SplFixedArray.php, State.php]
+Functions Extracted: 5
+
+
+Function 1: fromArray
+Language: PHP
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public static function fromArray(array $array, $save_indexes = true) {
+        $self = new SplFixedArray(count($array));
+        if($save_indexes) {
+            foreach($array as $key => $value) {
+                $self[(int) $key] = $value;
+            }
+        } else {
+            $i = 0;
+            foreach (array_values($array) as $value) {
+                $self[$i] = $value;
+                $i++;
+            }
+        }
+        return $self;
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: counterReset
+Language: PHP
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+public function counterReset() {
+        $this->counter = 1;
+        $this->_pad = str_repeat("\0", 4);
+        return $this;
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: getCombinedNonce
+Language: PHP
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+public function getCombinedNonce() {
+        return $this->getCounter() .
+            ParagonIE_Sodium_Core32_Util::substr($this->getNonce(), 0, 8);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 4: rekey
+Language: PHP
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+public function rekey($newKeyAndNonce) {
+        $this->key = ParagonIE_Sodium_Core32_Util::substr($newKeyAndNonce, 0, 32);
+        $this->nonce = str_pad(
+            ParagonIE_Sodium_Core32_Util::substr($newKeyAndNonce, 32),
+            12,
+            "\0",
+            STR_PAD_RIGHT
+        );
+        return $this;
+    }
+--------------------------------------------------------------------------------
+
+
+Function 5: toString
+Language: PHP
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+public function toString() {
+        return $this->key .
+            $this->getCounter() .
+            $this->nonce .
+            $this->_pad;
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:33:32.655Z
+File: WordPress-WordPress-a81ae76/wp-includes/sodium_compat/lib/php72compat.php
+Functions Extracted: 8
+
+
+Function 1: sodium_add
+Language: PHP
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_add(
+        #[\SensitiveParameter]
+        &$string1,
+        #[\SensitiveParameter]
+        $string2
+    ) {
+        ParagonIE_Sodium_Compat::add($string1, $string2);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: sodium_crypto_aead_aes256gcm_decrypt
+Language: PHP
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_aead_aes256gcm_decrypt(
+        $ciphertext,
+        $additional_data,
+        $nonce,
+        #[\SensitiveParameter]
+        $key
+    ) {
+        try {
+            return ParagonIE_Sodium_Compat::crypto_aead_aes256gcm_decrypt(
+                $ciphertext,
+                $additional_data,
+                $nonce,
+                $key
+            );
+        } catch (Error $ex) {
+            return false;
+        } catch (Exception $ex) {
+            if (($ex instanceof SodiumException) && ($ex->getMessage() === 'AES-256-GCM is not available')) {
+                throw $ex;
+            }
+            return false;
+        }
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: sodium_crypto_aead_aes256gcm_encrypt
+Language: PHP
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_aead_aes256gcm_encrypt(
+        #[\SensitiveParameter]
+        $message,
+        $additional_data,
+        $nonce,
+        #[\SensitiveParameter]
+        $key
+    ) {
+        return ParagonIE_Sodium_Compat::crypto_aead_aes256gcm_encrypt($message, $additional_data, $nonce, $key);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 4: sodium_crypto_auth
+Language: PHP
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_auth(
+        $message,
+        #[\SensitiveParameter]
+        $key
+    ) {
+        return ParagonIE_Sodium_Compat::crypto_auth($message, $key);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 5: sodium_crypto_box_open
+Language: PHP
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_box_open(
+        $ciphertext,
+        $nonce,
+        #[\SensitiveParameter]
+        $key_pair
+    ) {
+        try {
+            return ParagonIE_Sodium_Compat::crypto_box_open($ciphertext, $nonce, $key_pair);
+        } catch (Error $ex) {
+            return false;
+        } catch (Exception $ex) {
+            return false;
+        }
+    }
+--------------------------------------------------------------------------------
+
+
+Function 6: sodium_crypto_secretbox_open
+Language: PHP
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_secretbox_open(
+        $ciphertext,
+        $nonce,
+        #[\SensitiveParameter]
+        $key
+    ) {
+        try {
+            return ParagonIE_Sodium_Compat::crypto_secretbox_open($ciphertext, $nonce, $key);
+        } catch (Error $ex) {
+            return false;
+        } catch (Exception $ex) {
+            return false;
+        }
+    }
+--------------------------------------------------------------------------------
+
+
+Function 7: sodium_crypto_secretstream_xchacha20poly1305_pull
+Language: PHP
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_secretstream_xchacha20poly1305_pull(
+        #[\SensitiveParameter]
+        &$state,
+        $ciphertext,
+        $additional_data = ''
+    ) {
+        return ParagonIE_Sodium_Compat::crypto_secretstream_xchacha20poly1305_pull(
+            $state,
+            $ciphertext,
+            $additional_data
+        );
+    }
+--------------------------------------------------------------------------------
+
+
+Function 8: sodium_crypto_secretstream_xchacha20poly1305_init_push
+Language: PHP
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_secretstream_xchacha20poly1305_init_push(
+        #[\SensitiveParameter]
+        $key
+    ) {
+        return ParagonIE_Sodium_Compat::crypto_secretstream_xchacha20poly1305_init_push($key);
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:49:03.835Z
+File: greensock-GSAP-9f8eca1/esm/CSSPlugin.js
+Functions Extracted: 4
+
+
+Function 1: _renderRoundedCSSProp
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+var _renderRoundedCSSProp = function _renderRoundedCSSProp(ratio, data) {
+  var value = data.s + data.c * ratio;
+  data.set(data.t, data.p, ~~(value + (value < 0 ? -.5 : .5)) + data.u, data);
+};
+--------------------------------------------------------------------------------
+
+
+Function 2: _setterScaleWithRender
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+var _setterScaleWithRender = function _setterScaleWithRender(target, property, value, data, ratio) {
+  var cache = target._gsap;
+  cache.scaleX = cache.scaleY = value;
+  cache.renderTransform(ratio, cache);
+};
+--------------------------------------------------------------------------------
+
+
+Function 3: _setterTransformWithRender
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+var _setterTransformWithRender = function _setterTransformWithRender(target, property, value, data, ratio) {
+  var cache = target._gsap;
+  cache[property] = value;
+  cache.renderTransform(ratio, cache);
+};
+--------------------------------------------------------------------------------
+
+
+Function 4: _saveStyle
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+var _saveStyle = function _saveStyle(property, isNotCSS) {
+  var _this = this;
+
+  var target = this.target,
+      style = target.style,
+      cache = target._gsap;
+
+  if (property in _transformProps && style) {
+    this.tfm = this.tfm || {};
+
+    if (property !== "transform") {
+      property = _propertyAliases[property] || property;
+      ~property.indexOf(",") ? property.split(",").forEach(function (a) {
+        return _this.tfm[a] = _get(target, a);
+      }) : this.tfm[property] = cache.x ? cache[property] : _get(target, property);
+    }
+  }
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:49:05.076Z
+File: greensock-GSAP-9f8eca1/esm/GSDevTools.js
+Functions Extracted: 5
+
+
+Function 1: _createElement
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function _createElement(type, container, cssText) {
+  var element = _doc.createElementNS ? _doc.createElementNS(type === "svg" ? _svgNS : _domNS, type) : _doc.createElement(type);
+
+  if (container) {
+    if (_isString(container)) {
+      container = _doc.querySelector(container);
+    }
+
+    container.appendChild(element);
+  }
+
+  if (type === "svg") {
+    element.setAttribute("xmlns", _svgNS);
+    element.setAttribute("xmlns:xlink", _domNS);
+  }
+
+  cssText && (element.style.cssText = cssText);
+  return element;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: _getChildrenOf
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function _getChildrenOf(timeline, includeTimelines) {
+  var a = [],
+      cnt = 0,
+      Tween = gsap.core.Tween,
+      tween = timeline._first;
+
+  while (tween) {
+    if (tween instanceof Tween) {
+      if (tween.vars.id) {
+        a[cnt++] = tween;
+      }
+    } else {
+      if (includeTimelines && tween.vars.id) {
+        a[cnt++] = tween;
+      }
+
+      a = a.concat(_getChildrenOf(tween, includeTimelines));
+      cnt = a.length;
+    }
+
+    tween = tween._next;
+  }
+
+  return a;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: _merge
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function _merge() {
+  var t = _globalTimeline._first,
+      duration,
+      next,
+      target;
+
+  if (_rootInstance) {
+    duration = _recordedRoot._dur;
+
+    while (t) {
+      next = t._next;
+      target = t._targets && t._targets[0];
+
+      if (!(_isFunction(target) && target === t.vars.onComplete && !t._dur) && !(target && target._gsIgnore)) {
+        _recordedRoot.add(t, t._start - t._delay);
+      }
+
+      t = next;
+    }
+
+    return duration !== _recordedRoot.duration();
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: _updateRootDuration
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+function _updateRootDuration() {
+  if (_rootInstance) {
+    _rootInstance.update();
+
+    _rootIsDirty = false;
+  }
+
+  gsap.ticker.remove(_updateRootDuration);
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: _buildPlayPauseMorph
+Language: JavaScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+function _buildPlayPauseMorph(svg) {
+  var tl = gsap.timeline({
+    data: "root",
+    parent: _independentRoot,
+    onComplete: function onComplete() {
+      return tl.kill();
+    }
+  }, _independentRoot._time);
+  tl.to(svg.querySelector(".play-1"), {
+    duration: 0.4,
+    attr: {
+      d: "M5.75,3.13 C5.75,9.79 5.75,16.46 5.75,23.13 4.08,23.13 2.41,23.13 0.75,23.13 0.75,16.46 0.75,9.79 0.75,3.12 2.41,3.12 4.08,3.12 5.75,3.12"
+    },
+    ease: "power2.inOut",
+    rotation: 360,
+    transformOrigin: "50% 50%"
+  }).to(svg.querySelector(".play-2"), {
+    duration: 0.4,
+    attr: {
+      d: "M16.38,3.13 C16.38,9.79 16.38,16.46 16.38,23.13 14.71,23.13 13.04,23.13 11.38,23.13 11.38,16.46 11.38,9.79 11.38,3.12 13.04,3.12 14.71,3.12 16.38,3.12"
+    },
+    ease: "power2.inOut",
+    rotation: 360,
+    transformOrigin: "50% 50%"
+  }, 0.05);
+  return tl;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T00:07:22.558Z
+File: motiondivision-motion-b5df740/dev/react/src/examples/useSpring.tsx
+Functions Extracted: 4
+
+
+Function 1: DragExample
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function DragExample() {
+    const dragX = useMotionValue(0)
+    const dragY = useMotionValue(0)
+    const dragXPX = useTransform(dragX, (v) => `${v}%`)
+    const dragYPX = useTransform(dragY, (v) => `${v}%`)
+    const x = useSpring(dragXPX, spring)
+    const y = useSpring(dragYPX, spring)
+
+    return (
+        <motion.div
+            drag
+            dragMomentum={false}
+            _dragX={dragX}
+            _dragY={dragY}
+            style={{ width: 100, height: 100, background: "red", x, y }}
+        >
+            Drag
+        </motion.div>
+    )
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: RerenderExample
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+function RerenderExample() {
+    const [{ x, y }, setMousePosition] = useState({ x: 0, y: 0 })
+
+    const updateMousePosition = useRef((e) => {
+        frame.postRender(() => setMousePosition({ x: e.clientX, y: e.clientY }))
+    })
+
+    const size = 40
+    const ref = useRef<HTMLDivElement>(null)
+
+    return (
+        <motion.div
+            ref={ref}
+            animate={{ x, y }}
+            transition={spring}
+            style={{
+                width: 100,
+                height: 100,
+                background: "green",
+                position: "absolute",
+                inset: 0,
+            }}
+            onTapStart={() => {
+                window.addEventListener(
+                    "mousemove",
+                    updateMousePosition.current
+                )
+            }}
+            onTap={() => {
+                window.removeEventListener(
+                    "mousemove",
+                    updateMousePosition.current
+                )
+            }}
+            onTapCancel={() => {
+                window.removeEventListener(
+                    "mousemove",
+                    updateMousePosition.current
+                )
+            }}
+        >
+            Rerender
+        </motion.div>
+    )
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: MouseEventExample
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+function MouseEventExample() {
+    const xPoint = useMotionValue(0)
+    const yPoint = useMotionValue(0)
+    const x = useSpring(0, spring)
+    const y = useSpring(0, spring)
+    const ref = useRef<HTMLDivElement>(null)
+    const onMove = useRef<(event: MouseEvent) => void>(
+        ({ clientX, clientY }: MouseEvent) => {
+            const element = ref.current!
+
+            x.set(clientX - element.offsetLeft - element.offsetWidth / 2)
+            y.set(clientY - element.offsetTop - element.offsetHeight / 2)
+        }
+    )
+
+    function startPointer() {
+        window.addEventListener("pointermove", onMove.current)
+    }
+
+    function cancelPointer() {
+        window.removeEventListener("pointermove", onMove.current)
+    }
+
+    return (
+        <motion.div
+            ref={ref}
+            style={{ width: 100, height: 100, background: "yellow", x, y }}
+            onTapStart={startPointer}
+            onTapCancel={cancelPointer}
+            onTap={cancelPointer}
+        >
+            Mouse Event
+        </motion.div>
+    )
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: AnimationExample
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function AnimationExample() {
+    const x = useMotionValue(0)
+    const xSpring = useSpring(x)
+
+    return (
+        <div style={{ width: 100, height: 100, position: "relative" }}>
+            <motion.div
+                animate={{
+                    x: [-200, 200],
+                    transition: {
+                        duration: 1,
+                        repeat: Infinity,
+                        repeatType: "reverse",
+                    },
+                }}
+                style={{ width: 100, height: 100, background: "lightblue", x }}
+            />
+            <motion.div
+                style={{
+                    width: 100,
+                    height: 100,
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    background: "lightblue",
+                    opacity: 0.5,
+                    x: xSpring,
+                }}
+            />
+        </div>
+    )
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T00:07:22.614Z
+File: [2 files: index.tsx, delta-calc.ts]
+Functions Extracted: 3
+
+
+Function 1: createMotionComponent
+Language: TypeScript
+Lines: 55
+Full Code:
+--------------------------------------------------------------------------------
+export function createMotionComponent<Props, TagName extends keyof DOMMotionComponents | string = "div">
+(
+    Component: TagName | string | React.ComponentType<Props>,
+    { forwardMotionProps = false }: MotionComponentOptions = {},
+    preloadedFeatures?: FeaturePackages,
+    createVisualElement?: CreateVisualElement<Props, TagName>
+) {
+    preloadedFeatures && loadFeatures(preloadedFeatures)
+
+    const useVisualState = isSVGComponent(Component)
+        ? useSVGVisualState
+        : useHTMLVisualState
+
+    function MotionDOMComponent(
+        props: MotionComponentProps<Props>,
+        externalRef?: React.Ref<HTMLElement | SVGElement>
+    ) {
+        let MeasureLayout: undefined | React.ComponentType<MotionProps>
+
+        const configAndProps = {
+            ...useContext(MotionConfigContext),
+            ...props,
+            layoutId: useLayoutId(props),
+        }
+
+        const { isStatic } = configAndProps
+
+        const context = useCreateMotionContext<HTMLElement | SVGElement>(props)
+
+        const visualState = useVisualState(props, isStatic)
+
+        if (!isStatic && isBrowser) {
+            useStrictMode(configAndProps, preloadedFeatures)
+
+            const layoutProjection = getProjectionFunctionality(configAndProps)
+            MeasureLayout = layoutProjection.MeasureLayout
+
+            context.visualElement = useVisualElement(
+                Component,
+                visualState,
+                configAndProps,
+                createVisualElement,
+                layoutProjection.ProjectionNode
+            )
+        }
+
+        return (
+            <MotionContext.Provider value={context}>
+                {MeasureLayout && context.visualElement ? (
+                    <MeasureLayout
+                        visualElement={context.visualElement}
+                        {...configAndProps}
+                    />
+                ) : null}
+                {useRender<Props, TagName>(
+                    Component,
+                    props,
+                    useMotionRef<
+                        HTMLElement | SVGElement,
+                        HTMLRenderState | SVGRenderState
+                    >(visualState, context.visualElement, externalRef),
+                    visualState,
+                    isStatic,
+                    forwardMotionProps
+                )}
+            </MotionContext.Provider>
+        )
+    }
+
+    MotionDOMComponent.displayName = `motion.${
+        typeof Component === "string"
+            ? Component
+            : `create(${Component.displayName ?? Component.name ?? ""})`
+    }`
+
+    const ForwardRefMotionComponent = forwardRef(MotionDOMComponent as any)
+    ;(ForwardRefMotionComponent as any)[motionComponentSymbol] = Component
+
+    return ForwardRefMotionComponent as MotionComponent<TagName, Props>
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: calcAxisDelta
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function calcAxisDelta(
+    delta: AxisDelta,
+    source: Axis,
+    target: Axis,
+    origin: number = 0.5
+) {
+    delta.origin = origin
+    delta.originPoint = mixNumber(source.min, source.max, delta.origin)
+    delta.scale = calcLength(target) / calcLength(source)
+    delta.translate =
+        mixNumber(target.min, target.max, delta.origin) - delta.originPoint
+
+    if (
+        (delta.scale >= SCALE_MIN && delta.scale <= SCALE_MAX) ||
+        isNaN(delta.scale)
+    ) {
+        delta.scale = 1.0
+    }
+
+    if (
+        (delta.translate >= TRANSLATE_MIN &&
+            delta.translate <= TRANSLATE_MAX) ||
+        isNaN(delta.translate)
+    ) {
+        delta.translate = 0.0
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: calcBoxDelta
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export function calcBoxDelta(
+    delta: Delta,
+    source: Box,
+    target: Box,
+    origin?: ResolvedValues
+): void {
+    calcAxisDelta(
+        delta.x,
+        source.x,
+        target.x,
+        origin ? (origin.originX as number) : undefined
+    )
+    calcAxisDelta(
+        delta.y,
+        source.y,
+        target.y,
+        origin ? (origin.originY as number) : undefined
+    )
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T00:07:23.785Z
+File: motiondivision-motion-b5df740/packages/framer-motion/src/animation/sequence/create.ts
+Functions Extracted: 5
+
+
+Function 1: createAnimationsFromSequence
+Language: TypeScript
+Lines: 66
+Full Code:
+--------------------------------------------------------------------------------
+export function createAnimationsFromSequence(
+    sequence: AnimationSequence,
+    { defaultTransition = {}, ...sequenceTransition }: SequenceOptions = {},
+    scope?: AnimationScope,
+    generators?: { [key: string]: GeneratorFactory }
+): ResolvedAnimationDefinitions {
+    const defaultDuration = defaultTransition.duration || 0.3;
+    const animationDefinitions: ResolvedAnimationDefinitions = new Map();
+    const sequences = new Map<Element | MotionValue, SequenceMap>();
+    const elementCache = {};
+    const timeLabels = new Map<string, number>();
+
+    let prevTime = 0;
+    let currentTime = 0;
+    let totalDuration = 0;
+
+    for (let i = 0; i < sequence.length; i++) {
+        const segment = sequence[i];
+
+        if (typeof segment === "string") {
+            timeLabels.set(segment, currentTime);
+            continue;
+        } else if (!Array.isArray(segment)) {
+            timeLabels.set(
+                segment.name,
+                calcNextTime(currentTime, segment.at, prevTime, timeLabels)
+            );
+            continue;
+        }
+
+        let [subject, keyframes, transition = {}] = segment;
+
+        if (transition.at !== undefined) {
+            currentTime = calcNextTime(
+                currentTime,
+                transition.at,
+                prevTime,
+                timeLabels
+            );
+        }
+
+        let maxDuration = 0;
+
+        const resolveValueSequence = (
+            valueKeyframes: UnresolvedValueKeyframe | UnresolvedValueKeyframe[],
+            valueTransition: Transition | DynamicAnimationOptions,
+            valueSequence: ValueSequence,
+            elementIndex = 0,
+            numSubjects = 0
+        ) => {
+            const valueKeyframesAsList = keyframesAsList(valueKeyframes);
+            const {
+                delay = 0,
+                times = defaultOffset(valueKeyframesAsList),
+                type = "keyframes",
+                repeat,
+                repeatType,
+                repeatDelay = 0,
+                ...remainingTransition
+            } = valueTransition;
+            let { ease = defaultTransition.ease || "easeOut", duration } =
+                valueTransition;
+
+            const calculatedDelay =
+                typeof delay === "function"
+                    ? delay(elementIndex, numSubjects)
+                    : delay;
+
+            const numKeyframes = valueKeyframesAsList.length;
+            const createGenerator = isGenerator(type)
+                ? type
+                : generators?.[type || "keyframes"];
+--------------------------------------------------------------------------------
+
+
+Function 2: getSubjectSequence
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function getSubjectSequence<O extends {}>(
+    subject: Element | MotionValue | O,
+    sequences: Map<Element | MotionValue | O, SequenceMap>
+): SequenceMap {
+    !sequences.has(subject) && sequences.set(subject, {});
+    return sequences.get(subject)!;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: getValueSequence
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function getValueSequence(name: string, sequences: SequenceMap): ValueSequence {
+    if (!sequences[name]) sequences[name] = [];
+    return sequences[name];
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: keyframesAsList
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function keyframesAsList(
+    keyframes: UnresolvedValueKeyframe | UnresolvedValueKeyframe[]
+): UnresolvedValueKeyframe[] {
+    return Array.isArray(keyframes) ? keyframes : [keyframes];
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: getValueTransition
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+export function getValueTransition(
+    transition: DynamicAnimationOptions & At,
+    key: string
+): DynamicAnimationOptions {
+    return transition && transition[key as keyof typeof transition]
+        ? {
+              ...transition,
+              ...(transition[key as keyof typeof transition] as Transition),
+          }
+        : { ...transition };
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T00:07:29.344Z
+File: [2 files: index.ts, static-prop.test.tsx]
+Functions Extracted: 1
+
+
+Function 1: createScopedAnimate
+Language: TypeScript
+Lines: 42
+Full Code:
+--------------------------------------------------------------------------------
+export function createScopedAnimate(scope?: AnimationScope) {
+    function scopedAnimate(
+        sequence: AnimationSequence,
+        options?: SequenceOptions
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate(
+        value: string | MotionValue<string>,
+        keyframes: string | UnresolvedValueKeyframe<string>[],
+        options?: ValueAnimationTransition<string>
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate(
+        value: number | MotionValue<number>,
+        keyframes: number | UnresolvedValueKeyframe<number>[],
+        options?: ValueAnimationTransition<number>
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate<V extends string | number>(
+        value: V | MotionValue<V>,
+        keyframes: V | UnresolvedValueKeyframe<V>[],
+        options?: ValueAnimationTransition<V>
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate(
+        element: ElementOrSelector,
+        keyframes: DOMKeyframesDefinition,
+        options?: DynamicAnimationOptions
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate<O extends {}>(
+        object: O | O[],
+        keyframes: ObjectTarget<O>,
+        options?: DynamicAnimationOptions
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate<O extends {}>(
+        subjectOrSequence:
+            | AnimationSequence
+            | MotionValue<number>
+            | MotionValue<string>
+            | number
+            | string
+            | ElementOrSelector
+            | O
+            | O[],
+        optionsOrKeyframes?:
+            | SequenceOptions
+            | number
+            | string
+            | UnresolvedValueKeyframe<number>[]
+            | UnresolvedValueKeyframe<string>[]
+            | DOMKeyframesDefinition
+            | ObjectTarget<O>,
+        options?:
+            | ValueAnimationTransition<number>
+            | ValueAnimationTransition<string>
+            | DynamicAnimationOptions
+    ): AnimationPlaybackControlsWithThen {
+        let animations: AnimationPlaybackControlsWithThen[] = []
+        let animationOnComplete: VoidFunction | undefined
+
+        if (isSequence(subjectOrSequence)) {
+            animations = animateSequence(
+                subjectOrSequence,
+                optionsOrKeyframes as SequenceOptions,
+                scope
+            )
+        } else {
+            // Implementation details...
+        }
+    }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T00:07:30.859Z
+File: just allows us to look at the results of animations when everything has wrapped up
+Functions Extracted: 3
+
+
+Function 1: Component
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+const Component = () => {
+    const animation = useAnimation();
+    const x = useMotionValue(0);
+
+    React.useEffect(() => {
+        animation.start({ x: 100 });
+    }, []);
+
+    return (
+        <motion.div
+            animate={animation}
+            style={{ x }}
+            onAnimationComplete={() => resolve(x.get())}
+        />
+    );
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: Component
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+const Component = () => {
+    const animation = useAnimation();
+    const x = useMotionValue(0);
+    const variants = {
+        foo: { x: 200 },
+    };
+
+    useEffect(() => {
+        animation.start("foo").then(() => resolve(x.get()));
+    }, []);
+
+    return (
+        <motion.div
+            variants={variants}
+            animate={animation}
+            style={{ x }}
+        />
+    );
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: Component
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const Component = () => {
+    const controls = useAnimation();
+    const variants = {
+        foo: { x: 1 },
+    };
+
+    useEffect(() => {
+        controls.set("foo");
+        resolve([xa.get(), xb.get()]);
+    });
+
+    return (
+        <motion.div
+            animate={controls}
+            variants={variants}
+            style={{ x: xa }}
+        >
+            <motion.div
+                variants={child}
+                style={{ x: xb }}
+            />
+        </motion.div>
+    );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T00:07:33.124Z
+File: motiondivision-motion-b5df740/packages/motion-dom/src/value/index.ts
+Functions Extracted: 6
+
+
+Function 1: setCurrent
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+setCurrent(current: V) {
+        this.current = current
+        this.updatedAt = time.now()
+
+        if (this.canTrackVelocity === null && current !== undefined) {
+            this.canTrackVelocity = isFloat(this.current)
+        }
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: onChange
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+onChange(subscription: Subscriber<V>): () => void {
+        if (process.env.NODE_ENV !== "production") {
+            warnOnce(
+                false,
+                `value.onChange(callback) is deprecated. Switch to value.on("change", callback).`
+            )
+        }
+        return this.on("change", subscription)
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: on
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+on<EventName extends keyof MotionValueEventCallbacks<V>>(
+        eventName: EventName,
+        callback: MotionValueEventCallbacks<V>[EventName]
+    ) {
+        if (!this.events[eventName]) {
+            this.events[eventName] = new SubscriptionManager()
+        }
+
+        const unsubscribe = this.events[eventName].add(callback)
+
+        if (eventName === "change") {
+            return () => {
+                unsubscribe()
+
+                frame.read(() => {
+                    if (!this.events.change.getSize()) {
+                        this.stop()
+                    }
+                })
+            }
+        }
+
+        return unsubscribe
+    }
+--------------------------------------------------------------------------------
+
+
+Function 4: set
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+set(v: V) {
+        if (!this.passiveEffect) {
+            this.updateAndNotify(v)
+        } else {
+            this.passiveEffect(v, this.updateAndNotify)
+        }
+    }
+--------------------------------------------------------------------------------
+
+
+Function 5: jump
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+jump(v: V, endAnimation = true) {
+        this.updateAndNotify(v)
+        this.prev = v
+        this.prevUpdatedAt = this.prevFrameValue = undefined
+        endAnimation && this.stop()
+        if (this.stopPassiveEffect) this.stopPassiveEffect()
+    }
+--------------------------------------------------------------------------------
+
+
+Function 6: updateAndNotify
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+updateAndNotify = (v: V) => {
+        const currentTime = time.now()
+
+        if (this.updatedAt !== currentTime) {
+            this.setPrevFrameValue()
+        }
+
+        this.prev = this.current
+
+        this.setCurrent(v)
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T00:19:40.962Z
+File: meteor-meteor-6f48b86/packages/accounts-base/accounts-base.d.ts
+Functions Extracted: 9
+
+
+Function 1: createUser
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function createUser(
+    options: {
+      username?: string | undefined;
+      email?: string | undefined;
+      password?: string | undefined;
+      profile?: Meteor.UserProfile | undefined;
+    },
+    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void
+  ): Promise<string>;
+--------------------------------------------------------------------------------
+
+
+Function 2: changePassword
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function changePassword(
+    oldPassword: string,
+    newPassword: string,
+    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void
+  ): Promise<void>;
+--------------------------------------------------------------------------------
+
+
+Function 3: forgotPassword
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function forgotPassword(
+    options: { email?: string | undefined },
+    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void
+  ): Promise<void>;
+--------------------------------------------------------------------------------
+
+
+Function 4: resetPassword
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function resetPassword(
+    token: string,
+    newPassword: string,
+    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void
+  ): Promise<void>;
+--------------------------------------------------------------------------------
+
+
+Function 5: verifyEmail
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function verifyEmail(
+    token: string,
+    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void
+  ): Promise<void>;
+--------------------------------------------------------------------------------
+
+
+Function 6: sendEnrollmentEmail
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function sendEnrollmentEmail(
+    userId: string,
+    email?: string,
+    extraTokenData?: Record<string, unknown>,
+    extraParams?: Record<string, unknown>
+  ): Promise<SendEmailResult>;
+--------------------------------------------------------------------------------
+
+
+Function 7: sendResetPasswordEmail
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function sendResetPasswordEmail(
+    userId: string,
+    email?: string,
+    extraTokenData?: Record<string, unknown>,
+    extraParams?: Record<string, unknown>
+  ): Promise<SendEmailResult>;
+--------------------------------------------------------------------------------
+
+
+Function 8: sendVerificationEmail
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function sendVerificationEmail(
+    userId: string,
+    email?: string,
+    extraTokenData?: Record<string, unknown>,
+    extraParams?: Record<string, unknown>
+  ): Promise<SendEmailResult>;
+--------------------------------------------------------------------------------
+
+
+Function 9: _checkPasswordAsync
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function _checkPasswordAsync(
+    user: Meteor.User,
+    password: Password
+  ): Promise<{ userId: string; error?: any }>
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T00:19:42.015Z
+File: [2 files: logging.d.ts, WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.]
+Functions Extracted: 9
+
+
+Function 1: normalizeName
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function normalizeName(name) {
+  if (typeof name !== 'string') {
+    name = String(name)
+  }
+  if (/[^a-z0-9\-#$%&'*+\.\^_`|~]/i.test(name)) {
+    throw new TypeError('Invalid character in header field name')
+  }
+  return name.toLowerCase()
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: Headers
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function Headers(headers) {
+  this.map = {}
+
+  if (headers instanceof Headers) {
+    headers.forEach(function(value, name) {
+      this.append(name, value)
+    }, this)
+
+  } else if (headers) {
+    Object.getOwnPropertyNames(headers).forEach(function(name) {
+      this.append(name, headers[name])
+    }, this)
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: append
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+Headers.prototype.append = function(name, value) {
+  name = normalizeName(name)
+  value = normalizeValue(value)
+  var list = this.map[name]
+  if (!list) {
+    list = []
+    this.map[name] = list
+  }
+  list.push(value)
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: forEach
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+Headers.prototype.forEach = function(callback, thisArg) {
+  Object.getOwnPropertyNames(this.map).forEach(function(name) {
+    this.map[name].forEach(function(value) {
+      callback.call(thisArg, value, name, this)
+    }, this)
+  }, this)
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: consumed
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function consumed(body) {
+  if (body.bodyUsed) {
+    return Promise.reject(new TypeError('Already read'))
+  }
+  body.bodyUsed = true
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: fileReaderReady
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function fileReaderReady(reader) {
+  return new Promise(function(resolve, reject) {
+    reader.onload = function() {
+      resolve(reader.result)
+    }
+    reader.onerror = function() {
+      reject(reader.error)
+    }
+  })
+}
+--------------------------------------------------------------------------------
+
+
+Function 7: readBlobAsArrayBuffer
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function readBlobAsArrayBuffer(blob) {
+  var reader = new FileReader()
+  reader.readAsArrayBuffer(blob)
+  return fileReaderReady(reader)
+}
+--------------------------------------------------------------------------------
+
+
+Function 8: readBlobAsText
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function readBlobAsText(blob) {
+  var reader = new FileReader()
+  reader.readAsText(blob)
+  return fileReaderReady(reader)
+}
+--------------------------------------------------------------------------------
+
+
+Function 9: _initBody
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+this._initBody = function(body) {
+  this._bodyInit = body
+  if (typeof body === 'string') {
+    this._bodyText = body
+  } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
+    this._bodyBlob = body
+  } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
+    this._bodyFormData = body
+  } else if (!body) {
+    this._bodyText = ''
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { QuizSession } from '@/lib/quiz-service';
 import { detectLanguage } from '@/lib/question-plugins/utils';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -43,6 +43,9 @@ function getHighlighterLanguage(lang: string): string {
   return langMap[lang] || 'javascript';
 }
 
+const STARTING_LIVES = 3;
+const MAX_LIVES = 3;
+
 export default function QuizInterface({ quizSession, onClose }: QuizInterfaceProps) {
   const { user } = useAuth();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -69,7 +72,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
   // ALL HOOKS MUST BE DECLARED BEFORE ANY CONDITIONAL RETURNS
   const [score, setScore] = useState(0);
-  const [lives, setLives] = useState(3);
+  const [lives, setLives] = useState(STARTING_LIVES);
   const [currentVariantIndex, setCurrentVariantIndex] = useState(0);
   const [showExplanations, setShowExplanations] = useState(false);
   const [shakingNext, setShakingNext] = useState(false);
@@ -81,6 +84,18 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   const [reportRequestId, setReportRequestId] = useState<number | null>(null);
   const [isTicketStreamPending, setIsTicketStreamPending] = useState(false);
   const [ticketStreamPlanned, setTicketStreamPlanned] = useState<number | null>(null);
+
+  const isStreamFinished = useMemo(() => {
+    if (quizSession.completed) return true;
+    if (Object.prototype.hasOwnProperty.call(quizSession, 'isStreaming')) {
+      return !quizSession.isStreaming;
+    }
+    return false;
+  }, [quizSession.completed, quizSession.isStreaming]);
+
+  const totalStreamedQuestions = quizSession.questions?.length ?? 0;
+  const answeredQuestions = Math.max(results.length, currentQuestionIndex + (showExplanations ? 1 : 0));
+  const accuracyPercentage = answeredQuestions > 0 ? Math.round((score / answeredQuestions) * 100) : 0;
 
   // Timers: per-question and overall (increase as questions stream in)
   const [questionTimeTotal, setQuestionTimeTotal] = useState(0);
@@ -536,7 +551,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     
     // Check if we're trying to finish the quiz before streaming is complete
     const isFinishingQuiz = !nextAvailable;
-    const isStreamingComplete = quizSession.completed || false;
+    const isStreamingComplete = isStreamFinished;
     
     // If finishing while streaming, show "slow down tiger" message and prevent finishing
     if (isFinishingQuiz && !isStreamingComplete) {
@@ -561,7 +576,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     setSelectedAnswers([]);
     setShowResults(false);
     setScore(0);
-    setLives(3);
+    setLives(STARTING_LIVES);
     setCurrentVariantIndex(0);
     setShowExplanations(false);
     setResults([]);
@@ -1343,6 +1358,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         initialTickets={generatedTickets}
         ticketsLoading={isTicketStreamPending}
         ticketsPlanned={ticketStreamPlanned}
+        totalStreamedQuestions={totalStreamedQuestions}
       />
     );
   }
@@ -1445,7 +1461,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 {hasQuestion ? (
                   <>
                     Question {currentQuestionIndex + 1} of {totalQuestions}
-                    {!quizSession.completed && (
+                    {quizSession.isStreaming && (
                       <span className="ml-3 px-2 py-1 text-xs bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 rounded-full flex items-center gap-1">
                         <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
                         Streaming...
@@ -1468,6 +1484,14 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               {/* Score */}
               <div className="text-sm font-medium text-gray-900 dark:text-white">
                 Score: {score}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Accuracy: {totalStreamedQuestions > 0 ? `${accuracyPercentage}%` : '—'}
+                {totalStreamedQuestions > 0 && (
+                  <span className="ml-1 text-xs">
+                    ({score}/{totalStreamedQuestions})
+                  </span>
+                )}
               </div>
               
             {/* Timers */}
@@ -1508,21 +1532,21 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               <div className="flex items-center space-x-2">
                 <span className="text-sm text-gray-600 dark:text-gray-400">Lives:</span>
                 <div className="flex space-x-1">
-                  {[0,1,2].map((i) => (
+                  {Array.from({ length: MAX_LIVES }, (_, i) => (
                     <button
                       key={i}
                       onClick={() => {
-                        if (i >= lives && lives < 3) {
-                          setLives(prev => Math.min(3, prev + 1));
+                        if (i >= lives && lives < MAX_LIVES) {
+                          setLives(prev => Math.min(MAX_LIVES, prev + 1));
                         }
                       }}
                       className={`w-4 h-4 rounded-full transition-colors ${
-                        i < lives 
-                          ? 'bg-red-500 hover:bg-red-600' 
+                        i < lives
+                          ? 'bg-red-500 hover:bg-red-600'
                           : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 cursor-pointer'
                       }`}
                       title={i >= lives ? 'Click to restore life' : 'Life active'}
-                    ></button>
+                    />
                   ))}
                 </div>
               </div>
@@ -2013,16 +2037,16 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               <div className="relative">
                 <button
                   onClick={handleNextQuestion}
-                  disabled={currentQuestionIndex === quizSession.questions.length - 1 && !quizSession.completed}
+                  disabled={currentQuestionIndex === quizSession.questions.length - 1 && !isStreamFinished}
                   className={`py-3 px-8 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors ${
-                    currentQuestionIndex === quizSession.questions.length - 1 && !quizSession.completed
+                    currentQuestionIndex === quizSession.questions.length - 1 && !isStreamFinished
                       ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
                       : `bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 ${shakingNext ? 'animate-shake' : ''}`
                   }`}
                 >
                   {currentQuestionIndex === quizSession.questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
                 </button>
-                {currentQuestionIndex === quizSession.questions.length - 1 && !quizSession.completed && (
+                {currentQuestionIndex === quizSession.questions.length - 1 && !isStreamFinished && (
                   <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap shadow-lg">
                     Slow down tiger!
                     <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-500"></div>

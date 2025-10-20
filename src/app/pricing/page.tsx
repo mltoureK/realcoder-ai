@@ -1,21 +1,64 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import FounderCounter from '@/components/FounderCounter';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
+import { getFounderTierStatus } from '@/lib/founder-tier';
+
+type FounderTierStatus = Awaited<ReturnType<typeof getFounderTierStatus>>;
 
 export default function PricingPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [founderStatus, setFounderStatus] = useState<FounderTierStatus | null>(null);
+  const [founderStatusLoading, setFounderStatusLoading] = useState(true);
+  const [founderStatusError, setFounderStatusError] = useState<string | null>(null);
 
-  const handleUpgrade = async () => {
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadStatus = async () => {
+      try {
+        setFounderStatusError(null);
+        const status = await getFounderTierStatus();
+        if (isMounted) {
+          setFounderStatus(status);
+        }
+      } catch (err) {
+        console.error('❌ Error fetching founder tier status:', err);
+        if (isMounted) {
+          setFounderStatusError('Unable to load founder tier availability.');
+        }
+      } finally {
+        if (isMounted) {
+          setFounderStatusLoading(false);
+        }
+      }
+    };
+
+    loadStatus();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const founderAvailable = useMemo(() => {
+    if (!founderStatus) return false;
+    return (
+      founderStatus.isActive &&
+      founderStatus.available &&
+      founderStatus.slotsRemaining > 0
+    );
+  }, [founderStatus]);
+
+  const handleUpgrade = async (tier: 'founder' | 'regular') => {
     // Check if user is logged in
     if (!user) {
-      alert('Please sign in to upgrade to Founder tier');
+      alert('Please sign in to upgrade your plan');
       router.push('/');
       return;
     }
@@ -35,7 +78,7 @@ export default function PricingPage() {
         body: JSON.stringify({
           userId: user.uid,
           userEmail: user.email,
-          isFounder: true,
+          isFounder: tier === 'founder',
         }),
       });
 
@@ -107,12 +150,28 @@ export default function PricingPage() {
             Choose Your Plan
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Start learning from real code today. Upgrade to Founder tier for unlimited access.
+            Start learning from real code today. {founderAvailable ? 'Upgrade to Founder tier for unlimited access.' : 'Unlock unlimited access with our Pro plan.'}
           </p>
+          {founderStatusError && (
+            <p className="text-sm text-red-500 mt-2">{founderStatusError}</p>
+          )}
         </div>
 
         {/* Founder Counter - Show urgency */}
         <FounderCounter />
+
+        {!founderStatusLoading && founderStatus && !founderAvailable && (
+          <div className="max-w-3xl mx-auto mb-8">
+            <div className="bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-700 rounded-2xl px-6 py-4 text-center shadow-sm">
+              <h3 className="text-lg font-semibold text-yellow-900 dark:text-yellow-200">
+                🎉 Founder tier is now sold out!
+              </h3>
+              <p className="text-sm text-yellow-900/80 dark:text-yellow-200/80 mt-2">
+                New subscribers receive the Pro plan at the regular rate. Existing founders keep their lifetime pricing.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Pricing Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
@@ -194,138 +253,214 @@ export default function PricingPage() {
           </div>
 
           {/* Founder Tier */}
-          <div className="bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl shadow-2xl border-2 border-purple-400 p-8 flex flex-col relative overflow-hidden transform hover:scale-105 transition-transform">
-            {/* LIMITED TIME Badge */}
-            <div className="absolute top-4 right-4">
-              <div className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full animate-pulse shadow-lg">
-                LIMITED TIME
+          {founderAvailable ? (
+            <div className="bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl shadow-2xl border-2 border-purple-400 p-8 flex flex-col relative overflow-hidden transform hover:scale-105 transition-transform">
+              {/* LIMITED TIME Badge */}
+              <div className="absolute top-4 right-4">
+                <div className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full animate-pulse shadow-lg">
+                  LIMITED TIME
+                </div>
               </div>
-            </div>
 
-            {/* Glow effect */}
-            <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-pink-400/20 pointer-events-none"></div>
+              {/* Glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-pink-400/20 pointer-events-none"></div>
 
-            {/* Content */}
-            <div className="relative z-10">
-              {/* Header */}
-              <div className="text-center mb-6">
-                <div className="inline-flex items-center justify-center mb-2">
-                  <span className="text-3xl">🏆</span>
-                  <h3 className="text-2xl font-bold text-white ml-2">
-                    Founder Tier
-                  </h3>
+              {/* Content */}
+              <div className="relative z-10">
+                {/* Header */}
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center justify-center mb-2">
+                    <span className="text-3xl">🏆</span>
+                    <h3 className="text-2xl font-bold text-white ml-2">
+                      Founder Tier
+                    </h3>
+                  </div>
+                  <div className="flex items-baseline justify-center">
+                    <span className="text-5xl font-extrabold text-white">$5</span>
+                    <span className="text-xl text-white/90 ml-2">/month</span>
+                  </div>
+                  <p className="text-sm text-white/90 mt-2 font-medium">
+                    Lock in lifetime founder pricing
+                  </p>
                 </div>
-                <div className="flex items-baseline justify-center">
-                  <span className="text-5xl font-extrabold text-white">$5</span>
-                  <span className="text-xl text-white/90 ml-2">/month</span>
+
+                {/* Savings Badge */}
+                <div className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg p-4 mb-6">
+                  <div className="text-center">
+                    <div className="text-white font-bold text-lg mb-1">
+                      🎉 Save $60/year
+                    </div>
+                    <div className="text-white/90 text-sm">
+                      Compared to regular pricing at <span className="line-through">$10/month</span>
+                    </div>
+                    <div className="text-white/80 text-xs mt-2">
+                      Regular price after founder tier closes
+                    </div>
+                  </div>
                 </div>
-                <p className="text-sm text-white/90 mt-2 font-medium">
-                  Lock in lifetime founder pricing
+
+                {/* Features */}
+                <div className="space-y-4 mb-8 flex-grow">
+                  <div className="flex items-start">
+                    <svg className="w-5 h-5 text-yellow-300 mt-1 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-white font-semibold">
+                      ⚡ Unlimited quizzes
+                    </span>
+                  </div>
+                  <div className="flex items-start">
+                    <svg className="w-5 h-5 text-yellow-300 mt-1 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-white">
+                      🏅 Exclusive founder badge
+                    </span>
+                  </div>
+                  <div className="flex items-start">
+                    <svg className="w-5 h-5 text-yellow-300 mt-1 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-white">
+                      💎 Priority support
+                    </span>
+                  </div>
+                  <div className="flex items-start">
+                    <svg className="w-5 h-5 text-yellow-300 mt-1 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-white">
+                      🚀 Early access to new features
+                    </span>
+                  </div>
+                  <div className="flex items-start">
+                    <svg className="w-5 h-5 text-yellow-300 mt-1 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-white">
+                      🔒 Lifetime pricing guarantee
+                    </span>
+                  </div>
+                  <div className="flex items-start">
+                    <svg className="w-5 h-5 text-yellow-300 mt-1 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-white">
+                      💪 Support indie development
+                    </span>
+                  </div>
+                  <div className="flex items-start">
+                    <svg className="w-5 h-5 text-yellow-300 mt-1 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-white">
+                      Everything in Free, plus more
+                    </span>
+                  </div>
+                </div>
+
+                {/* CTA Button */}
+                <button
+                  onClick={() => handleUpgrade('founder')}
+                  disabled={loading}
+                  className="w-full bg-white text-purple-600 py-4 px-6 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? (
+                    <div className="flex items-center justify-center space-x-2">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-purple-600"></div>
+                      <span>Processing...</span>
+                    </div>
+                  ) : (
+                    '🚀 Upgrade to Founder Tier'
+                  )}
+                </button>
+
+                {error && (
+                  <div className="mt-4 p-3 bg-red-500/20 border border-red-400 rounded-lg">
+                    <p className="text-white text-sm text-center">{error}</p>
+                  </div>
+                )}
+
+                <p className="text-white/80 text-xs text-center mt-4">
+                  ✓ Cancel anytime • No long-term commitment
                 </p>
               </div>
-
-              {/* Savings Badge */}
-              <div className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg p-4 mb-6">
-                <div className="text-center">
-                  <div className="text-white font-bold text-lg mb-1">
-                    🎉 Save $60/year
-                  </div>
-                  <div className="text-white/90 text-sm">
-                    Compared to regular pricing at <span className="line-through">$10/month</span>
-                  </div>
-                  <div className="text-white/80 text-xs mt-2">
-                    Regular price after founder tier closes
-                  </div>
-                </div>
-              </div>
-
-              {/* Features */}
-              <div className="space-y-4 mb-8 flex-grow">
-                <div className="flex items-start">
-                  <svg className="w-5 h-5 text-yellow-300 mt-1 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-white font-semibold">
-                    ⚡ Unlimited quizzes
-                  </span>
-                </div>
-                <div className="flex items-start">
-                  <svg className="w-5 h-5 text-yellow-300 mt-1 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-white">
-                    🏅 Exclusive founder badge
-                  </span>
-                </div>
-                <div className="flex items-start">
-                  <svg className="w-5 h-5 text-yellow-300 mt-1 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-white">
-                    💎 Priority support
-                  </span>
-                </div>
-                <div className="flex items-start">
-                  <svg className="w-5 h-5 text-yellow-300 mt-1 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-white">
-                    🚀 Early access to new features
-                  </span>
-                </div>
-                <div className="flex items-start">
-                  <svg className="w-5 h-5 text-yellow-300 mt-1 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-white">
-                    🔒 Lifetime pricing guarantee
-                  </span>
-                </div>
-                <div className="flex items-start">
-                  <svg className="w-5 h-5 text-yellow-300 mt-1 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-white">
-                    💪 Support indie development
-                  </span>
-                </div>
-                <div className="flex items-start">
-                  <svg className="w-5 h-5 text-yellow-300 mt-1 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-white">
-                    Everything in Free, plus more
-                  </span>
-                </div>
-              </div>
-
-              {/* CTA Button */}
-              <button
-                onClick={handleUpgrade}
-                disabled={loading}
-                className="w-full bg-white text-purple-600 py-4 px-6 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? (
-                  <div className="flex items-center justify-center space-x-2">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-purple-600"></div>
-                    <span>Processing...</span>
-                  </div>
-                ) : (
-                  '🚀 Upgrade to Founder Tier'
-                )}
-              </button>
-
-              {error && (
-                <div className="mt-4 p-3 bg-red-500/20 border border-red-400 rounded-lg">
-                  <p className="text-white text-sm text-center">{error}</p>
-                </div>
-              )}
-
-              <p className="text-white/80 text-xs text-center mt-4">
-                ✓ Cancel anytime • No long-term commitment
-              </p>
             </div>
-          </div>
+          ) : (
+            <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-2xl border-2 border-indigo-400 p-8 flex flex-col relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+              <div className="relative z-10">
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center justify-center mb-2">
+                    <span className="text-3xl">🚀</span>
+                    <h3 className="text-2xl font-bold text-white ml-2">
+                      Pro Plan
+                    </h3>
+                  </div>
+                  <div className="flex items-baseline justify-center">
+                    <span className="text-5xl font-extrabold text-white">$10</span>
+                    <span className="text-xl text-white/90 ml-2">/month</span>
+                  </div>
+                  <p className="text-sm text-white/90 mt-2 font-medium">
+                    Founder pricing is locked for existing members
+                  </p>
+                </div>
+
+                <div className="bg-white/15 backdrop-blur-sm border border-white/30 rounded-lg p-4 mb-6 text-center">
+                  <p className="text-white text-sm">
+                    Includes everything in the Free plan plus unlimited quizzes, priority support, and access to upcoming features.
+                  </p>
+                </div>
+
+                <div className="space-y-4 mb-8 flex-grow">
+                  {[
+                    '⚡ Unlimited quizzes every week',
+                    '🔍 Deep-dive code explanations',
+                    '💼 Interview readiness content',
+                    '💬 Priority support & feedback',
+                    '🚀 Instant access to new features',
+                    '🏦 Supports continued development',
+                  ].map((feature) => (
+                    <div key={feature} className="flex items-start">
+                      <svg className="w-5 h-5 text-blue-200 mt-1 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <span className="text-white">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => handleUpgrade('regular')}
+                  disabled={loading}
+                  className="w-full bg-white text-indigo-600 py-4 px-6 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? (
+                    <div className="flex items-center justify-center space-x-2">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600"></div>
+                      <span>Processing...</span>
+                    </div>
+                  ) : (
+                    'Upgrade to Pro'
+                  )}
+                </button>
+
+                {error && (
+                  <div className="mt-4 p-3 bg-red-500/20 border border-red-400 rounded-lg">
+                    <p className="text-white text-sm text-center">{error}</p>
+                  </div>
+                )}
+
+                <p className="text-white/80 text-xs text-center mt-4">
+                  ✓ Cancel anytime • No long-term commitment
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* FAQ Section */}
@@ -384,14 +519,20 @@ export default function PricingPage() {
               Ready to level up your coding skills?
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-2xl mx-auto">
-              Join the first 100 founders and lock in lifetime pricing while learning from real-world code.
+              {founderAvailable
+                ? 'Join the first 100 founders and lock in lifetime pricing while learning from real-world code.'
+                : 'Upgrade to the Pro plan for unlimited quizzes, priority support, and all future features.'}
             </p>
             <button
-              onClick={handleUpgrade}
+              onClick={() => handleUpgrade(founderAvailable ? 'founder' : 'regular')}
               disabled={loading}
               className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-8 rounded-lg font-bold text-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Processing...' : 'Become a Founder Now'}
+              {loading
+                ? 'Processing...'
+                : founderAvailable
+                  ? 'Become a Founder Now'
+                  : 'Upgrade to Pro'}
             </button>
           </div>
         </div>
@@ -399,4 +540,3 @@ export default function PricingPage() {
     </div>
   );
 }
-

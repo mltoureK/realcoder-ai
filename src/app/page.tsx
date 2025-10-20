@@ -678,29 +678,30 @@ export default function Home() {
             isCached: true // Mark as community reviewed
           }));
           
-          console.log('✨ Selected cached questions:', selectedQuestions.map(q => ({
-            id: q.id,
-            type: q.type,
-            isCached: q.isCached,
-            question: q.question?.substring(0, 50)
-          })));
-          
-          const cachedSession = {
-            id: Date.now().toString(),
-            title: 'Community Reviewed Quiz',
-            questions: selectedQuestions,
-            currentQuestionIndex: 0,
-            score: 0,
-            lives: 3,
-            lastLifeRefill: new Date(),
-            completed: false,
-            repositoryInfo: {
-              owner: githubRepo.owner,
-              repo: githubRepo.repo,
-              branch: selectedBranch || 'main'
-            },
-            isCached: true
-          };
+      console.log('✨ Selected cached questions:', selectedQuestions.map(q => ({
+        id: q.id,
+        type: q.type,
+        isCached: q.isCached,
+        question: q.question?.substring(0, 50)
+      })));
+      
+      const cachedSession = {
+        id: Date.now().toString(),
+        title: 'Community Reviewed Quiz',
+        questions: selectedQuestions,
+        currentQuestionIndex: 0,
+        score: 0,
+        lives: 3,
+        lastLifeRefill: new Date(),
+        completed: true,
+        repositoryInfo: {
+          owner: githubRepo.owner,
+          repo: githubRepo.repo,
+          branch: selectedBranch || 'main'
+        },
+        isCached: true,
+        isStreaming: false
+      };
           
           setQuizSession(cachedSession);
           setIsLoading(false);

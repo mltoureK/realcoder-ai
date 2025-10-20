@@ -50,6 +50,7 @@ type Props = {
   initialTickets?: Ticket[];
   ticketsLoading?: boolean;
   ticketsPlanned?: number | null;
+  totalStreamedQuestions?: number;
 };
 
 export default function ReportCard({
@@ -59,7 +60,8 @@ export default function ReportCard({
   onRetry,
   initialTickets,
   ticketsLoading = false,
-  ticketsPlanned = null
+  ticketsPlanned = null,
+  totalStreamedQuestions
 }: Props) {
   const analysis = analyzeResults(results);
   const recs = generateRecommendations(analysis);
@@ -277,8 +279,15 @@ useEffect(() => {
     } catch (_) {}
   }
 
-  const percentage = Math.round(analysis.overall.accuracy * 100);
-  const passed = percentage >= 70;
+  const answeredAccuracyPercentage = Math.round(analysis.overall.accuracy * 100);
+  const totalQuestionsDenominator = Math.max(
+    totalStreamedQuestions ?? 0,
+    analysis.overall.total
+  );
+  const overallPercentage = totalQuestionsDenominator > 0
+    ? Math.round((analysis.overall.correct / totalQuestionsDenominator) * 100)
+    : 0;
+  const passed = answeredAccuracyPercentage >= 70;
   const numDone = tickets.filter((t) => t.done).length;
   const allHandled = tickets.length === 0 || tickets.every((t) => t.done);
   let pendingSkeletonCount = 0;
@@ -387,11 +396,11 @@ useEffect(() => {
                   <div className="rounded-2xl border border-white/20 bg-white/10 p-3">
                     <div className="text-[11px] font-semibold uppercase tracking-wide text-white/70">Correct</div>
                     <div className="mt-1 text-2xl font-semibold">{analysis.overall.correct}</div>
-                    <div className="text-[11px] text-white/70">Out of {analysis.overall.total}</div>
+                    <div className="text-[11px] text-white/70">Out of {totalQuestionsDenominator}</div>
                   </div>
                   <div className="rounded-2xl border border-white/20 bg-white/10 p-3">
                     <div className="text-[11px] font-semibold uppercase tracking-wide text-white/70">Accuracy</div>
-                    <div className="mt-1 text-2xl font-semibold">{percentage}%</div>
+                    <div className="mt-1 text-2xl font-semibold">{answeredAccuracyPercentage}%</div>
                     <div className="text-[11px] text-white/70">
                       {analysis.overall.total ? `${analysis.overall.correct} ✅ / ${analysis.overall.incorrect} ❌` : 'No attempts yet'}
                     </div>
@@ -409,9 +418,9 @@ useEffect(() => {
                 <div className="rounded-2xl bg-white/95 p-5 text-indigo-950 shadow-xl backdrop-blur dark:bg-slate-900/95 dark:text-slate-100">
                   <div className="text-xs font-semibold uppercase tracking-wide text-indigo-500 dark:text-indigo-300">Overall Score</div>
                   <div className="mt-3 flex items-end justify-between gap-3">
-                    <span className="text-4xl font-bold">{percentage}%</span>
+                    <span className="text-4xl font-bold">{overallPercentage}%</span>
                     <span className="text-sm text-slate-500 dark:text-slate-400">
-                      {analysis.overall.correct} / {analysis.overall.total}
+                      {analysis.overall.correct} / {totalQuestionsDenominator}
                     </span>
                   </div>
                   <p className="mt-3 text-xs leading-relaxed text-slate-600 dark:text-slate-300">

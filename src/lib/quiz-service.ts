@@ -30,6 +30,7 @@ export interface QuizSession {
   lives: number;
   lastLifeRefill: Date;
   completed: boolean;
+  isStreaming?: boolean;
   repositoryInfo: RepositoryInfo;
 }
 

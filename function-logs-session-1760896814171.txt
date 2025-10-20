@@ -930,3 +930,3987 @@ Total Chunks Processed: 5
 Ended: 2025-10-19T18:12:21.627Z
 ================================================================================
 
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T19:40:58.697Z
+File: lfnovo-open-notebook-df0986c/api/models.py
+Functions Extracted: 1
+
+
+Function 1: validate_notebook_fields
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+    @model_validator(mode="after")
+    def validate_notebook_fields(self):
+        # Ensure only one of notebook_id or notebooks is provided
+        if self.notebook_id is not None and self.notebooks is not None:
+            raise ValueError(
+                "Cannot specify both 'notebook_id' and 'notebooks'. Use 'notebooks' for multi-notebook support."
+            )
+
+        # Convert single notebook_id to notebooks array for internal processing
+        if self.notebook_id is not None:
+            self.notebooks = [self.notebook_id]
+            # Keep notebook_id for backward compatibility in response
+
+        # Set empty array if no notebooks specified (allow sources without notebooks)
+        if self.notebooks is None:
+            self.notebooks = []
+
+        return self
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T19:41:01.200Z
+Question Type: multiple-choice
+Function: validate_notebook_fields
+Function Size: 991 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: validate_notebook_fields (Python)\n// Validates the notebook fields to ensure that either 'notebook_id' or 'notebooks' is provided, and converts 'notebook_id' to a list for internal processing.\n\n    @model_validator(mode="after")\n    def validate_notebook_fields(self):\n        # Ensure o
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T19:41:06.843Z
+File: [3 files: card.tsx, use-models.ts, select.tsx]
+Functions Extracted: 5
+
+
+Function 1: Card
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+function Card({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card"
+      className={cn(
+        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: useModels
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function useModels() {
+  return useQuery({
+    queryKey: MODEL_QUERY_KEYS.models,
+    queryFn: () => modelsApi.list(),
+  })
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: useCreateModel
+Language: TypeScript
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+export function useCreateModel() {
+  const queryClient = useQueryClient()
+  const { toast } = useToast()
+
+  return useMutation({
+    mutationFn: (data: CreateModelRequest) => modelsApi.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: MODEL_QUERY_KEYS.models })
+      toast({
+        title: 'Success',
+        description: 'Model created successfully',
+      })
+    },
+    onError: () => {
+      toast({
+        title: 'Error',
+        description: 'Failed to create model',
+        variant: 'destructive',
+      })
+    },
+  })
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: SelectTrigger
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+function SelectTrigger({
+  className,
+  size = "default",
+  children,
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
+  size?: "sm" | "default"
+}) {
+  return (
+    <SelectPrimitive.Trigger
+      data-slot="select-trigger"
+      data-size={size}
+      className={cn(
+        "border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex w-fit items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      {...props}
+    >
+      {children}
+      <SelectPrimitive.Icon asChild>
+        <ChevronDownIcon className="size-4 opacity-50" />
+      </SelectPrimitive.Icon>
+    </SelectPrimitive.Trigger>
+  )
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: useDeleteModel
+Language: TypeScript
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+export function useDeleteModel() {
+  const queryClient = useQueryClient()
+  const { toast } = useToast()
+
+  return useMutation({
+    mutationFn: (id: string) => modelsApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: MODEL_QUERY_KEYS.models })
+      queryClient.invalidateQueries({ queryKey: MODEL_QUERY_KEYS.defaults })
+      toast({
+        title: 'Success',
+        description: 'Model deleted successfully',
+      })
+    },
+    onError: () => {
+      toast({
+        title: 'Error',
+        description: 'Failed to delete model',
+        variant: 'destructive',
+      })
+    },
+  })
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T19:41:06.910Z
+Question Type: true-false
+Function: validate_notebook_fields
+Function Size: 991 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: validate_notebook_fields (Python)\n// Validates the notebook fields to ensure that either 'notebook_id' or 'notebooks' is provided, and converts 'notebook_id' to a list for internal processing.\n\n    @model_validator(mode="after")\n    def validate_notebook_fields(self):\n        # Ensure o
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T19:41:08.069Z
+Question Type: order-sequence
+Function: validate_notebook_fields
+Function Size: 991 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: validate_notebook_fields (Python)\n// Validates the notebook fields to ensure that either 'notebook_id' or 'notebooks' is provided, and converts 'notebook_id' to a list for internal processing.\n\n    @model_validator(mode="after")\n    def validate_notebook_fields(self):\n        # Ensure o
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T19:41:08.682Z
+Question Type: order-sequence
+Function: validate_notebook_fields
+Function Size: 991 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: validate_notebook_fields (Python)\n// Validates the notebook fields to ensure that either 'notebook_id' or 'notebooks' is provided, and converts 'notebook_id' to a list for internal processing.\n\n    @model_validator(mode="after")\n    def validate_notebook_fields(self):\n        # Ensure o
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T19:41:12.926Z
+Question Type: true-false
+Function: validate_notebook_fields
+Function Size: 991 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: validate_notebook_fields (Python)\n// Validates the notebook fields to ensure that either 'notebook_id' or 'notebooks' is provided, and converts 'notebook_id' to a list for internal processing.\n\n    @model_validator(mode="after")\n    def validate_notebook_fields(self):\n        # Ensure o
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T19:41:13.913Z
+Question Type: function-variant
+Function: validate_notebook_fields
+Function Size: 991 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: validate_notebook_fields (Python)\n// Validates the notebook fields to ensure that either 'notebook_id' or 'notebooks' is provided, and converts 'notebook_id' to a list for internal processing.\n\n    @model_validator(mode="after")\n    def validate_notebook_fields(self):\n        # Ensure o
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 5
+Total Chunks Processed: 1
+Ended: 2025-10-19T19:41:13.933Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T19:41:16.032Z
+Question Type: multiple-choice
+Function: Card
+Function Size: 384 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: Card (TypeScript)\n// Renders a card component with customizable class names and props.\n\nfunction Card({ className, ...props }: React.ComponentProps<"div">) {\n  return (\n    <div\n      data-slot="card"\n      className={cn(\n        "bg-card text-card-foreground flex flex-col gap-6 rounded
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T19:41:17.390Z
+Question Type: true-false
+Function: useModels
+Function Size: 212 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useModels (TypeScript)\n// Fetches a list of models using a query.\n\nexport function useModels() {\n  return useQuery({\n    queryKey: MODEL_QUERY_KEYS.models,\n    queryFn: () => modelsApi.list(),\n  })\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T19:41:19.142Z
+Question Type: select-all
+Function: useModels
+Function Size: 212 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useModels (TypeScript)\n// Fetches a list of models using a query.\n\nexport function useModels() {\n  return useQuery({\n    queryKey: MODEL_QUERY_KEYS.models,\n    queryFn: () => modelsApi.list(),\n  })\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T19:41:20.862Z
+Question Type: select-all
+Function: useCreateModel
+Function Size: 674 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useCreateModel (TypeScript)\n// Handles the creation of a model with success and error handling.\n\nexport function useCreateModel() {\n  const queryClient = useQueryClient()\n  const { toast } = useToast()\n\n  return useMutation({\n    mutationFn: (data: CreateModelRequest) => modelsApi.creat
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T19:41:24.994Z
+File: [2 files: dialog.tsx, command.tsx]
+Functions Extracted: 2
+
+
+Function 1: DialogContent
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function DialogContent({
+  className,
+  children,
+  showCloseButton = true,
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Content> & {
+  showCloseButton?: boolean
+}) {
+  return (
+    <DialogPortal data-slot="dialog-portal">
+      <DialogOverlay />
+      <DialogPrimitive.Content
+        data-slot="dialog-content"
+        className={cn(
+          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-[calc(100%-2rem)]",
+          className
+        )}
+        {...props}
+      >
+        {children}
+        {showCloseButton && (
+          <DialogPrimitive.Close
+            data-slot="dialog-close"
+            className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+          >
+            <XIcon />
+            <span className="sr-only">Close</span>
+          </DialogPrimitive.Close>
+        )}
+      </DialogPrimitive.Content>
+    </DialogPortal>
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: CommandDialog
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+function CommandDialog({
+  title = "Command Palette",
+  description = "Search for a command to run...",
+  children,
+  className,
+  showCloseButton = true,
+  ...props
+}: React.ComponentProps<typeof Dialog> & {
+  title?: string
+  description?: string
+  className?: string
+  showCloseButton?: boolean
+}) {
+  return (
+    <Dialog {...props}>
+      <DialogHeader className="sr-only">
+        <DialogTitle>{title}</DialogTitle>
+        <DialogDescription>{description}</DialogDescription>
+      </DialogHeader>
+      <DialogContent
+        className={cn("overflow-hidden p-0", className)}
+        showCloseButton={showCloseButton}
+      >
+        <Command className="[&_[cmdk-group-heading]]:text-muted-foreground **:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
+          {children}
+        </Command>
+      </DialogContent>
+    </Dialog>
+  );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T19:41:25.429Z
+Question Type: select-all
+Function: useDeleteModel
+Function Size: 735 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useDeleteModel (TypeScript)\n// Handles the deletion of a model with success and error handling.\n\nexport function useDeleteModel() {\n  const queryClient = useQueryClient()\n  const { toast } = useToast()\n\n  return useMutation({\n    mutationFn: (id: string) => modelsApi.delete(id),\n    onS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T19:41:26.188Z
+Question Type: function-variant
+Function: Card
+Function Size: 384 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: Card (TypeScript)\n// Renders a card component with customizable class names and props.\n\nfunction Card({ className, ...props }: React.ComponentProps<"div">) {\n  return (\n    <div\n      data-slot="card"\n      className={cn(\n        "bg-card text-card-foreground flex flex-col gap-6 rounded
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T19:41:32.488Z
+Question Type: order-sequence
+Function: Card
+Function Size: 384 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: Card (TypeScript)\n// Renders a card component with customizable class names and props.\n\nfunction Card({ className, ...props }: React.ComponentProps<"div">) {\n  return (\n    <div\n      data-slot="card"\n      className={cn(\n        "bg-card text-card-foreground flex flex-col gap-6 rounded
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T19:41:34.025Z
+Question Type: function-variant
+Function: useModels
+Function Size: 212 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useModels (TypeScript)\n// Fetches a list of models using a query.\n\nexport function useModels() {\n  return useQuery({\n    queryKey: MODEL_QUERY_KEYS.models,\n    queryFn: () => modelsApi.list(),\n  })\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T19:41:35.099Z
+Question Type: function-variant
+Function: useCreateModel
+Function Size: 674 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useCreateModel (TypeScript)\n// Handles the creation of a model with success and error handling.\n\nexport function useCreateModel() {\n  const queryClient = useQueryClient()\n  const { toast } = useToast()\n\n  return useMutation({\n    mutationFn: (data: CreateModelRequest) => modelsApi.creat
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T19:41:36.516Z
+Question Type: order-sequence
+Function: useDeleteModel
+Function Size: 735 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useDeleteModel (TypeScript)\n// Handles the deletion of a model with success and error handling.\n\nexport function useDeleteModel() {\n  const queryClient = useQueryClient()\n  const { toast } = useToast()\n\n  return useMutation({\n    mutationFn: (id: string) => modelsApi.delete(id),\n    onS
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 5
+Ended: 2025-10-19T19:41:36.548Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T21:34:40.621Z
+File: [2 files: If we end up here, there was no work store or work unit store present., find-page-file.ts]
+Functions Extracted: 4
+
+
+Function 1: makeHangingHeaders
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function makeHangingHeaders(
+  workStore: WorkStore,
+  prerenderStore: PrerenderStoreModern
+): Promise<ReadonlyHeaders> {
+  const cachedHeaders = CachedHeaders.get(prerenderStore);
+  if (cachedHeaders) {
+    return cachedHeaders;
+  }
+
+  const promise = makeHangingPromise<ReadonlyHeaders>(
+    prerenderStore.renderSignal,
+    workStore.route,
+    '`headers()`'
+  );
+  CachedHeaders.set(prerenderStore, promise);
+
+  return promise;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: makeUntrackedHeadersWithDevWarnings
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function makeUntrackedHeadersWithDevWarnings(
+  underlyingHeaders: ReadonlyHeaders,
+  route: string | undefined,
+  requestStore: RequestStore
+): Promise<ReadonlyHeaders> {
+  if (requestStore.asyncApiPromises) {
+    const promise = requestStore.asyncApiPromises.headers;
+    return instrumentHeadersPromiseWithDevWarnings(promise, route);
+  }
+
+  const cachedHeaders = CachedHeaders.get(underlyingHeaders);
+  if (cachedHeaders) {
+    return cachedHeaders;
+  }
+
+  const promise = makeDevtoolsIOAwarePromise(
+    underlyingHeaders,
+    requestStore,
+    RenderStage.Runtime
+  );
+
+  const proxiedPromise = instrumentHeadersPromiseWithDevWarnings(promise, route);
+
+  CachedHeaders.set(underlyingHeaders, proxiedPromise);
+
+  return proxiedPromise;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: findPageFile
+Language: TypeScript
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+export async function findPageFile(
+  pagesDir: string,
+  normalizedPagePath: string,
+  pageExtensions: PageExtensions,
+  isAppDir: boolean
+): Promise<string | null> {
+  const pagePaths = getPagePaths(normalizedPagePath, pageExtensions, isAppDir);
+  const [existingPath, ...others] = (
+    await Promise.all(
+      pagePaths.map(async (path) => {
+        const filePath = join(pagesDir, path);
+        try {
+          return (await fileExists(filePath)) ? path : null;
+        } catch (err: any) {
+          if (!err?.code?.includes('ENOTDIR')) throw err;
+        }
+        return null;
+      })
+    )
+  ).filter(nonNullable);
+
+  if (!existingPath) {
+    return null;
+  }
+
+  if (!(await isTrueCasePagePath(existingPath, pagesDir))) {
+    return null;
+  }
+
+  if (others.length > 0) {
+    warn(
+      `Duplicate page detected. ${cyan(join('pages', existingPath))} and ${cyan(
+        join('pages', others[0])
+      )} both resolve to ${cyan(normalizedPagePath)}.`
+    );
+  }
+
+  return existingPath;
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: createValidFileMatcher
+Language: TypeScript
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+export function createValidFileMatcher(
+  pageExtensions: PageExtensions,
+  appDirPath: string | undefined
+) {
+  const getExtensionRegexString = (extensions: string[]) =>
+    `(?:${extensions.join('|')})`;
+
+  const validExtensionFileRegex = new RegExp(
+    '\.' + getExtensionRegexString(pageExtensions) + '$'
+  );
+  const leafOnlyPageFileRegex = new RegExp(
+    `(^(page|route)|[\\/](page|route))\.${getExtensionRegexString(
+      pageExtensions
+    )}$`
+  );
+
+  const leafOnlyRouteFileRegex = new RegExp(
+    `(^route|[\\/]route)\.${getExtensionRegexString(pageExtensions)}$`
+  );
+  const leafOnlyLayoutFileRegex = new RegExp(
+    `(^(layout)|[\\/](layout))\.${getExtensionRegexString(pageExtensions)}$`
+  );
+  const rootNotFoundFileRegex = new RegExp(
+    `^not-found\.${getExtensionRegexString(pageExtensions)}$`
+  );
+  const leafOnlyDefaultFileRegex = new RegExp(
+    `(^(default)|[\\/](default))\.${getExtensionRegexString(pageExtensions)}$`
+  );
+
+  function isMetadataFile(filePath: string) {
+    const appDirRelativePath = appDirPath
+      ? filePath.replace(appDirPath, '')
+      : filePath;
+
+    return isMetadataRouteFile(appDirRelativePath, pageExtensions, true);
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T21:34:42.668Z
+Question Type: multiple-choice
+Function: createValidFileMatcher
+Function Size: 1317 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createValidFileMatcher (TypeScript)\n// Creates a matcher for valid file types based on page extensions and app directory.\n\nexport function createValidFileMatcher(\n  pageExtensions: PageExtensions,\n  appDirPath: string | undefined\n) {\n  const getExtensionRegexString = (extensions: string
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T21:34:45.941Z
+Question Type: true-false
+Function: findPageFile
+Function Size: 1136 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: findPageFile (TypeScript)\n// Finds a page file based on the given parameters, checking for duplicates and case sensitivity.\n\nexport async function findPageFile(\n  pagesDir: string,\n  normalizedPagePath: string,\n  pageExtensions: PageExtensions,\n  isAppDir: boolean\n): Promise<string | nu
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T21:34:48.403Z
+Question Type: select-all
+Function: findPageFile
+Function Size: 1136 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: findPageFile (TypeScript)\n// Finds a page file based on the given parameters, checking for duplicates and case sensitivity.\n\nexport async function findPageFile(\n  pagesDir: string,\n  normalizedPagePath: string,\n  pageExtensions: PageExtensions,\n  isAppDir: boolean\n): Promise<string | nu
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T21:34:52.800Z
+Question Type: order-sequence
+Function: createValidFileMatcher
+Function Size: 1317 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createValidFileMatcher (TypeScript)\n// Creates a matcher for valid file types based on page extensions and app directory.\n\nexport function createValidFileMatcher(\n  pageExtensions: PageExtensions,\n  appDirPath: string | undefined\n) {\n  const getExtensionRegexString = (extensions: string
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T21:34:52.954Z
+Question Type: true-false
+Function: makeUntrackedHeadersWithDevWarnings
+Function Size: 906 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeUntrackedHeadersWithDevWarnings (TypeScript)\n// Creates untracked headers with development warnings for a given set of headers and request store.\n\nfunction makeUntrackedHeadersWithDevWarnings(\n  underlyingHeaders: ReadonlyHeaders,\n  route: string | undefined,\n  requestStore: Request
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T21:34:53.095Z
+Question Type: select-all
+Function: makeUntrackedHeadersWithDevWarnings
+Function Size: 906 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeUntrackedHeadersWithDevWarnings (TypeScript)\n// Creates untracked headers with development warnings for a given set of headers and request store.\n\nfunction makeUntrackedHeadersWithDevWarnings(\n  underlyingHeaders: ReadonlyHeaders,\n  route: string | undefined,\n  requestStore: Request
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T21:34:55.060Z
+Question Type: function-variant
+Function: findPageFile
+Function Size: 1136 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: findPageFile (TypeScript)\n// Finds a page file based on the given parameters, checking for duplicates and case sensitivity.\n\nexport async function findPageFile(\n  pagesDir: string,\n  normalizedPagePath: string,\n  pageExtensions: PageExtensions,\n  isAppDir: boolean\n): Promise<string | nu
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T21:34:58.798Z
+Question Type: select-all
+Function: makeHangingHeaders
+Function Size: 570 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeHangingHeaders (TypeScript)\n// Creates hanging headers for a given work store and prerender store, caching the result.\n\nfunction makeHangingHeaders(\n  workStore: WorkStore,\n  prerenderStore: PrerenderStoreModern\n): Promise<ReadonlyHeaders> {\n  const cachedHeaders = CachedHeaders.get
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 4
+Ended: 2025-10-19T21:34:58.803Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T21:35:17.234Z
+Question Type: multiple-choice
+Function: makeHangingHeaders
+Function Size: 570 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeHangingHeaders (TypeScript)\n// Creates hanging headers for a given work store and prerender store, caching the result.\n\nfunction makeHangingHeaders(\n  workStore: WorkStore,\n  prerenderStore: PrerenderStoreModern\n): Promise<ReadonlyHeaders> {\n  const cachedHeaders = CachedHeaders.get
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T21:35:24.599Z
+Question Type: order-sequence
+Function: makeHangingHeaders
+Function Size: 570 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeHangingHeaders (TypeScript)\n// Creates hanging headers for a given work store and prerender store, caching the result.\n\nfunction makeHangingHeaders(\n  workStore: WorkStore,\n  prerenderStore: PrerenderStoreModern\n): Promise<ReadonlyHeaders> {\n  const cachedHeaders = CachedHeaders.get
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T21:35:25.892Z
+Question Type: order-sequence
+Function: createValidFileMatcher
+Function Size: 1317 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createValidFileMatcher (TypeScript)\n// Creates a matcher for valid file types based on page extensions and app directory.\n\nexport function createValidFileMatcher(\n  pageExtensions: PageExtensions,\n  appDirPath: string | undefined\n) {\n  const getExtensionRegexString = (extensions: string
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T21:35:27.658Z
+Question Type: order-sequence
+Function: findPageFile
+Function Size: 1136 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: findPageFile (TypeScript)\n// Finds a page file based on the given parameters, checking for duplicates and case sensitivity.\n\nexport async function findPageFile(\n  pagesDir: string,\n  normalizedPagePath: string,\n  pageExtensions: PageExtensions,\n  isAppDir: boolean\n): Promise<string | nu
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T21:35:29.624Z
+Question Type: function-variant
+Function: makeUntrackedHeadersWithDevWarnings
+Function Size: 906 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeUntrackedHeadersWithDevWarnings (TypeScript)\n// Creates untracked headers with development warnings for a given set of headers and request store.\n\nfunction makeUntrackedHeadersWithDevWarnings(\n  underlyingHeaders: ReadonlyHeaders,\n  route: string | undefined,\n  requestStore: Request
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T21:35:32.142Z
+Question Type: select-all
+Function: makeUntrackedHeadersWithDevWarnings
+Function Size: 906 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeUntrackedHeadersWithDevWarnings (TypeScript)\n// Creates untracked headers with development warnings for a given set of headers and request store.\n\nfunction makeUntrackedHeadersWithDevWarnings(\n  underlyingHeaders: ReadonlyHeaders,\n  route: string | undefined,\n  requestStore: Request
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T21:35:34.731Z
+Question Type: select-all
+Function: makeHangingHeaders
+Function Size: 570 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeHangingHeaders (TypeScript)\n// Creates hanging headers for a given work store and prerender store, caching the result.\n\nfunction makeHangingHeaders(\n  workStore: WorkStore,\n  prerenderStore: PrerenderStoreModern\n): Promise<ReadonlyHeaders> {\n  const cachedHeaders = CachedHeaders.get
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T21:35:36.335Z
+Question Type: select-all
+Function: createValidFileMatcher
+Function Size: 1317 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createValidFileMatcher (TypeScript)\n// Creates a matcher for valid file types based on page extensions and app directory.\n\nexport function createValidFileMatcher(\n  pageExtensions: PageExtensions,\n  appDirPath: string | undefined\n) {\n  const getExtensionRegexString = (extensions: string
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T21:35:39.603Z
+Question Type: true-false
+Function: makeUntrackedHeadersWithDevWarnings
+Function Size: 906 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeUntrackedHeadersWithDevWarnings (TypeScript)\n// Creates untracked headers with development warnings for a given set of headers and request store.\n\nfunction makeUntrackedHeadersWithDevWarnings(\n  underlyingHeaders: ReadonlyHeaders,\n  route: string | undefined,\n  requestStore: Request
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 4
+Ended: 2025-10-19T21:35:39.638Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:05:25.493Z
+File: [8 files: production.js, babel.config.js, Channel files must be named *_channel.js., postcss.config.js, custom.js, You can generate new channels where WebSocket features live using the `rails generate channel` command., test.js, development.js]
+Functions Extracted: 3
+
+
+Function 1: babel.config.js
+Language: JavaScript
+Lines: 39
+Full Code:
+--------------------------------------------------------------------------------
+module.exports = function(api) {
+  var validEnv = ['development', 'test', 'production']
+  var currentEnv = api.env()
+  var isDevelopmentEnv = api.env('development')
+  var isProductionEnv = api.env('production')
+  var isTestEnv = api.env('test')
+
+  if (!validEnv.includes(currentEnv)) {
+    throw new Error(
+      'Please specify a valid `NODE_ENV` or ' +
+        '`BABEL_ENV` environment variables. Valid values are "development", ' +
+        '"test", and "production". Instead, received: ' +
+        JSON.stringify(currentEnv) +
+        '.'
+    )
+  }
+
+  return {
+    presets: [
+      isTestEnv && [
+        '@babel/preset-env',
+        {
+          targets: {
+            node: 'current'
+          }
+        }
+      ],
+      (isProductionEnv || isDevelopmentEnv) && [
+        '@babel/preset-env',
+        {
+          forceAllTransforms: true,
+          useBuiltIns: 'entry',
+          corejs: 3,
+          modules: false,
+          exclude: ['transform-typeof-symbol']
+        }
+      ]
+    ].filter(Boolean),
+    plugins: [
+      'babel-plugin-macros',
+      '@babel/plugin-syntax-dynamic-import',
+      isTestEnv && 'babel-plugin-dynamic-import-node',
+      '@babel/plugin-transform-destructuring',
+      [
+        '@babel/plugin-proposal-class-properties',
+        {
+          loose: true
+        }
+      ],
+      [
+        '@babel/plugin-proposal-object-rest-spread',
+        {
+          useBuiltIns: true
+        }
+      ],
+      [
+        '@babel/plugin-transform-runtime',
+        {
+          helpers: false,
+          regenerator: true,
+          corejs: false
+        }
+      ],
+      [
+        '@babel/plugin-transform-regenerator',
+        {
+          async: false
+        }
+      ]
+    ].filter(Boolean)
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: resizeGridItem
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function resizeGridItem(item) {
+  grid = document.getElementsByClassName("grid")[0];
+  rowHeight = parseInt(
+    window.getComputedStyle(grid).getPropertyValue("grid-auto-rows")
+  );
+  rowGap = parseInt(
+    window.getComputedStyle(grid).getPropertyValue("grid-row-gap")
+  );
+  rowSpan = Math.ceil(
+    (item.querySelector(".content").getBoundingClientRect().height + rowGap) /
+      (rowHeight + rowGap)
+  );
+  item.style.gridRowEnd = "span " + rowSpan;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: resizeAllGridItems
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function resizeAllGridItems() {
+  allItems = document.getElementsByClassName("item");
+  for (x = 0; x < allItems.length; x++) {
+    resizeGridItem(allItems[x]);
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:05:27.246Z
+Question Type: multiple-choice
+Function: babel.config.js
+Function Size: 1838 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: babel.config.js (JavaScript)\n// Configures Babel presets and plugins based on the current environment.\n\nmodule.exports = function(api) {\n  var validEnv = ['development', 'test', 'production']\n  var currentEnv = api.env()\n  var isDevelopmentEnv = api.env('development')\n  var isProduction
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:05:30.685Z
+Question Type: select-all
+Function: resizeAllGridItems
+Function Size: 279 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: resizeAllGridItems (JavaScript)\n// Resizes all grid items by calling resizeGridItem for each item.\n\nfunction resizeAllGridItems() {\n  allItems = document.getElementsByClassName("item");\n  for (x = 0; x < allItems.length; x++) {\n    resizeGridItem(allItems[x]);\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:05:32.873Z
+Question Type: order-sequence
+Function: resizeGridItem
+Function Size: 579 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: resizeGridItem (JavaScript)\n// Calculates and sets the row span for a grid item based on its content height.\n\nfunction resizeGridItem(item) {\n  grid = document.getElementsByClassName("grid")[0];\n  rowHeight = parseInt(\n    window.getComputedStyle(grid).getPropertyValue("grid-auto-rows")
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:05:34.637Z
+Question Type: function-variant
+Function: resizeAllGridItems
+Function Size: 279 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: resizeAllGridItems (JavaScript)\n// Resizes all grid items by calling resizeGridItem for each item.\n\nfunction resizeAllGridItems() {\n  allItems = document.getElementsByClassName("item");\n  for (x = 0; x < allItems.length; x++) {\n    resizeGridItem(allItems[x]);\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:05:35.558Z
+Question Type: select-all
+Function: resizeAllGridItems
+Function Size: 279 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: resizeAllGridItems (JavaScript)\n// Resizes all grid items by calling resizeGridItem for each item.\n\nfunction resizeAllGridItems() {\n  allItems = document.getElementsByClassName("item");\n  for (x = 0; x < allItems.length; x++) {\n    resizeGridItem(allItems[x]);\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:05:38.656Z
+Question Type: order-sequence
+Function: resizeAllGridItems
+Function Size: 279 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: resizeAllGridItems (JavaScript)\n// Resizes all grid items by calling resizeGridItem for each item.\n\nfunction resizeAllGridItems() {\n  allItems = document.getElementsByClassName("item");\n  for (x = 0; x < allItems.length; x++) {\n    resizeGridItem(allItems[x]);\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:05:38.870Z
+Question Type: true-false
+Function: resizeAllGridItems
+Function Size: 279 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: resizeAllGridItems (JavaScript)\n// Resizes all grid items by calling resizeGridItem for each item.\n\nfunction resizeAllGridItems() {\n  allItems = document.getElementsByClassName("item");\n  for (x = 0; x < allItems.length; x++) {\n    resizeGridItem(allItems[x]);\n  }\n}
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 3
+Ended: 2025-10-19T23:05:38.907Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:05:40.996Z
+Question Type: multiple-choice
+Function: resizeGridItem
+Function Size: 579 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: resizeGridItem (JavaScript)\n// Calculates and sets the row span for a grid item based on its content height.\n\nfunction resizeGridItem(item) {\n  grid = document.getElementsByClassName("grid")[0];\n  rowHeight = parseInt(\n    window.getComputedStyle(grid).getPropertyValue("grid-auto-rows")
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:05:44.808Z
+Question Type: select-all
+Function: resizeGridItem
+Function Size: 579 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: resizeGridItem (JavaScript)\n// Calculates and sets the row span for a grid item based on its content height.\n\nfunction resizeGridItem(item) {\n  grid = document.getElementsByClassName("grid")[0];\n  rowHeight = parseInt(\n    window.getComputedStyle(grid).getPropertyValue("grid-auto-rows")
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:05:48.212Z
+Question Type: order-sequence
+Function: resizeGridItem
+Function Size: 579 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: resizeGridItem (JavaScript)\n// Calculates and sets the row span for a grid item based on its content height.\n\nfunction resizeGridItem(item) {\n  grid = document.getElementsByClassName("grid")[0];\n  rowHeight = parseInt(\n    window.getComputedStyle(grid).getPropertyValue("grid-auto-rows")
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:05:50.511Z
+Question Type: order-sequence
+Function: babel.config.js
+Function Size: 1838 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: babel.config.js (JavaScript)\n// Configures Babel presets and plugins based on the current environment.\n\nmodule.exports = function(api) {\n  var validEnv = ['development', 'test', 'production']\n  var currentEnv = api.env()\n  var isDevelopmentEnv = api.env('development')\n  var isProduction
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:05:59.205Z
+Question Type: function-variant
+Function: resizeAllGridItems
+Function Size: 279 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: resizeAllGridItems (JavaScript)\n// Resizes all grid items by calling resizeGridItem for each item.\n\nfunction resizeAllGridItems() {\n  allItems = document.getElementsByClassName("item");\n  for (x = 0; x < allItems.length; x++) {\n    resizeGridItem(allItems[x]);\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:06:04.199Z
+Question Type: function-variant
+Function: resizeGridItem
+Function Size: 579 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: resizeGridItem (JavaScript)\n// Calculates and sets the row span for a grid item based on its content height.\n\nfunction resizeGridItem(item) {\n  grid = document.getElementsByClassName("grid")[0];\n  rowHeight = parseInt(\n    window.getComputedStyle(grid).getPropertyValue("grid-auto-rows")
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:06:04.542Z
+Question Type: select-all
+Function: resizeAllGridItems
+Function Size: 279 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: resizeAllGridItems (JavaScript)\n// Resizes all grid items by calling resizeGridItem for each item.\n\nfunction resizeAllGridItems() {\n  allItems = document.getElementsByClassName("item");\n  for (x = 0; x < allItems.length; x++) {\n    resizeGridItem(allItems[x]);\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:06:05.116Z
+Question Type: function-variant
+Function: babel.config.js
+Function Size: 1838 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: babel.config.js (JavaScript)\n// Configures Babel presets and plugins based on the current environment.\n\nmodule.exports = function(api) {\n  var validEnv = ['development', 'test', 'production']\n  var currentEnv = api.env()\n  var isDevelopmentEnv = api.env('development')\n  var isProduction
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:06:09.102Z
+Question Type: select-all
+Function: resizeAllGridItems
+Function Size: 279 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: resizeAllGridItems (JavaScript)\n// Resizes all grid items by calling resizeGridItem for each item.\n\nfunction resizeAllGridItems() {\n  allItems = document.getElementsByClassName("item");\n  for (x = 0; x < allItems.length; x++) {\n    resizeGridItem(allItems[x]);\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:06:11.399Z
+Question Type: true-false
+Function: babel.config.js
+Function Size: 1838 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: babel.config.js (JavaScript)\n// Configures Babel presets and plugins based on the current environment.\n\nmodule.exports = function(api) {\n  var validEnv = ['development', 'test', 'production']\n  var currentEnv = api.env()\n  var isDevelopmentEnv = api.env('development')\n  var isProduction
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 3
+Ended: 2025-10-19T23:06:11.436Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:21:47.292Z
+File: [2 files: If we end up here, there was no work store or work unit store present., If we end up here, there was no work store or work unit store present.]
+Functions Extracted: 4
+
+
+Function 1: makeHangingHeaders
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function makeHangingHeaders(
+  workStore: WorkStore,
+  prerenderStore: PrerenderStoreModern
+): Promise<ReadonlyHeaders> {
+  const cachedHeaders = CachedHeaders.get(prerenderStore)
+  if (cachedHeaders) {
+    return cachedHeaders
+  }
+
+  const promise = makeHangingPromise<ReadonlyHeaders>(
+    prerenderStore.renderSignal,
+    workStore.route,
+    '`headers()`'
+  )
+  CachedHeaders.set(prerenderStore, promise)
+
+  return promise
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: makeUntrackedHeadersWithDevWarnings
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function makeUntrackedHeadersWithDevWarnings(
+  underlyingHeaders: ReadonlyHeaders,
+  route: string | undefined,
+  requestStore: RequestStore
+): Promise<ReadonlyHeaders> {
+  if (requestStore.asyncApiPromises) {
+    const promise = requestStore.asyncApiPromises.headers
+    return instrumentHeadersPromiseWithDevWarnings(promise, route)
+  }
+
+  const cachedHeaders = CachedHeaders.get(underlyingHeaders)
+  if (cachedHeaders) {
+    return cachedHeaders
+  }
+
+  const promise = makeDevtoolsIOAwarePromise(
+    underlyingHeaders,
+    requestStore,
+    RenderStage.Runtime
+  )
+
+  const proxiedPromise = instrumentHeadersPromiseWithDevWarnings(promise, route)
+
+  CachedHeaders.set(underlyingHeaders, proxiedPromise)
+
+  return proxiedPromise
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: makeHangingCookies
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function makeHangingCookies(
+  workStore: WorkStore,
+  prerenderStore: PrerenderStoreModern
+): Promise<ReadonlyRequestCookies> {
+  const cachedPromise = CachedCookies.get(prerenderStore)
+  if (cachedPromise) {
+    return cachedPromise
+  }
+
+  const promise = makeHangingPromise<ReadonlyRequestCookies>(
+    prerenderStore.renderSignal,
+    workStore.route,
+    '`cookies()`'
+  )
+  CachedCookies.set(prerenderStore, promise)
+
+  return promise
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: makeUntrackedCookiesWithDevWarnings
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+function makeUntrackedCookiesWithDevWarnings(
+  requestStore: RequestStore,
+  underlyingCookies: ReadonlyRequestCookies,
+  route?: string
+): Promise<ReadonlyRequestCookies> {
+  if (requestStore.asyncApiPromises) {
+    let promise: Promise<ReadonlyRequestCookies>
+    if (underlyingCookies === requestStore.mutableCookies) {
+      promise = requestStore.asyncApiPromises.mutableCookies
+    } else if (underlyingCookies === requestStore.cookies) {
+      promise = requestStore.asyncApiPromises.cookies
+    } else {
+      throw new InvariantError(
+        'Received an underlying cookies object that does not match either `cookies` or `mutableCookies`'
+      )
+    }
+    return instrumentCookiesPromiseWithDevWarnings(promise, route)
+  }
+
+  const cachedCookies = CachedCookies.get(underlyingCookies)
+  if (cachedCookies) {
+    return cachedCookies
+  }
+
+  const promise = makeDevtoolsIOAwarePromise(
+    underlyingCookies,
+    requestStore,
+    RenderStage.Runtime
+  )
+
+  const proxiedPromise = instrumentCookiesPromiseWithDevWarnings(promise, route)
+
+  CachedCookies.set(underlyingCookies, proxiedPromise)
+
+  return proxiedPromise
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:21:48.247Z
+File: <reference path="../../runtime/base/dev-extensions.ts" />
+Functions Extracted: 4
+
+
+Function 1: connect
+Language: TypeScript
+Lines: 38
+Full Code:
+--------------------------------------------------------------------------------
+export function connect({
+  addMessageListener,
+  sendMessage,
+  onUpdateError = console.error,
+}: ClientOptions) {
+  addMessageListener((msg) => {
+    switch (msg.type) {
+      case 'turbopack-connected':
+        handleSocketConnected(sendMessage)
+        break
+      default:
+        try {
+          if (Array.isArray(msg.data)) {
+            for (let i = 0; i < msg.data.length; i++) {
+              handleSocketMessage(msg.data[i] as ServerMessage)
+            }
+          } else {
+            handleSocketMessage(msg.data as ServerMessage)
+          }
+          applyAggregatedUpdates()
+        } catch (e: unknown) {
+          console.warn(
+            '[Fast Refresh] performing full reload\n\n' +
+              "Fast Refresh will perform a full reload when you edit a file that's imported by modules outside of the React rendering tree.\n" +
+              'You might have a file which exports a React component but also exports a value that is imported by a non-React component file.\n' +
+              'Consider migrating the non-React component export to a separate file and importing it into both files.\n\n' +
+              'It is also possible the parent component of the component you edited is a class component, which disables Fast Refresh.\n' +
+              'Fast Refresh requires at least one parent function component in your React tree.'
+          )
+          onUpdateError(e)
+          location.reload()
+        }
+        break
+    }
+  })
+
+  const queued = globalThis.TURBOPACK_CHUNK_UPDATE_LISTENERS
+  if (queued != null && !Array.isArray(queued)) {
+    throw new Error('A separate HMR handler was already registered')
+  }
+  globalThis.TURBOPACK_CHUNK_UPDATE_LISTENERS = {
+    push: ([chunkPath, callback]: [ChunkListPath, UpdateCallback]) => {
+      subscribeToChunkUpdate(chunkPath, sendMessage, callback)
+    },
+  }
+
+  if (Array.isArray(queued)) {
+    for (const [chunkPath, callback] of queued) {
+      subscribeToChunkUpdate(chunkPath, sendMessage, callback)
+    }
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: resourceKey
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function resourceKey(resource: ResourceIdentifier): ResourceKey {
+  return JSON.stringify({
+    path: resource.path,
+    headers: resource.headers || null,
+  })
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: subscribeToUpdates
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function subscribeToUpdates(
+  sendMessage: SendMessage,
+  resource: ResourceIdentifier
+): () => void {
+  sendJSON(sendMessage, {
+    type: 'turbopack-subscribe',
+    ...resource,
+  })
+
+  return () => {
+    sendJSON(sendMessage, {
+      type: 'turbopack-unsubscribe',
+      ...resource,
+    })
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: handleSocketConnected
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function handleSocketConnected(sendMessage: SendMessage) {
+  for (const key of updateCallbackSets.keys()) {
+    subscribeToUpdates(sendMessage, JSON.parse(key))
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:21:52.917Z
+Question Type: select-all
+Function: makeHangingCookies
+Function Size: 565 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeHangingCookies (TypeScript)\n// Creates a promise for hanging cookies based on work and prerender stores.\n\nfunction makeHangingCookies(\n  workStore: WorkStore,\n  prerenderStore: PrerenderStoreModern\n): Promise<ReadonlyRequestCookies> {\n  const cachedPromise = CachedCookies.get(preren
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:21:54.849Z
+Question Type: select-all
+Function: makeUntrackedHeadersWithDevWarnings
+Function Size: 876 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: makeUntrackedHeadersWithDevWarnings (TypeScript)\n// Creates untracked headers with development warnings based on request store.\n\nfunction makeUntrackedHeadersWithDevWarnings(\n  underlyingHeaders: ReadonlyHeaders,\n  route: string | undefined,\n  requestStore: RequestStore\n): Promise<Reado
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:21:55.929Z
+Question Type: order-sequence
+Function: makeUntrackedCookiesWithDevWarnings
+Function Size: 1271 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeUntrackedCookiesWithDevWarnings (TypeScript)\n// Creates untracked cookies with development warnings based on request store.\n\nfunction makeUntrackedCookiesWithDevWarnings(\n  requestStore: RequestStore,\n  underlyingCookies: ReadonlyRequestCookies,\n  route?: string\n): Promise<ReadonlyR
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:21:56.980Z
+Question Type: function-variant
+Function: makeHangingCookies
+Function Size: 565 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeHangingCookies (TypeScript)\n// Creates a promise for hanging cookies based on work and prerender stores.\n\nfunction makeHangingCookies(\n  workStore: WorkStore,\n  prerenderStore: PrerenderStoreModern\n): Promise<ReadonlyRequestCookies> {\n  const cachedPromise = CachedCookies.get(preren
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:22:00.952Z
+Question Type: select-all
+Function: makeUntrackedCookiesWithDevWarnings
+Function Size: 1271 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeUntrackedCookiesWithDevWarnings (TypeScript)\n// Creates untracked cookies with development warnings based on request store.\n\nfunction makeUntrackedCookiesWithDevWarnings(\n  requestStore: RequestStore,\n  underlyingCookies: ReadonlyRequestCookies,\n  route?: string\n): Promise<ReadonlyR
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:22:03.739Z
+Question Type: order-sequence
+Function: makeUntrackedHeadersWithDevWarnings
+Function Size: 876 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeUntrackedHeadersWithDevWarnings (TypeScript)\n// Creates untracked headers with development warnings based on request store.\n\nfunction makeUntrackedHeadersWithDevWarnings(\n  underlyingHeaders: ReadonlyHeaders,\n  route: string | undefined,\n  requestStore: RequestStore\n): Promise<Reado
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:22:06.039Z
+Question Type: select-all
+Function: makeHangingHeaders
+Function Size: 551 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeHangingHeaders (TypeScript)\n// Creates a promise for hanging headers based on work and prerender stores.\n\nfunction makeHangingHeaders(\n  workStore: WorkStore,\n  prerenderStore: PrerenderStoreModern\n): Promise<ReadonlyHeaders> {\n  const cachedHeaders = CachedHeaders.get(prerenderStor
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:22:06.443Z
+Question Type: function-variant
+Function: makeHangingHeaders
+Function Size: 551 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeHangingHeaders (TypeScript)\n// Creates a promise for hanging headers based on work and prerender stores.\n\nfunction makeHangingHeaders(\n  workStore: WorkStore,\n  prerenderStore: PrerenderStoreModern\n): Promise<ReadonlyHeaders> {\n  const cachedHeaders = CachedHeaders.get(prerenderStor
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:22:07.794Z
+Question Type: multiple-choice
+Function: makeHangingHeaders
+Function Size: 551 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeHangingHeaders (TypeScript)\n// Creates a promise for hanging headers based on work and prerender stores.\n\nfunction makeHangingHeaders(\n  workStore: WorkStore,\n  prerenderStore: PrerenderStoreModern\n): Promise<ReadonlyHeaders> {\n  const cachedHeaders = CachedHeaders.get(prerenderStor
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:22:08.795Z
+Question Type: order-sequence
+Function: makeHangingHeaders
+Function Size: 551 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeHangingHeaders (TypeScript)\n// Creates a promise for hanging headers based on work and prerender stores.\n\nfunction makeHangingHeaders(\n  workStore: WorkStore,\n  prerenderStore: PrerenderStoreModern\n): Promise<ReadonlyHeaders> {\n  const cachedHeaders = CachedHeaders.get(prerenderStor
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:22:09.981Z
+Question Type: true-false
+Function: makeHangingCookies
+Function Size: 565 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeHangingCookies (TypeScript)\n// Creates a promise for hanging cookies based on work and prerender stores.\n\nfunction makeHangingCookies(\n  workStore: WorkStore,\n  prerenderStore: PrerenderStoreModern\n): Promise<ReadonlyRequestCookies> {\n  const cachedPromise = CachedCookies.get(preren
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 4
+Ended: 2025-10-19T23:22:10.002Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:22:15.568Z
+Question Type: function-variant
+Function: resourceKey
+Function Size: 285 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: resourceKey (TypeScript)\n// Generates a unique resource key by stringifying the resource's path and headers.\n\nfunction resourceKey(resource: ResourceIdentifier): ResourceKey {\n  return JSON.stringify({\n    path: resource.path,\n    headers: resource.headers || null,\n  })\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:22:16.526Z
+Question Type: function-variant
+Function: handleSocketConnected
+Function Size: 321 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleSocketConnected (TypeScript)\n// Handles the event when the socket is connected by subscribing to updates for all registered resources.\n\nfunction handleSocketConnected(sendMessage: SendMessage) {\n  for (const key of updateCallbackSets.keys()) {\n    subscribeToUpdates(sendMessage, J
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:22:17.242Z
+Question Type: order-sequence
+Function: resourceKey
+Function Size: 285 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: resourceKey (TypeScript)\n// Generates a unique resource key by stringifying the resource's path and headers.\n\nfunction resourceKey(resource: ResourceIdentifier): ResourceKey {\n  return JSON.stringify({\n    path: resource.path,\n    headers: resource.headers || null,\n  })\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:22:17.404Z
+Question Type: multiple-choice
+Function: handleSocketConnected
+Function Size: 321 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleSocketConnected (TypeScript)\n// Handles the event when the socket is connected by subscribing to updates for all registered resources.\n\nfunction handleSocketConnected(sendMessage: SendMessage) {\n  for (const key of updateCallbackSets.keys()) {\n    subscribeToUpdates(sendMessage, J
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:22:19.520Z
+Question Type: true-false
+Function: resourceKey
+Function Size: 285 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: resourceKey (TypeScript)\n// Generates a unique resource key by stringifying the resource's path and headers.\n\nfunction resourceKey(resource: ResourceIdentifier): ResourceKey {\n  return JSON.stringify({\n    path: resource.path,\n    headers: resource.headers || null,\n  })\n}
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 5
+Total Chunks Processed: 4
+Ended: 2025-10-19T23:22:19.545Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:28:44.801Z
+File: Matching BufferAttribute constructor, do not normalize the array.
+Functions Extracted: 3
+
+
+Function 1: getComponent
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+getComponent( index, component ) {
+	let value = this.array[ index * this.itemSize + component ];
+	if ( this.normalized ) value = denormalize( value, this.array );
+	return value;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: setComponent
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+setComponent( index, component, value ) {
+	if ( this.normalized ) value = normalize( value, this.array );
+	this.array[ index * this.itemSize + component ] = value;
+	return this;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: toJSON
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+toJSON() {
+	const data = {
+		itemSize: this.itemSize,
+		type: this.array.constructor.name,
+		array: Array.from( this.array ),
+		normalized: this.normalized
+	};
+	if ( this.name !== '' ) data.name = this.name;
+	if ( this.usage !== StaticDrawUsage ) data.usage = this.usage;
+	return data;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:28:48.075Z
+Question Type: true-false
+Function: setComponent
+Function Size: 300 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setComponent (JavaScript)\n// Sets the given value to the given component of the vector at the given index.\n\nsetComponent( index, component, value ) {\n	if ( this.normalized ) value = normalize( value, this.array );\n	this.array[ index * this.itemSize + component ] = value;\n	return this;\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:28:49.423Z
+Question Type: select-all
+Function: setComponent
+Function Size: 300 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setComponent (JavaScript)\n// Sets the given value to the given component of the vector at the given index.\n\nsetComponent( index, component, value ) {\n	if ( this.normalized ) value = normalize( value, this.array );\n	this.array[ index * this.itemSize + component ] = value;\n	return this;\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:28:52.511Z
+Question Type: function-variant
+Function: setComponent
+Function Size: 300 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setComponent (JavaScript)\n// Sets the given value to the given component of the vector at the given index.\n\nsetComponent( index, component, value ) {\n	if ( this.normalized ) value = normalize( value, this.array );\n	this.array[ index * this.itemSize + component ] = value;\n	return this;\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:28:55.270Z
+Question Type: order-sequence
+Function: toJSON
+Function Size: 367 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: toJSON (JavaScript)\n// Serializes the buffer attribute into JSON.\n\ntoJSON() {\n	const data = {\n		itemSize: this.itemSize,\n		type: this.array.constructor.name,\n		array: Array.from( this.array ),\n		normalized: this.normalized\n	};\n	if ( this.name !== '' ) data.name = this.name;\n	if ( this.u
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:28:57.271Z
+Question Type: order-sequence
+Function: setComponent
+Function Size: 300 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setComponent (JavaScript)\n// Sets the given value to the given component of the vector at the given index.\n\nsetComponent( index, component, value ) {\n	if ( this.normalized ) value = normalize( value, this.array );\n	this.array[ index * this.itemSize + component ] = value;\n	return this;\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:28:58.537Z
+Question Type: order-sequence
+Function: getComponent
+Function Size: 284 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: getComponent (JavaScript)\n// Returns the given component of the vector at the given index.\n\ngetComponent( index, component ) {\n	let value = this.array[ index * this.itemSize + component ];\n	if ( this.normalized ) value = denormalize( value, this.array );\n	return value;\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:29:01.898Z
+Question Type: select-all
+Function: setComponent
+Function Size: 300 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setComponent (JavaScript)\n// Sets the given value to the given component of the vector at the given index.\n\nsetComponent( index, component, value ) {\n	if ( this.normalized ) value = normalize( value, this.array );\n	this.array[ index * this.itemSize + component ] = value;\n	return this;\n}
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 3
+Ended: 2025-10-19T23:29:01.955Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:29:05.005Z
+Question Type: true-false
+Function: toJSON
+Function Size: 367 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: toJSON (JavaScript)\n// Serializes the buffer attribute into JSON.\n\ntoJSON() {\n	const data = {\n		itemSize: this.itemSize,\n		type: this.array.constructor.name,\n		array: Array.from( this.array ),\n		normalized: this.normalized\n	};\n	if ( this.name !== '' ) data.name = this.name;\n	if ( this.u
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:29:09.390Z
+Question Type: function-variant
+Function: setComponent
+Function Size: 300 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setComponent (JavaScript)\n// Sets the given value to the given component of the vector at the given index.\n\nsetComponent( index, component, value ) {\n	if ( this.normalized ) value = normalize( value, this.array );\n	this.array[ index * this.itemSize + component ] = value;\n	return this;\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:29:10.928Z
+Question Type: order-sequence
+Function: getComponent
+Function Size: 284 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: getComponent (JavaScript)\n// Returns the given component of the vector at the given index.\n\ngetComponent( index, component ) {\n	let value = this.array[ index * this.itemSize + component ];\n	if ( this.normalized ) value = denormalize( value, this.array );\n	return value;\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:29:11.155Z
+Question Type: function-variant
+Function: setComponent
+Function Size: 300 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setComponent (JavaScript)\n// Sets the given value to the given component of the vector at the given index.\n\nsetComponent( index, component, value ) {\n	if ( this.normalized ) value = normalize( value, this.array );\n	this.array[ index * this.itemSize + component ] = value;\n	return this;\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:29:11.789Z
+Question Type: order-sequence
+Function: getComponent
+Function Size: 284 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getComponent (JavaScript)\n// Returns the given component of the vector at the given index.\n\ngetComponent( index, component ) {\n	let value = this.array[ index * this.itemSize + component ];\n	if ( this.normalized ) value = denormalize( value, this.array );\n	return value;\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:29:11.912Z
+Question Type: true-false
+Function: getComponent
+Function Size: 284 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getComponent (JavaScript)\n// Returns the given component of the vector at the given index.\n\ngetComponent( index, component ) {\n	let value = this.array[ index * this.itemSize + component ];\n	if ( this.normalized ) value = denormalize( value, this.array );\n	return value;\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:29:13.946Z
+Question Type: multiple-choice
+Function: setComponent
+Function Size: 300 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setComponent (JavaScript)\n// Sets the given value to the given component of the vector at the given index.\n\nsetComponent( index, component, value ) {\n	if ( this.normalized ) value = normalize( value, this.array );\n	this.array[ index * this.itemSize + component ] = value;\n	return this;\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:29:18.739Z
+Question Type: select-all
+Function: getComponent
+Function Size: 284 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getComponent (JavaScript)\n// Returns the given component of the vector at the given index.\n\ngetComponent( index, component ) {\n	let value = this.array[ index * this.itemSize + component ];\n	if ( this.normalized ) value = denormalize( value, this.array );\n	return value;\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:29:21.131Z
+Question Type: order-sequence
+Function: toJSON
+Function Size: 367 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: toJSON (JavaScript)\n// Serializes the buffer attribute into JSON.\n\ntoJSON() {\n	const data = {\n		itemSize: this.itemSize,\n		type: this.array.constructor.name,\n		array: Array.from( this.array ),\n		normalized: this.normalized\n	};\n	if ( this.name !== '' ) data.name = this.name;\n	if ( this.u
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:29:23.447Z
+Question Type: select-all
+Function: getComponent
+Function Size: 284 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getComponent (JavaScript)\n// Returns the given component of the vector at the given index.\n\ngetComponent( index, component ) {\n	let value = this.array[ index * this.itemSize + component ];\n	if ( this.normalized ) value = denormalize( value, this.array );\n	return value;\n}
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 3
+Ended: 2025-10-19T23:29:23.539Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:33:18.195Z
+File: WordPress-WordPress-a81ae76/wp-includes/sodium_compat/lib/php72compat.php
+Functions Extracted: 7
+
+
+Function 1: sodium_add
+Language: PHP
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_add(
+        #[\SensitiveParameter]
+        &$string1,
+        #[\SensitiveParameter]
+        $string2
+    ) {
+        ParagonIE_Sodium_Compat::add($string1, $string2);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: sodium_crypto_aead_aes256gcm_decrypt
+Language: PHP
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_aead_aes256gcm_decrypt(
+        $ciphertext,
+        $additional_data,
+        $nonce,
+        #[\SensitiveParameter]
+        $key
+    ) {
+        try {
+            return ParagonIE_Sodium_Compat::crypto_aead_aes256gcm_decrypt(
+                $ciphertext,
+                $additional_data,
+                $nonce,
+                $key
+            );
+        } catch (Error $ex) {
+            return false;
+        } catch (Exception $ex) {
+            if (($ex instanceof SodiumException) && ($ex->getMessage() === 'AES-256-GCM is not available')) {
+                throw $ex;
+            }
+            return false;
+        }
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: sodium_crypto_aead_aes256gcm_encrypt
+Language: PHP
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_aead_aes256gcm_encrypt(
+        #[\SensitiveParameter]
+        $message,
+        $additional_data,
+        $nonce,
+        #[\SensitiveParameter]
+        $key
+    ) {
+        return ParagonIE_Sodium_Compat::crypto_aead_aes256gcm_encrypt($message, $additional_data, $nonce, $key);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 4: sodium_crypto_secretbox_open
+Language: PHP
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_secretbox_open(
+        $ciphertext,
+        $nonce,
+        #[\SensitiveParameter]
+        $key
+    ) {
+        try {
+            return ParagonIE_Sodium_Compat::crypto_secretbox_open($ciphertext, $nonce, $key);
+        } catch (Error $ex) {
+            return false;
+        } catch (Exception $ex) {
+            return false;
+        }
+    }
+--------------------------------------------------------------------------------
+
+
+Function 5: sodium_crypto_secretbox
+Language: PHP
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_secretbox(
+        #[\SensitiveParameter]
+        $message,
+        $nonce,
+        #[\SensitiveParameter]
+        $key
+    ) {
+        return ParagonIE_Sodium_Compat::crypto_secretbox($message, $nonce, $key);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 6: sodium_crypto_sign
+Language: PHP
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_sign(
+        $message,
+        #[\SensitiveParameter]
+        $secret_key
+    ) {
+        return ParagonIE_Sodium_Compat::crypto_sign($message, $secret_key);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 7: sodium_crypto_sign_open
+Language: PHP
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function sodium_crypto_sign_open($signedMessage, $public_key) {
+        try {
+            return ParagonIE_Sodium_Compat::crypto_sign_open($signedMessage, $public_key);
+        } catch (Error $ex) {
+            return false;
+        } catch (Exception $ex) {
+            return false;
+        }
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:33:20.028Z
+Question Type: multiple-choice
+Function: sodium_crypto_sign
+Function Size: 265 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_sign (PHP)\n// Signs a message using a secret key.\n\nfunction sodium_crypto_sign(\n        $message,\n        #[\SensitiveParameter]\n        $secret_key\n    ) {\n        return ParagonIE_Sodium_Compat::crypto_sign($message, $secret_key);\n    }
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:33:21.034Z
+File: [2 files: State.php, $return->limbs[0] = (int) (($this->limbs[0] >> $c) & 0xffff);]
+Functions Extracted: 6
+
+
+Function 1: counterReset
+Language: PHP
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+public function counterReset() {
+    $this->counter = 1;
+    $this->_pad = str_repeat("\0", 4);
+    return $this;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: rekey
+Language: PHP
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+public function rekey($newKeyAndNonce) {
+    $this->key = ParagonIE_Sodium_Core_Util::substr($newKeyAndNonce, 0, 32);
+    $this->nonce = str_pad(
+        ParagonIE_Sodium_Core_Util::substr($newKeyAndNonce, 32),
+        12,
+        "\0",
+        STR_PAD_RIGHT
+    );
+    return $this;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: subInt
+Language: PHP
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public function subInt($int) {
+    ParagonIE_Sodium_Core32_Util::declareScalarType($int, 'int', 1);
+    $int = (int) $int;
+
+    $return = new ParagonIE_Sodium_Core32_Int32();
+    $return->unsignedInt = $this->unsignedInt;
+
+    $tmp = $this->limbs[1] - ($int & 0xffff);
+    $carry = $tmp >> 16;
+    $return->limbs[1] = (int) ($tmp & 0xffff);
+
+    $tmp = $this->limbs[0] - (($int >> 16) & 0xffff) + $carry;
+    $return->limbs[0] = (int) ($tmp & 0xffff);
+    return $return;
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: subInt32
+Language: PHP
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public function subInt32(ParagonIE_Sodium_Core32_Int32 $b) {
+    $return = new ParagonIE_Sodium_Core32_Int32();
+    $return->unsignedInt = $this->unsignedInt;
+
+    $tmp = $this->limbs[1] - ($b->limbs[1] & 0xffff);
+    $carry = $tmp >> 16;
+    $return->limbs[1] = (int) ($tmp & 0xffff);
+
+    $tmp = $this->limbs[0] - ($b->limbs[0] & 0xffff) + $carry;
+    $return->limbs[0] = (int) ($tmp & 0xffff);
+    return $return;
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: xorInt32
+Language: PHP
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+public function xorInt32(ParagonIE_Sodium_Core32_Int32 $b) {
+    $return = new ParagonIE_Sodium_Core32_Int32();
+    $return->unsignedInt = $this->unsignedInt;
+    $return->limbs = array(
+        (int) ($this->limbs[0] ^ $b->limbs[0]),
+        (int) ($this->limbs[1] ^ $b->limbs[1])
+    );
+    return $return;
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: toInt
+Language: PHP
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+public function toInt() {
+    return (int) (
+        (($this->limbs[0] & 0xffff) << 16)
+            |
+        ($this->limbs[1] & 0xffff)
+    );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:33:21.177Z
+Question Type: true-false
+Function: sodium_crypto_sign
+Function Size: 265 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_sign (PHP)\n// Signs a message using a secret key.\n\nfunction sodium_crypto_sign(\n        $message,\n        #[\SensitiveParameter]\n        $secret_key\n    ) {\n        return ParagonIE_Sodium_Compat::crypto_sign($message, $secret_key);\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:33:24.010Z
+Question Type: select-all
+Function: sodium_add
+Function Size: 251 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_add (PHP)\n// Adds two strings together.\n\nfunction sodium_add(\n        #[\SensitiveParameter]\n        &$string1,\n        #[\SensitiveParameter]\n        $string2\n    ) {\n        ParagonIE_Sodium_Compat::add($string1, $string2);\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:33:25.676Z
+Question Type: order-sequence
+Function: sodium_crypto_secretbox
+Function Size: 322 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_secretbox (PHP)\n// Encrypts a message using secret box.\n\nfunction sodium_crypto_secretbox(\n        #[\SensitiveParameter]\n        $message,\n        $nonce,\n        #[\SensitiveParameter]\n        $key\n    ) {\n        return ParagonIE_Sodium_Compat::crypto_secretbox($message
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:33:26.583Z
+Question Type: order-sequence
+Function: sodium_add
+Function Size: 251 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_add (PHP)\n// Adds two strings together.\n\nfunction sodium_add(\n        #[\SensitiveParameter]\n        &$string1,\n        #[\SensitiveParameter]\n        $string2\n    ) {\n        ParagonIE_Sodium_Compat::add($string1, $string2);\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:33:28.939Z
+Question Type: select-all
+Function: sodium_crypto_secretbox_open
+Function Size: 442 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_secretbox_open (PHP)\n// Decrypts a secret box.\n\nfunction sodium_crypto_secretbox_open(\n        $ciphertext,\n        $nonce,\n        #[\SensitiveParameter]\n        $key\n    ) {\n        try {\n            return ParagonIE_Sodium_Compat::crypto_secretbox_open($ciphertext, $non
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:33:30.048Z
+Question Type: order-sequence
+Function: sodium_crypto_aead_aes256gcm_encrypt
+Function Size: 406 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_aead_aes256gcm_encrypt (PHP)\n// Encrypts a message using AES-256-GCM.\n\nfunction sodium_crypto_aead_aes256gcm_encrypt(\n        #[\SensitiveParameter]\n        $message,\n        $additional_data,\n        $nonce,\n        #[\SensitiveParameter]\n        $key\n    ) {\n        retu
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:33:33.978Z
+Question Type: select-all
+Function: sodium_crypto_secretbox
+Function Size: 322 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_secretbox (PHP)\n// Encrypts a message using secret box.\n\nfunction sodium_crypto_secretbox(\n        #[\SensitiveParameter]\n        $message,\n        $nonce,\n        #[\SensitiveParameter]\n        $key\n    ) {\n        return ParagonIE_Sodium_Compat::crypto_secretbox($message
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:33:34.310Z
+Question Type: function-variant
+Function: sodium_crypto_aead_aes256gcm_encrypt
+Function Size: 406 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_aead_aes256gcm_encrypt (PHP)\n// Encrypts a message using AES-256-GCM.\n\nfunction sodium_crypto_aead_aes256gcm_encrypt(\n        #[\SensitiveParameter]\n        $message,\n        $additional_data,\n        $nonce,\n        #[\SensitiveParameter]\n        $key\n    ) {\n        retu
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:33:34.442Z
+Question Type: select-all
+Function: sodium_crypto_sign_open
+Function Size: 374 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_sign_open (PHP)\n// Verifies a signed message.\n\nfunction sodium_crypto_sign_open($signedMessage, $public_key) {\n        try {\n            return ParagonIE_Sodium_Compat::crypto_sign_open($signedMessage, $public_key);\n        } catch (Error $ex) {\n            return false;\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:33:41.345Z
+Question Type: function-variant
+Function: sodium_crypto_aead_aes256gcm_decrypt
+Function Size: 757 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_aead_aes256gcm_decrypt (PHP)\n// Decrypts a ciphertext using AES-256-GCM.\n\nfunction sodium_crypto_aead_aes256gcm_decrypt(\n        $ciphertext,\n        $additional_data,\n        $nonce,\n        #[\SensitiveParameter]\n        $key\n    ) {\n        try {\n            return Para
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:33:42.209Z
+Question Type: function-variant
+Function: sodium_crypto_sign
+Function Size: 265 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_sign (PHP)\n// Signs a message using a secret key.\n\nfunction sodium_crypto_sign(\n        $message,\n        #[\SensitiveParameter]\n        $secret_key\n    ) {\n        return ParagonIE_Sodium_Compat::crypto_sign($message, $secret_key);\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:33:44.158Z
+Question Type: order-sequence
+Function: sodium_crypto_aead_aes256gcm_decrypt
+Function Size: 757 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_aead_aes256gcm_decrypt (PHP)\n// Decrypts a ciphertext using AES-256-GCM.\n\nfunction sodium_crypto_aead_aes256gcm_decrypt(\n        $ciphertext,\n        $additional_data,\n        $nonce,\n        #[\SensitiveParameter]\n        $key\n    ) {\n        try {\n            return Para
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:33:44.814Z
+Question Type: true-false
+Function: sodium_crypto_sign_open
+Function Size: 374 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_sign_open (PHP)\n// Verifies a signed message.\n\nfunction sodium_crypto_sign_open($signedMessage, $public_key) {\n        try {\n            return ParagonIE_Sodium_Compat::crypto_sign_open($signedMessage, $public_key);\n        } catch (Error $ex) {\n            return false;\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:33:45.611Z
+Question Type: function-variant
+Function: sodium_crypto_secretbox_open
+Function Size: 442 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: sodium_crypto_secretbox_open (PHP)\n// Decrypts a secret box.\n\nfunction sodium_crypto_secretbox_open(\n        $ciphertext,\n        $nonce,\n        #[\SensitiveParameter]\n        $key\n    ) {\n        try {\n            return ParagonIE_Sodium_Compat::crypto_secretbox_open($ciphertext, $non
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 14
+Total Chunks Processed: 7
+Ended: 2025-10-19T23:33:45.612Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:33:51.033Z
+Question Type: select-all
+Function: rekey
+Function Size: 357 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: rekey (PHP)\n// Updates the key and nonce with new values.\n\npublic function rekey($newKeyAndNonce) {\n    $this->key = ParagonIE_Sodium_Core_Util::substr($newKeyAndNonce, 0, 32);\n    $this->nonce = str_pad(\n        ParagonIE_Sodium_Core_Util::substr($newKeyAndNonce, 32),\n        12,\n     
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:33:52.957Z
+Question Type: select-all
+Function: subInt
+Function Size: 552 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: subInt (PHP)\n// Subtracts a normal integer from an int32 object.\n\npublic function subInt($int) {\n    ParagonIE_Sodium_Core32_Util::declareScalarType($int, 'int', 1);\n    $int = (int) $int;\n\n    $return = new ParagonIE_Sodium_Core32_Int32();\n    $return->unsignedInt = $this->unsignedInt;
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:33:54.631Z
+Question Type: order-sequence
+Function: subInt
+Function Size: 552 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: subInt (PHP)\n// Subtracts a normal integer from an int32 object.\n\npublic function subInt($int) {\n    ParagonIE_Sodium_Core32_Util::declareScalarType($int, 'int', 1);\n    $int = (int) $int;\n\n    $return = new ParagonIE_Sodium_Core32_Int32();\n    $return->unsignedInt = $this->unsignedInt;
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:33:56.103Z
+Question Type: select-all
+Function: xorInt32
+Function Size: 394 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: xorInt32 (PHP)\n// XORs this 32-bit integer with another int32 object.\n\npublic function xorInt32(ParagonIE_Sodium_Core32_Int32 $b) {\n    $return = new ParagonIE_Sodium_Core32_Int32();\n    $return->unsignedInt = $this->unsignedInt;\n    $return->limbs = array(\n        (int) ($this->limbs[0
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:33:56.357Z
+Question Type: multiple-choice
+Function: subInt
+Function Size: 552 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: subInt (PHP)\n// Subtracts a normal integer from an int32 object.\n\npublic function subInt($int) {\n    ParagonIE_Sodium_Core32_Util::declareScalarType($int, 'int', 1);\n    $int = (int) $int;\n\n    $return = new ParagonIE_Sodium_Core32_Int32();\n    $return->unsignedInt = $this->unsignedInt;
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:34:00.398Z
+Question Type: function-variant
+Function: toInt
+Function Size: 222 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: toInt (PHP)\n// Converts the int32 object to a regular integer.\n\npublic function toInt() {\n    return (int) (\n        (($this->limbs[0] & 0xffff) << 16)\n            |\n        ($this->limbs[1] & 0xffff)\n    );\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:34:02.764Z
+Question Type: function-variant
+Function: subInt32
+Function Size: 496 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: subInt32 (PHP)\n// Subtracts another int32 object from this one.\n\npublic function subInt32(ParagonIE_Sodium_Core32_Int32 $b) {\n    $return = new ParagonIE_Sodium_Core32_Int32();\n    $return->unsignedInt = $this->unsignedInt;\n\n    $tmp = $this->limbs[1] - ($b->limbs[1] & 0xffff);\n    $car
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:34:04.110Z
+Question Type: function-variant
+Function: toInt
+Function Size: 222 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: toInt (PHP)\n// Converts the int32 object to a regular integer.\n\npublic function toInt() {\n    return (int) (\n        (($this->limbs[0] & 0xffff) << 16)\n            |\n        ($this->limbs[1] & 0xffff)\n    );\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:34:05.352Z
+Question Type: order-sequence
+Function: counterReset
+Function Size: 199 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: counterReset (PHP)\n// Resets the counter to 1 and clears the padding.\n\npublic function counterReset() {\n    $this->counter = 1;\n    $this->_pad = str_repeat("\0", 4);\n    return $this;\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:34:06.665Z
+Question Type: true-false
+Function: rekey
+Function Size: 357 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: rekey (PHP)\n// Updates the key and nonce with new values.\n\npublic function rekey($newKeyAndNonce) {\n    $this->key = ParagonIE_Sodium_Core_Util::substr($newKeyAndNonce, 0, 32);\n    $this->nonce = str_pad(\n        ParagonIE_Sodium_Core_Util::substr($newKeyAndNonce, 32),\n        12,\n     
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 6
+Ended: 2025-10-19T23:34:06.684Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:44:37.000Z
+File: [8 files: index.js, App.js, UpdateEmployeeComponent.jsx, FooterComponent.jsx, ViewEmployeeComponent.jsx, HeaderComponent.js, ResourceNotFoundException.java, Execute callback]
+Functions Extracted: 5
+
+
+Function 1: App
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function App() {
+  return (
+    <div>
+        <Router>
+              <HeaderComponent />
+                <div className="container">
+                    <Switch> 
+                          <Route path = "/" exact component = {ListEmployeeComponent}></Route>
+                          <Route path = "/employees" component = {ListEmployeeComponent}></Route>
+                          <Route path = "/add-employee/:id" component = {CreateEmployeeComponent}></Route>
+                          <Route path = "/view-employee/:id" component = {ViewEmployeeComponent}></Route>
+                    </Switch>
+                </div>
+              <FooterComponent />
+        </Router>
+    </div>
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: componentDidMount
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+componentDidMount(){
+    EmployeeService.getEmployeeById(this.state.id).then( (res) =>{
+        let employee = res.data;
+        this.setState({firstName: employee.firstName,
+            lastName: employee.lastName,
+            emailId : employee.emailId
+        });
+    });
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: updateEmployee
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+updateEmployee = (e) => {
+    e.preventDefault();
+    let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};
+    console.log('employee => ' + JSON.stringify(employee));
+    console.log('id => ' + JSON.stringify(this.state.id));
+    EmployeeService.updateEmployee(employee, this.state.id).then( res => {
+        this.props.history.push('/employees');
+    });
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: componentDidMount
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+componentDidMount(){
+    EmployeeService.getEmployeeById(this.state.id).then( res => {
+        this.setState({employee: res.data});
+    })
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: render
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+render() {
+    return (
+        <div>
+            <br></br>
+            <div className = "card col-md-6 offset-md-3">
+                <h3 className = "text-center"> View Employee Details</h3>
+                <div className = "card-body">
+                    <div className = "row">
+                        <label> Employee First Name: </label>
+                        <div> { this.state.employee.firstName }</div>
+                    </div>
+                    <div className = "row">
+                        <label> Employee Last Name: </label>
+                        <div> { this.state.employee.lastName }</div>
+                    </div>
+                    <div className = "row">
+                        <label> Employee Email ID: </label>
+                        <div> { this.state.employee.emailId }</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:44:43.401Z
+Question Type: select-all
+Function: render
+Function Size: 977 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: render (JavaScript)\n// Renders the employee details view.\n\nrender() {\n    return (\n        <div>\n            <br></br>\n            <div className = "card col-md-6 offset-md-3">\n                <h3 className = "text-center"> View Employee Details</h3>\n                <div className = "ca
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:44:45.247Z
+Question Type: function-variant
+Function: componentDidMount
+Function Size: 395 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data when the component mounts and updates the state.\n\ncomponentDidMount(){\n    EmployeeService.getEmployeeById(this.state.id).then( (res) =>{\n        let employee = res.data;\n        this.setState({firstName: employee.firstName,\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:44:48.000Z
+Question Type: function-variant
+Function: updateEmployee
+Function Size: 531 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateEmployee (JavaScript)\n// Handles the employee update process and redirects to the employee list.\n\nupdateEmployee = (e) => {\n    e.preventDefault();\n    let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};\n    console.log('em
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:44:50.322Z
+Question Type: function-variant
+Function: componentDidMount
+Function Size: 252 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee details based on ID when the component mounts.\n\ncomponentDidMount(){\n    EmployeeService.getEmployeeById(this.state.id).then( res => {\n        this.setState({employee: res.data});\n    })\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:44:52.080Z
+Question Type: multiple-choice
+Function: componentDidMount
+Function Size: 252 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee details based on ID when the component mounts.\n\ncomponentDidMount(){\n    EmployeeService.getEmployeeById(this.state.id).then( res => {\n        this.setState({employee: res.data});\n    })\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:44:53.042Z
+Question Type: function-variant
+Function: render
+Function Size: 977 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: render (JavaScript)\n// Renders the employee details view.\n\nrender() {\n    return (\n        <div>\n            <br></br>\n            <div className = "card col-md-6 offset-md-3">\n                <h3 className = "text-center"> View Employee Details</h3>\n                <div className = "ca
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:44:53.825Z
+Question Type: order-sequence
+Function: App
+Function Size: 805 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing and includes header and footer.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                       
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:44:57.410Z
+Question Type: true-false
+Function: App
+Function Size: 805 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing and includes header and footer.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                       
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:44:59.256Z
+Question Type: order-sequence
+Function: render
+Function Size: 977 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: render (JavaScript)\n// Renders the employee details view.\n\nrender() {\n    return (\n        <div>\n            <br></br>\n            <div className = "card col-md-6 offset-md-3">\n                <h3 className = "text-center"> View Employee Details</h3>\n                <div className = "ca
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:45:00.369Z
+Question Type: select-all
+Function: App
+Function Size: 805 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing and includes header and footer.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                       
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 5
+Ended: 2025-10-19T23:45:00.429Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:45:02.567Z
+Question Type: multiple-choice
+Function: render
+Function Size: 977 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: render (JavaScript)\n// Renders the employee details view.\n\nrender() {\n    return (\n        <div>\n            <br></br>\n            <div className = "card col-md-6 offset-md-3">\n                <h3 className = "text-center"> View Employee Details</h3>\n                <div className = "ca
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:45:06.133Z
+Question Type: select-all
+Function: render
+Function Size: 977 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: render (JavaScript)\n// Renders the employee details view.\n\nrender() {\n    return (\n        <div>\n            <br></br>\n            <div className = "card col-md-6 offset-md-3">\n                <h3 className = "text-center"> View Employee Details</h3>\n                <div className = "ca
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:45:08.092Z
+Question Type: select-all
+Function: updateEmployee
+Function Size: 531 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: updateEmployee (JavaScript)\n// Handles the employee update process and redirects to the employee list.\n\nupdateEmployee = (e) => {\n    e.preventDefault();\n    let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};\n    console.log('em
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:45:11.589Z
+Question Type: order-sequence
+Function: updateEmployee
+Function Size: 531 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateEmployee (JavaScript)\n// Handles the employee update process and redirects to the employee list.\n\nupdateEmployee = (e) => {\n    e.preventDefault();\n    let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};\n    console.log('em
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:45:12.149Z
+Question Type: select-all
+Function: componentDidMount
+Function Size: 252 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee details based on ID when the component mounts.\n\ncomponentDidMount(){\n    EmployeeService.getEmployeeById(this.state.id).then( res => {\n        this.setState({employee: res.data});\n    })\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:45:14.357Z
+Question Type: function-variant
+Function: componentDidMount
+Function Size: 395 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data when the component mounts and updates the state.\n\ncomponentDidMount(){\n    EmployeeService.getEmployeeById(this.state.id).then( (res) =>{\n        let employee = res.data;\n        this.setState({firstName: employee.firstName,\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:45:16.249Z
+Question Type: function-variant
+Function: render
+Function Size: 977 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: render (JavaScript)\n// Renders the employee details view.\n\nrender() {\n    return (\n        <div>\n            <br></br>\n            <div className = "card col-md-6 offset-md-3">\n                <h3 className = "text-center"> View Employee Details</h3>\n                <div className = "ca
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:45:16.471Z
+Question Type: true-false
+Function: App
+Function Size: 805 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: App (JavaScript)\n// Main application component that sets up routing and includes header and footer.\n\nfunction App() {\n  return (\n    <div>\n        <Router>\n              <HeaderComponent />\n                <div className="container">\n                    <Switch> \n                       
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 7
+Total Chunks Processed: 5
+Ended: 2025-10-19T23:45:16.506Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:49:22.576Z
+File: greensock-GSAP-9f8eca1/esm/utils/VelocityTracker.js
+Functions Extracted: 7
+
+
+Function 1: get
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+proto.get = function get(property, skipRecentTick) {
+    var pt = this._props[property] || console.warn("Not tracking " + property + " velocity."),
+        val,
+        dif,
+        rotationCap;
+    val = parseFloat(skipRecentTick ? pt.v1 : pt.g(pt.t, pt.p));
+    dif = val - parseFloat(pt.v2);
+    rotationCap = pt.rCap;
+
+    if (rotationCap) {
+      dif = dif % rotationCap;
+
+      if (dif !== dif % (rotationCap / 2)) {
+        dif = dif < 0 ? dif + rotationCap : dif - rotationCap;
+      }
+    }
+
+    return _round(dif / ((skipRecentTick ? pt.t1 : _ticker.time) - pt.t2));
+  };
+--------------------------------------------------------------------------------
+
+
+Function 2: getAll
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+proto.getAll = function getAll() {
+    var result = {},
+        props = this._props,
+        p;
+
+    for (p in props) {
+      result[p] = this.get(p);
+    }
+
+    return result;
+  };
+--------------------------------------------------------------------------------
+
+
+Function 3: add
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+proto.add = function add(property, type) {
+    if (!(property in this._props)) {
+      if (!_first) {
+        _ticker.add(_onTick);
+
+        _time1 = _time2 = _ticker.time;
+      }
+
+      _first = this._props[property] = new PropTracker(this.target, property, type, _first);
+    }
+  };
+--------------------------------------------------------------------------------
+
+
+Function 4: remove
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+proto.remove = function remove(property) {
+    var pt = this._props[property],
+        prev,
+        next;
+
+    if (pt) {
+      prev = pt._prev;
+      next = pt._next;
+
+      if (prev) {
+        prev._next = next;
+      }
+
+      if (next) {
+        next._prev = prev;
+      } else if (_first === pt) {
+        _ticker.remove(_onTick);
+
+        _first = 0;
+      }
+
+      delete this._props[property];
+    }
+  };
+--------------------------------------------------------------------------------
+
+
+Function 5: track
+Language: JavaScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+VelocityTracker.track = function track(targets, properties, types) {
+    if (!_coreInitted) {
+      _initCore();
+    }
+
+    var result = [],
+        targs = _toArray(targets),
+        a = properties.split(","),
+        t = (types || "").split(","),
+        i = targs.length,
+        tracker,
+        j;
+
+    while (i--) {
+      tracker = _getByTarget(targs[i]) || new VelocityTracker(targs[i]);
+      j = a.length;
+
+      while (j--) {
+        tracker.add(a[j], t[j] || t[0]);
+      }
+
+      result.push(tracker);
+    }
+
+    return result;
+  };
+--------------------------------------------------------------------------------
+
+
+Function 6: untrack
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+VelocityTracker.untrack = function untrack(targets, properties) {
+    var props = (properties || "").split(",");
+
+    _toArray(targets).forEach(function (target) {
+      var tracker = _getByTarget(target);
+
+      if (tracker) {
+        if (!props.length) {
+          tracker.kill(1);
+        } else {
+          props.forEach(function (p) {
+            return tracker.remove(p);
+          });
+        }
+      }
+    });
+  };
+--------------------------------------------------------------------------------
+
+
+Function 7: getVelocity
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+VelocityTracker.getVelocity = function getVelocity(target, property) {
+    var tracker = _getByTarget(target);
+
+    return !tracker || !tracker.isTracking(property) ? console.warn("Not tracking velocity of " + property) : tracker.get(property);
+  };
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-19T23:49:24.847Z
+File: greensock-GSAP-9f8eca1/esm/GSDevTools.js
+Functions Extracted: 5
+
+
+Function 1: _createElement
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function _createElement(type, container, cssText) {
+  var element = _doc.createElementNS ? _doc.createElementNS(type === "svg" ? _svgNS : _domNS, type) : _doc.createElement(type);
+
+  if (container) {
+    if (_isString(container)) {
+      container = _doc.querySelector(container);
+    }
+
+    container.appendChild(element);
+  }
+
+  if (type === "svg") {
+    element.setAttribute("xmlns", _svgNS);
+    element.setAttribute("xmlns:xlink", _domNS);
+  }
+
+  cssText && (element.style.cssText = cssText);
+  return element;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: _getChildrenOf
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function _getChildrenOf(timeline, includeTimelines) {
+  var a = [],
+      cnt = 0,
+      Tween = gsap.core.Tween,
+      tween = timeline._first;
+
+  while (tween) {
+    if (tween instanceof Tween) {
+      if (tween.vars.id) {
+        a[cnt++] = tween;
+      }
+    } else {
+      if (includeTimelines && tween.vars.id) {
+        a[cnt++] = tween;
+      }
+
+      a = a.concat(_getChildrenOf(tween, includeTimelines));
+      cnt = a.length;
+    }
+
+    tween = tween._next;
+  }
+
+  return a;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: _merge
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function _merge() {
+  var t = _globalTimeline._first,
+      duration,
+      next,
+      target;
+
+  if (_rootInstance) {
+    duration = _recordedRoot._dur;
+
+    while (t) {
+      next = t._next;
+      target = t._targets && t._targets[0];
+
+      if (!(_isFunction(target) && target === t.vars.onComplete && !t._dur) && !(target && target._gsIgnore)) {
+        _recordedRoot.add(t, t._start - t._delay);
+      }
+
+      t = next;
+    }
+
+    return duration !== _recordedRoot.duration();
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: _updateRootDuration
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+function _updateRootDuration() {
+  if (_rootInstance) {
+    _rootInstance.update();
+
+    _rootIsDirty = false;
+  }
+
+  gsap.ticker.remove(_updateRootDuration);
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: _buildPlayPauseMorph
+Language: JavaScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+function _buildPlayPauseMorph(svg) {
+  var tl = gsap.timeline({
+    data: "root",
+    parent: _independentRoot,
+    onComplete: function onComplete() {
+      return tl.kill();
+    }
+  }, _independentRoot._time);
+  tl.to(svg.querySelector(".play-1"), {
+    duration: 0.4,
+    attr: {
+      d: "M5.75,3.13 C5.75,9.79 5.75,16.46 5.75,23.13 4.08,23.13 2.41,23.13 0.75,23.13 0.75,16.46 0.75,9.79 0.75,3.12 2.41,3.12 4.08,3.12 5.75,3.12"
+    },
+    ease: "power2.inOut",
+    rotation: 360,
+    transformOrigin: "50% 50%"
+  }).to(svg.querySelector(".play-2"), {
+    duration: 0.4,
+    attr: {
+      d: "M16.38,3.13 C16.38,9.79 16.38,16.46 16.38,23.13 14.71,23.13 13.04,23.13 11.38,23.13 11.38,16.46 11.38,9.79 11.38,3.12 13.04,3.12 14.71,3.12 16.38,3.12"
+    },
+    ease: "power2.inOut",
+    rotation: 360,
+    transformOrigin: "50% 50%"
+  }, 0.05);
+  return tl;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:49:26.822Z
+Question Type: select-all
+Function: getVelocity
+Function Size: 351 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getVelocity (JavaScript)\n// Retrieves the velocity of a specific property for a target.\n\nVelocityTracker.getVelocity = function getVelocity(target, property) {\n    var tracker = _getByTarget(target);\n\n    return !tracker || !tracker.isTracking(property) ? console.warn("Not tracking velo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:49:27.159Z
+Question Type: true-false
+Function: get
+Function Size: 689 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: get (JavaScript)\n// Calculates the velocity of a tracked property, considering rotation caps.\n\nproto.get = function get(property, skipRecentTick) {\n    var pt = this._props[property] || console.warn("Not tracking " + property + " velocity."),\n        val,\n        dif,\n        rotationCa
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:49:30.716Z
+Question Type: order-sequence
+Function: add
+Function Size: 363 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: add (JavaScript)\n// Adds a property to be tracked for velocity.\n\nproto.add = function add(property, type) {\n    if (!(property in this._props)) {\n      if (!_first) {\n        _ticker.add(_onTick);\n\n        _time1 = _time2 = _ticker.time;\n      }\n\n      _first = this._props[property] = n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:49:32.290Z
+Question Type: order-sequence
+Function: getAll
+Function Size: 270 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getAll (JavaScript)\n// Retrieves the velocities of all tracked properties.\n\nproto.getAll = function getAll() {\n    var result = {},\n        props = this._props,\n        p;\n\n    for (p in props) {\n      result[p] = this.get(p);\n    }\n\n    return result;\n  };
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:49:32.330Z
+Question Type: select-all
+Function: add
+Function Size: 363 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: add (JavaScript)\n// Adds a property to be tracked for velocity.\n\nproto.add = function add(property, type) {\n    if (!(property in this._props)) {\n      if (!_first) {\n        _ticker.add(_onTick);\n\n        _time1 = _time2 = _ticker.time;\n      }\n\n      _first = this._props[property] = n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:49:34.096Z
+Question Type: multiple-choice
+Function: track
+Function Size: 629 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: track (JavaScript)\n// Tracks multiple properties for multiple targets.\n\nVelocityTracker.track = function track(targets, properties, types) {\n    if (!_coreInitted) {\n      _initCore();\n    }\n\n    var result = [],\n        targs = _toArray(targets),\n        a = properties.split(","),\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:49:34.927Z
+Question Type: order-sequence
+Function: remove
+Function Size: 500 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: remove (JavaScript)\n// Removes a property from being tracked for velocity.\n\nproto.remove = function remove(property) {\n    var pt = this._props[property],\n        prev,\n        next;\n\n    if (pt) {\n      prev = pt._prev;\n      next = pt._next;\n\n      if (prev) {\n        prev._next = nex
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:49:37.477Z
+Question Type: select-all
+Function: untrack
+Function Size: 503 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: untrack (JavaScript)\n// Untracks properties from multiple targets.\n\nVelocityTracker.untrack = function untrack(targets, properties) {\n    var props = (properties || "").split(",");\n\n    _toArray(targets).forEach(function (target) {\n      var tracker = _getByTarget(target);\n\n      if (tr
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:49:37.684Z
+Question Type: true-false
+Function: getVelocity
+Function Size: 351 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getVelocity (JavaScript)\n// Retrieves the velocity of a specific property for a target.\n\nVelocityTracker.getVelocity = function getVelocity(target, property) {\n    var tracker = _getByTarget(target);\n\n    return !tracker || !tracker.isTracking(property) ? console.warn("Not tracking velo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:49:42.027Z
+Question Type: order-sequence
+Function: track
+Function Size: 629 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: track (JavaScript)\n// Tracks multiple properties for multiple targets.\n\nVelocityTracker.track = function track(targets, properties, types) {\n    if (!_coreInitted) {\n      _initCore();\n    }\n\n    var result = [],\n        targs = _toArray(targets),\n        a = properties.split(","),\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:49:42.164Z
+Question Type: select-all
+Function: getAll
+Function Size: 270 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getAll (JavaScript)\n// Retrieves the velocities of all tracked properties.\n\nproto.getAll = function getAll() {\n    var result = {},\n        props = this._props,\n        p;\n\n    for (p in props) {\n      result[p] = this.get(p);\n    }\n\n    return result;\n  };
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:49:44.755Z
+Question Type: function-variant
+Function: untrack
+Function Size: 503 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: untrack (JavaScript)\n// Untracks properties from multiple targets.\n\nVelocityTracker.untrack = function untrack(targets, properties) {\n    var props = (properties || "").split(",");\n\n    _toArray(targets).forEach(function (target) {\n      var tracker = _getByTarget(target);\n\n      if (tr
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:49:50.685Z
+Question Type: function-variant
+Function: track
+Function Size: 629 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: track (JavaScript)\n// Tracks multiple properties for multiple targets.\n\nVelocityTracker.track = function track(targets, properties, types) {\n    if (!_coreInitted) {\n      _initCore();\n    }\n\n    var result = [],\n        targs = _toArray(targets),\n        a = properties.split(","),\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:49:53.458Z
+Question Type: function-variant
+Function: remove
+Function Size: 500 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: remove (JavaScript)\n// Removes a property from being tracked for velocity.\n\nproto.remove = function remove(property) {\n    var pt = this._props[property],\n        prev,\n        next;\n\n    if (pt) {\n      prev = pt._prev;\n      next = pt._next;\n\n      if (prev) {\n        prev._next = nex
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:49:56.535Z
+Question Type: function-variant
+Function: get
+Function Size: 689 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: get (JavaScript)\n// Calculates the velocity of a tracked property, considering rotation caps.\n\nproto.get = function get(property, skipRecentTick) {\n    var pt = this._props[property] || console.warn("Not tracking " + property + " velocity."),\n        val,\n        dif,\n        rotationCa
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 13
+Total Chunks Processed: 7
+Ended: 2025-10-19T23:49:56.537Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:50:01.027Z
+Question Type: true-false
+Function: _getChildrenOf
+Function Size: 593 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _getChildrenOf (JavaScript)\n// Retrieves all child tweens or timelines of a given timeline.\n\nfunction _getChildrenOf(timeline, includeTimelines) {\n  var a = [],\n      cnt = 0,\n      Tween = gsap.core.Tween,\n      tween = timeline._first;\n\n  while (tween) {\n    if (tween instanceof Tween
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:50:05.429Z
+Question Type: order-sequence
+Function: _createElement
+Function Size: 638 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _createElement (JavaScript)\n// Creates a new HTML or SVG element and optionally appends it to a container.\n\nfunction _createElement(type, container, cssText) {\n  var element = _doc.createElementNS ? _doc.createElementNS(type === "svg" ? _svgNS : _domNS, type) : _doc.createElement(type);
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-19T23:50:07.096Z
+Question Type: function-variant
+Function: _updateRootDuration
+Function Size: 266 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _updateRootDuration (JavaScript)\n// Updates the duration of the root instance if it exists.\n\nfunction _updateRootDuration() {\n  if (_rootInstance) {\n    _rootInstance.update();\n\n    _rootIsDirty = false;\n  }\n\n  gsap.ticker.remove(_updateRootDuration);\n}
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 3
+Total Chunks Processed: 5
+Ended: 2025-10-19T23:50:07.166Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:06:25.888Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1373 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: set scroll (notify ScrollTrigger so it can dispatch a "scrollStart" event if necessary\n} else if (doNotCache || _scrollers.cache !== cachingFunc.cacheID || _bridge("ref")) {\n      cachingFunc.cacheID = _scrollers.cache;\n      cachingFunc.v = f();\n    }\n\n    return cachingFunc.v + cachingFun
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:06:28.822Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1373 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: set scroll (notify ScrollTrigger so it can dispatch a "scrollStart" event if necessary\n} else if (doNotCache || _scrollers.cache !== cachingFunc.cacheID || _bridge("ref")) {\n      cachingFunc.cacheID = _scrollers.cache;\n      cachingFunc.v = f();\n    }\n\n    return cachingFunc.v + cachingFun
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:06:29.334Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2067 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: greensock-GSAP-9f8eca1/esm/Observer.js\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = tru
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:06:32.590Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 337 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: check if the element is in the list or is a descendant of an element in the list.\nvar i = list.length;\n\n  while (i--) {\n    if (list[i] === element || list[i].contains(element)) {\n      return true;\n    }\n  }\n\n  return false;\n},\n    _getScrollFunc = function _getScrollFunc(element, _ref) {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:06:32.642Z
+Question Type: true-false
+Function: Unknown
+Function Size: 337 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: check if the element is in the list or is a descendant of an element in the list.\nvar i = list.length;\n\n  while (i--) {\n    if (list[i] === element || list[i].contains(element)) {\n      return true;\n    }\n  }\n\n  return false;\n},\n    _getScrollFunc = function _getScrollFunc(element, _ref) {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:06:33.735Z
+Question Type: select-all
+Function: Unknown
+Function Size: 337 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: check if the element is in the list or is a descendant of an element in the list.\nvar i = list.length;\n\n  while (i--) {\n    if (list[i] === element || list[i].contains(element)) {\n      return true;\n    }\n  }\n\n  return false;\n},\n    _getScrollFunc = function _getScrollFunc(element, _ref) {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:06:34.945Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 2067 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: greensock-GSAP-9f8eca1/esm/Observer.js\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = tru
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:06:36.952Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1373 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: set scroll (notify ScrollTrigger so it can dispatch a "scrollStart" event if necessary\n} else if (doNotCache || _scrollers.cache !== cachingFunc.cacheID || _bridge("ref")) {\n      cachingFunc.cacheID = _scrollers.cache;\n      cachingFunc.v = f();\n    }\n\n    return cachingFunc.v + cachingFun
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:06:39.745Z
+Question Type: select-all
+Function: Unknown
+Function Size: 499 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: since reading the scrollTop/scrollLeft/pageOffsetY/pageOffsetX can trigger a layout, this function allows us to cache the value so it only gets read fresh after a "scroll" event fires (or while we're refreshing because that can lengthen the page and alter the scroll position). when "soft" i
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:06:42.411Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 461 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: otherwise the new position will get overwritten by the browser onload.\nvar isNormalizing = _normalizer && _normalizer.isPressed;\n      value = cachingFunc.v = Math.round(value) || (_normalizer && _normalizer.iOS ? 1 : 0); //TODO: iOS Bug: if you allow it to go to 0, Safari can start to repo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:06:42.685Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2067 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: greensock-GSAP-9f8eca1/esm/Observer.js\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = tru
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:06:44.125Z
+Question Type: true-false
+Function: Unknown
+Function Size: 499 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: since reading the scrollTop/scrollLeft/pageOffsetY/pageOffsetX can trigger a layout, this function allows us to cache the value so it only gets read fresh after a "scroll" event fires (or while we're refreshing because that can lengthen the page and alter the scroll position). when "soft" i
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:06:45.610Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 461 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: otherwise the new position will get overwritten by the browser onload.\nvar isNormalizing = _normalizer && _normalizer.isPressed;\n      value = cachingFunc.v = Math.round(value) || (_normalizer && _normalizer.iOS ? 1 : 0); //TODO: iOS Bug: if you allow it to go to 0, Safari can start to repo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:06:50.954Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 461 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: otherwise the new position will get overwritten by the browser onload.\nvar isNormalizing = _normalizer && _normalizer.isPressed;\n      value = cachingFunc.v = Math.round(value) || (_normalizer && _normalizer.iOS ? 1 : 0); //TODO: iOS Bug: if you allow it to go to 0, Safari can start to repo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:06:54.937Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 499 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: since reading the scrollTop/scrollLeft/pageOffsetY/pageOffsetX can trigger a layout, this function allows us to cache the value so it only gets read fresh after a "scroll" event fires (or while we're refreshing because that can lengthen the page and alter the scroll position). when "soft" i
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 14
+Total Chunks Processed: 5
+Ended: 2025-10-20T00:06:54.950Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T00:07:25.779Z
+File: motiondivision-motion-b5df740/packages/framer-motion/src/value/use-transform.ts
+Functions Extracted: 2
+
+
+Function 1: useTransform
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function useTransform<I, O>(
+    input:
+        | MotionValue<I>
+        | MotionValue<string>[]
+        | MotionValue<number>[]
+        | MotionValue<AnyResolvedKeyframe>[]
+        | (() => O),
+    inputRangeOrTransformer?: InputRange | Transformer<I, O>,
+    outputRange?: O[],
+    options?: TransformOptions<O>
+): MotionValue<O> {
+    if (typeof input === "function") {
+        return useComputed(input)
+    }
+
+    const transformer =
+        typeof inputRangeOrTransformer === "function"
+            ? inputRangeOrTransformer
+            : transform(inputRangeOrTransformer!, outputRange!, options)
+
+    return Array.isArray(input)
+        ? useListTransform(
+              input,
+              transformer as MultiTransformer<AnyResolvedKeyframe, O>
+          )
+        : useListTransform([input], ([latest]) =>
+              (transformer as SingleTransformer<I, O>)(latest)
+          )
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: useListTransform
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function useListTransform<I, O>(
+    values: MotionValue<I>[],
+    transformer: MultiTransformer<I, O>
+): MotionValue<O> {
+    const latest = useConstant<I[]>(() => [])
+
+    return useCombineMotionValues(values, () => {
+        latest.length = 0
+        const numValues = values.length
+        for (let i = 0; i < numValues; i++) {
+            latest[i] = values[i].get()
+        }
+
+        return transformer(latest)
+    })
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:07:31.382Z
+Question Type: true-false
+Function: useTransform
+Function Size: 1034 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useTransform (TypeScript)\n// Transforms the output of a MotionValue based on input ranges or a transformation function.\n\nexport function useTransform<I, O>(\n    input:\n        | MotionValue<I>\n        | MotionValue<string>[]\n        | MotionValue<number>[]\n        | MotionValue<AnyResol
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:07:31.565Z
+Question Type: select-all
+Function: useListTransform
+Function Size: 566 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useListTransform (TypeScript)\n// Combines multiple MotionValues and applies a transformation function to their latest values.\n\nfunction useListTransform<I, O>(\n    values: MotionValue<I>[],\n    transformer: MultiTransformer<I, O>\n): MotionValue<O> {\n    const latest = useConstant<I[]>((
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:07:37.349Z
+Question Type: function-variant
+Function: useListTransform
+Function Size: 566 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useListTransform (TypeScript)\n// Combines multiple MotionValues and applies a transformation function to their latest values.\n\nfunction useListTransform<I, O>(\n    values: MotionValue<I>[],\n    transformer: MultiTransformer<I, O>\n): MotionValue<O> {\n    const latest = useConstant<I[]>((
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:07:37.469Z
+Question Type: order-sequence
+Function: useTransform
+Function Size: 1034 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useTransform (TypeScript)\n// Transforms the output of a MotionValue based on input ranges or a transformation function.\n\nexport function useTransform<I, O>(\n    input:\n        | MotionValue<I>\n        | MotionValue<string>[]\n        | MotionValue<number>[]\n        | MotionValue<AnyResol
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 4
+Total Chunks Processed: 2
+Ended: 2025-10-20T00:07:37.495Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T00:07:46.040Z
+File: motiondivision-motion-b5df740/packages/framer-motion/src/animation/animate/index.ts
+Functions Extracted: 1
+
+
+Function 1: createScopedAnimate
+Language: TypeScript
+Lines: 43
+Full Code:
+--------------------------------------------------------------------------------
+export function createScopedAnimate(scope?: AnimationScope) {
+    function scopedAnimate(
+        sequence: AnimationSequence,
+        options?: SequenceOptions
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate(
+        value: string | MotionValue<string>,
+        keyframes: string | UnresolvedValueKeyframe<string>[],
+        options?: ValueAnimationTransition<string>
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate(
+        value: number | MotionValue<number>,
+        keyframes: number | UnresolvedValueKeyframe<number>[],
+        options?: ValueAnimationTransition<number>
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate<V extends string | number>(
+        value: V | MotionValue<V>,
+        keyframes: V | UnresolvedValueKeyframe<V>[],
+        options?: ValueAnimationTransition<V>
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate(
+        element: ElementOrSelector,
+        keyframes: DOMKeyframesDefinition,
+        options?: DynamicAnimationOptions
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate<O extends {}>(
+        object: O | O[],
+        keyframes: ObjectTarget<O>,
+        options?: DynamicAnimationOptions
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate<O extends {}>(
+        subjectOrSequence:
+            | AnimationSequence
+            | MotionValue<number>
+            | MotionValue<string>
+            | number
+            | string
+            | ElementOrSelector
+            | O
+            | O[],
+        optionsOrKeyframes?:
+            | SequenceOptions
+            | number
+            | string
+            | UnresolvedValueKeyframe<number>[]
+            | UnresolvedValueKeyframe<string>[]
+            | DOMKeyframesDefinition
+            | ObjectTarget<O>,
+        options?:
+            | ValueAnimationTransition<number>
+            | ValueAnimationTransition<string>
+            | DynamicAnimationOptions
+    ): AnimationPlaybackControlsWithThen {
+        let animations: AnimationPlaybackControlsWithThen[] = []
+        let animationOnComplete: VoidFunction | undefined
+
+        if (isSequence(subjectOrSequence)) {
+            animations = animateSequence(
+                subjectOrSequence,
+                optionsOrKeyframes as SequenceOptions,
+                scope
+            )
+        } else {
+            // Implementation continues...
+        }
+    }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:07:48.264Z
+Question Type: multiple-choice
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:07:54.837Z
+Question Type: order-sequence
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:07:57.507Z
+Question Type: order-sequence
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:07:59.794Z
+Question Type: function-variant
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:08:04.394Z
+Question Type: order-sequence
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:08:07.456Z
+Question Type: order-sequence
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:08:12.557Z
+Question Type: function-variant
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:08:13.091Z
+Question Type: function-variant
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:08:14.561Z
+Question Type: select-all
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:08:18.043Z
+Question Type: select-all
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:08:21.795Z
+Question Type: true-false
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 1
+Ended: 2025-10-20T00:08:21.908Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:08:27.526Z
+Question Type: select-all
+Function: useListTransform
+Function Size: 566 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useListTransform (TypeScript)\n// Combines multiple MotionValues and applies a transformation function to their latest values.\n\nfunction useListTransform<I, O>(\n    values: MotionValue<I>[],\n    transformer: MultiTransformer<I, O>\n): MotionValue<O> {\n    const latest = useConstant<I[]>((
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:08:31.241Z
+Question Type: order-sequence
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:08:32.451Z
+Question Type: order-sequence
+Function: useListTransform
+Function Size: 566 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useListTransform (TypeScript)\n// Combines multiple MotionValues and applies a transformation function to their latest values.\n\nfunction useListTransform<I, O>(\n    values: MotionValue<I>[],\n    transformer: MultiTransformer<I, O>\n): MotionValue<O> {\n    const latest = useConstant<I[]>((
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:08:32.524Z
+Question Type: select-all
+Function: useListTransform
+Function Size: 566 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useListTransform (TypeScript)\n// Combines multiple MotionValues and applies a transformation function to their latest values.\n\nfunction useListTransform<I, O>(\n    values: MotionValue<I>[],\n    transformer: MultiTransformer<I, O>\n): MotionValue<O> {\n    const latest = useConstant<I[]>((
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:08:37.970Z
+Question Type: true-false
+Function: useTransform
+Function Size: 1034 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: useTransform (TypeScript)\n// Transforms the output of a MotionValue based on input ranges or a transformation function.\n\nexport function useTransform<I, O>(\n    input:\n        | MotionValue<I>\n        | MotionValue<string>[]\n        | MotionValue<number>[]\n        | MotionValue<AnyResol
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:08:40.614Z
+Question Type: function-variant
+Function: useTransform
+Function Size: 1034 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useTransform (TypeScript)\n// Transforms the output of a MotionValue based on input ranges or a transformation function.\n\nexport function useTransform<I, O>(\n    input:\n        | MotionValue<I>\n        | MotionValue<string>[]\n        | MotionValue<number>[]\n        | MotionValue<AnyResol
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:08:42.249Z
+Question Type: order-sequence
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:08:44.505Z
+Question Type: multiple-choice
+Function: useListTransform
+Function Size: 566 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useListTransform (TypeScript)\n// Combines multiple MotionValues and applies a transformation function to their latest values.\n\nfunction useListTransform<I, O>(\n    values: MotionValue<I>[],\n    transformer: MultiTransformer<I, O>\n): MotionValue<O> {\n    const latest = useConstant<I[]>((
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:08:46.413Z
+Question Type: true-false
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 3
+Ended: 2025-10-20T00:08:46.468Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T00:19:52.578Z
+File: Separate out this functionality for testing
+Functions Extracted: 3
+
+
+Function 1: onResetPasswordLink
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+onResetPasswordLink(callback) {
+    if (this._accountsCallbacks["reset-password"]) {
+      Meteor._debug("Accounts.onResetPasswordLink was called more than once. " +
+        "Only one callback added will be executed.");
+    }
+
+    this._accountsCallbacks["reset-password"] = callback;
+  };
+--------------------------------------------------------------------------------
+
+
+Function 2: onEmailVerificationLink
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+onEmailVerificationLink(callback) {
+    if (this._accountsCallbacks["verify-email"]) {
+      Meteor._debug("Accounts.onEmailVerificationLink was called more than once. " +
+        "Only one callback added will be executed.");
+    }
+
+    this._accountsCallbacks["verify-email"] = callback;
+  };
+--------------------------------------------------------------------------------
+
+
+Function 3: onEnrollmentLink
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+onEnrollmentLink(callback) {
+    if (this._accountsCallbacks["enroll-account"]) {
+      Meteor._debug("Accounts.onEnrollmentLink was called more than once. " +
+        "Only one callback added will be executed.");
+    }
+
+    this._accountsCallbacks["enroll-account"] = callback;
+  };
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:19:56.098Z
+Question Type: true-false
+Function: onEnrollmentLink
+Function Size: 429 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onEnrollmentLink (JavaScript)\n// Registers a callback function to be called when an account enrollment link is clicked in an email.\n\nonEnrollmentLink(callback) {\n    if (this._accountsCallbacks["enroll-account"]) {\n      Meteor._debug("Accounts.onEnrollmentLink was called more than once
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:19:57.571Z
+Question Type: select-all
+Function: onEmailVerificationLink
+Function Size: 446 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onEmailVerificationLink (JavaScript)\n// Registers a callback function to be called when an email verification link is clicked in an email.\n\nonEmailVerificationLink(callback) {\n    if (this._accountsCallbacks["verify-email"]) {\n      Meteor._debug("Accounts.onEmailVerificationLink was ca
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:20:00.205Z
+Question Type: select-all
+Function: onEnrollmentLink
+Function Size: 429 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onEnrollmentLink (JavaScript)\n// Registers a callback function to be called when an account enrollment link is clicked in an email.\n\nonEnrollmentLink(callback) {\n    if (this._accountsCallbacks["enroll-account"]) {\n      Meteor._debug("Accounts.onEnrollmentLink was called more than once
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:20:00.398Z
+Question Type: function-variant
+Function: onEnrollmentLink
+Function Size: 429 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onEnrollmentLink (JavaScript)\n// Registers a callback function to be called when an account enrollment link is clicked in an email.\n\nonEnrollmentLink(callback) {\n    if (this._accountsCallbacks["enroll-account"]) {\n      Meteor._debug("Accounts.onEnrollmentLink was called more than once
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:20:04.327Z
+Question Type: function-variant
+Function: onResetPasswordLink
+Function Size: 433 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onResetPasswordLink (JavaScript)\n// Registers a callback function to be called when a reset password link is clicked in an email.\n\nonResetPasswordLink(callback) {\n    if (this._accountsCallbacks["reset-password"]) {\n      Meteor._debug("Accounts.onResetPasswordLink was called more than 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:20:06.104Z
+Question Type: select-all
+Function: onEmailVerificationLink
+Function Size: 446 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: onEmailVerificationLink (JavaScript)\n// Registers a callback function to be called when an email verification link is clicked in an email.\n\nonEmailVerificationLink(callback) {\n    if (this._accountsCallbacks["verify-email"]) {\n      Meteor._debug("Accounts.onEmailVerificationLink was ca
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:20:06.417Z
+Question Type: function-variant
+Function: onResetPasswordLink
+Function Size: 433 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onResetPasswordLink (JavaScript)\n// Registers a callback function to be called when a reset password link is clicked in an email.\n\nonResetPasswordLink(callback) {\n    if (this._accountsCallbacks["reset-password"]) {\n      Meteor._debug("Accounts.onResetPasswordLink was called more than 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 3
+Ended: 2025-10-20T00:20:06.419Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:20:17.394Z
+Question Type: select-all
+Function: onEnrollmentLink
+Function Size: 429 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onEnrollmentLink (JavaScript)\n// Registers a callback function to be called when an account enrollment link is clicked in an email.\n\nonEnrollmentLink(callback) {\n    if (this._accountsCallbacks["enroll-account"]) {\n      Meteor._debug("Accounts.onEnrollmentLink was called more than once
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:20:17.578Z
+Question Type: select-all
+Function: onEmailVerificationLink
+Function Size: 446 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onEmailVerificationLink (JavaScript)\n// Registers a callback function to be called when an email verification link is clicked in an email.\n\nonEmailVerificationLink(callback) {\n    if (this._accountsCallbacks["verify-email"]) {\n      Meteor._debug("Accounts.onEmailVerificationLink was ca
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:20:19.443Z
+Question Type: multiple-choice
+Function: onEnrollmentLink
+Function Size: 429 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onEnrollmentLink (JavaScript)\n// Registers a callback function to be called when an account enrollment link is clicked in an email.\n\nonEnrollmentLink(callback) {\n    if (this._accountsCallbacks["enroll-account"]) {\n      Meteor._debug("Accounts.onEnrollmentLink was called more than once
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:20:21.958Z
+Question Type: order-sequence
+Function: onResetPasswordLink
+Function Size: 433 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: onResetPasswordLink (JavaScript)\n// Registers a callback function to be called when a reset password link is clicked in an email.\n\nonResetPasswordLink(callback) {\n    if (this._accountsCallbacks["reset-password"]) {\n      Meteor._debug("Accounts.onResetPasswordLink was called more than 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:20:22.403Z
+Question Type: select-all
+Function: onResetPasswordLink
+Function Size: 433 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onResetPasswordLink (JavaScript)\n// Registers a callback function to be called when a reset password link is clicked in an email.\n\nonResetPasswordLink(callback) {\n    if (this._accountsCallbacks["reset-password"]) {\n      Meteor._debug("Accounts.onResetPasswordLink was called more than 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:20:23.277Z
+Question Type: order-sequence
+Function: onResetPasswordLink
+Function Size: 433 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: onResetPasswordLink (JavaScript)\n// Registers a callback function to be called when a reset password link is clicked in an email.\n\nonResetPasswordLink(callback) {\n    if (this._accountsCallbacks["reset-password"]) {\n      Meteor._debug("Accounts.onResetPasswordLink was called more than 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:20:28.286Z
+Question Type: select-all
+Function: onResetPasswordLink
+Function Size: 433 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: onResetPasswordLink (JavaScript)\n// Registers a callback function to be called when a reset password link is clicked in an email.\n\nonResetPasswordLink(callback) {\n    if (this._accountsCallbacks["reset-password"]) {\n      Meteor._debug("Accounts.onResetPasswordLink was called more than 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:20:29.606Z
+Question Type: function-variant
+Function: onEmailVerificationLink
+Function Size: 446 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onEmailVerificationLink (JavaScript)\n// Registers a callback function to be called when an email verification link is clicked in an email.\n\nonEmailVerificationLink(callback) {\n    if (this._accountsCallbacks["verify-email"]) {\n      Meteor._debug("Accounts.onEmailVerificationLink was ca
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:20:31.803Z
+Question Type: function-variant
+Function: onEnrollmentLink
+Function Size: 429 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onEnrollmentLink (JavaScript)\n// Registers a callback function to be called when an account enrollment link is clicked in an email.\n\nonEnrollmentLink(callback) {\n    if (this._accountsCallbacks["enroll-account"]) {\n      Meteor._debug("Accounts.onEnrollmentLink was called more than once
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:20:32.397Z
+Question Type: order-sequence
+Function: onEmailVerificationLink
+Function Size: 446 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onEmailVerificationLink (JavaScript)\n// Registers a callback function to be called when an email verification link is clicked in an email.\n\nonEmailVerificationLink(callback) {\n    if (this._accountsCallbacks["verify-email"]) {\n      Meteor._debug("Accounts.onEmailVerificationLink was ca
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:20:35.648Z
+Question Type: true-false
+Function: onEmailVerificationLink
+Function Size: 446 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onEmailVerificationLink (JavaScript)\n// Registers a callback function to be called when an email verification link is clicked in an email.\n\nonEmailVerificationLink(callback) {\n    if (this._accountsCallbacks["verify-email"]) {\n      Meteor._debug("Accounts.onEmailVerificationLink was ca
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:20:36.654Z
+Question Type: function-variant
+Function: onEnrollmentLink
+Function Size: 429 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: onEnrollmentLink (JavaScript)\n// Registers a callback function to be called when an account enrollment link is clicked in an email.\n\nonEnrollmentLink(callback) {\n    if (this._accountsCallbacks["enroll-account"]) {\n      Meteor._debug("Accounts.onEnrollmentLink was called more than once
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 3
+Ended: 2025-10-20T00:20:36.675Z
+================================================================================
+
