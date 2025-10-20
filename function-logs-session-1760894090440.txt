@@ -8321,3 +8321,2702 @@ this._initBody = function(body) {
 --------------------------------------------------------------------------------
 
 ================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T00:29:17.282Z
+File: guzzle-guzzle-b51ac70/src/functions.php
+Functions Extracted: 3
+
+
+Function 1: is_host_in_noproxy
+Language: PHP
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function is_host_in_noproxy(string $host, array $noProxyArray): bool
+{
+    return Utils::isHostInNoProxy($host, $noProxyArray);
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: json_decode
+Language: PHP
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function json_decode(string $json, bool $assoc = false, int $depth = 512, int $options = 0)
+{
+    return Utils::jsonDecode($json, $assoc, $depth, $options);
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: json_encode
+Language: PHP
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function json_encode($value, int $options = 0, int $depth = 512): string
+{
+    return Utils::jsonEncode($value, $options, $depth);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T00:29:26.309Z
+File: array_values included for BC
+Functions Extracted: 3
+
+
+Function 1: __invoke
+Language: PHP
+Lines: 42
+Full Code:
+--------------------------------------------------------------------------------
+public function __invoke(RequestInterface $request, array $options): PromiseInterface {
+        if (!$this->queue) {
+            throw new \OutOfBoundsException('Mock queue is empty');
+        }
+
+        if (isset($options['delay']) && \is_numeric($options['delay'])) {
+            \usleep((int) $options['delay'] * 1000);
+        }
+
+        $this->lastRequest = $request;
+        $this->lastOptions = $options;
+        $response = \array_shift($this->queue);
+
+        if (isset($options['on_headers'])) {
+            if (!\is_callable($options['on_headers'])) {
+                throw new \InvalidArgumentException('on_headers must be callable');
+            }
+            try {
+                $options['on_headers']($response);
+            } catch (\Exception $e) {
+                $msg = 'An error was encountered during the on_headers event';
+                $response = new RequestException($msg, $request, $response, $e);
+            }
+        }
+
+        if (\is_callable($response)) {
+            $response = $response($request, $options);
+        }
+
+        $response = $response instanceof \Throwable
+            ? P\Create::rejectionFor($response)
+            : P\Create::promiseFor($response);
+
+        return $response->then(
+            function (?ResponseInterface $value) use ($request, $options) {
+                $this->invokeStats($request, $options, $value);
+                if ($this->onFulfilled) {
+                    ($this->onFulfilled)($value);
+                }
+
+                if ($value !== null && isset($options['sink'])) {
+                    $contents = (string) $value->getBody();
+                    $sink = $options['sink'];
+
+                    if (\is_resource($sink)) {
+                        \fwrite($sink, $contents);
+                    } elseif (\is_string($sink)) {
+                        \file_put_contents($sink, $contents);
+                    } elseif ($sink instanceof StreamInterface) {
+                        $sink->write($contents);
+                    }
+                }
+
+                return $value;
+            },
+            function ($reason) use ($request, $options) {
+                $this->invokeStats($request, $options, null, $reason);
+                if ($this->onRejected) {
+                    ($this->onRejected)($reason);
+                }
+
+                return P\Create::rejectionFor($reason);
+            }
+        );
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: append
+Language: PHP
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public function append(...$values): void {
+        foreach ($values as $value) {
+            if ($value instanceof ResponseInterface
+                || $value instanceof \Throwable
+                || $value instanceof PromiseInterface
+                || \is_callable($value)
+            ) {
+                $this->queue[] = $value;
+            } else {
+                throw new \TypeError('Expected a Response, Promise, Throwable or callable. Found '.Utils::describeType($value));
+            }
+        }
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: invokeStats
+Language: PHP
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+private function invokeStats(
+        RequestInterface $request,
+        array $options,
+        ?ResponseInterface $response = null,
+        $reason = null
+    ): void {
+        if (isset($options['on_stats'])) {
+            $transferTime = $options['transfer_time'] ?? 0;
+            $stats = new TransferStats($request, $response, $transferTime, $reason);
+            ($options['on_stats'])($stats);
+        }
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T00:29:28.165Z
+File: [2 files: Middleware.php, BadResponseException.php]
+Functions Extracted: 5
+
+
+Function 1: cookies
+Language: PHP
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public static function cookies(): callable {
+        return static function (callable $handler): callable {
+            return static function ($request, array $options) use ($handler) {
+                if (empty($options['cookies'])) {
+                    return $handler($request, $options);
+                } elseif (!($options['cookies'] instanceof CookieJarInterface)) {
+                    throw new \InvalidArgumentException('cookies must be an instance of GuzzleHttp\Cookie\CookieJarInterface');
+                }
+                $cookieJar = $options['cookies'];
+                $request = $cookieJar->withCookieHeader($request);
+
+                return $handler($request, $options)
+                    ->then(
+                        static function (ResponseInterface $response) use ($cookieJar, $request): ResponseInterface {
+                            $cookieJar->extractCookies($request, $response);
+
+                            return $response;
+                        }
+                    );
+            };
+        };
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: httpErrors
+Language: PHP
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public static function httpErrors(?BodySummarizerInterface $bodySummarizer = null): callable {
+        return static function (callable $handler) use ($bodySummarizer): callable {
+            return static function ($request, array $options) use ($handler, $bodySummarizer) {
+                if (empty($options['http_errors'])) {
+                    return $handler($request, $options);
+                }
+
+                return $handler($request, $options)->then(
+                    static function (ResponseInterface $response) use ($request, $bodySummarizer) {
+                        $code = $response->getStatusCode();
+                        if ($code < 400) {
+                            return $response;
+                        }
+                        throw RequestException::create($request, $response, null, [], $bodySummarizer);
+                    }
+                );
+            };
+        };
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: history
+Language: PHP
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public static function history(&$container): callable {
+        if (!\is_array($container) && !$container instanceof \ArrayAccess) {
+            throw new \InvalidArgumentException('history container must be an array or object implementing ArrayAccess');
+        }
+
+        return static function (callable $handler) use (&$container): callable {
+            return static function (RequestInterface $request, array $options) use ($handler, &$container) {
+                return $handler($request, $options)->then(
+                    static function ($value) use ($request, &$container, $options) {
+                        $container[] = [
+                            'request' => $request,
+                            'response' => $value,
+                            'error' => null,
+                            'options' => $options,
+                        ];
+
+                        return $value;
+                    },
+                    static function ($reason) use ($request, &$container, $options) {
+                        $container[] = [
+                            'request' => $request,
+                            'response' => null,
+                            'error' => $reason,
+                            'options' => $options,
+                        ];
+
+                        return P\Create::rejectionFor($reason);
+                    }
+                );
+            };
+        };
+    }
+--------------------------------------------------------------------------------
+
+
+Function 4: tap
+Language: PHP
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public static function tap(?callable $before = null, ?callable $after = null): callable {
+        return static function (callable $handler) use ($before, $after): callable {
+            return static function (RequestInterface $request, array $options) use ($handler, $before, $after) {
+                if ($before) {
+                    $before($request, $options);
+                }
+                $response = $handler($request, $options);
+                if ($after) {
+                    $after($request, $options, $response);
+                }
+
+                return $response;
+            };
+        };
+    }
+--------------------------------------------------------------------------------
+
+
+Function 5: BadResponseException::__construct
+Language: PHP
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+public function __construct(
+        string $message,
+        RequestInterface $request,
+        ResponseInterface $response,
+        ?\Throwable $previous = null,
+        array $handlerContext = []
+    ) {
+        parent::__construct($message, $request, $response, $previous, $handlerContext);
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T00:29:36.474Z
+File: guzzle-guzzle-b51ac70/src/RetryMiddleware.php
+Functions Extracted: 5
+
+
+Function 1: __construct
+Language: PHP
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+public function __construct(callable $decider, callable $nextHandler, ?callable $delay = null) {
+        $this->decider = $decider;
+        $this->nextHandler = $nextHandler;
+        $this->delay = $delay ?: __CLASS__.'::exponentialDelay';
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: __invoke
+Language: PHP
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+public function __invoke(RequestInterface $request, array $options): PromiseInterface {
+        if (!isset($options['retries'])) {
+            $options['retries'] = 0;
+        }
+
+        $fn = $this->nextHandler;
+
+        return $fn($request, $options)
+            ->then(
+                $this->onFulfilled($request, $options),
+                $this->onRejected($request, $options)
+            );
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: onFulfilled
+Language: PHP
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+private function onFulfilled(RequestInterface $request, array $options): callable {
+        return function ($value) use ($request, $options) {
+            if (!($this->decider)(
+                $options['retries'],
+                $request,
+                $value,
+                null
+            )) {
+                return $value;
+            }
+
+            return $this->doRetry($request, $options, $value);
+        };
+    }
+--------------------------------------------------------------------------------
+
+
+Function 4: onRejected
+Language: PHP
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+private function onRejected(RequestInterface $req, array $options): callable {
+        return function ($reason) use ($req, $options) {
+            if (!($this->decider)(
+                $options['retries'],
+                $req,
+                null,
+                $reason
+            )) {
+                return P\Create::rejectionFor($reason);
+            }
+
+            return $this->doRetry($req, $options);
+        };
+    }
+--------------------------------------------------------------------------------
+
+
+Function 5: doRetry
+Language: PHP
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+private function doRetry(RequestInterface $request, array $options, ?ResponseInterface $response = null): PromiseInterface {
+        $options['delay'] = ($this->delay)(++$options['retries'], $response, $request);
+
+        return $this($request, $options);
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T01:00:59.594Z
+File: [2 files: profile.tsx, certification with projects.]
+Functions Extracted: 2
+
+
+Function 1: UserProfile
+Language: TypeScript
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+function UserProfile({ user, isSessionUser }: ProfileProps): JSX.Element {
+  const [isEditing, setIsEditing] = useState(false);
+
+  const {
+    profileUI: {
+      showCerts,
+      showHeatMap,
+      showPoints,
+      showPortfolio,
+      showTimeLine
+    },
+    calendar,
+    completedChallenges,
+    username,
+    points,
+    portfolio
+  } = user;
+
+  return (
+    <>
+      {isSessionUser && (
+        <EditModal
+          user={user}
+          isEditing={isEditing}
+          isSessionUser={isSessionUser}
+          setIsEditing={setIsEditing}
+        />
+      )}
+      <Camper
+        user={user}
+        isSessionUser={isSessionUser}
+        setIsEditing={setIsEditing}
+      />
+      {showPoints ? <Stats points={points} calendar={calendar} /> : null}
+      {showHeatMap ? <HeatMap calendar={calendar} /> : null}
+      {showPortfolio ? (
+        <PortfolioProjects portfolioProjects={portfolio} />
+      ) : null}
+      {showCerts ? <Certifications user={user} /> : null}
+      {showTimeLine ? (
+        <Timeline completedMap={completedChallenges} username={username} />
+      ) : null}
+      <Spacer size='m' />
+    </>
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: CertificationSettings
+Language: TypeScript
+Lines: 32
+Full Code:
+--------------------------------------------------------------------------------
+function CertificationSettings(props: CertificationSettingsProps) {
+  const [projectTitle, setProjectTitle] = useState('');
+  const [challengeFiles, setChallengeFiles] = useState<CompletedChallenge['challengeFiles'] | null>(null);
+  const [challengeData, setChallengeData] = useState<ChallengeData | null>(null);
+  const [solution, setSolution] = useState<string | null>();
+  const [examResults, setExamResults] = useState<GeneratedExamResults | null>();
+  const [isOpen, setIsOpen] = useState(false);
+  function initialiseState() {
+    setProjectTitle('');
+    setChallengeFiles(null);
+    setSolution(null);
+    setExamResults(null);
+    setIsOpen(false);
+  }
+
+  const handleSolutionModalHide = () => initialiseState();
+
+  const isCertifiedMap = createCertifiedMap(props);
+  const getProjectSolution = (projectId: string, projectTitle: string) => {
+    const { completedChallenges, openModal } = props;
+    const completedProject = find(
+      completedChallenges,
+      ({ id }) => projectId === id
+    );
+    if (!completedProject) {
+      return null;
+    }
+    const { solution, challengeFiles, examResults } = completedProject;
+    const showUserCode = () => {
+      setProjectTitle(projectTitle);
+      setChallengeFiles(challengeFiles);
+      setSolution(solution);
+      setIsOpen(true);
+    };
+  };
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T01:01:04.787Z
+File: Items per page in timeline.
+Functions Extracted: 4
+
+
+Function 1: viewProject
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function viewProject(completedChallenge: CompletedChallenge): void {
+    setCompletedChallenge(completedChallenge);
+    setProjectTitle(
+      idToNameMap.get(completedChallenge.id)?.challengeTitle ?? ''
+    );
+    openModal('projectPreview');
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: viewExamResults
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function viewExamResults(completedChallenge: CompletedChallenge): void {
+    setCompletedChallenge(completedChallenge);
+    setProjectTitle(
+      idToNameMap.get(completedChallenge.id)?.challengeTitle ?? ''
+    );
+    openModal('examResults');
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: renderViewButton
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function renderViewButton(
+    completedChallenge: CompletedChallenge
+  ): React.ReactNode {
+    const { id } = completedChallenge;
+    const projectTitle = idToNameMap.get(id)?.challengeTitle || '';
+    return (
+      <SolutionDisplayWidget
+        completedChallenge={completedChallenge}
+        projectTitle={projectTitle}
+        showUserCode={() => viewSolution(completedChallenge)}
+        showProjectPreview={() => viewProject(completedChallenge)}
+        showExamResults={() => viewExamResults(completedChallenge)}
+        displayContext='timeline'
+      ></SolutionDisplayWidget>
+    );
+  }
+--------------------------------------------------------------------------------
+
+
+Function 4: renderCompletion
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+function renderCompletion(completed: CompletedChallenge) {
+    const { id } = completed;
+    const challenge = idToNameMap.get(id);
+    if (!challenge) return;
+    const { challengeTitle, challengePath, certPath } = challenge;
+    const completedDate = new Date(completed.completedDate);
+    return (
+      <tr className='timeline-row' key={id}>
+        <td>
+          {certPath ? (
+            <Link
+              className='timeline-cert-link'
+              to={`/certification/${username}/${certPath}`}
+            >
+              {challengeTitle}
+              <CertificationIcon />
+            </Link>
+          ) : (
+            <Link to={challengePath}>{challengeTitle}</Link>
+          )}
+        </td>
+        <td>{renderViewButton(completed)}</td>
+        <td className='text-center'>
+          <time dateTime={completedDate.toISOString()}>
+            {completedDate.toLocaleString([localeCode, 'en-US'], {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            })}
+          </time>
+        </td>
+      </tr>
+    );
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T01:01:08.268Z
+File: not being used to render anything
+Functions Extracted: 1
+
+
+Function 1: courseCompletionStatus
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+const courseCompletionStatus = () => {
+  if (completedCount === 0) {
+    return t('learn.not-started');
+  }
+  if (isBlockCompleted) {
+    return t('learn.completed');
+  }
+  return `${percentageCompleted}% ${t('learn.completed')}`;
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T01:17:33.108Z
+File: freeCodeCamp-freeCodeCamp-c7fe5d9/curriculum/challenges/english/blocks/build-a-budget-app-project/5e44413e903586ffb414c94e.md
+Functions Extracted: 2
+
+
+Function 1: Category
+Language: Python
+Lines: 43
+Full Code:
+--------------------------------------------------------------------------------
+class Category:
+    def __init__(self, name):
+        self.name = name
+        self.ledger = []
+        self.balance = 0
+        self.spent = 0
+
+    def __str__(self):
+        first_line = f'{self.name.center(30, "*")}\n'
+        lines = ''
+        total = f'Total: {format(self.balance, ".2f")}'
+
+        for n in range(len(self.ledger)):
+            descr = self.ledger[n]["description"][:23]
+            am = format(float(self.ledger[n]["amount"]), ".2f")[:7]
+            lines = lines + f'{descr:<23}{am:>7}\n'
+
+        return f'{first_line}{lines}{total}'
+
+    def deposit(self, amount, description=''):
+        self.ledger.append({
+            'amount': float(amount),
+            'description': description
+        })
+        self.balance = self.balance + float(amount)
+
+    def withdraw(self, amount, description=''):
+        if self.check_funds(amount):
+            self.ledger.append({
+                'amount': -float(amount),
+                'description': description
+            })
+            self.balance = self.balance - float(amount)
+            self.spent = self.spent + float(amount)
+            return True
+        else:
+            return False
+
+    def get_balance(self):
+        return self.balance
+
+    def transfer(self, amount, category):
+        if self.check_funds(amount):
+            # withdraw
+            self.ledger.append({
+                'amount': -float(amount),
+                'description': f'Transfer to {category.name}'
+            })
+            self.balance = self.balance - float(amount)
+            # deposit
+            category.deposit(amount, f'Transfer from {self.name}')
+
+            return True
+        else:
+            return False
+
+    def check_funds(self, amount):
+        if float(amount) > self.balance:
+            return False
+        else:
+            return True
+--------------------------------------------------------------------------------
+
+
+Function 2: create_spend_chart
+Language: Python
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+def create_spend_chart(categories):
+    total_expenses = 0
+    obj = {}
+    col1 = []
+    str = []
+    final_str = 'Percentage spent by category\n'
+    label_max_length = 0
+    label_strings = []
+
+    for category in categories:
+        total_expenses = total_expenses + category.spent
+        obj[category.name] = {'expenses': category.spent}
+        obj[category.name]['label'] = list(category.name)
+        if len(obj[category.name]['label']) > label_max_length:
+            label_max_length = len(obj[category.name]['label'])
+
+    for category in categories:
+        obj[category.name]['percent'] = (
+            (category.spent / total_expenses * 100)
+        )
+
+    # Additional logic to construct the chart would go here
+    return final_str
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T01:17:37.276Z
+File: freeCodeCamp-freeCodeCamp-c7fe5d9/curriculum/challenges/english/blocks/lab-bookmark-manager-app/66def5467aee701733aaf8cc.md
+Functions Extracted: 4
+
+
+Function 1: getBookmarks
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const getBookmarks = () => {
+  try {
+    const parsed = JSON.parse(localStorage.getItem("bookmarks"));
+    if (
+      Array.isArray(parsed) &&
+      parsed.every(
+        (item) =>
+          item.hasOwnProperty("category") &&
+          item.hasOwnProperty("name") &&
+          item.hasOwnProperty("url")
+      )
+    ) {
+      return parsed;
+    }
+    return [];
+  } catch {
+    return [];
+  }
+};
+--------------------------------------------------------------------------------
+
+
+Function 2: addBookmark
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+const addBookmark = () => {
+    const bookmarkObject = {
+        name: bookmarkName.value,
+        category: categoryDropdown.value,
+        url: bookmarkURL.value
+    };
+    if (bookmarkName.value.length && bookmarkURL.value.length) {        
+        localStorage.setItem("bookmarks", JSON.stringify(getBookmarks().concat(bookmarkObject)))
+        bookmarkName.value = "";
+        bookmarkURL.value = "";
+        displayOrCloseForm()
+    } else {
+        alert("Please, provide valid name and URL.")
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: fillBookmarkList
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const fillBookmarkList = () => {
+    categoryHeading[1].innerText = categoryDropdown.value.charAt(0).toUpperCase()
+        + categoryDropdown.value.slice(1);
+    const bookmarksToDisplay = getBookmarks().filter((i) => i.category === categoryDropdown.value);
+    if (bookmarksToDisplay.length) {
+        categoryList.innerHTML = '';
+        for (const bookmark of bookmarksToDisplay) {
+            categoryList.innerHTML += `
+            <div>
+              <input type="radio" name="bookmarks" id="${bookmark.name}" value="${bookmark.name}">
+              <label for="${bookmark.name}">
+                <a href="${bookmark.url}">${bookmark.name}</a>
+              </label>
+            </div>`
+        }
+    } else {
+        categoryList.innerHTML = '<p>No Bookmarks Found</p>';
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: deleteBookmark
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+const deleteBookmark = () => {
+    const radioBookmarks = document.querySelectorAll('input[type="radio"]');
+    for (const radioBookmark of radioBookmarks) {
+        if (radioBookmark.checked) {
+            const bookmarks = getBookmarks();
+            const indexToRemove = bookmarks.findIndex(i => i.name == radioBookmark.value && i.category === categoryDropdown.value);
+            bookmarks.splice(indexToRemove, 1);
+            localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+            return
+        }
+    }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T01:17:38.824Z
+File: freeCodeCamp-freeCodeCamp-c7fe5d9/curriculum/challenges/english/blocks/lab-inventory-management-program/66d75dd0aa65a71600dc669b.md
+Functions Extracted: 3
+
+
+Function 1: findProductIndex
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+const findProductIndex = (productName) => {
+    let productIndex = -1;
+    inventory.forEach((element, index) => {
+        if (element.name === productName.toLowerCase()) {
+            productIndex = index;
+        }
+    })
+    return productIndex;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: addProduct
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+const addProduct = (product) => {
+    product.name = product.name.toLowerCase();
+    const productIndex = findProductIndex(product.name);
+    if (productIndex < 0) {
+        inventory.push(product);
+        console.log(`${product.name} added to inventory`)
+        return;
+    }
+    inventory[productIndex].quantity += product.quantity;
+    console.log(`${product.name} quantity updated`)
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: removeProduct
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const removeProduct = (productName, productQuantity) => {
+    productName = productName.toLowerCase();
+    const productIndex = findProductIndex(productName);
+    if (productIndex < 0) {
+        console.log(`${productName} not found`);
+        return;
+    }
+    const foundProduct = inventory[productIndex];
+    if (foundProduct.quantity >= productQuantity) {
+        foundProduct.quantity -= productQuantity;
+        console.log(`Remaining ${productName} pieces: ${foundProduct.quantity}`)
+        if (!foundProduct.quantity) {
+            inventory.splice(productIndex, 1);
+        }
+        return;
+    }
+    console.log(`Not enough ${productName} available, remaining pieces: ${foundProduct.quantity}`);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T01:17:45.430Z
+File: freeCodeCamp-freeCodeCamp-c7fe5d9/curriculum/challenges/english/blocks/lab-gradebook-app/66bb6a9c2dd58b73cd759034.md
+Functions Extracted: 3
+
+
+Function 1: getAverage
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function getAverage(scores) {
+    let sum = 0;
+
+    for (const score of scores) {
+      sum += score;
+    }
+
+    return sum / scores.length;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: getGrade
+Language: JavaScript
+Lines: 11
+Full Code:
+--------------------------------------------------------------------------------
+function getGrade(score) {
+    if (score === 100) {
+      return "A+";
+    } else if (score >= 90) {
+      return "A";
+    } else if (score >= 80) {
+      return "B";
+    } else if (score >= 70) {
+      return "C";
+    } else if (score >= 60) {
+      return "D";
+    } else {
+      return "F";
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: studentMsg
+Language: JavaScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+function studentMsg(totalScores, studentScore) {
+    let average = getAverage(totalScores);
+    let grade = getGrade(studentScore);
+
+    return `Class average: ${average}. Your grade: ${grade}. You ${
+      hasPassingGrade(studentScore) ? "passed" : "failed"
+    } the course.`;
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T01:17:45.653Z
+File: airbnb-lottie-web-bede03d/player/js/utils/expressions/LayerInterface.js
+Functions Extracted: 8
+
+
+Function 1: getMatrix
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function getMatrix(time) {
+    var toWorldMat = new Matrix();
+    if (time !== undefined) {
+      var propMatrix = this._elem.finalTransform.mProp.getValueAtTime(time);
+      propMatrix.clone(toWorldMat);
+    } else {
+      var transformMat = this._elem.finalTransform.mProp;
+      transformMat.applyToMatrix(toWorldMat);
+    }
+    return toWorldMat;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: toWorldVec
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function toWorldVec(arr, time) {
+    var toWorldMat = this.getMatrix(time);
+    toWorldMat.props[12] = 0;
+    toWorldMat.props[13] = 0;
+    toWorldMat.props[14] = 0;
+    return this.applyPoint(toWorldMat, arr);
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: toWorld
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function toWorld(arr, time) {
+    var toWorldMat = this.getMatrix(time);
+    return this.applyPoint(toWorldMat, arr);
+  }
+--------------------------------------------------------------------------------
+
+
+Function 4: fromWorldVec
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function fromWorldVec(arr, time) {
+    var toWorldMat = this.getMatrix(time);
+    toWorldMat.props[12] = 0;
+    toWorldMat.props[13] = 0;
+    toWorldMat.props[14] = 0;
+    return this.invertPoint(toWorldMat, arr);
+  }
+--------------------------------------------------------------------------------
+
+
+Function 5: fromWorld
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function fromWorld(arr, time) {
+    var toWorldMat = this.getMatrix(time);
+    return this.invertPoint(toWorldMat, arr);
+  }
+--------------------------------------------------------------------------------
+
+
+Function 6: applyPoint
+Language: JavaScript
+Lines: 11
+Full Code:
+--------------------------------------------------------------------------------
+function applyPoint(matrix, arr) {
+    if (this._elem.hierarchy && this._elem.hierarchy.length) {
+      var i;
+      var len = this._elem.hierarchy.length;
+      for (i = 0; i < len; i += 1) {
+        this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(matrix);
+      }
+    }
+    return matrix.applyToPointArray(arr[0], arr[1], arr[2] || 0);
+  }
+--------------------------------------------------------------------------------
+
+
+Function 7: invertPoint
+Language: JavaScript
+Lines: 11
+Full Code:
+--------------------------------------------------------------------------------
+function invertPoint(matrix, arr) {
+    if (this._elem.hierarchy && this._elem.hierarchy.length) {
+      var i;
+      var len = this._elem.hierarchy.length;
+      for (i = 0; i < len; i += 1) {
+        this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(matrix);
+      }
+    }
+    return matrix.inversePoint(arr);
+  }
+--------------------------------------------------------------------------------
+
+
+Function 8: fromComp
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function fromComp(arr) {
+    var toWorldMat = new Matrix();
+    toWorldMat.reset();
+    this._elem.finalTransform.mProp.applyToMatrix(toWorldMat);
+    if (this._elem.hierarchy && this._elem.hierarchy.length) {
+      var i;
+      var len = this._elem.hierarchy.length;
+      for (i = 0; i < len; i += 1) {
+        this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toWorldMat);
+      }
+      return toWorldMat.inversePoint(arr);
+    }
+    return toWorldMat.inversePoint(arr);
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T01:17:46.168Z
+File: freeCodeCamp-freeCodeCamp-c7fe5d9/client/src/templates/Challenges/exam-download/show.tsx
+Functions Extracted: 2
+
+
+Function 1: handleDownloadLink
+Language: TypeScript
+Lines: 34
+Full Code:
+--------------------------------------------------------------------------------
+function handleDownloadLink(downloadLinks: string[]) {
+    const win = downloadLinks.find(link => link.match(/\.exe/));
+    const macARM = downloadLinks.find(
+      link => link.match(/aarch64/) && link.match(/\.dmg/)
+    );
+    const macX64 = downloadLinks.find(
+      link => link.match(/x64/) && link.match(/\.dmg/)
+    );
+
+    const linuxARM = downloadLinks.find(
+      link => link.match(/aarch64/) && link.match(/tar\.gz/)
+    );
+
+    const linuxX64 = downloadLinks.find(
+      link => link.match(/amd64/) && link.match(/AppImage/)
+    );
+
+    if (os.os === 'WIN') {
+      if (isEmpty(win)) return '';
+
+      return win;
+    }
+
+    if (os.os === 'MAC') {
+      if (os.architecture.toLowerCase() === 'arm') {
+        if (isEmpty(macARM)) return '';
+
+        return macARM;
+      } else {
+        if (isEmpty(macX64)) return '';
+
+        return macX64;
+      }
+    }
+
+    if (os.os === 'LINUX') {
+      if (os.architecture.toLowerCase() === 'arm') {
+        if (isEmpty(linuxARM)) return '';
+
+        return linuxARM;
+      } else {
+        if (isEmpty(linuxX64)) return '';
+
+        return linuxX64;
+      }
+    }
+
+    return '';
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: checkLatestVersion
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+async function checkLatestVersion() {
+      try {
+        const response = await fetch(
+          'https://api.github.com/repos/freeCodeCamp/exam-env/releases/latest'
+        );
+        if (response.ok) {
+          const data = (await response.json()) as GitProps;
+          const { tag_name, assets } = data;
+          setLatestVersion(tag_name);
+          const urls = assets.map(link => link.browser_download_url);
+          setDownloadLink(handleDownloadLink(urls));
+          setDownloadLinks(urls);
+        }
+      } catch {
+        setLatestVersion('...');
+      }
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T01:18:02.877Z
+File: };
+Functions Extracted: 6
+
+
+Function 1: findComp
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+function findComp(id, comps) {
+    var i = 0;
+    var len = comps.length;
+    while (i < len) {
+        if (comps[i].id === id) {
+            return comps[i];
+        }
+        i += 1;
+    }
+    return null;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: findCompLayers
+Language: JavaScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+function findCompLayers(id, comps) {
+    var comp = findComp(id, comps);
+    if (comp) {
+        if (!comp.layers.__used) {
+            comp.layers.__used = true;
+            return comp.layers;
+        }
+        return JSON.parse(JSON.stringify(comp.layers));
+    }
+    return null;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: completeShapes
+Language: JavaScript
+Lines: 17
+Full Code:
+--------------------------------------------------------------------------------
+function completeShapes(arr) {
+    var i;
+    var len = arr.length;
+    var j;
+    var jLen;
+    for (i = len - 1; i >= 0; i -= 1) {
+        if (arr[i].ty === 'sh') {
+            if (arr[i].ks.k.i) {
+                convertPathsToAbsoluteValues(arr[i].ks.k);
+            } else {
+                jLen = arr[i].ks.k.length;
+                for (j = 0; j < jLen; j += 1) {
+                    if (arr[i].ks.k[j].s) {
+                        convertPathsToAbsoluteValues(arr[i].ks.k[j].s[0]);
+                    }
+                    if (arr[i].ks.k[j].e) {
+                        convertPathsToAbsoluteValues(arr[i].ks.k[j].e[0]);
+                    }
+                }
+            }
+        } else if (arr[i].ty === 'gr') {
+            completeShapes(arr[i].it);
+        }
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: convertPathsToAbsoluteValues
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function convertPathsToAbsoluteValues(path) {
+    var i;
+    var len = path.i.length;
+    for (i = 0; i < len; i += 1) {
+        path.i[i][0] += path.v[i][0];
+        path.i[i][1] += path.v[i][1];
+        path.o[i][0] += path.v[i][0];
+        path.o[i][1] += path.v[i][1];
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: checkVersion
+Language: JavaScript
+Lines: 13
+Full Code:
+--------------------------------------------------------------------------------
+function checkVersion(minimum, animVersionString) {
+    var animVersion = animVersionString ? animVersionString.split('.') : [100, 100, 100];
+    if (minimum[0] > animVersion[0]) {
+        return true;
+    } if (animVersion[0] > minimum[0]) {
+        return false;
+    }
+    if (minimum[1] > animVersion[1]) {
+        return true;
+    } if (animVersion[1] > minimum[1]) {
+        return false;
+    }
+    if (minimum[2] > animVersion[2]) {
+        return true;
+    } if (animVersion[2] > minimum[2]) {
+        return false;
+    }
+    return null;
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: completeData
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function completeData(animationData) {
+    if (animationData.__complete) {
+        return;
+    }
+    checkColors(animationData);
+    checkText(animationData);
+    checkChars(animationData);
+    checkPathProperties(animationData);
+    checkShapes(animationData);
+    completeLayers(animationData.layers, animationData.assets);
+    completeChars(animationData.chars, animationData.assets);
+    animationData.__complete = true;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T01:19:54.984Z
+File: [2 files: block.tsx, to make use of the Response object (message, status, etc)]
+Functions Extracted: 7
+
+
+Function 1: get
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+async function get<T>(
+  path: string,
+  signal?: AbortSignal
+): Promise<ResponseWithData<T>> {
+  const response = await fetch(`${base}${path}`, {
+    ...defaultOptions,
+    headers: { 'CSRF-Token': getCSRFToken() },
+    signal
+  });
+
+  return combineDataWithResponse(response);
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: combineDataWithResponse
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+async function combineDataWithResponse<T>(response: Response) {
+  const data = (await response.json()) as T;
+  return { response, data };
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: post
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function post<T = void>(
+  path: string,
+  body: unknown
+): Promise<ResponseWithData<T>> {
+  return request('POST', path, body);
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: put
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function put<T = void>(
+  path: string,
+  body: unknown
+): Promise<ResponseWithData<T>> {
+  return request('PUT', path, body);
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: deleteRequest
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function deleteRequest<T = void>(
+  path: string,
+  body: unknown
+): Promise<ResponseWithData<T>> {
+  return request('DELETE', path, body);
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: request
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+async function request<T>(
+  method: 'POST' | 'PUT' | 'DELETE',
+  path: string,
+  body: unknown
+): Promise<ResponseWithData<T>> {
+  const options: RequestInit = {
+    ...defaultOptions,
+    method,
+    headers: {
+      'CSRF-Token': getCSRFToken(),
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  };
+
+  const response = await fetch(`${base}${path}`, options);
+  return combineDataWithResponse(response);
+}
+--------------------------------------------------------------------------------
+
+
+Function 7: parseApiResponseToClientUser
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function parseApiResponseToClientUser(data: ApiUserResponse): User | null {
+  const userData = data.user?.[data?.result ?? ''];
+  let completedChallenges: CompletedChallenge[] = [];
+  let savedChallenges: SavedChallenge[] = [];
+  if (userData) {
+    completedChallenges = mapFilesToChallengeFiles(
+      userData.completedChallenges
+    );
+    savedChallenges = mapFilesToChallengeFiles(userData.savedChallenges);
+  }
+  return data.result
+    ? { ...userData, completedChallenges, savedChallenges }
+    : null;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T02:01:53.888Z
+File: [3 files: index.ts, TODO: Convert to DELETE, awaitable-messenger.ts]
+Functions Extracted: 4
+
+
+Function 1: base64URLEncode
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+export function base64URLEncode(buf: Buffer): string {
+  return buf
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: mapErr
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+export async function mapErr<T>(promise: Promise<T>): Promise<Result<T>> {
+  try {
+    return { hasError: false, data: await promise };
+  } catch (error) {
+    return { hasError: true, error };
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: syncMapErr
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+export function syncMapErr<T>(fn: () => T): Result<T> {
+  try {
+    return { hasError: false, data: fn() };
+  } catch (error) {
+    return { hasError: true, error };
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: awaitResponse
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function awaitResponse<
+  MessageOut,
+  MessageIn extends { type: string; value: Value; error: string },
+  Value
+>({
+  messenger,
+  message,
+  onMessage
+}: {
+  messenger: Messenger<MessageOut>;
+  message: MessageOut;
+  onMessage: (
+    response: MessageIn,
+    onSuccess: (res: Value) => void,
+    onFailure: (err: Error) => void
+  ) => void;
+}): Promise<Value> {
+  return new Promise(
+    (resolve: (res: Value) => void, reject: (err: Error) => void) => {
+      const channel = new MessageChannel();
+
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T02:01:54.880Z
+File: [2 files: Items per page in timeline., certification with projects.]
+Functions Extracted: 4
+
+
+Function 1: viewProject
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function viewProject(completedChallenge: CompletedChallenge): void {
+    setCompletedChallenge(completedChallenge);
+    setProjectTitle(
+      idToNameMap.get(completedChallenge.id)?.challengeTitle ?? ''
+    );
+    openModal('projectPreview');
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: viewExamResults
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function viewExamResults(completedChallenge: CompletedChallenge): void {
+    setCompletedChallenge(completedChallenge);
+    setProjectTitle(
+      idToNameMap.get(completedChallenge.id)?.challengeTitle ?? ''
+    );
+    openModal('examResults');
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: initialiseState
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function initialiseState() {
+    setProjectTitle('');
+    setChallengeFiles(null);
+    setSolution(null);
+    setExamResults(null);
+    setIsOpen(false);
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: getProjectSolution
+Language: TypeScript
+Lines: 11
+Full Code:
+--------------------------------------------------------------------------------
+const getProjectSolution = (projectId: string, projectTitle: string) => {
+    const { completedChallenges, openModal } = props;
+    const completedProject = find(
+      completedChallenges,
+      ({ id }) => projectId === id
+    );
+    if (!completedProject) {
+      return null;
+    }
+    const { solution, challengeFiles, examResults } = completedProject;
+    const showUserCode = () => {
+      setProjectTitle(projectTitle);
+      setChallengeFiles(challengeFiles);
+      setSolution(solution);
+      setIsOpen(true);
+    };
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T02:01:57.788Z
+File: [3 files: prettier-ignore, language=txt, index.js]
+Functions Extracted: 3
+
+
+Function 1: getSnapshot
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+const getSnapshot = (
+  opts: Options,
+  from: string,
+  pieces: TemplateStringsArray,
+  args: any[]
+): Snapshot => ({
+  ...opts,
+  ac: opts.ac || new AbortController(),
+  ee: new EventEmitter(),
+  from,
+  pieces,
+  args,
+  cmd: '',
+})
+--------------------------------------------------------------------------------
+
+
+Function 2: main
+Language: TypeScript
+Lines: 21
+Full Code:
+--------------------------------------------------------------------------------
+export async function main(): Promise<void> {
+  if (argv.version) {
+    console.log(VERSION)
+    return
+  }
+  if (argv.help) {
+    printUsage()
+    return
+  }
+  if (argv.cwd) $.cwd = argv.cwd
+  if (argv.env) {
+    const envfile = path.resolve($.cwd ?? process.cwd(), argv.env)
+    dotenv.config(envfile)
+    resolveDefaults()
+  }
+  if (argv.verbose) $.verbose = true
+  if (argv.quiet) $.quiet = true
+  if (argv.shell) $.shell = argv.shell
+  if (argv.prefix) $.prefix = argv.prefix
+  if (argv.postfix) $.postfix = argv.postfix
+  if (argv.preferLocal) $.preferLocal = argv.preferLocal
+
+  await import('zx/globals')
+  if (argv.repl) {
+    await startRepl()
+    return
+  }
+  argv.ext = normalizeExt(argv.ext)
+
+  const { script, scriptPath, tempPath } = await readScript()
+  await runScript(script, scriptPath, tempPath)
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: runScript
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+async function runScript(
+  script: string,
+  scriptPath: string,
+  tempPath: string
+): Promise<void> {
+  let nmLink = ''
+  const rmTemp = () => {
+    rmrf(tempPath)
+    rmrf(nmLink)
+  }
+  try {
+    if (tempPath) {
+      scriptPath = tempPath
+      await fs.writeFile(tempPath, script)
+    }
+    const cwd = path.dirname(scriptPath)
+    if (typeof argv.preferLocal === 'string') {
+      nmLink = linkNodeModules(cwd, argv.preferLocal)
+    }
+    if (argv.install) {
+      await installDeps(parseDeps(script), cwd, argv.registry)
+    }
+
+    injectGlobalRequire(scriptPath)
+    process.once('exit', rmTemp)
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T02:06:47.818Z
+File: stream.Readable.fromWeb requires Node.js 18+
+Functions Extracted: 1
+
+
+Function 1: responseToReadable
+Language: JavaScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+const responseToReadable = (response) => {
+            const reader = response.body.getReader()
+            const rs = new Readable()
+            rs._read = async () => {
+              const result = await reader.read()
+              if (!result.done) rs.push(Buffer.from(result.value))
+              else rs.push(null)
+            }
+            return rs
+          }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T02:06:47.846Z
+File: stream.Readable.fromWeb requires Node.js 18+
+Functions Extracted: 1
+
+
+Function 1: responseToReadable
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+const responseToReadable = (response) => {
+            const reader = response.body.getReader()
+            const rs = new Readable()
+            rs._read = async () => {
+              const result = await reader.read()
+              if (!result.done) rs.push(Buffer.from(result.value))
+              else rs.push(null)
+            }
+            return rs
+          }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T02:06:50.759Z
+File: prettier-ignore
+Functions Extracted: 1
+
+
+Function 1: _pipe
+Language: TypeScript
+Lines: 55
+Full Code:
+--------------------------------------------------------------------------------
+private _pipe(source: keyof TSpawnStore, dest: PipeDest, ...args: any[]): PromisifiedStream | ProcessPromise {
+    if (isString(dest))
+      return this._pipe(source, fs.createWriteStream(dest));
+
+    if (isStringLiteral(dest, ...args))
+      return this._pipe(
+        source,
+        $({
+          halt: true,
+          signal: this.signal,
+        })(dest as TemplateStringsArray, ...args)
+      );
+
+    const isP = dest instanceof ProcessPromise;
+    if (isP && dest.isSettled()) throw new Fail('Cannot pipe to a settled process.');
+    if (!isP && dest.writableEnded) throw new Fail('Cannot pipe to a closed stream.');
+
+    this._piped = true;
+    ProcessPromise.bus.pipe(this, dest);
+
+    const { ee } = this._snapshot;
+    const output = this.output;
+    const from = new VoidStream();
+    const check = () => !!ProcessPromise.bus.refs.get(this)?.has(dest);
+    const end = () => {
+      if (!check()) return;
+      setImmediate(() => {
+        ProcessPromise.bus.unpipe(this, dest);
+        ProcessPromise.bus.sources(dest).length === 0 && from.end();
+      });
+    };
+    const fill = () => {
+      for (const chunk of this._zurk!.store[source]) from.write(chunk);
+    };
+    const fillSettled = () => {
+      if (!output) return;
+      if (isP && !output.ok) dest.break(output.exitCode, output.signal, output.cause);
+      fill();
+      end();
+    };
+
+    if (!output) {
+      const onData = (chunk: string | Buffer) => check() && from.write(chunk);
+      ee
+        .once(source, () => {
+          fill();
+          ee.on(source, onData);
+        })
+        .once('end', () => {
+          ee.removeListener(source, onData);
+          end();
+        });
+    }
+
+    if (isP) {
+      from.pipe(dest._stdin);
+      if (this.isHalted()) ee.once('start', () => dest.run());
+      else {
+        dest.run();
+        this.catch((e) => dest.break(e.exitCode, e.signal, e.cause));
+      }
+      fillSettled();
+      return dest;
+    }
+
+    from.once('end', () => dest.emit(EPF)).pipe(dest);
+    fillSettled();
+    return ProcessPromise.promisifyStream(dest, this);
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T02:06:59.051Z
+File: Helps to detect unresolved ProcessPromise.
+Functions Extracted: 2
+
+
+Function 1: $.spawn
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+const proc = spawn(...args)
+const done = () => (proc._done = true)
+spawned.push(proc)
+return proc.once('close', done).once('error', done)
+--------------------------------------------------------------------------------
+
+
+Function 2: test
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+async () => {
+const p = $`node build/cli.js --cwd=${cwd} --env=${env}  <<< ${file}`
+fs.remove(env)
+fs.remove(dir)
+assert.equal(out.stdout, 'BAR\n\nFOO+\n\n')
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T02:07:00.396Z
+File: [4 files: prettier-ignore, limitations under the License., TODO: fix unanalyzable-dynamic-import to work correctly with jsr.io, limitations under the License.]
+Functions Extracted: 5
+
+
+Function 1: syncProcessCwd
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+export function syncProcessCwd(flag: boolean = true) {
+  cwdSyncHook =
+    cwdSyncHook ||
+    createHook({
+      init: syncCwd,
+      before: syncCwd,
+      promiseResolve: syncCwd,
+      after: syncCwd,
+      destroy: syncCwd,
+    })
+  if (flag) cwdSyncHook.enable()
+  else cwdSyncHook.disable()
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: cd
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+export function cd(dir: string | ProcessOutput) {
+  if (dir instanceof ProcessOutput) {
+    dir = dir.toString().trim()
+  }
+
+  $.log({ kind: 'cd', dir, verbose: !$.quiet && $.verbose })
+  process.chdir(dir)
+  $[CWD] = process.cwd()
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: kill
+Language: TypeScript
+Lines: 21
+Full Code:
+--------------------------------------------------------------------------------
+export async function kill(
+  pid: number | `${number}`,
+  signal = $.killSignal || SIGTERM
+) {
+  if (
+    (typeof pid !== 'number' && typeof pid !== 'string') ||
+    !/^\d+$/.test(pid as string)
+  )
+    throw new Fail(`Invalid pid: ${pid}`)
+
+  $.log({ kind: 'kill', pid, signal, verbose: !$.quiet && $.verbose })
+  if (
+    process.platform === 'win32' &&
+    (await new Promise((resolve) => {
+      cp.exec(`taskkill /pid ${pid} /t /f`, (err) => resolve(!err))
+    }))
+  )
+    return
+
+  for (const p of await ps.tree({ pid, recursive: true })) {
+    try {
+      process.kill(+p.pid, signal)
+    } catch (e) {}
+  }
+  try {
+    process.kill(-pid, signal)
+  } catch (e) {
+    try {
+      process.kill(+pid, signal)
+    } catch (e) {}
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: installDeps
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export async function installDeps(
+  dependencies: Record<string, string>,
+  prefix?: string,
+  registry?: string,
+  installerType = 'npm'
+): Promise<void> {
+  const installer = installers[installerType]
+  const packages = Object.entries(dependencies).map(
+    ([name, version]) => `${name}@${version}`
+  )
+  if (packages.length === 0) return
+  if (!installer) {
+    throw new Fail(
+      `Unsupported installer type: ${installerType}. Supported types: ${Object.keys(installers).join(', ')}`
+    )
+  }
+
+  await spinner(`${installerType} i ${packages.join(' ')}`, () =>
+    installer({ packages, prefix, registry })
+  )
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: parseDeps
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+export function parseDeps(content: string): Record<string, string> {
+  return depseek(content + '\n', { comments: true }).reduce<
+    Record<string, string>
+  >((m, { type, value }, i, list) => {
+    if (type === 'dep') {
+      const meta = list[i + 1]
+      const name = parsePackageName(value)
+      const version =
+        (meta?.type === 'comment' && parseVersion(meta?.value.trim())) ||
+        'latest'
+      if (name) m[name] = version
+    }
+    return m
+  }, {})
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T02:07:02.402Z
+File: [3 files: prettier-ignore, prettier-ignore, deno.polyfill.js]
+Functions Extracted: 4
+
+
+Function 1: syncProcessCwd
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+export function syncProcessCwd(flag: boolean = true) {
+  cwdSyncHook =
+    cwdSyncHook ||
+    createHook({
+      init: syncCwd,
+      before: syncCwd,
+      promiseResolve: syncCwd,
+      after: syncCwd,
+      destroy: syncCwd,
+    })
+  if (flag) cwdSyncHook.enable()
+  else cwdSyncHook.disable()
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: cd
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+export function cd(dir: string | ProcessOutput) {
+  if (dir instanceof ProcessOutput) {
+    dir = dir.toString().trim()
+  }
+
+  $.log({ kind: 'cd', dir, verbose: !$.quiet && $.verbose })
+  process.chdir(dir)
+  $[CWD] = process.cwd()
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: kill
+Language: TypeScript
+Lines: 27
+Full Code:
+--------------------------------------------------------------------------------
+export async function kill(
+  pid: number | `${number}`,
+  signal = $.killSignal || SIGTERM
+) {
+  if (
+    (typeof pid !== 'number' && typeof pid !== 'string') ||
+    !/^\d+$/.test(pid as string)
+  )
+    throw new Fail(`Invalid pid: ${pid}`)
+
+  $.log({ kind: 'kill', pid, signal, verbose: !$.quiet && $.verbose })
+  if (
+    process.platform === 'win32' &&
+    (await new Promise((resolve) => {
+      cp.exec(`taskkill /pid ${pid} /t /f`, (err) => resolve(!err))
+    }))
+  )
+    return
+
+  for (const p of await ps.tree({ pid, recursive: true })) {
+    try {
+      process.kill(+p.pid, signal)
+    } catch (e) {}
+  }
+  try {
+    process.kill(-pid, signal)
+  } catch (e) {
+    try {
+      process.kill(+pid, signal)
+    } catch (e) {}
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: resolveDefaults
+Language: TypeScript
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+export function resolveDefaults(
+  defs: Options = defaults,
+  prefix: string = ENV_PREFIX,
+  env = process.env,
+  allowed = ENV_OPTS
+): Options {
+  return Object.entries(env).reduce<Options>((m, [k, v]) => {
+    if (v && k.startsWith(prefix)) {
+      const _k = toCamelCase(k.slice(prefix.length))
+      const _v = parseBool(v)
+      if (allowed.has(_k)) (m as any)[_k] = _v
+    }
+    return m
+  }, defs)
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T02:07:13.485Z
+File: [2 files: * length-prefixed roof-of-rotation structure, Hints.java]
+Functions Extracted: 3
+
+
+Function 1: generateAdditionalAttributes
+Language: Java
+Lines: 24
+Full Code:
+--------------------------------------------------------------------------------
+private byte[] generateAdditionalAttributes(SignerConfig signerConfig) {
+    List<byte[]> attributes = new ArrayList<>();
+    if (signerConfig.signingCertificateLineage != null) {
+        attributes.add(generateV3SignerAttribute(signerConfig.signingCertificateLineage));
+    }
+    if ((mRotationTargetsDevRelease || signerConfig.signerTargetsDevRelease)
+            && mBlockId == V3SchemeConstants.APK_SIGNATURE_SCHEME_V31_BLOCK_ID) {
+        attributes.add(generateV31RotationTargetsDevReleaseAttribute());
+    }
+    if (mOptionalV31MinSdkVersion.isPresent()
+            && mBlockId == V3SchemeConstants.APK_SIGNATURE_SCHEME_V3_BLOCK_ID) {
+        attributes.add(generateV3RotationMinSdkVersionStrippingProtectionAttribute(
+                mOptionalV31MinSdkVersion.getAsInt()));
+    }
+    int attributesSize = attributes.stream().mapToInt(attribute -> attribute.length).sum();
+    byte[] attributesBuffer = new byte[attributesSize];
+    if (attributesSize == 0) {
+        return new byte[0];
+    }
+    int index = 0;
+    for (byte[] attribute : attributes) {
+        System.arraycopy(attribute, 0, attributesBuffer, index, attribute.length);
+        index += attribute.length;
+    }
+    return attributesBuffer;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: encodeByteRangeList
+Language: Java
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+public static byte[] encodeByteRangeList(List<ByteRange> pinByteRanges) {
+    ByteArrayOutputStream bos = new ByteArrayOutputStream(pinByteRanges.size() * 8);
+    DataOutputStream out = new DataOutputStream(bos);
+    try {
+        for (ByteRange pinByteRange : pinByteRanges) {
+            out.writeInt(clampToInt(pinByteRange.start));
+            out.writeInt(clampToInt(pinByteRange.end - pinByteRange.start));
+        }
+    } catch (IOException ex) {
+        throw new AssertionError("impossible", ex);
+    }
+    return bos.toByteArray();
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: parsePinPatterns
+Language: Java
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+public static ArrayList<PatternWithRange> parsePinPatterns(byte[] patternBlob) {
+    ArrayList<PatternWithRange> pinPatterns = new ArrayList<>();
+    try {
+        for (String rawLine : new String(patternBlob, "UTF-8").split("\n")) {
+            String line = rawLine.replaceFirst("#.*", "");
+            // Additional parsing logic here
+        }
+    } catch (UnsupportedEncodingException e) {
+        throw new RuntimeException(e);
+    }
+    return pinPatterns;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T02:07:14.708Z
+File: verification.
+Functions Extracted: 5
+
+
+Function 1: mergeFrom
+Language: Java
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+private void mergeFrom(ApkSigResult source) {
+    switch (source.signatureSchemeVersion) {
+        case Constants.VERSION_SOURCE_STAMP:
+            mVerified = source.verified;
+            if (!source.mSigners.isEmpty()) {
+                mSourceStampInfo = new SourceStampInfo(source.mSigners.get(0));
+            }
+            break;
+        default:
+            throw new IllegalArgumentException(
+                    "Unknown ApkSigResult Signing Block Scheme Id "
+                            + source.signatureSchemeVersion);
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: containsErrors
+Language: Java
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public boolean containsErrors() {
+    if (!mErrors.isEmpty()) {
+        return true;
+    }
+    for (List<SignerInfo> signers : mAllSchemeSigners) {
+        for (SignerInfo signer : signers) {
+            if (signer.containsErrors()) {
+                return true;
+            }
+        }
+    }
+    if (mSourceStampInfo != null) {
+        if (mSourceStampInfo.containsErrors()) {
+            return true;
+        }
+    }
+    return false;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: getAllErrors
+Language: Java
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public List<ApkVerificationIssue> getAllErrors() {
+    List<ApkVerificationIssue> errors = new ArrayList<>();
+    errors.addAll(mErrors);
+
+    for (List<SignerInfo> signers : mAllSchemeSigners) {
+        for (SignerInfo signer : signers) {
+            errors.addAll(signer.getErrors());
+        }
+    }
+    if (mSourceStampInfo != null) {
+        errors.addAll(mSourceStampInfo.getErrors());
+    }
+    return errors;
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: getAllWarnings
+Language: Java
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public List<ApkVerificationIssue> getAllWarnings() {
+    List<ApkVerificationIssue> warnings = new ArrayList<>();
+    warnings.addAll(mWarnings);
+
+    for (List<SignerInfo> signers : mAllSchemeSigners) {
+        for (SignerInfo signer : signers) {
+            warnings.addAll(signer.getWarnings());
+        }
+    }
+    if (mSourceStampInfo != null) {
+        warnings.addAll(mSourceStampInfo.getWarnings());
+    }
+    return warnings;
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: build
+Language: Java
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+public SourceStampVerifier build() {
+    return new SourceStampVerifier(
+            mApkFile,
+            mApkDataSource,
+            mMinSdkVersion,
+            mMaxSdkVersion);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T02:07:15.503Z
+File: [2 files: Asn1BerParser.java, -- GODOT end --]
+Functions Extracted: 5
+
+
+Function 1: parse
+Language: Java
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public static <T> T parse(ByteBuffer encoded, Class<T> containerClass) throws Asn1DecodingException {
+        BerDataValue containerDataValue;
+        try {
+            containerDataValue = new ByteBufferBerDataValueReader(encoded).readDataValue();
+        } catch (BerDataValueFormatException e) {
+            throw new Asn1DecodingException("Failed to decode top-level data value", e);
+        }
+        if (containerDataValue == null) {
+            throw new Asn1DecodingException("Empty input");
+        }
+        return parse(containerDataValue, containerClass);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: parseImplicitSetOf
+Language: Java
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public static <T> List<T> parseImplicitSetOf(ByteBuffer encoded, Class<T> elementClass) throws Asn1DecodingException {
+        BerDataValue containerDataValue;
+        try {
+            containerDataValue = new ByteBufferBerDataValueReader(encoded).readDataValue();
+        } catch (BerDataValueFormatException e) {
+            throw new Asn1DecodingException("Failed to decode top-level data value", e);
+        }
+        if (containerDataValue == null) {
+            throw new Asn1DecodingException("Empty input");
+        }
+        return parseSetOf(containerDataValue, elementClass);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: parse
+Language: Java
+Lines: 31
+Full Code:
+--------------------------------------------------------------------------------
+private static <T> T parse(BerDataValue container, Class<T> containerClass) throws Asn1DecodingException {
+        if (container == null) {
+            throw new NullPointerException("container == null");
+        }
+        if (containerClass == null) {
+            throw new NullPointerException("containerClass == null");
+        }
+
+        Asn1Type dataType = getContainerAsn1Type(containerClass);
+        switch (dataType) {
+            case CHOICE:
+                return parseChoice(container, containerClass);
+
+            case SEQUENCE:
+            {
+                int expectedTagClass = BerEncoding.TAG_CLASS_UNIVERSAL;
+                int expectedTagNumber = BerEncoding.getTagNumber(dataType);
+                if ((container.getTagClass() != expectedTagClass)
+                        || (container.getTagNumber() != expectedTagNumber)) {
+                    throw new Asn1UnexpectedTagException(
+                            "Unexpected data value read as " + containerClass.getName()
+                                    + ". Expected " + BerEncoding.tagClassAndNumberToString(
+                                    expectedTagClass, expectedTagNumber)
+                                    + ", but read: " + BerEncoding.tagClassAndNumberToString(
+                                    container.getTagClass(), container.getTagNumber()));
+                }
+                return parseSequence(container, containerClass);
+            }
+            case UNENCODED_CONTAINER:
+                return parseSequence(container, containerClass, true);
+            default:
+                throw new Asn1DecodingException("Parsing container " + dataType + " not supported");
+        }
+    }
+--------------------------------------------------------------------------------
+
+
+Function 4: onDownloadStateChanged
+Language: Java
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+public void onDownloadStateChanged(int newState) {
+            Bundle params = new Bundle(1);
+            params.putInt(PARAM_NEW_STATE, newState);
+            send(MSG_ONDOWNLOADSTATE_CHANGED, params);
+        }
+--------------------------------------------------------------------------------
+
+
+Function 5: onDownloadProgress
+Language: Java
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+public void onDownloadProgress(DownloadProgressInfo progress) {
+            Bundle params = new Bundle(1);
+            params.putParcelable(PARAM_PROGRESS, progress);
+            send(MSG_ONDOWNLOADPROGRESS, params);
+        }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T02:07:16.990Z
+File: godotengine-godot-7864ac8/platform/android/java/editor/src/main/java/com/android/apksig/internal/apk/v1/V1SchemeSigner.java
+Functions Extracted: 1
+
+
+Function 1: getSuggestedSignatureDigestAlgorithm
+Language: Java
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public static DigestAlgorithm getSuggestedSignatureDigestAlgorithm(
+            PublicKey signingKey, int minSdkVersion) throws InvalidKeyException {
+        String keyAlgorithm = signingKey.getAlgorithm();
+        if ("RSA".equalsIgnoreCase(keyAlgorithm) || OID_RSA_ENCRYPTION.equals((keyAlgorithm))) {
+            // Additional logic would go here
+        }
+        // Additional logic would go here
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T02:07:27.150Z
+File: new: A -> B -> D
+Functions Extracted: 6
+
+
+Function 1: equals
+Language: Java
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+@Override
+public boolean equals(Object other) {
+    if (this == other) return true;
+    if (!(other instanceof SignerCapabilities)) return false;
+
+    return this.mFlags == ((SignerCapabilities) other).mFlags;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: setInstalledData
+Language: Java
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+public Builder setInstalledData(boolean enabled) {
+    mCallerConfiguredFlags |= PAST_CERT_INSTALLED_DATA;
+    if (enabled) {
+        mFlags |= PAST_CERT_INSTALLED_DATA;
+    } else {
+        mFlags &= ~PAST_CERT_INSTALLED_DATA;
+    }
+    return this;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: setSharedUid
+Language: Java
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+public Builder setSharedUid(boolean enabled) {
+    mCallerConfiguredFlags |= PAST_CERT_SHARED_USER_ID;
+    if (enabled) {
+        mFlags |= PAST_CERT_SHARED_USER_ID;
+    } else {
+        mFlags &= ~PAST_CERT_SHARED_USER_ID;
+    }
+    return this;
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: setPermission
+Language: Java
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+public Builder setPermission(boolean enabled) {
+    mCallerConfiguredFlags |= PAST_CERT_PERMISSION;
+    if (enabled) {
+        mFlags |= PAST_CERT_PERMISSION;
+    } else {
+        mFlags &= ~PAST_CERT_PERMISSION;
+    }
+    return this;
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: setRollback
+Language: Java
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+public Builder setRollback(boolean enabled) {
+    mCallerConfiguredFlags |= PAST_CERT_ROLLBACK;
+    if (enabled) {
+        mFlags |= PAST_CERT_ROLLBACK;
+    } else {
+        mFlags &= ~PAST_CERT_ROLLBACK;
+    }
+    return this;
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: setAuth
+Language: Java
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+public Builder setAuth(boolean enabled) {
+    mCallerConfiguredFlags |= PAST_CERT_AUTH;
+    if (enabled) {
+        mFlags |= PAST_CERT_AUTH;
+    } else {
+        mFlags &= ~PAST_CERT_AUTH;
+    }
+    return this;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T02:07:27.154Z
+File: godotengine-godot-7864ac8/platform/android/java/editor/src/main/java/com/android/apksig/apk/ApkUtils.java
+Functions Extracted: 5
+
+
+Function 1: findZipSections
+Language: Java
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+public static ZipSections findZipSections(DataSource apk) throws IOException, ZipFormatException {
+    com.android.apksig.zip.ZipSections zipSections = ApkUtilsLite.findZipSections(apk);
+    return new ZipSections(
+            zipSections.getZipCentralDirectoryOffset(),
+            zipSections.getZipCentralDirectorySizeBytes(),
+            zipSections.getZipCentralDirectoryRecordCount(),
+            zipSections.getZipEndOfCentralDirectoryOffset(),
+            zipSections.getZipEndOfCentralDirectory());
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: setZipEocdCentralDirectoryOffset
+Language: Java
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+public static void setZipEocdCentralDirectoryOffset(
+        ByteBuffer zipEndOfCentralDirectory, long offset) {
+    ByteBuffer eocd = zipEndOfCentralDirectory.slice();
+    eocd.order(ByteOrder.LITTLE_ENDIAN);
+    ZipUtils.setZipEocdCentralDirectoryOffset(eocd, offset);
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: updateZipEocdCommentLen
+Language: Java
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+public static void updateZipEocdCommentLen(ByteBuffer zipEndOfCentralDirectory) {
+    ByteBuffer eocd = zipEndOfCentralDirectory.slice();
+    eocd.order(ByteOrder.LITTLE_ENDIAN);
+    ZipUtils.updateZipEocdCommentLen(eocd);
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: findApkSigningBlock
+Language: Java
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+public static ApkSigningBlock findApkSigningBlock(DataSource apk) throws ApkFormatException, IOException, ApkSigningBlockNotFoundException {
+    ApkUtils.ZipSections inputZipSections;
+    try {
+        inputZipSections = ApkUtils.findZipSections(apk);
+    } catch (ZipFormatException e) {
+        throw new ApkFormatException("Malformed APK: not a ZIP archive", e);
+    }
+    return findApkSigningBlock(apk, inputZipSections);
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: getAndroidManifest
+Language: Java
+Lines: 25
+Full Code:
+--------------------------------------------------------------------------------
+public static ByteBuffer getAndroidManifest(DataSource apk) throws IOException, ApkFormatException {
+    ZipSections zipSections;
+    try {
+        zipSections = findZipSections(apk);
+    } catch (ZipFormatException e) {
+        throw new ApkFormatException("Not a valid ZIP archive", e);
+    }
+    List<CentralDirectoryRecord> cdRecords = V1SchemeVerifier.parseZipCentralDirectory(apk, zipSections);
+    CentralDirectoryRecord androidManifestCdRecord = null;
+    for (CentralDirectoryRecord cdRecord : cdRecords) {
+        if (ANDROID_MANIFEST_ZIP_ENTRY_NAME.equals(cdRecord.getName())) {
+            androidManifestCdRecord = cdRecord;
+            break;
+        }
+    }
+    if (androidManifestCdRecord == null) {
+        throw new ApkFormatException("Missing " + ANDROID_MANIFEST_ZIP_ENTRY_NAME);
+    }
+    DataSource lfhSection = apk.slice(0, zipSections.getZipCentralDirectoryOffset());
+
+    try {
+        return ByteBuffer.wrap(
+                LocalFileRecord.getUncompressedData(
+                        lfhSection, androidManifestCdRecord, lfhSection.size()));
+    } catch (ZipFormatException e) {
+        throw new ApkFormatException("Failed to read " + ANDROID_MANIFEST_ZIP_ENTRY_NAME, e);
+    }
+}
+--------------------------------------------------------------------------------
+
+================================================================================

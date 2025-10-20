@@ -4914,3 +4914,2123 @@ Total Chunks Processed: 3
 Ended: 2025-10-20T00:20:36.675Z
 ================================================================================
 
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T00:29:29.528Z
+File: [4 files: SessionCookieJar.php, functions.php, FileCookieJar.php, BadResponseException.php]
+Functions Extracted: 7
+
+
+Function 1: __construct
+Language: PHP
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+public function __construct(string $sessionKey, bool $storeSessionCookies = false) {
+        parent::__construct();
+        $this->sessionKey = $sessionKey;
+        $this->storeSessionCookies = $storeSessionCookies;
+        $this->load();
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: save
+Language: PHP
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+public function save(): void {
+        $json = [];
+        /** @var SetCookie $cookie */
+        foreach ($this as $cookie) {
+            if (CookieJar::shouldPersist($cookie, $this->storeSessionCookies)) {
+                $json[] = $cookie->toArray();
+            }
+        }
+
+        $_SESSION[$this->sessionKey] = \json_encode($json);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: load
+Language: PHP
+Lines: 13
+Full Code:
+--------------------------------------------------------------------------------
+protected function load(): void {
+        if (!isset($_SESSION[$this->sessionKey])) {
+            return;
+        }
+        $data = \json_decode($_SESSION[$this->sessionKey], true);
+        if (\is_array($data)) {
+            foreach ($data as $cookie) {
+                $this->setCookie(new SetCookie($cookie));
+            }
+        } elseif (\strlen($data)) {
+            throw new \RuntimeException('Invalid cookie data');
+        }
+    }
+--------------------------------------------------------------------------------
+
+
+Function 4: __construct
+Language: PHP
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+public function __construct(string $cookieFile, bool $storeSessionCookies = false) {
+        parent::__construct();
+        $this->filename = $cookieFile;
+        $this->storeSessionCookies = $storeSessionCookies;
+
+        if (\file_exists($cookieFile)) {
+            $this->load($cookieFile);
+        }
+    }
+--------------------------------------------------------------------------------
+
+
+Function 5: save
+Language: PHP
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+public function save(string $filename): void {
+        $json = [];
+        /** @var SetCookie $cookie */
+        foreach ($this as $cookie) {
+            if (CookieJar::shouldPersist($cookie, $this->storeSessionCookies)) {
+                $json[] = $cookie->toArray();
+            }
+        }
+
+        $jsonStr = Utils::jsonEncode($json);
+        if (false === \file_put_contents($filename, $jsonStr, \LOCK_EX)) {
+            throw new \RuntimeException("Unable to save file {$filename}");
+        }
+    }
+--------------------------------------------------------------------------------
+
+
+Function 6: load
+Language: PHP
+Lines: 16
+Full Code:
+--------------------------------------------------------------------------------
+public function load(string $filename): void {
+        $json = \file_get_contents($filename);
+        if (false === $json) {
+            throw new \RuntimeException("Unable to load file {$filename}");
+        }
+        if ($json === '') {
+            return;
+        }
+
+        $data = Utils::jsonDecode($json, true);
+        if (\is_array($data)) {
+            foreach ($data as $cookie) {
+                $this->setCookie(new SetCookie($cookie));
+            }
+        } elseif (\is_scalar($data) && !empty($data)) {
+            throw new \RuntimeException("Invalid cookie file: {$filename}");
+        }
+    }
+--------------------------------------------------------------------------------
+
+
+Function 7: __construct
+Language: PHP
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+public function __construct(
+        string $message,
+        RequestInterface $request,
+        ResponseInterface $response,
+        ?\Throwable $previous = null,
+        array $handlerContext = []
+    ) {
+        parent::__construct($message, $request, $response, $previous, $handlerContext);
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T00:29:31.556Z
+File: [2 files: array_values included for BC, CookieJarInterface.php]
+Functions Extracted: 3
+
+
+Function 1: __invoke
+Language: PHP
+Lines: 56
+Full Code:
+--------------------------------------------------------------------------------
+public function __invoke(RequestInterface $request, array $options): PromiseInterface {
+        if (!$this->queue) {
+            throw new \OutOfBoundsException('Mock queue is empty');
+        }
+
+        if (isset($options['delay']) && \is_numeric($options['delay'])) {
+            \usleep((int) $options['delay'] * 1000);
+        }
+
+        $this->lastRequest = $request;
+        $this->lastOptions = $options;
+        $response = \array_shift($this->queue);
+
+        if (isset($options['on_headers'])) {
+            if (!\is_callable($options['on_headers'])) {
+                throw new \InvalidArgumentException('on_headers must be callable');
+            }
+            try {
+                $options['on_headers']($response);
+            } catch (\Exception $e) {
+                $msg = 'An error was encountered during the on_headers event';
+                $response = new RequestException($msg, $request, $response, $e);
+            }
+        }
+
+        if (\is_callable($response)) {
+            $response = $response($request, $options);
+        }
+
+        $response = $response instanceof \Throwable
+            ? P\Create::rejectionFor($response)
+            : P\Create::promiseFor($response);
+
+        return $response->then(
+            function (?ResponseInterface $value) use ($request, $options) {
+                $this->invokeStats($request, $options, $value);
+                if ($this->onFulfilled) {
+                    ($this->onFulfilled)($value);
+                }
+
+                if ($value !== null && isset($options['sink'])) {
+                    $contents = (string) $value->getBody();
+                    $sink = $options['sink'];
+
+                    if (\is_resource($sink)) {
+                        \fwrite($sink, $contents);
+                    } elseif (\is_string($sink)) {
+                        \file_put_contents($sink, $contents);
+                    } elseif ($sink instanceof StreamInterface) {
+                        $sink->write($contents);
+                    }
+                }
+
+                return $value;
+            },
+            function ($reason) use ($request, $options) {
+                $this->invokeStats($request, $options, null, $reason);
+                if ($this->onRejected) {
+                    ($this->onRejected)($reason);
+                }
+
+                return P\Create::rejectionFor($reason);
+            }
+        );
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: append
+Language: PHP
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public function append(...$values): void {
+        foreach ($values as $value) {
+            if ($value instanceof ResponseInterface
+                || $value instanceof \Throwable
+                || $value instanceof PromiseInterface
+                || \is_callable($value)
+            ) {
+                $this->queue[] = $value;
+            } else {
+                throw new \TypeError('Expected a Response, Promise, Throwable or callable. Found '.Utils::describeType($value));
+            }
+        }
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: invokeStats
+Language: PHP
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+private function invokeStats(
+        RequestInterface $request,
+        array $options,
+        ?ResponseInterface $response = null,
+        $reason = null
+    ): void {
+        if (isset($options['on_stats'])) {
+            $transferTime = $options['transfer_time'] ?? 0;
+            $stats = new TransferStats($request, $response, $transferTime, $reason);
+            ($options['on_stats'])($stats);
+        }
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:29:33.451Z
+Question Type: true-false
+Function: save
+Function Size: 562 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: save (PHP)\n// Saves the cookies to a file.\n\npublic function save(string $filename): void {\n        $json = [];\n        /** @var SetCookie $cookie */\n        foreach ($this as $cookie) {\n            if (CookieJar::shouldPersist($cookie, $this->storeSessionCookies)) {\n                $jso
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:29:36.478Z
+Question Type: order-sequence
+Function: __construct
+Function Size: 353 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: __construct (PHP)\n// Creates a new SessionCookieJar object and loads cookies from the session.\n\npublic function __construct(string $sessionKey, bool $storeSessionCookies = false) {\n        parent::__construct();\n        $this->sessionKey = $sessionKey;\n        $this->storeSessionCookies
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:29:39.016Z
+Question Type: select-all
+Function: load
+Function Size: 532 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: load (PHP)\n// Loads the contents of the client session into the data array.\n\nprotected function load(): void {\n        if (!isset($_SESSION[$this->sessionKey])) {\n            return;\n        }\n        $data = \json_decode($_SESSION[$this->sessionKey], true);\n        if (\is_array($data)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:29:40.085Z
+Question Type: order-sequence
+Function: save
+Function Size: 408 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: save (PHP)\n// Saves cookies to the client session.\n\npublic function save(): void {\n        $json = [];\n        /** @var SetCookie $cookie */\n        foreach ($this as $cookie) {\n            if (CookieJar::shouldPersist($cookie, $this->storeSessionCookies)) {\n                $json[] = $c
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:29:44.613Z
+Question Type: select-all
+Function: __construct
+Function Size: 396 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: __construct (PHP)\n// Constructs a BadResponseException with the given parameters.\n\npublic function __construct(\n        string $message,\n        RequestInterface $request,\n        ResponseInterface $response,\n        ?\Throwable $previous = null,\n        array $handlerContext = []\n    )
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:29:49.944Z
+Question Type: function-variant
+Function: save
+Function Size: 562 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: save (PHP)\n// Saves the cookies to a file.\n\npublic function save(string $filename): void {\n        $json = [];\n        /** @var SetCookie $cookie */\n        foreach ($this as $cookie) {\n            if (CookieJar::shouldPersist($cookie, $this->storeSessionCookies)) {\n                $jso
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:29:50.112Z
+Question Type: function-variant
+Function: __construct
+Function Size: 423 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: __construct (PHP)\n// Creates a new FileCookieJar object and loads cookies from a file if it exists.\n\npublic function __construct(string $cookieFile, bool $storeSessionCookies = false) {\n        parent::__construct();\n        $this->filename = $cookieFile;\n        $this->storeSessionCook
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:29:52.480Z
+Question Type: function-variant
+Function: load
+Function Size: 681 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: load (PHP)\n// Loads cookies from a JSON formatted file.\n\npublic function load(string $filename): void {\n        $json = \file_get_contents($filename);\n        if (false === $json) {\n            throw new \RuntimeException("Unable to load file {$filename}");\n        }\n        if ($json =
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:29:56.148Z
+Question Type: order-sequence
+Function: load
+Function Size: 532 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: load (PHP)\n// Loads the contents of the client session into the data array.\n\nprotected function load(): void {\n        if (!isset($_SESSION[$this->sessionKey])) {\n            return;\n        }\n        $data = \json_decode($_SESSION[$this->sessionKey], true);\n        if (\is_array($data)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:29:57.170Z
+Question Type: select-all
+Function: __construct
+Function Size: 353 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: __construct (PHP)\n// Creates a new SessionCookieJar object and loads cookies from the session.\n\npublic function __construct(string $sessionKey, bool $storeSessionCookies = false) {\n        parent::__construct();\n        $this->sessionKey = $sessionKey;\n        $this->storeSessionCookies
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:29:58.959Z
+Question Type: order-sequence
+Function: __construct
+Function Size: 396 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: __construct (PHP)\n// Constructs a BadResponseException with the given parameters.\n\npublic function __construct(\n        string $message,\n        RequestInterface $request,\n        ResponseInterface $response,\n        ?\Throwable $previous = null,\n        array $handlerContext = []\n    )
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:30:00.406Z
+Question Type: true-false
+Function: load
+Function Size: 681 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: load (PHP)\n// Loads cookies from a JSON formatted file.\n\npublic function load(string $filename): void {\n        $json = \file_get_contents($filename);\n        if (false === $json) {\n            throw new \RuntimeException("Unable to load file {$filename}");\n        }\n        if ($json =
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:30:00.635Z
+Question Type: function-variant
+Function: save
+Function Size: 408 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: save (PHP)\n// Saves cookies to the client session.\n\npublic function save(): void {\n        $json = [];\n        /** @var SetCookie $cookie */\n        foreach ($this as $cookie) {\n            if (CookieJar::shouldPersist($cookie, $this->storeSessionCookies)) {\n                $json[] = $c
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:30:00.706Z
+Question Type: multiple-choice
+Function: save
+Function Size: 408 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: save (PHP)\n// Saves cookies to the client session.\n\npublic function save(): void {\n        $json = [];\n        /** @var SetCookie $cookie */\n        foreach ($this as $cookie) {\n            if (CookieJar::shouldPersist($cookie, $this->storeSessionCookies)) {\n                $json[] = $c
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:30:03.240Z
+Question Type: select-all
+Function: __construct
+Function Size: 423 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: __construct (PHP)\n// Creates a new FileCookieJar object and loads cookies from a file if it exists.\n\npublic function __construct(string $cookieFile, bool $storeSessionCookies = false) {\n        parent::__construct();\n        $this->filename = $cookieFile;\n        $this->storeSessionCook
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 7
+Ended: 2025-10-20T00:30:03.241Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:30:06.918Z
+Question Type: true-false
+Function: append
+Function Size: 626 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: append (PHP)\n// Adds one or more variadic requests, exceptions, callables, or promises to the queue.\n\npublic function append(...$values): void {\n        foreach ($values as $value) {\n            if ($value instanceof ResponseInterface\n                || $value instanceof \Throwable\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:30:11.697Z
+Question Type: order-sequence
+Function: append
+Function Size: 626 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: append (PHP)\n// Adds one or more variadic requests, exceptions, callables, or promises to the queue.\n\npublic function append(...$values): void {\n        foreach ($values as $value) {\n            if ($value instanceof ResponseInterface\n                || $value instanceof \Throwable\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:30:14.593Z
+Question Type: order-sequence
+Function: __invoke
+Function Size: 2528 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: __invoke (PHP)\n// Handles the invocation of a request with options, managing the response and invoking callbacks.\n\npublic function __invoke(RequestInterface $request, array $options): PromiseInterface {\n        if (!$this->queue) {\n            throw new \OutOfBoundsException('Mock queue
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:30:15.787Z
+Question Type: order-sequence
+Function: invokeStats
+Function Size: 508 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: invokeStats (PHP)\n// Invokes statistics callback with transfer information.\n\nprivate function invokeStats(\n        RequestInterface $request,\n        array $options,\n        ?ResponseInterface $response = null,\n        $reason = null\n    ): void {\n        if (isset($options['on_stats'])
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:30:16.432Z
+Question Type: multiple-choice
+Function: __invoke
+Function Size: 2528 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: __invoke (PHP)\n// Handles the invocation of a request with options, managing the response and invoking callbacks.\n\npublic function __invoke(RequestInterface $request, array $options): PromiseInterface {\n        if (!$this->queue) {\n            throw new \OutOfBoundsException('Mock queue
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:30:17.670Z
+Question Type: select-all
+Function: invokeStats
+Function Size: 508 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: invokeStats (PHP)\n// Invokes statistics callback with transfer information.\n\nprivate function invokeStats(\n        RequestInterface $request,\n        array $options,\n        ?ResponseInterface $response = null,\n        $reason = null\n    ): void {\n        if (isset($options['on_stats'])
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:30:20.037Z
+Question Type: true-false
+Function: invokeStats
+Function Size: 508 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: invokeStats (PHP)\n// Invokes statistics callback with transfer information.\n\nprivate function invokeStats(\n        RequestInterface $request,\n        array $options,\n        ?ResponseInterface $response = null,\n        $reason = null\n    ): void {\n        if (isset($options['on_stats'])
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:30:27.878Z
+Question Type: select-all
+Function: __invoke
+Function Size: 2528 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: __invoke (PHP)\n// Handles the invocation of a request with options, managing the response and invoking callbacks.\n\npublic function __invoke(RequestInterface $request, array $options): PromiseInterface {\n        if (!$this->queue) {\n            throw new \OutOfBoundsException('Mock queue
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:30:31.046Z
+Question Type: function-variant
+Function: invokeStats
+Function Size: 508 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: invokeStats (PHP)\n// Invokes statistics callback with transfer information.\n\nprivate function invokeStats(\n        RequestInterface $request,\n        array $options,\n        ?ResponseInterface $response = null,\n        $reason = null\n    ): void {\n        if (isset($options['on_stats'])
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 5
+Total Chunks Processed: 3
+Ended: 2025-10-20T00:30:31.082Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:39:43.618Z
+Question Type: multiple-choice
+Function: __invoke
+Function Size: 2528 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: __invoke (PHP)\n// Handles the invocation of a request with options, managing the response and invoking callbacks.\n\npublic function __invoke(RequestInterface $request, array $options): PromiseInterface {\n        if (!$this->queue) {\n            throw new \OutOfBoundsException('Mock queue
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:39:48.056Z
+Question Type: select-all
+Function: load
+Function Size: 532 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: load (PHP)\n// Loads the contents of the client session into the data array.\n\nprotected function load(): void {\n        if (!isset($_SESSION[$this->sessionKey])) {\n            return;\n        }\n        $data = \json_decode($_SESSION[$this->sessionKey], true);\n        if (\is_array($data)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:39:48.985Z
+Question Type: select-all
+Function: save
+Function Size: 562 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: save (PHP)\n// Saves the cookies to a file.\n\npublic function save(string $filename): void {\n        $json = [];\n        /** @var SetCookie $cookie */\n        foreach ($this as $cookie) {\n            if (CookieJar::shouldPersist($cookie, $this->storeSessionCookies)) {\n                $jso
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:39:49.529Z
+Question Type: function-variant
+Function: __construct
+Function Size: 423 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: __construct (PHP)\n// Creates a new FileCookieJar object and loads cookies from a file if it exists.\n\npublic function __construct(string $cookieFile, bool $storeSessionCookies = false) {\n        parent::__construct();\n        $this->filename = $cookieFile;\n        $this->storeSessionCook
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:39:53.056Z
+Question Type: true-false
+Function: load
+Function Size: 681 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: load (PHP)\n// Loads cookies from a JSON formatted file.\n\npublic function load(string $filename): void {\n        $json = \file_get_contents($filename);\n        if (false === $json) {\n            throw new \RuntimeException("Unable to load file {$filename}");\n        }\n        if ($json =
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:39:54.689Z
+Question Type: function-variant
+Function: save
+Function Size: 408 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: save (PHP)\n// Saves cookies to the client session.\n\npublic function save(): void {\n        $json = [];\n        /** @var SetCookie $cookie */\n        foreach ($this as $cookie) {\n            if (CookieJar::shouldPersist($cookie, $this->storeSessionCookies)) {\n                $json[] = $c
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:39:58.241Z
+Question Type: select-all
+Function: __construct
+Function Size: 353 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: __construct (PHP)\n// Creates a new SessionCookieJar object and loads cookies from the session.\n\npublic function __construct(string $sessionKey, bool $storeSessionCookies = false) {\n        parent::__construct();\n        $this->sessionKey = $sessionKey;\n        $this->storeSessionCookies
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:39:58.342Z
+Question Type: order-sequence
+Function: append
+Function Size: 626 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: append (PHP)\n// Adds one or more variadic requests, exceptions, callables, or promises to the queue.\n\npublic function append(...$values): void {\n        foreach ($values as $value) {\n            if ($value instanceof ResponseInterface\n                || $value instanceof \Throwable\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:40:00.472Z
+Question Type: function-variant
+Function: append
+Function Size: 626 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: append (PHP)\n// Adds one or more variadic requests, exceptions, callables, or promises to the queue.\n\npublic function append(...$values): void {\n        foreach ($values as $value) {\n            if ($value instanceof ResponseInterface\n                || $value instanceof \Throwable\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:40:06.965Z
+Question Type: order-sequence
+Function: __construct
+Function Size: 353 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: __construct (PHP)\n// Creates a new SessionCookieJar object and loads cookies from the session.\n\npublic function __construct(string $sessionKey, bool $storeSessionCookies = false) {\n        parent::__construct();\n        $this->sessionKey = $sessionKey;\n        $this->storeSessionCookies
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:40:07.198Z
+Question Type: order-sequence
+Function: invokeStats
+Function Size: 508 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: invokeStats (PHP)\n// Invokes statistics callback with transfer information.\n\nprivate function invokeStats(\n        RequestInterface $request,\n        array $options,\n        ?ResponseInterface $response = null,\n        $reason = null\n    ): void {\n        if (isset($options['on_stats'])
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:40:11.634Z
+Question Type: true-false
+Function: save
+Function Size: 408 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: save (PHP)\n// Saves cookies to the client session.\n\npublic function save(): void {\n        $json = [];\n        /** @var SetCookie $cookie */\n        foreach ($this as $cookie) {\n            if (CookieJar::shouldPersist($cookie, $this->storeSessionCookies)) {\n                $json[] = $c
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:40:11.763Z
+Question Type: order-sequence
+Function: __invoke
+Function Size: 2528 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: __invoke (PHP)\n// Handles the invocation of a request with options, managing the response and invoking callbacks.\n\npublic function __invoke(RequestInterface $request, array $options): PromiseInterface {\n        if (!$this->queue) {\n            throw new \OutOfBoundsException('Mock queue
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:40:12.462Z
+Question Type: select-all
+Function: __construct
+Function Size: 396 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: __construct (PHP)\n// Constructs a BadResponseException with the given parameters.\n\npublic function __construct(\n        string $message,\n        RequestInterface $request,\n        ResponseInterface $response,\n        ?\Throwable $previous = null,\n        array $handlerContext = []\n    )
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:40:15.236Z
+Question Type: function-variant
+Function: load
+Function Size: 681 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: load (PHP)\n// Loads cookies from a JSON formatted file.\n\npublic function load(string $filename): void {\n        $json = \file_get_contents($filename);\n        if (false === $json) {\n            throw new \RuntimeException("Unable to load file {$filename}");\n        }\n        if ($json =
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 10
+Ended: 2025-10-20T00:40:15.260Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:40:20.922Z
+Question Type: order-sequence
+Function: __construct
+Function Size: 423 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: __construct (PHP)\n// Creates a new FileCookieJar object and loads cookies from a file if it exists.\n\npublic function __construct(string $cookieFile, bool $storeSessionCookies = false) {\n        parent::__construct();\n        $this->filename = $cookieFile;\n        $this->storeSessionCook
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:40:26.711Z
+Question Type: function-variant
+Function: load
+Function Size: 532 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: load (PHP)\n// Loads the contents of the client session into the data array.\n\nprotected function load(): void {\n        if (!isset($_SESSION[$this->sessionKey])) {\n            return;\n        }\n        $data = \json_decode($_SESSION[$this->sessionKey], true);\n        if (\is_array($data)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:40:26.745Z
+Question Type: function-variant
+Function: save
+Function Size: 562 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: save (PHP)\n// Saves the cookies to a file.\n\npublic function save(string $filename): void {\n        $json = [];\n        /** @var SetCookie $cookie */\n        foreach ($this as $cookie) {\n            if (CookieJar::shouldPersist($cookie, $this->storeSessionCookies)) {\n                $jso
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:40:27.113Z
+Question Type: order-sequence
+Function: load
+Function Size: 681 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: load (PHP)\n// Loads cookies from a JSON formatted file.\n\npublic function load(string $filename): void {\n        $json = \file_get_contents($filename);\n        if (false === $json) {\n            throw new \RuntimeException("Unable to load file {$filename}");\n        }\n        if ($json =
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:40:30.601Z
+Question Type: order-sequence
+Function: __construct
+Function Size: 396 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: __construct (PHP)\n// Constructs a BadResponseException with the given parameters.\n\npublic function __construct(\n        string $message,\n        RequestInterface $request,\n        ResponseInterface $response,\n        ?\Throwable $previous = null,\n        array $handlerContext = []\n    )
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:40:31.110Z
+Question Type: select-all
+Function: save
+Function Size: 408 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: save (PHP)\n// Saves cookies to the client session.\n\npublic function save(): void {\n        $json = [];\n        /** @var SetCookie $cookie */\n        foreach ($this as $cookie) {\n            if (CookieJar::shouldPersist($cookie, $this->storeSessionCookies)) {\n                $json[] = $c
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:40:32.314Z
+Question Type: select-all
+Function: __construct
+Function Size: 353 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: __construct (PHP)\n// Creates a new SessionCookieJar object and loads cookies from the session.\n\npublic function __construct(string $sessionKey, bool $storeSessionCookies = false) {\n        parent::__construct();\n        $this->sessionKey = $sessionKey;\n        $this->storeSessionCookies
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:40:36.572Z
+Question Type: select-all
+Function: append
+Function Size: 626 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: append (PHP)\n// Adds one or more variadic requests, exceptions, callables, or promises to the queue.\n\npublic function append(...$values): void {\n        foreach ($values as $value) {\n            if ($value instanceof ResponseInterface\n                || $value instanceof \Throwable\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:40:37.469Z
+Question Type: select-all
+Function: __construct
+Function Size: 396 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: __construct (PHP)\n// Constructs a BadResponseException with the given parameters.\n\npublic function __construct(\n        string $message,\n        RequestInterface $request,\n        ResponseInterface $response,\n        ?\Throwable $previous = null,\n        array $handlerContext = []\n    )
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:40:41.214Z
+Question Type: function-variant
+Function: invokeStats
+Function Size: 508 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: invokeStats (PHP)\n// Invokes statistics callback with transfer information.\n\nprivate function invokeStats(\n        RequestInterface $request,\n        array $options,\n        ?ResponseInterface $response = null,\n        $reason = null\n    ): void {\n        if (isset($options['on_stats'])
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T00:40:41.959Z
+Question Type: true-false
+Function: load
+Function Size: 681 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: load (PHP)\n// Loads cookies from a JSON formatted file.\n\npublic function load(string $filename): void {\n        $json = \file_get_contents($filename);\n        if (false === $json) {\n            throw new \RuntimeException("Unable to load file {$filename}");\n        }\n        if ($json =
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 10
+Ended: 2025-10-20T00:40:42.001Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T01:00:57.919Z
+File: not being used to render anything
+Functions Extracted: 1
+
+
+Function 1: courseCompletionStatus
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+const courseCompletionStatus = () => {
+  if (completedCount === 0) {
+    return t('learn.not-started');
+  }
+  if (isBlockCompleted) {
+    return t('learn.completed');
+  }
+  return `${percentageCompleted}% ${t('learn.completed')}`;
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:01:01.134Z
+Question Type: true-false
+Function: courseCompletionStatus
+Function Size: 357 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on completed challenges.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    return t('learn.completed');\n  }\n  ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:01:02.882Z
+Question Type: multiple-choice
+Function: courseCompletionStatus
+Function Size: 357 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on completed challenges.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    return t('learn.completed');\n  }\n  ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:01:03.189Z
+Question Type: order-sequence
+Function: courseCompletionStatus
+Function Size: 357 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on completed challenges.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    return t('learn.completed');\n  }\n  ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:01:03.280Z
+Question Type: select-all
+Function: courseCompletionStatus
+Function Size: 357 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on completed challenges.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    return t('learn.completed');\n  }\n  ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:01:06.054Z
+Question Type: true-false
+Function: courseCompletionStatus
+Function Size: 357 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on completed challenges.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    return t('learn.completed');\n  }\n  ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:01:07.919Z
+Question Type: order-sequence
+Function: courseCompletionStatus
+Function Size: 357 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on completed challenges.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    return t('learn.completed');\n  }\n  ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:01:09.714Z
+Question Type: function-variant
+Function: courseCompletionStatus
+Function Size: 357 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on completed challenges.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    return t('learn.completed');\n  }\n  ret
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 5
+Total Chunks Processed: 1
+Ended: 2025-10-20T01:01:09.731Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:01:30.217Z
+Question Type: true-false
+Function: courseCompletionStatus
+Function Size: 357 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on completed challenges.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    return t('learn.completed');\n  }\n  ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:01:37.380Z
+Question Type: select-all
+Function: courseCompletionStatus
+Function Size: 357 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on completed challenges.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    return t('learn.completed');\n  }\n  ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:01:38.197Z
+Question Type: order-sequence
+Function: courseCompletionStatus
+Function Size: 357 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on completed challenges.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    return t('learn.completed');\n  }\n  ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:01:38.202Z
+Question Type: function-variant
+Function: courseCompletionStatus
+Function Size: 357 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on completed challenges.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    return t('learn.completed');\n  }\n  ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:01:40.088Z
+Question Type: multiple-choice
+Function: courseCompletionStatus
+Function Size: 357 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on completed challenges.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    return t('learn.completed');\n  }\n  ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:01:42.438Z
+Question Type: order-sequence
+Function: courseCompletionStatus
+Function Size: 357 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on completed challenges.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    return t('learn.completed');\n  }\n  ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:01:43.401Z
+Question Type: select-all
+Function: courseCompletionStatus
+Function Size: 357 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on completed challenges.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    return t('learn.completed');\n  }\n  ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:01:45.247Z
+Question Type: select-all
+Function: courseCompletionStatus
+Function Size: 357 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on completed challenges.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    return t('learn.completed');\n  }\n  ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:01:49.520Z
+Question Type: order-sequence
+Function: courseCompletionStatus
+Function Size: 357 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on completed challenges.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    return t('learn.completed');\n  }\n  ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:01:53.836Z
+Question Type: function-variant
+Function: courseCompletionStatus
+Function Size: 357 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on completed challenges.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    return t('learn.completed');\n  }\n  ret
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 1
+Ended: 2025-10-20T01:01:53.894Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T01:20:14.526Z
+File: freeCodeCamp-freeCodeCamp-c7fe5d9/client/src/components/profile/components/social-icons.tsx
+Functions Extracted: 6
+
+
+Function 1: LinkedInIcon
+Language: TypeScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+function LinkedInIcon({ href, username }: IconProps): JSX.Element {
+  const { t } = useTranslation();
+  return (
+    <a
+      aria-label={t('aria.linkedin', { username })}
+      href={href}
+      rel='noopener noreferrer'
+      target='_blank'
+    >
+      <FontAwesomeIcon icon={faLinkedin} size='2x' />
+    </a>
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: GitHubIcon
+Language: TypeScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+function GitHubIcon({ href, username }: IconProps): JSX.Element {
+  const { t } = useTranslation();
+  return (
+    <a
+      aria-label={t('aria.github', { username })}
+      href={href}
+      rel='noopener noreferrer'
+      target='_blank'
+    >
+      <FontAwesomeIcon icon={faGithub} size='2x' />
+    </a>
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: WebsiteIcon
+Language: TypeScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+function WebsiteIcon({ href, username }: IconProps): JSX.Element {
+  const { t } = useTranslation();
+  return (
+    <a
+      aria-label={t('aria.website', { username })}
+      href={href}
+      rel='noopener noreferrer'
+      target='_blank'
+    >
+      <FontAwesomeIcon icon={faLink} size='2x' />
+    </a>
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: TwitterIcon
+Language: TypeScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+function TwitterIcon({ href, username }: IconProps): JSX.Element {
+  const { t } = useTranslation();
+  return (
+    <a
+      aria-label={t('aria.twitter', { username })}
+      href={href}
+      rel='noopener noreferrer'
+      target='_blank'
+    >
+      <FontAwesomeIcon icon={faXTwitter} size='2x' />
+    </a>
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: BlueskyIcon
+Language: TypeScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+function BlueskyIcon({ href, username }: IconProps): JSX.Element {
+  const { t } = useTranslation();
+  return (
+    <a
+      aria-label={t('aria.bluesky', { username })}
+      href={href}
+      rel='noopener noreferrer'
+      target='_blank'
+    >
+      <FontAwesomeIcon icon={faBluesky} size='2x' />
+    </a>
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: SocialIcons
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+function SocialIcons(props: SocialIconsProps): JSX.Element | null {
+  const { githubProfile, linkedin, twitter, bluesky, username, website } =
+    props;
+  const show = linkedin || githubProfile || website || twitter || bluesky;
+  if (!show) {
+    return null;
+  }
+
+  return (
+    <Row>
+      <Col className='social-icons-row'>
+        {linkedin ? <LinkedInIcon href={linkedin} username={username} /> : null}
+        {githubProfile ? (
+          <GitHubIcon href={githubProfile} username={username} />
+        ) : null}
+        {website ? <WebsiteIcon href={website} username={username} /> : null}
+        {twitter ? <TwitterIcon href={twitter} username={username} /> : null}
+        {bluesky ? <BlueskyIcon href={bluesky} username={username} /> : null}
+      </Col>
+    </Row>
+  );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:20:16.430Z
+Question Type: multiple-choice
+Function: TwitterIcon
+Function Size: 421 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: TwitterIcon (TypeScript)\n// Renders a Twitter icon as a link with accessibility features.\n\nfunction TwitterIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.twitter', { username })}\n      href={href}\n      re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:20:19.015Z
+Question Type: true-false
+Function: GitHubIcon
+Function Size: 415 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GitHubIcon (TypeScript)\n// Renders a GitHub icon as a link with accessibility features.\n\nfunction GitHubIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.github', { username })}\n      href={href}\n      rel='n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:20:19.988Z
+Question Type: select-all
+Function: LinkedInIcon
+Function Size: 425 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: LinkedInIcon (TypeScript)\n// Renders a LinkedIn icon as a link with accessibility features.\n\nfunction LinkedInIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.linkedin', { username })}\n      href={href}\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:20:20.936Z
+Question Type: select-all
+Function: TwitterIcon
+Function Size: 421 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: TwitterIcon (TypeScript)\n// Renders a Twitter icon as a link with accessibility features.\n\nfunction TwitterIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.twitter', { username })}\n      href={href}\n      re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:20:24.336Z
+Question Type: true-false
+Function: SocialIcons
+Function Size: 894 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: SocialIcons (TypeScript)\n// Renders a collection of social media icons based on provided props.\n\nfunction SocialIcons(props: SocialIconsProps): JSX.Element | null {\n  const { githubProfile, linkedin, twitter, bluesky, username, website } =\n    props;\n  const show = linkedin || githubPro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:20:30.125Z
+Question Type: function-variant
+Function: WebsiteIcon
+Function Size: 417 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: WebsiteIcon (TypeScript)\n// Renders a website icon as a link with accessibility features.\n\nfunction WebsiteIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.website', { username })}\n      href={href}\n      re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:20:31.743Z
+Question Type: order-sequence
+Function: WebsiteIcon
+Function Size: 417 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: WebsiteIcon (TypeScript)\n// Renders a website icon as a link with accessibility features.\n\nfunction WebsiteIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.website', { username })}\n      href={href}\n      re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:20:33.702Z
+Question Type: order-sequence
+Function: BlueskyIcon
+Function Size: 420 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: BlueskyIcon (TypeScript)\n// Renders a Bluesky icon as a link with accessibility features.\n\nfunction BlueskyIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.bluesky', { username })}\n      href={href}\n      re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:20:38.979Z
+Question Type: function-variant
+Function: SocialIcons
+Function Size: 894 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: SocialIcons (TypeScript)\n// Renders a collection of social media icons based on provided props.\n\nfunction SocialIcons(props: SocialIconsProps): JSX.Element | null {\n  const { githubProfile, linkedin, twitter, bluesky, username, website } =\n    props;\n  const show = linkedin || githubPro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:20:39.642Z
+Question Type: select-all
+Function: SocialIcons
+Function Size: 894 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: SocialIcons (TypeScript)\n// Renders a collection of social media icons based on provided props.\n\nfunction SocialIcons(props: SocialIconsProps): JSX.Element | null {\n  const { githubProfile, linkedin, twitter, bluesky, username, website } =\n    props;\n  const show = linkedin || githubPro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:20:41.618Z
+Question Type: function-variant
+Function: LinkedInIcon
+Function Size: 425 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: LinkedInIcon (TypeScript)\n// Renders a LinkedIn icon as a link with accessibility features.\n\nfunction LinkedInIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.linkedin', { username })}\n      href={href}\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:20:43.428Z
+Question Type: order-sequence
+Function: TwitterIcon
+Function Size: 421 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: TwitterIcon (TypeScript)\n// Renders a Twitter icon as a link with accessibility features.\n\nfunction TwitterIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.twitter', { username })}\n      href={href}\n      re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:20:45.862Z
+Question Type: select-all
+Function: BlueskyIcon
+Function Size: 420 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: BlueskyIcon (TypeScript)\n// Renders a Bluesky icon as a link with accessibility features.\n\nfunction BlueskyIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.bluesky', { username })}\n      href={href}\n      re
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 12
+Total Chunks Processed: 6
+Ended: 2025-10-20T01:20:53.800Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:20:56.377Z
+Question Type: multiple-choice
+Function: BlueskyIcon
+Function Size: 420 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: BlueskyIcon (TypeScript)\n// Renders a Bluesky icon as a link with accessibility features.\n\nfunction BlueskyIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.bluesky', { username })}\n      href={href}\n      re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:21:00.587Z
+Question Type: select-all
+Function: BlueskyIcon
+Function Size: 420 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: BlueskyIcon (TypeScript)\n// Renders a Bluesky icon as a link with accessibility features.\n\nfunction BlueskyIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.bluesky', { username })}\n      href={href}\n      re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:21:02.849Z
+Question Type: select-all
+Function: SocialIcons
+Function Size: 894 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: SocialIcons (TypeScript)\n// Renders a collection of social media icons based on provided props.\n\nfunction SocialIcons(props: SocialIconsProps): JSX.Element | null {\n  const { githubProfile, linkedin, twitter, bluesky, username, website } =\n    props;\n  const show = linkedin || githubPro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:21:03.236Z
+Question Type: order-sequence
+Function: BlueskyIcon
+Function Size: 420 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: BlueskyIcon (TypeScript)\n// Renders a Bluesky icon as a link with accessibility features.\n\nfunction BlueskyIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.bluesky', { username })}\n      href={href}\n      re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:21:03.730Z
+Question Type: function-variant
+Function: WebsiteIcon
+Function Size: 417 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: WebsiteIcon (TypeScript)\n// Renders a website icon as a link with accessibility features.\n\nfunction WebsiteIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.website', { username })}\n      href={href}\n      re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:21:10.347Z
+Question Type: function-variant
+Function: TwitterIcon
+Function Size: 421 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: TwitterIcon (TypeScript)\n// Renders a Twitter icon as a link with accessibility features.\n\nfunction TwitterIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.twitter', { username })}\n      href={href}\n      re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:21:11.702Z
+Question Type: order-sequence
+Function: LinkedInIcon
+Function Size: 425 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: LinkedInIcon (TypeScript)\n// Renders a LinkedIn icon as a link with accessibility features.\n\nfunction LinkedInIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.linkedin', { username })}\n      href={href}\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:21:15.530Z
+Question Type: order-sequence
+Function: GitHubIcon
+Function Size: 415 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: GitHubIcon (TypeScript)\n// Renders a GitHub icon as a link with accessibility features.\n\nfunction GitHubIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.github', { username })}\n      href={href}\n      rel='n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:21:15.873Z
+Question Type: select-all
+Function: LinkedInIcon
+Function Size: 425 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: LinkedInIcon (TypeScript)\n// Renders a LinkedIn icon as a link with accessibility features.\n\nfunction LinkedInIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.linkedin', { username })}\n      href={href}\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:21:16.368Z
+Question Type: order-sequence
+Function: SocialIcons
+Function Size: 894 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: SocialIcons (TypeScript)\n// Renders a collection of social media icons based on provided props.\n\nfunction SocialIcons(props: SocialIconsProps): JSX.Element | null {\n  const { githubProfile, linkedin, twitter, bluesky, username, website } =\n    props;\n  const show = linkedin || githubPro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:21:20.212Z
+Question Type: true-false
+Function: GitHubIcon
+Function Size: 415 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GitHubIcon (TypeScript)\n// Renders a GitHub icon as a link with accessibility features.\n\nfunction GitHubIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.github', { username })}\n      href={href}\n      rel='n
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 6
+Ended: 2025-10-20T01:21:20.797Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:27:53.465Z
+Question Type: multiple-choice
+Function: SocialIcons
+Function Size: 894 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: SocialIcons (TypeScript)\n// Renders a collection of social media icons based on provided props.\n\nfunction SocialIcons(props: SocialIconsProps): JSX.Element | null {\n  const { githubProfile, linkedin, twitter, bluesky, username, website } =\n    props;\n  const show = linkedin || githubPro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:27:55.041Z
+Question Type: true-false
+Function: TwitterIcon
+Function Size: 421 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: TwitterIcon (TypeScript)\n// Renders a Twitter icon as a link with accessibility features.\n\nfunction TwitterIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.twitter', { username })}\n      href={href}\n      re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:27:58.235Z
+Question Type: select-all
+Function: GitHubIcon
+Function Size: 415 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GitHubIcon (TypeScript)\n// Renders a GitHub icon as a link with accessibility features.\n\nfunction GitHubIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.github', { username })}\n      href={href}\n      rel='n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:28:00.607Z
+Question Type: order-sequence
+Function: TwitterIcon
+Function Size: 421 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: TwitterIcon (TypeScript)\n// Renders a Twitter icon as a link with accessibility features.\n\nfunction TwitterIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.twitter', { username })}\n      href={href}\n      re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:28:02.624Z
+Question Type: select-all
+Function: SocialIcons
+Function Size: 894 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: SocialIcons (TypeScript)\n// Renders a collection of social media icons based on provided props.\n\nfunction SocialIcons(props: SocialIconsProps): JSX.Element | null {\n  const { githubProfile, linkedin, twitter, bluesky, username, website } =\n    props;\n  const show = linkedin || githubPro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:28:06.863Z
+Question Type: select-all
+Function: WebsiteIcon
+Function Size: 417 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: WebsiteIcon (TypeScript)\n// Renders a website icon as a link with accessibility features.\n\nfunction WebsiteIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.website', { username })}\n      href={href}\n      re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:28:07.506Z
+Question Type: function-variant
+Function: LinkedInIcon
+Function Size: 425 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: LinkedInIcon (TypeScript)\n// Renders a LinkedIn icon as a link with accessibility features.\n\nfunction LinkedInIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.linkedin', { username })}\n      href={href}\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:28:08.778Z
+Question Type: true-false
+Function: GitHubIcon
+Function Size: 415 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GitHubIcon (TypeScript)\n// Renders a GitHub icon as a link with accessibility features.\n\nfunction GitHubIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.github', { username })}\n      href={href}\n      rel='n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:28:09.714Z
+Question Type: order-sequence
+Function: LinkedInIcon
+Function Size: 425 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: LinkedInIcon (TypeScript)\n// Renders a LinkedIn icon as a link with accessibility features.\n\nfunction LinkedInIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.linkedin', { username })}\n      href={href}\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:28:15.173Z
+Question Type: select-all
+Function: TwitterIcon
+Function Size: 421 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: TwitterIcon (TypeScript)\n// Renders a Twitter icon as a link with accessibility features.\n\nfunction TwitterIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.twitter', { username })}\n      href={href}\n      re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:28:17.429Z
+Question Type: order-sequence
+Function: WebsiteIcon
+Function Size: 417 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: WebsiteIcon (TypeScript)\n// Renders a website icon as a link with accessibility features.\n\nfunction WebsiteIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.website', { username })}\n      href={href}\n      re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:28:19.956Z
+Question Type: function-variant
+Function: BlueskyIcon
+Function Size: 420 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: BlueskyIcon (TypeScript)\n// Renders a Bluesky icon as a link with accessibility features.\n\nfunction BlueskyIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.bluesky', { username })}\n      href={href}\n      re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:28:20.246Z
+Question Type: order-sequence
+Function: GitHubIcon
+Function Size: 415 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: GitHubIcon (TypeScript)\n// Renders a GitHub icon as a link with accessibility features.\n\nfunction GitHubIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.github', { username })}\n      href={href}\n      rel='n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:28:27.214Z
+Question Type: function-variant
+Function: BlueskyIcon
+Function Size: 420 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: BlueskyIcon (TypeScript)\n// Renders a Bluesky icon as a link with accessibility features.\n\nfunction BlueskyIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.bluesky', { username })}\n      href={href}\n      re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:28:37.862Z
+Question Type: function-variant
+Function: SocialIcons
+Function Size: 894 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: SocialIcons (TypeScript)\n// Renders a collection of social media icons based on provided props.\n\nfunction SocialIcons(props: SocialIconsProps): JSX.Element | null {\n  const { githubProfile, linkedin, twitter, bluesky, username, website } =\n    props;\n  const show = linkedin || githubPro
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 13
+Total Chunks Processed: 6
+Ended: 2025-10-20T01:28:37.876Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:28:42.555Z
+Question Type: true-false
+Function: TwitterIcon
+Function Size: 421 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: TwitterIcon (TypeScript)\n// Renders a Twitter icon as a link with accessibility features.\n\nfunction TwitterIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.twitter', { username })}\n      href={href}\n      re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:28:48.037Z
+Question Type: select-all
+Function: BlueskyIcon
+Function Size: 420 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: BlueskyIcon (TypeScript)\n// Renders a Bluesky icon as a link with accessibility features.\n\nfunction BlueskyIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.bluesky', { username })}\n      href={href}\n      re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:28:48.157Z
+Question Type: order-sequence
+Function: SocialIcons
+Function Size: 894 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: SocialIcons (TypeScript)\n// Renders a collection of social media icons based on provided props.\n\nfunction SocialIcons(props: SocialIconsProps): JSX.Element | null {\n  const { githubProfile, linkedin, twitter, bluesky, username, website } =\n    props;\n  const show = linkedin || githubPro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:28:48.257Z
+Question Type: order-sequence
+Function: LinkedInIcon
+Function Size: 425 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: LinkedInIcon (TypeScript)\n// Renders a LinkedIn icon as a link with accessibility features.\n\nfunction LinkedInIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.linkedin', { username })}\n      href={href}\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:28:49.221Z
+Question Type: order-sequence
+Function: TwitterIcon
+Function Size: 421 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: TwitterIcon (TypeScript)\n// Renders a Twitter icon as a link with accessibility features.\n\nfunction TwitterIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.twitter', { username })}\n      href={href}\n      re
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:28:51.417Z
+Question Type: multiple-choice
+Function: GitHubIcon
+Function Size: 415 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GitHubIcon (TypeScript)\n// Renders a GitHub icon as a link with accessibility features.\n\nfunction GitHubIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.github', { username })}\n      href={href}\n      rel='n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:28:53.291Z
+Question Type: select-all
+Function: LinkedInIcon
+Function Size: 425 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: LinkedInIcon (TypeScript)\n// Renders a LinkedIn icon as a link with accessibility features.\n\nfunction LinkedInIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.linkedin', { username })}\n      href={href}\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T01:28:58.591Z
+Question Type: function-variant
+Function: GitHubIcon
+Function Size: 415 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: GitHubIcon (TypeScript)\n// Renders a GitHub icon as a link with accessibility features.\n\nfunction GitHubIcon({ href, username }: IconProps): JSX.Element {\n  const { t } = useTranslation();\n  return (\n    <a\n      aria-label={t('aria.github', { username })}\n      href={href}\n      rel='n
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 6
+Ended: 2025-10-20T01:28:58.753Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T02:02:02.571Z
+File: [2 files: language=txt, limitations under the License.]
+Functions Extracted: 3
+
+
+Function 1: main
+Language: TypeScript
+Lines: 24
+Full Code:
+--------------------------------------------------------------------------------
+export async function main(): Promise<void> {
+  if (argv.version) {
+    console.log(VERSION)
+    return
+  }
+  if (argv.help) {
+    printUsage()
+    return
+  }
+  if (argv.cwd) $.cwd = argv.cwd
+  if (argv.env) {
+    const envfile = path.resolve($.cwd ?? process.cwd(), argv.env)
+    dotenv.config(envfile)
+    resolveDefaults()
+  }
+  if (argv.verbose) $.verbose = true
+  if (argv.quiet) $.quiet = true
+  if (argv.shell) $.shell = argv.shell
+  if (argv.prefix) $.prefix = argv.prefix
+  if (argv.postfix) $.postfix = argv.postfix
+  if (argv.preferLocal) $.preferLocal = argv.preferLocal
+
+  await import('zx/globals')
+  if (argv.repl) {
+    await startRepl()
+    return
+  }
+  argv.ext = normalizeExt(argv.ext)
+
+  const { script, scriptPath, tempPath } = await readScript()
+  await runScript(script, scriptPath, tempPath)
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: installDeps
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export async function installDeps(
+  dependencies: Record<string, string>,
+  prefix?: string,
+  registry?: string,
+  installerType = 'npm'
+): Promise<void> {
+  const installer = installers[installerType]
+  const packages = Object.entries(dependencies).map(
+    ([name, version]) => `${name}@${version}`
+  )
+  if (packages.length === 0) return
+  if (!installer) {
+    throw new Fail(
+      `Unsupported installer type: ${installerType}. Supported types: ${Object.keys(installers).join(', ')}`
+    )
+  }
+
+  await spinner(`${installerType} i ${packages.join(' ')}`, () =>
+    installer({ packages, prefix, registry })
+  )
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: parseDeps
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function parseDeps(content: string): Record<string, string> {
+  return depseek(content + '\n', { comments: true }).reduce<
+    Record<string, string>
+  >((m, { type, value }, i, list) => {
+    if (type === 'dep') {
+      const meta = list[i + 1]
+      const name = parsePackageName(value)
+      const version =
+        (meta?.type === 'comment' && parseVersion(meta?.value.trim())) ||
+        'latest'
+      if (name) m[name] = version
+    }
+    return m
+  }, {})
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T02:02:06.604Z
+Question Type: true-false
+Function: parseDeps
+Function Size: 589 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: parseDeps (TypeScript)\n// Parses dependencies from the provided content and returns them as an object.\n\nexport function parseDeps(content: string): Record<string, string> {\n  return depseek(content + '\n', { comments: true }).reduce<\n    Record<string, string>\n  >((m, { type, value }, i
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T02:02:07.199Z
+File: [2 files: isConcatSpreadable, TODO: fix unanalyzable-dynamic-import to work correctly with jsr.io]
+Functions Extracted: 5
+
+
+Function 1: linkNodeModules
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function linkNodeModules(cwd: string, external: string): string {
+  const nm = 'node_modules';
+  const alias = path.resolve(cwd, nm);
+  const target =
+    path.basename(external) === nm
+      ? path.resolve(external)
+      : path.resolve(external, nm);
+  const aliasStat = lstat(alias);
+  const targetStat = lstat(target);
+
+  if (!targetStat?.isDirectory())
+    throw new Fail(
+      `Can't link node_modules: ${target} doesn't exist or is not a directory`
+    );
+  if (aliasStat?.isDirectory() && alias !== target)
+    throw new Fail(`Can't link node_modules: ${alias} already exists`);
+  if (aliasStat) return '';
+
+  fs.symlinkSync(target, alias, 'junction');
+  return alias;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: readScript
+Language: TypeScript
+Lines: 35
+Full Code:
+--------------------------------------------------------------------------------
+async function readScript() {
+  const [firstArg] = argv._;
+  let script = '';
+  let scriptPath = '';
+  let tempPath = '';
+  let argSlice = 1;
+
+  if (argv.eval) {
+    argSlice = 0;
+    script = argv.eval;
+    tempPath = getFilepath($.cwd, 'zx', argv.ext);
+  } else if (!firstArg || firstArg === '-') {
+    script = await readScriptFromStdin();
+    tempPath = getFilepath($.cwd, 'zx', argv.ext);
+    if (script.length === 0) {
+      printUsage();
+      process.exitCode = 1;
+      throw new Fail('No script provided');
+    }
+  } else if (/^https?:/.test(firstArg)) {
+    const { name, ext = argv.ext } = path.parse(new URL(firstArg).pathname);
+    script = await readScriptFromHttp(firstArg);
+    tempPath = getFilepath($.cwd, name, ext);
+  } else {
+    script = await fs.readFile(firstArg, 'utf8');
+    scriptPath = firstArg.startsWith('file:')
+      ? url.fileURLToPath(firstArg)
+      : path.resolve(firstArg);
+  }
+
+  const { ext, base, dir } = path.parse(tempPath || scriptPath);
+  if (ext === '' || (argv.ext && !EXT_RE.test(ext))) {
+    tempPath = getFilepath(dir, base);
+  }
+  if (ext === '.md') {
+    script = transformMarkdown(script);
+    tempPath = getFilepath(dir, base);
+  }
+  if (argSlice) updateArgv(argv._.slice(argSlice));
+
+  return { script, scriptPath, tempPath };
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: readScriptFromHttp
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+async function readScriptFromHttp(remote: string): Promise<string> {
+  const res = await fetch(remote);
+  if (!res.ok) {
+    console.error(`Error: Can't get ${remote}`);
+    process.exit(1);
+  }
+  return res.text();
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: injectGlobalRequire
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+export function injectGlobalRequire(origin: string): void {
+  const __filename = path.resolve(origin);
+  const __dirname = path.dirname(__filename);
+  const require = createRequire(origin);
+  Object.assign(globalThis, { __filename, __dirname, require });
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: isMain
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export function isMain(
+  metaurl: string = import.meta.url,
+  scriptpath: string = process.argv[1]
+): boolean {
+  if (metaurl.startsWith('file:')) {
+    const modulePath = url.fileURLToPath(metaurl).replace(/\.\w+$/, '');
+    const mainPath = fs.realpathSync(scriptpath).replace(/\.\w+$/, '');
+    return mainPath === modulePath;
+  }
+
+  return false;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T02:02:07.758Z
+Question Type: order-sequence
+Function: installDeps
+Function Size: 725 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: installDeps (TypeScript)\n// Installs npm dependencies using the specified package manager.\n\nexport async function installDeps(\n  dependencies: Record<string, string>,\n  prefix?: string,\n  registry?: string,\n  installerType = 'npm'\n): Promise<void> {\n  const installer = installers[instal
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T02:02:10.948Z
+Question Type: select-all
+Function: parseDeps
+Function Size: 589 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: parseDeps (TypeScript)\n// Parses dependencies from the provided content and returns them as an object.\n\nexport function parseDeps(content: string): Record<string, string> {\n  return depseek(content + '\n', { comments: true }).reduce<\n    Record<string, string>\n  >((m, { type, value }, i
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T02:02:12.474Z
+Question Type: select-all
+Function: installDeps
+Function Size: 725 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: installDeps (TypeScript)\n// Installs npm dependencies using the specified package manager.\n\nexport async function installDeps(\n  dependencies: Record<string, string>,\n  prefix?: string,\n  registry?: string,\n  installerType = 'npm'\n): Promise<void> {\n  const installer = installers[instal
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T02:02:16.509Z
+Question Type: function-variant
+Function: installDeps
+Function Size: 725 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: installDeps (TypeScript)\n// Installs npm dependencies using the specified package manager.\n\nexport async function installDeps(\n  dependencies: Record<string, string>,\n  prefix?: string,\n  registry?: string,\n  installerType = 'npm'\n): Promise<void> {\n  const installer = installers[instal
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T02:02:17.148Z
+Question Type: order-sequence
+Function: parseDeps
+Function Size: 589 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: parseDeps (TypeScript)\n// Parses dependencies from the provided content and returns them as an object.\n\nexport function parseDeps(content: string): Record<string, string> {\n  return depseek(content + '\n', { comments: true }).reduce<\n    Record<string, string>\n  >((m, { type, value }, i
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 3
+Ended: 2025-10-20T02:02:17.230Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T02:02:19.700Z
+Question Type: multiple-choice
+Function: readScriptFromHttp
+Function Size: 330 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: readScriptFromHttp (TypeScript)\n// Fetches a script from a given HTTP URL and returns its content.\n\nasync function readScriptFromHttp(remote: string): Promise<string> {\n  const res = await fetch(remote);\n  if (!res.ok) {\n    console.error(`Error: Can't get ${remote}`);\n    process.exit(
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-20T02:02:19.852Z
+File: stream.Readable.fromWeb requires Node.js 18+
+Functions Extracted: 1
+
+
+Function 1: responseToReadable
+Language: JavaScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+const responseToReadable = (response) => {
+            const reader = response.body.getReader()
+            const rs = new Readable()
+            rs._read = async () => {
+              const result = await reader.read()
+              if (!result.done) rs.push(Buffer.from(result.value))
+              else rs.push(null)
+            }
+            return rs
+          }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T02:02:25.761Z
+Question Type: order-sequence
+Function: readScriptFromHttp
+Function Size: 330 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: readScriptFromHttp (TypeScript)\n// Fetches a script from a given HTTP URL and returns its content.\n\nasync function readScriptFromHttp(remote: string): Promise<string> {\n  const res = await fetch(remote);\n  if (!res.ok) {\n    console.error(`Error: Can't get ${remote}`);\n    process.exit(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T02:02:28.916Z
+Question Type: function-variant
+Function: isMain
+Function Size: 458 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isMain (TypeScript)\n// Determines if the current module is the main module being executed.\n\nexport function isMain(\n  metaurl: string = import.meta.url,\n  scriptpath: string = process.argv[1]\n): boolean {\n  if (metaurl.startsWith('file:')) {\n    const modulePath = url.fileURLToPath(meta
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T02:02:28.921Z
+Question Type: select-all
+Function: readScript
+Function Size: 1463 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: readScript (TypeScript)\n// Reads a script from various sources including command line arguments, stdin, or a URL, and returns the script content along with its path.\n\nasync function readScript() {\n  const [firstArg] = argv._;\n  let script = '';\n  let scriptPath = '';\n  let tempPath = ''
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T02:02:29.739Z
+Question Type: order-sequence
+Function: readScript
+Function Size: 1463 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: readScript (TypeScript)\n// Reads a script from various sources including command line arguments, stdin, or a URL, and returns the script content along with its path.\n\nasync function readScript() {\n  const [firstArg] = argv._;\n  let script = '';\n  let scriptPath = '';\n  let tempPath = ''
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T02:02:33.916Z
+Question Type: select-all
+Function: isMain
+Function Size: 458 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isMain (TypeScript)\n// Determines if the current module is the main module being executed.\n\nexport function isMain(\n  metaurl: string = import.meta.url,\n  scriptpath: string = process.argv[1]\n): boolean {\n  if (metaurl.startsWith('file:')) {\n    const modulePath = url.fileURLToPath(meta
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T02:02:34.318Z
+Question Type: function-variant
+Function: injectGlobalRequire
+Function Size: 408 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: injectGlobalRequire (TypeScript)\n// Injects global variables for the current module's filename, directory, and a custom require function.\n\nexport function injectGlobalRequire(origin: string): void {\n  const __filename = path.resolve(origin);\n  const __dirname = path.dirname(__filename);
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T02:02:34.362Z
+Question Type: select-all
+Function: readScriptFromHttp
+Function Size: 330 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: readScriptFromHttp (TypeScript)\n// Fetches a script from a given HTTP URL and returns its content.\n\nasync function readScriptFromHttp(remote: string): Promise<string> {\n  const res = await fetch(remote);\n  if (!res.ok) {\n    console.error(`Error: Can't get ${remote}`);\n    process.exit(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T02:02:37.520Z
+Question Type: true-false
+Function: injectGlobalRequire
+Function Size: 408 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: injectGlobalRequire (TypeScript)\n// Injects global variables for the current module's filename, directory, and a custom require function.\n\nexport function injectGlobalRequire(origin: string): void {\n  const __filename = path.resolve(origin);\n  const __dirname = path.dirname(__filename);
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T02:02:37.619Z
+Question Type: order-sequence
+Function: injectGlobalRequire
+Function Size: 408 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: injectGlobalRequire (TypeScript)\n// Injects global variables for the current module's filename, directory, and a custom require function.\n\nexport function injectGlobalRequire(origin: string): void {\n  const __filename = path.resolve(origin);\n  const __dirname = path.dirname(__filename);
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-20T02:02:38.594Z
+Question Type: true-false
+Function: linkNodeModules
+Function Size: 822 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: linkNodeModules (TypeScript)\n// Links the node_modules directory from an external path to a specified current working directory.\n\nfunction linkNodeModules(cwd: string, external: string): string {\n  const nm = 'node_modules';\n  const alias = path.resolve(cwd, nm);\n  const target =\n    pa
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1760896814171
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 5
+Ended: 2025-10-20T02:02:38.627Z
+================================================================================
+
