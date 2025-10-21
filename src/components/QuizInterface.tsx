@@ -73,6 +73,11 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     'Fact: NaN !== NaN. But Number.isNaN(NaN) is true.',
   ];
 
+  const sanitizeExplanation = useCallback((text?: string | null) => {
+    if (!text) return text ?? '';
+    return text.replace(/—/g, ',');
+  }, []);
+
   // ALL HOOKS MUST BE DECLARED BEFORE ANY CONDITIONAL RETURNS
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(STARTING_LIVES);
@@ -591,6 +596,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     // Record result for this question
     const qId = (currentQuestion.id && String(currentQuestion.id)) || String(currentQuestionIndex + 1);
     const lang = currentQuestion.language || null;
+    const sanitizedExplanation = sanitizeExplanation(currentQuestion.explanation);
     const resultEntry: QuestionResult = {
       questionId: qId,
       type: currentQuestion.type,
@@ -614,7 +620,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         codeContext: currentQuestion.codeContext,
         selectedAnswers: [...selectedAnswers],
         correctAnswers: correctAnswersResolved.filter(Boolean),
-        explanation: currentQuestion.explanation,
+        explanation: sanitizedExplanation,
         variants: currentQuestion.variants,
         steps: currentQuestion.steps,
         options: currentQuestion.options
@@ -1132,7 +1138,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                         setSelectedAnswers(prev => [...prev, step.id]);
                       }}
                     >
-                      <div className="flex items-start space-x-3">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:space-x-3 space-y-3 sm:space-y-0">
                         <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium ${
                           showExplanations && step.isDistractor 
                             ? 'bg-orange-200 dark:bg-orange-800 text-orange-700 dark:text-orange-300' 
@@ -1140,7 +1146,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                         }`}>
                           {showExplanations && step.isDistractor ? '⚠️' : (isAlreadySelected ? '✓' : '+')}
                         </div>
-                        <div className="flex-1 min-w-0">
+                        <div className="flex-1 min-w-0 w-full">
                           <div className="overflow-x-auto">
                             <pre className="text-sm font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">
                               {step.code}
@@ -1152,7 +1158,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                               ? 'text-orange-600 dark:text-orange-400' 
                               : 'text-gray-500 dark:text-gray-400'
                           }`}>
-                            {step.explanation}
+                            {sanitizeExplanation(step.explanation)}
                           </p>
                         )}
                         {showExplanations && step.isDistractor && (
@@ -1348,7 +1354,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                                 <pre className="text-sm font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">{step.code}</pre>
                               </div>
                               {step.explanation && (
-                                <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">{step.explanation}</p>
+                                <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">{sanitizeExplanation(step.explanation)}</p>
                               )}
                               {!userMatchedPosition && userIndex >= 0 && (
                                 <p className="text-xs mt-1 text-yellow-700 dark:text-yellow-300">You placed this at position {userIndex + 1}.</p>
@@ -1365,7 +1371,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
                   {currentQuestion.explanation && (
                     <div className="mt-4 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-                      <p className="text-sm text-blue-800 dark:text-blue-200"><strong>Overall Explanation:</strong> {currentQuestion.explanation}</p>
+                      <p className="text-sm text-blue-800 dark:text-blue-200"><strong>Overall Explanation:</strong> {sanitizeExplanation(currentQuestion.explanation)}</p>
                     </div>
                   )}
                 </div>
@@ -1570,7 +1576,10 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 z-50 overflow-y-auto overflow-x-hidden">
+    <div
+      className="fixed inset-0 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 z-50 overflow-y-auto overflow-x-hidden"
+      style={{ WebkitOverflowScrolling: 'touch' }}
+    >
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="w-full max-w-full sm:max-w-3xl lg:max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
@@ -1854,7 +1863,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                   return (
                     <div
                       key={variant.id}
-                      className={`p-4 rounded-lg border-2 w-full max-w-full ${
+                      className={`p-4 rounded-lg border-2 w-full max-w-full overflow-hidden ${
                         isCorrect
                           ? 'border-green-200 bg-green-50 dark:bg-green-900/20'
                           : 'border-red-200 bg-red-50 dark:bg-red-900/20'
@@ -1918,7 +1927,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                               ? 'text-green-700 dark:text-green-300'
                               : 'text-red-700 dark:text-red-300'
                           }`}>
-                            {variant.explanation}
+                            {sanitizeExplanation(variant.explanation)}
                           </p>
                         </div>
                       </div>
@@ -1990,7 +1999,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                           ? 'text-green-700 dark:text-green-300'
                           : 'text-red-700 dark:text-red-300'
                       }`}>
-                        {currentQuestion.explanation}
+                        {sanitizeExplanation(currentQuestion.explanation)}
                       </p>
                     </div>
                   </div>
@@ -2042,7 +2051,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                           ? 'text-green-700 dark:text-green-300'
                           : 'text-red-700 dark:text-red-300'
                       }`}>
-                        {currentQuestion.explanation}
+                        {sanitizeExplanation(currentQuestion.explanation)}
                       </p>
                     </div>
                   </div>
@@ -2129,7 +2138,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 {/* Overall explanation */}
                 <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                   <p className="text-sm text-blue-800 dark:text-blue-200">
-                    <strong>Overall Explanation:</strong> {currentQuestion.explanation}
+                    <strong>Overall Explanation:</strong> {sanitizeExplanation(currentQuestion.explanation)}
                   </p>
                 </div>
               </div>

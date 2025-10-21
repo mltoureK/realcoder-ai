@@ -151,7 +151,12 @@ export function computeRepoIQ(analysis: Analysis): RepoIQ {
   return { score, reasoning };
 }
 
-export async function generateStrengthsWeaknesses(analysis: Analysis, results: QuestionResult[], failedQuestions: FailedQuestion[]): Promise<StrengthsWeaknesses> {
+export async function generateStrengthsWeaknesses(
+  analysis: Analysis,
+  results: QuestionResult[],
+  failedQuestions: FailedQuestion[],
+  _totalStreamedQuestions?: number
+): Promise<StrengthsWeaknesses> {
   const strengths: string[] = [];
   const weaknesses: string[] = [];
 
@@ -170,8 +175,8 @@ export async function generateStrengthsWeaknesses(analysis: Analysis, results: Q
   }
 
   // Fallbacks if no concepts extracted
-  if (strengths.length === 0) strengths.push('Steady fundamentals across categories—keep building breadth and cadence.');
-  if (weaknesses.length === 0) weaknesses.push('No glaring gaps—raise the ceiling with harder variants and time‑boxed runs.');
+  if (strengths.length === 0) strengths.push('Steady fundamentals across categories, keep building breadth and cadence.');
+  if (weaknesses.length === 0) weaknesses.push('No glaring gaps, raise the ceiling with harder variants and time-boxed runs.');
 
   return { strengths, weaknesses };
 }
@@ -447,5 +452,3 @@ export function generateRecommendations(analysis: Analysis): Recommendations {
 
   return { resources: dedupResources, exercises: dedupExercises };
 }
-
-
