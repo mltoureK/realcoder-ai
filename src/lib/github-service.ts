@@ -19,10 +19,20 @@ export interface RepositoryInfo {
 
 // Step 1: Parse GitHub URL and extract repository info
 export function parseGitHubUrl(url: string): { owner: string; repo: string } | null {
-  console.log('🔍 Step 1: Parsing GitHub URL:', url);
+  if (!url || typeof url !== 'string') {
+    console.log('❌ Invalid GitHub URL: empty string');
+    return null;
+  }
+
+  let normalized = url.trim();
+  if (!/^https?:\/\//i.test(normalized)) {
+    normalized = `https://${normalized}`;
+  }
+
+  console.log('🔍 Step 1: Parsing GitHub URL:', normalized);
   
   const githubUrlRegex = /github\.com\/([^\/\?#]+)\/([^\/\?#]+)/;
-  const match = url.match(githubUrlRegex);
+  const match = normalized.match(githubUrlRegex);
   
   if (match) {
     const [, owner, repo] = match;
@@ -71,7 +81,7 @@ export async function fetchRepositoryTree(owner: string, repo: string, branch: s
 }
 
 // Step 3: Filter files by programming language
-export function filterCodeFiles(files: any[], targetLanguages: string[] = ['javascript', 'typescript', 'python', 'java']): any[] {
+export function filterCodeFiles(files: any[], targetLanguages: string[] = ['javascript', 'typescript', 'python', 'java', 'ada', 'assembly']): any[] {
   console.log('🔍 Step 3: Filtering files by language:', targetLanguages);
   
   const codeExtensions: { [key: string]: string } = {
@@ -87,7 +97,12 @@ export function filterCodeFiles(files: any[], targetLanguages: string[] = ['java
     '.php': 'php',
     '.rb': 'ruby',
     '.go': 'go',
-    '.rs': 'rust'
+    '.rs': 'rust',
+    '.ada': 'ada',
+    '.adb': 'ada',
+    '.ads': 'ada',
+    '.s': 'assembly',
+    '.asm': 'assembly'
   };
   
   const codeFiles = files.filter(file => {

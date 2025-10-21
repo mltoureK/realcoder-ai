@@ -40,6 +40,7 @@ export function LoadingScreen({
   const [progress, setProgress] = useState(0);
   const [currentTip, setCurrentTip] = useState(funTips[0]);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   // Randomize across known files if no explicit videoSrc provided
   const randomVideo = useMemo(() => {
@@ -76,6 +77,26 @@ export function LoadingScreen({
     }, 1000);
 
     return () => clearInterval(timeInterval);
+  }, []);
+
+  useEffect(() => {
+    const updateScreenSize = () => {
+      if (typeof window !== "undefined") {
+        setIsSmallScreen(window.innerWidth <= 640 || window.innerHeight > window.innerWidth);
+      }
+    };
+
+    updateScreenSize();
+    if (typeof window !== "undefined") {
+      window.addEventListener("resize", updateScreenSize);
+      window.addEventListener("orientationchange", updateScreenSize);
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("resize", updateScreenSize);
+        window.removeEventListener("orientationchange", updateScreenSize);
+      }
+    };
   }, []);
 
   // Rotate tips every 4 seconds
@@ -132,9 +153,10 @@ export function LoadingScreen({
             inset: 0,
             width: "100%",
             height: "100%",
-            objectFit: "cover",
+            objectFit: isSmallScreen ? "contain" : "cover",
+            objectPosition: "center center",
             opacity: 0.3,
-          }}
+            }}
         />
         
         {/* Loading Content Overlay */}
@@ -289,5 +311,3 @@ export function LoadingScreen({
 }
 
 export default LoadingScreen;
-
-

@@ -1,0 +1,513 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761043542603
+Started: 2025-10-21T10:45:42.603Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-21T10:45:42.604Z
+File: [8 files: EWD998.java, event shows is this is an incoming ("<") or outgoing (">") packet., , has to be replaced with:, VectorClock.java, data_split_step.py, Pair.java, EWD998App.java]
+Functions Extracted: 2
+
+
+Function 1: main
+Language: Java
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+public static void main(String[] args) throws Exception {
+	final Random rnd = new Random();
+	int traces = 0;
+	while (true) {
+		
+	}
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: data_split_step
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+def data_split_step():
+	# Load data
+	with open(input_json_path, "r") as f:
+		all_data = json.load(f)["data"]
+	# Shuffle and split
+	random.shuffle(all_data)
+	n_total = len(all_data)
+	n_train = int(n_total * train_ratio)
+	n_val = int(n_total * val_ratio)
+
+	train_data = all_data[:n_train]
+	val_data = all_data[n_train:n_train + n_val]
+	test_data = all_data[n_train + n_val:]
+
+	# Save splits
+	splits = {
+		"train.json": train_data,
+		"val.json": val_data,
+		"test.json": test_data,
+	}
+
+	for filename, data in splits.items():
+		with open(output_dir / filename, "w") as f:
+			json.dump({"data": data}, f, indent=2)
+	print(f"Dataset split into {len(train_data)} train, {len(val_data)} val, {len(test_data)} test samples.")
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-21T10:52:25.503Z
+File: [8 files: EmployeeService.js, Execute callback, SpringbootBackendApplication.java, HeaderComponent.js, Is not localhost. Just register service worker, ResourceNotFoundException.java, ViewEmployeeComponent.jsx, EmployeeController.java]
+Functions Extracted: 1
+
+
+Function 1: componentDidMount
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+componentDidMount(){
+        EmployeeService.getEmployeeById(this.state.id).then( res => {
+            this.setState({employee: res.data});
+        })
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-21T11:37:28.127Z
+File: freeCodeCamp-freeCodeCamp-5fd8651/client/src/templates/Introduction/components/block.tsx
+Functions Extracted: 2
+
+
+Function 1: mapStateToProps
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+const mapStateToProps = (state: unknown, ownProps: { block: string }) => {
+  const expandedSelector = makeExpandedBlockSelector(ownProps.block);
+
+  return createSelector(
+    expandedSelector,
+    completedChallengesSelector,
+    (isExpanded: boolean, completedChallenges: { id: string }[]) => ({
+      isExpanded,
+      completedChallengeIds: completedChallenges.map(({ id }) => id)
+    })
+  )(state as Record<string, unknown>);
+};
+--------------------------------------------------------------------------------
+
+
+Function 2: handleBlockClick
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+handleBlockClick = (): void => {
+    const { block, toggleBlock } = this.props;
+    void playTone('block-toggle');
+    toggleBlock(block);
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-21T11:54:29.374Z
+File: not being used to render anything
+Functions Extracted: 1
+
+
+Function 1: courseCompletionStatus
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+const courseCompletionStatus = () => {
+  if (completedCount === 0) {
+    return t('learn.not-started');
+  }
+  if (isBlockCompleted) {
+    return t('learn.completed');
+  }
+  return `${percentageCompleted}% ${t('learn.completed')}`;
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-21T12:32:45.856Z
+File: motiondivision-motion-b5df740/packages/framer-motion/src/value/use-transform.ts
+Functions Extracted: 2
+
+
+Function 1: useTransform
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function useTransform<I, O>(
+    input:
+        | MotionValue<I>
+        | MotionValue<string>[]
+        | MotionValue<number>[]
+        | MotionValue<AnyResolvedKeyframe>[]
+        | (() => O),
+    inputRangeOrTransformer?: InputRange | Transformer<I, O>,
+    outputRange?: O[],
+    options?: TransformOptions<O>
+): MotionValue<O> {
+    if (typeof input === "function") {
+        return useComputed(input)
+    }
+
+    const transformer =
+        typeof inputRangeOrTransformer === "function"
+            ? inputRangeOrTransformer
+            : transform(inputRangeOrTransformer!, outputRange!, options)
+
+    return Array.isArray(input)
+        ? useListTransform(
+              input,
+              transformer as MultiTransformer<AnyResolvedKeyframe, O>
+          )
+        : useListTransform([input], ([latest]) =>
+              (transformer as SingleTransformer<I, O>)(latest)
+          )
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: useListTransform
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function useListTransform<I, O>(
+    values: MotionValue<I>[],
+    transformer: MultiTransformer<I, O>
+): MotionValue<O> {
+    const latest = useConstant<I[]>(() => [])
+
+    return useCombineMotionValues(values, () => {
+        latest.length = 0
+        const numValues = values.length
+        for (let i = 0; i < numValues; i++) {
+            latest[i] = values[i].get()
+        }
+
+        return transformer(latest)
+    })
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-21T12:33:05.335Z
+File: motiondivision-motion-b5df740/packages/framer-motion/src/animation/animate/subject.ts
+Functions Extracted: 1
+
+
+Function 1: animateSubject
+Language: TypeScript
+Lines: 60
+Full Code:
+--------------------------------------------------------------------------------
+export function animateSubject<O extends Object>(
+    subject:
+        | MotionValue<number>
+        | MotionValue<string>
+        | number
+        | string
+        | ElementOrSelector
+        | O
+        | O[],
+    keyframes:
+        | number
+        | string
+        | UnresolvedValueKeyframe<number>[]
+        | UnresolvedValueKeyframe<string>[]
+        | DOMKeyframesDefinition
+        | ObjectTarget<O>,
+    options?:
+        | ValueAnimationTransition<number>
+        | ValueAnimationTransition<string>
+        | DynamicAnimationOptions,
+    scope?: AnimationScope
+): AnimationPlaybackControlsWithThen[] {
+    const animations: AnimationPlaybackControlsWithThen[] = []
+
+    if (isSingleValue(subject, keyframes)) {
+        animations.push(
+            animateSingleValue(
+                subject,
+                isDOMKeyframes(keyframes)
+                    ? (keyframes as any).default || keyframes
+                    : keyframes,
+                options ? (options as any).default || options : options
+            )
+        )
+    } else {
+        const subjects = resolveSubjects(
+            subject,
+            keyframes as DOMKeyframesDefinition,
+            scope
+        )
+
+        const numSubjects = subjects.length
+
+        invariant(
+            Boolean(numSubjects),
+            "No valid elements provided.",
+            "no-valid-elements"
+        )
+
+        for (let i = 0; i < numSubjects; i++) {
+            const thisSubject = subjects[i]
+
+            invariant(
+                thisSubject !== null,
+                "You're trying to perform an animation on null. Ensure that selectors are correctly finding elements and refs are correctly hydrated.",
+                "animate-null"
+            )
+
+            const createVisualElement =
+                thisSubject instanceof Element
+                    ? createDOMVisualElement
+                    : createObjectVisualElement
+
+            if (!visualElementStore.has(thisSubject)) {
+                createVisualElement(thisSubject as any)
+            }
+
+            const visualElement = visualElementStore.get(thisSubject)!
+            const transition = { ...options }
+
+            if (
+                "delay" in transition &&
+                typeof transition.delay === "function"
+            ) {
+                transition.delay = transition.delay(i, numSubjects)
+            }
+
+            animations.push(
+                ...animateTarget(
+                    visualElement,
+                    { ...(keyframes as {}), transition } as TargetAndTransition,
+                    {}
+                )
+            )
+        }
+    }
+
+    return animations
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-21T12:59:52.718Z
+File: [3 files: block.tsx, link-ms-user.tsx, to make use of the Response object (message, status, etc)]
+Functions Extracted: 4
+
+
+Function 1: get
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+async function get<T>(
+  path: string,
+  signal?: AbortSignal
+): Promise<ResponseWithData<T>> {
+  const response = await fetch(`${base}${path}`, {
+    ...defaultOptions,
+    headers: { 'CSRF-Token': getCSRFToken() },
+    signal
+  });
+
+  return combineDataWithResponse(response);
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: combineDataWithResponse
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+async function combineDataWithResponse<T>(response: Response) {
+  const data = (await response.json()) as T;
+  return { response, data };
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: request
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+async function request<T>(
+  method: 'POST' | 'PUT' | 'DELETE',
+  path: string,
+  body: unknown
+): Promise<ResponseWithData<T>> {
+  const options: RequestInit = {
+    ...defaultOptions,
+    method,
+    headers: {
+      'CSRF-Token': getCSRFToken(),
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  };
+
+  const response = await fetch(`${base}${path}`, options);
+  return combineDataWithResponse(response);
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: parseApiResponseToClientUser
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function parseApiResponseToClientUser(data: ApiUserResponse): User | null {
+  const userData = data.user?.[data?.result ?? ''];
+  let completedChallenges: CompletedChallenge[] = [];
+  let savedChallenges: SavedChallenge[] = [];
+  if (userData) {
+    completedChallenges = mapFilesToChallengeFiles(
+      userData.completedChallenges
+    );
+    savedChallenges = mapFilesToChallengeFiles(userData.savedChallenges);
+  }
+  return data.result
+    ? { ...userData, completedChallenges, savedChallenges }
+    : null;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-21T12:59:56.225Z
+File: not being used to render anything
+Functions Extracted: 1
+
+
+Function 1: courseCompletionStatus
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+const courseCompletionStatus = () => {
+  if (completedCount === 0) {
+    return t('learn.not-started');
+  }
+  if (isBlockCompleted) {
+    return t('learn.completed');
+  }
+  return `${percentageCompleted}% ${t('learn.completed')}`;
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-21T12:59:57.836Z
+File: freeCodeCamp-freeCodeCamp-f3d2511/client/src/templates/Challenges/exam-download/show.tsx
+Functions Extracted: 2
+
+
+Function 1: handleDownloadLink
+Language: TypeScript
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+function handleDownloadLink(downloadLinks: string[]) {
+    const win = downloadLinks.find(link => link.match(/\.exe/));
+    const macARM = downloadLinks.find(
+      link => link.match(/aarch64/) && link.match(/\.dmg/)
+    );
+    const macX64 = downloadLinks.find(
+      link => link.match(/x64/) && link.match(/\.dmg/)
+    );
+    const linuxARM = downloadLinks.find(
+      link => link.match(/aarch64/) && link.match(/tar\.gz/)
+    );
+    const linuxX64 = downloadLinks.find(
+      link => link.match(/amd64/) && link.match(/AppImage/)
+    );
+
+    if (os.os === 'WIN') {
+      if (isEmpty(win)) return '';
+
+      return win;
+    }
+
+    if (os.os === 'MAC') {
+      if (os.architecture.toLowerCase() === 'arm') {
+        if (isEmpty(macARM)) return '';
+
+        return macARM;
+      } else {
+        if (isEmpty(macX64)) return '';
+
+        return macX64;
+      }
+    }
+
+    if (os.os === 'LINUX') {
+      if (os.architecture.toLowerCase() === 'arm') {
+        if (isEmpty(linuxARM)) return '';
+
+        return linuxARM;
+      } else {
+        if (isEmpty(linuxX64)) return '';
+
+        return linuxX64;
+      }
+    }
+
+    return '';
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: checkLatestVersion
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+async function checkLatestVersion() {
+      try {
+        const response = await fetch(
+          'https://api.github.com/repos/freeCodeCamp/exam-env/releases/latest'
+        );
+        if (response.ok) {
+          const data = (await response.json()) as GitProps;
+          const { tag_name, assets } = data;
+          setLatestVersion(tag_name);
+          const urls = assets.map(link => link.browser_download_url);
+          setDownloadLink(handleDownloadLink(urls));
+          setDownloadLinks(urls);
+        }
+      } catch {
+        setLatestVersion('...');
+      }
+    }
+--------------------------------------------------------------------------------
+
+================================================================================

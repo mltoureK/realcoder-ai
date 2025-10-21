@@ -38,7 +38,9 @@ function getHighlighterLanguage(lang: string): string {
     'Kotlin': 'kotlin',
     'Scala': 'scala',
     'Shell': 'bash',
-    'SQL': 'sql'
+    'SQL': 'sql',
+    'Ada': 'ada',
+    'Assembly': 'asm6502'
   };
   return langMap[lang] || 'javascript';
 }
@@ -58,13 +60,14 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   
   const [showStreamingWarning, setShowStreamingWarning] = useState(false);
   const [showFullscreenCode, setShowFullscreenCode] = useState(false);
+  const [isVariantCodeExpanded, setIsVariantCodeExpanded] = useState(false);
 
   const funTips = [
     'Tip: Off-by-one bugs are 0-based 90% of the time.',
     'Fact: await Promise.all is faster than serial awaits.',
     'Tip: Prefer === over == unless you love surprises.',
     'Fact: map + filter beats pushing in for-loops for clarity.',
-    'Tip: In Python, default args are evaluated once—beware lists.',
+    'Tip: In Python, default args are evaluated once, beware lists.',
     'Fact: In Java, put constants on the left: "foo".equals(x).',
     'Tip: Throttle for rate limits; debounce for noisy inputs.',
     'Fact: NaN !== NaN. But Number.isNaN(NaN) is true.',
@@ -84,6 +87,92 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   const [reportRequestId, setReportRequestId] = useState<number | null>(null);
   const [isTicketStreamPending, setIsTicketStreamPending] = useState(false);
   const [ticketStreamPlanned, setTicketStreamPlanned] = useState<number | null>(null);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareStatus, setShareStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [shareUrl, setShareUrl] = useState('');
+  const [shareError, setShareError] = useState<string | null>(null);
+  const [shareCopied, setShareCopied] = useState(false);
+  const shareCopyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const generateShareLink = useCallback(() => {
+    setShareStatus('loading');
+    setShareError(null);
+    setShareCopied(false);
+
+    if (typeof window === 'undefined') {
+      setShareError('Sharing is only available in the browser.');
+      setShareStatus('error');
+      return;
+    }
+
+    try {
+      const currentUrl = new URL(window.location.href);
+      currentUrl.hash = '';
+      setShareUrl(currentUrl.toString());
+      setShareStatus('success');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error generating share link';
+      setShareError(message);
+      setShareStatus('error');
+    }
+  }, []);
+
+  const handleOpenShareModal = useCallback(() => {
+    setIsShareModalOpen(true);
+    generateShareLink();
+  }, [generateShareLink]);
+
+  const closeShareModal = useCallback(() => {
+    setIsShareModalOpen(false);
+    setShareStatus('idle');
+    setShareError(null);
+    setShareUrl('');
+    if (shareCopyTimeoutRef.current) {
+      clearTimeout(shareCopyTimeoutRef.current);
+      shareCopyTimeoutRef.current = null;
+    }
+    setShareCopied(false);
+  }, []);
+
+  const retryShare = useCallback(() => {
+    generateShareLink();
+  }, [generateShareLink]);
+
+  const handleCopyShareLink = useCallback(async () => {
+    if (!shareUrl) return;
+    if (typeof window === 'undefined') {
+      setShareError('Sharing is only available in the browser.');
+      setShareStatus('error');
+      return;
+    }
+
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareUrl);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = shareUrl;
+        textarea.setAttribute('readonly', 'true');
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+
+      setShareCopied(true);
+      if (shareCopyTimeoutRef.current) {
+        clearTimeout(shareCopyTimeoutRef.current);
+      }
+      shareCopyTimeoutRef.current = setTimeout(() => setShareCopied(false), 2000);
+    } catch (error) {
+      console.error('❌ Failed to copy share link:', error);
+      setShareError('Could not copy link to clipboard');
+      setShareStatus('error');
+    }
+  }, [shareUrl]);
+  const [isCodeContextExpanded, setIsCodeContextExpanded] = useState(false);
 
   const isStreamFinished = useMemo(() => {
     if (quizSession.completed) return true;
@@ -216,9 +305,27 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     };
   }, [reportRequestId, results, failedQuestions]);
 
+  useEffect(() => {
+    return () => {
+      if (shareCopyTimeoutRef.current) {
+        clearTimeout(shareCopyTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const totalQuestions = Array.isArray(quizSession.questions) ? quizSession.questions.length : 0;
   const hasQuestion = totalQuestions > 0 && currentQuestionIndex < totalQuestions;
   const currentQuestion: any = hasQuestion ? quizSession.questions[currentQuestionIndex] : undefined;
+  const codeContextLineCount = typeof currentQuestion?.codeContext === 'string' ? currentQuestion.codeContext.split('\n').length : 0;
+  const shouldClampCodeContext = codeContextLineCount > 36;
+
+  useEffect(() => {
+    setIsCodeContextExpanded(false);
+  }, [currentQuestionIndex]);
+
+  useEffect(() => {
+    setIsVariantCodeExpanded(false);
+  }, [currentVariantIndex, currentQuestionIndex]);
 
   // Reset saved-results flag when session changes
   useEffect(() => {
@@ -713,7 +820,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                     : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                 }`}
               >
-                <div className="flex items-center space-x-3">
+                <div className="flex items-start gap-3">
                   <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                     selectedAnswers.includes(option)
                       ? 'border-blue-500 bg-blue-500'
@@ -723,7 +830,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                       <div className="w-2 h-2 bg-white rounded-full"></div>
                     )}
                   </div>
-                  <span className="text-lg">{option}</span>
+                  <span className="text-lg leading-relaxed break-words">{option}</span>
                 </div>
               </button>
             ))}
@@ -803,15 +910,17 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
           ? { name: currentQuestion.language, color: currentQuestion.languageColor || 'text-gray-600', bgColor: currentQuestion.languageBgColor || 'bg-gray-100' }
           : detectLanguage(''); // fallback
         console.log('🎨 Using language badge:', fvLang);
+        const variantLineCount = typeof currentVariant?.code === 'string' ? currentVariant.code.split('\n').length : 0;
+        const shouldClampVariant = variantLineCount > 36;
 
         return (
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             {/* Navigation Header */}
-            <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-6 rounded-xl">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 bg-gray-50 dark:bg-gray-700 p-4 sm:p-6 rounded-xl">
               <button
                 onClick={() => handleVariantNavigation('prev')}
                 disabled={isFirstVariant}
-                className={`flex items-center space-x-3 px-5 py-3 rounded-lg transition-all font-medium ${
+                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-all font-medium w-full sm:w-auto ${
                   isFirstVariant
                     ? 'text-gray-400 cursor-not-allowed'
                     : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20'
@@ -820,7 +929,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                <span className="hidden sm:inline text-base">Previous</span>
+                <span className="text-sm sm:text-base">Previous</span>
               </button>
 
               <div className="text-center">
@@ -835,13 +944,13 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               <button
                 onClick={() => handleVariantNavigation('next')}
                 disabled={isLastVariant}
-                className={`flex items-center space-x-3 px-5 py-3 rounded-lg transition-all font-medium ${
+                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-all font-medium w-full sm:w-auto ${
                   isLastVariant
                     ? 'text-gray-400 cursor-not-allowed'
                     : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20'
                 }`}
               >
-                <span className="hidden sm:inline text-base">Next</span>
+                <span className="text-sm sm:text-base">Next</span>
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
@@ -849,7 +958,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             </div>
 
             {/* Code Display */}
-            <div className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
               <div className="flex items-center justify-between px-4 py-3 bg-[#1e1e1e] border-b border-gray-700">
                 <p className="text-sm text-gray-300 font-medium">
                   Analyze this code variant and determine if it&apos;s correct
@@ -858,28 +967,43 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                   {fvLang.name}
                 </span>
               </div>
-              
-              <div className="overflow-x-auto">
-                <SyntaxHighlighter
-                  language={getHighlighterLanguage(fvLang.name)}
-                  style={vscDarkPlus}
-                  customStyle={{
-                    margin: 0,
-                    padding: '1.5rem',
-                    fontSize: '0.9375rem',
-                    lineHeight: '1.6',
-                    borderRadius: 0,
-                    minWidth: '100%'
-                  }}
-                  showLineNumbers={true}
-                >
-                  {currentVariant.code}
-                </SyntaxHighlighter>
+              <div className={`relative ${shouldClampVariant && !isVariantCodeExpanded ? 'max-h-72 overflow-hidden' : ''}`}>
+                <div className={`overflow-x-auto ${shouldClampVariant && !isVariantCodeExpanded ? 'max-h-72 overflow-y-auto' : 'overflow-y-auto'}`}>
+                  <SyntaxHighlighter
+                    language={getHighlighterLanguage(fvLang.name)}
+                    style={vscDarkPlus}
+                    customStyle={{
+                      margin: 0,
+                      padding: '1rem',
+                      fontSize: '0.875rem',
+                      lineHeight: '1.6',
+                      borderRadius: 0,
+                      width: '100%'
+                    }}
+                    wrapLongLines={true}
+                    showLineNumbers={true}
+                  >
+                    {currentVariant.code}
+                  </SyntaxHighlighter>
+                </div>
+                {shouldClampVariant && !isVariantCodeExpanded && (
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#1e1e1e] via-[#1e1e1e]/80 to-transparent" />
+                )}
               </div>
+              {shouldClampVariant && (
+                <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/60 flex justify-center">
+                  <button
+                    onClick={() => setIsVariantCodeExpanded((prev) => !prev)}
+                    className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-300 dark:hover:text-blue-200 transition-colors"
+                  >
+                    {isVariantCodeExpanded ? 'Collapse Code' : 'Expand Full Code'}
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button
                 onClick={() => handleVariantSelect(currentVariant.id)}
                 className={`flex-1 py-3 px-6 rounded-lg font-medium transition-all ${
@@ -894,7 +1018,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               {!isLastVariant && (
                 <button
                   onClick={() => handleVariantNavigation('next')}
-                  className="flex-1 sm:flex-none py-3 px-6 rounded-lg font-medium bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+                  className="w-full sm:w-auto flex-1 sm:flex-none py-3 px-6 rounded-lg font-medium bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
                 >
                   Skip to Next
                 </button>
@@ -902,7 +1026,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             </div>
 
             {/* Progress Indicator */}
-            <div className="flex justify-center space-x-3">
+            <div className="flex justify-center space-x-2">
               {currentQuestion.variants.map((_: any, index: number) => (
                 <button
                   key={index}
@@ -1204,7 +1328,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
               {/* Solution panel: show authoritative correct order with per-step explanations */}
               {showExplanations && Array.isArray(currentQuestion.correctOrder) && Array.isArray(currentQuestion.steps) && (
-                <div className="mt-4 bg-gray-50 dark:bg-gray-700 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
+                <div className="mt-4 bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-600">
                   <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-3">Solution: Authoritative Order</h4>
                   <div className="space-y-2">
                     {currentQuestion.correctOrder.map((id: string, idx: number) => {
@@ -1273,7 +1397,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                     }`}>
                       {option === 'True' ? '✓' : '✗'}
                     </div>
-                    <span className="text-xl font-semibold">{option}</span>
+                    <span className="text-xl font-semibold leading-relaxed break-words">{option}</span>
                   </div>
                 </button>
               ))}
@@ -1313,7 +1437,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                       : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                   }`}
                 >
-                  <div className="flex items-start space-x-3">
+                  <div className="flex items-start gap-3">
                     <div className={`w-6 h-6 border-2 rounded-md flex items-center justify-center mt-0.5 flex-shrink-0 ${
                       selectedAnswers.includes(option)
                         ? 'border-blue-500 bg-blue-500'
@@ -1325,7 +1449,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                         </svg>
                       )}
                     </div>
-                    <span className="text-base leading-relaxed">{option}</span>
+                    <span className="text-base leading-relaxed break-words">{option}</span>
                   </div>
                 </button>
               ))}
@@ -1359,6 +1483,9 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         ticketsLoading={isTicketStreamPending}
         ticketsPlanned={ticketStreamPlanned}
         totalStreamedQuestions={totalStreamedQuestions}
+        shareEnabled
+        shareStatus={shareStatus}
+        onShareClick={handleOpenShareModal}
       />
     );
   }
@@ -1409,6 +1536,13 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     );
   }
 
+  const shareStatusLabel = {
+    loading: 'Generating share link…',
+    success: 'Share link ready',
+    error: shareError ?? 'Could not generate share link',
+    idle: ''
+  };
+
   // Loading screen while generating report
   if (isGeneratingReport) {
     return (
@@ -1436,12 +1570,12 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 z-50 overflow-y-auto">
+    <div className="fixed inset-0 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 z-50 overflow-y-auto overflow-x-hidden">
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+        <div className="w-full max-w-full sm:max-w-3xl lg:max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3 sm:gap-4">
               <button
                 onClick={onClose}
                 className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
@@ -1450,14 +1584,14 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-lg sm:text-xl font-bold leading-snug break-words text-gray-900 dark:text-white">
                 {quizSession.title}
               </h1>
             </div>
             
-            <div className="flex items-center space-x-6">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
               {/* Progress */}
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed break-words">
                 {hasQuestion ? (
                   <>
                     Question {currentQuestionIndex + 1} of {totalQuestions}
@@ -1494,44 +1628,44 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 )}
               </div>
               
-            {/* Timers */}
-            <div className="hidden sm:flex items-center space-x-4">
-              {/* Per-question timer */}
-              <div className="w-40">
-                <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                  <span>Q Time</span>
-                  <span className={`${questionTimeLeft <= 3 ? 'text-red-600 dark:text-red-400 animate-pulse' : (questionTimeTotal > 0 && questionTimeLeft / questionTimeTotal <= 0.2 ? 'text-red-600 dark:text-red-400' : '')}`}>
-                    {formatTime(questionTimeLeft)}
-                  </span>
+              {/* Timers */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 gap-2 sm:gap-4 w-full sm:w-auto text-sm text-gray-700 dark:text-gray-300">
+                {/* Per-question timer */}
+                <div className="w-full sm:w-40">
+                  <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
+                    <span>Q Time</span>
+                    <span className={`${questionTimeLeft <= 3 ? 'text-red-600 dark:text-red-400 animate-pulse' : (questionTimeTotal > 0 && questionTimeLeft / questionTimeTotal <= 0.2 ? 'text-red-600 dark:text-red-400' : '')}`}>
+                      {formatTime(questionTimeLeft)}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+                    <div
+                      className={`${questionTimeLeft <= 3 ? 'bg-red-600 animate-pulse' : (questionTimeTotal > 0 && questionTimeLeft / questionTimeTotal <= 0.2 ? 'bg-red-600 animate-pulse' : 'bg-blue-600')} h-2 rounded-full transition-all duration-500`}
+                      style={{ width: `${questionTimeTotal > 0 ? (questionTimeLeft / questionTimeTotal) * 100 : 0}%` }}
+                    ></div>
+                  </div>
                 </div>
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
-                  <div
-                    className={`${questionTimeLeft <= 3 ? 'bg-red-600 animate-pulse' : (questionTimeTotal > 0 && questionTimeLeft / questionTimeTotal <= 0.2 ? 'bg-red-600 animate-pulse' : 'bg-blue-600')} h-2 rounded-full transition-all duration-500`}
-                    style={{ width: `${questionTimeTotal > 0 ? (questionTimeLeft / questionTimeTotal) * 100 : 0}%` }}
-                  ></div>
+                {/* Overall timer */}
+                <div className="w-full sm:w-40">
+                  <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
+                    <span>Total</span>
+                    <span className={`${overallTimeTotal > 0 && overallTimeLeft / overallTimeTotal <= 0.15 ? 'text-red-600 dark:text-red-400' : ''}`}>
+                      {formatTime(overallTimeLeft)}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+                    <div
+                      className={`${overallTimeTotal > 0 && overallTimeLeft / overallTimeTotal <= 0.15 ? 'bg-red-600 animate-pulse' : 'bg-indigo-600'} h-2 rounded-full transition-all duration-500`}
+                      style={{ width: `${overallTimeTotal > 0 ? (overallTimeLeft / overallTimeTotal) * 100 : 0}%` }}
+                    ></div>
+                  </div>
                 </div>
               </div>
-              {/* Overall timer */}
-              <div className="w-40">
-                <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                  <span>Total</span>
-                  <span className={`${overallTimeTotal > 0 && overallTimeLeft / overallTimeTotal <= 0.15 ? 'text-red-600 dark:text-red-400' : ''}`}>
-                    {formatTime(overallTimeLeft)}
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
-                  <div
-                    className={`${overallTimeTotal > 0 && overallTimeLeft / overallTimeTotal <= 0.15 ? 'bg-red-600 animate-pulse' : 'bg-indigo-600'} h-2 rounded-full transition-all duration-500`}
-                    style={{ width: `${overallTimeTotal > 0 ? (overallTimeLeft / overallTimeTotal) * 100 : 0}%` }}
-                  ></div>
-                </div>
-              </div>
-            </div>
 
               {/* Lives */}
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm text-gray-600 dark:text-gray-400">Lives:</span>
-                <div className="flex space-x-1">
+                <div className="flex items-center gap-1">
                   {Array.from({ length: MAX_LIVES }, (_, i) => (
                     <button
                       key={i}
@@ -1602,8 +1736,8 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
       </AnimatePresence>
 
       {/* Question Card */}
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+      <div className="w-full max-w-full sm:max-w-3xl lg:max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8">
           {!hasQuestion ? (
             <div className="space-y-6 animate-pulse">
               <div className="h-7 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
@@ -1638,7 +1772,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               </div>
             )}
             
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white leading-relaxed break-words mb-4">
               {currentQuestion.question}
             </h2>
             
@@ -1663,23 +1797,39 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                     </button>
                   </div>
                 </div>
-                <div className="overflow-x-auto">
-                  <SyntaxHighlighter
-                    language={getHighlighterLanguage(currentQuestion.language || 'JavaScript')}
-                    style={vscDarkPlus}
-                    customStyle={{
-                      margin: 0,
-                      padding: '1rem',
-                      fontSize: '0.875rem',
-                      lineHeight: '1.5',
-                      borderRadius: 0,
-                      minWidth: '100%'
-                    }}
-                    showLineNumbers={true}
-                  >
-                    {currentQuestion.codeContext}
-                  </SyntaxHighlighter>
+                <div className={`relative ${shouldClampCodeContext && !isCodeContextExpanded ? 'max-h-72 overflow-hidden' : ''}`}>
+                  <div className={`overflow-x-auto ${shouldClampCodeContext && !isCodeContextExpanded ? 'max-h-72 overflow-y-auto' : 'overflow-y-auto'}`}>
+                    <SyntaxHighlighter
+                      language={getHighlighterLanguage(currentQuestion.language || 'JavaScript')}
+                      style={vscDarkPlus}
+                      customStyle={{
+                        margin: 0,
+                        padding: '0.75rem',
+                        fontSize: '0.8125rem',
+                        lineHeight: '1.5',
+                        borderRadius: 0,
+                        width: '100%'
+                      }}
+                      wrapLongLines={true}
+                      showLineNumbers={true}
+                    >
+                      {currentQuestion.codeContext}
+                    </SyntaxHighlighter>
+                  </div>
+                  {shouldClampCodeContext && !isCodeContextExpanded && (
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-[#1e1e1e] via-[#1e1e1e]/80 to-transparent" />
+                  )}
                 </div>
+                {shouldClampCodeContext && (
+                  <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700/60 border-t border-gray-200 dark:border-gray-700 flex justify-center">
+                    <button
+                      onClick={() => setIsCodeContextExpanded((prev) => !prev)}
+                      className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-300 dark:hover:text-blue-200 transition-colors"
+                    >
+                      {isCodeContextExpanded ? 'Collapse Code' : 'Expand Full Code'}
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -1691,11 +1841,11 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
           {/* Explanations for all question types */}
           {showExplanations && (currentQuestion.type === 'function-variant' && currentQuestion.variants) && (
-            <div className="mb-8 bg-gray-50 dark:bg-gray-700 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
+            <div className="mb-8 bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-600 w-full max-w-full">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Answer Explanations
               </h3>
-              <div className="space-y-4">
+              <div className="space-y-4 w-full max-w-full">
                 {currentQuestion.variants.map((variant: any, index: number) => {
                   const isSelected = selectedAnswers.includes(variant.id);
                   const isCorrect = variant.isCorrect;
@@ -1704,13 +1854,13 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                   return (
                     <div
                       key={variant.id}
-                      className={`p-4 rounded-lg border-2 ${
+                      className={`p-4 rounded-lg border-2 w-full max-w-full ${
                         isCorrect
                           ? 'border-green-200 bg-green-50 dark:bg-green-900/20'
                           : 'border-red-200 bg-red-50 dark:bg-red-900/20'
                       }`}
                     >
-                      <div className="flex items-start space-x-3">
+                      <div className="flex flex-col sm:flex-row sm:items-start gap-3 w-full max-w-full">
                         <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
                           isCorrect
                             ? 'border-green-500 bg-green-500'
@@ -1720,8 +1870,8 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                             {isCorrect ? '✓' : '✗'}
                           </span>
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-2">
+                        <div className="flex-1 w-full max-w-full">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 gap-2 mb-2">
                             <span className="font-semibold text-gray-900 dark:text-white">
                               Option {index + 1}
                             </span>
@@ -1735,7 +1885,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                               </span>
                             )}
                           </div>
-                          <div className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 mb-3">
+                          <div className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 mb-3 w-full max-w-full">
                             <div className="flex items-center justify-between px-4 py-2 bg-[#1e1e1e] border-b border-gray-700">
                               <span className="text-xs text-gray-400 font-medium">Code</span>
                               {currentQuestion.language && (
@@ -1744,18 +1894,19 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                                 </span>
                               )}
                             </div>
-                            <div className="overflow-x-auto">
+                            <div className="overflow-x-auto w-full max-w-full">
                               <SyntaxHighlighter
                                 language={getHighlighterLanguage(currentQuestion.language || 'JavaScript')}
                                 style={vscDarkPlus}
                                 customStyle={{
                                   margin: 0,
-                                  padding: '1rem',
-                                  fontSize: '0.875rem',
+                                  padding: '0.75rem',
+                                  fontSize: '0.8125rem',
                                   lineHeight: '1.5',
                                   borderRadius: 0,
-                                  minWidth: '100%'
+                                  width: '100%'
                                 }}
+                                wrapLongLines={true}
                                 showLineNumbers={true}
                               >
                                 {variant.code}
@@ -1780,7 +1931,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
           {/* Explanations for True/False and other question types */}
           {showExplanations && currentQuestion.type === 'true-false' && (
-            <div className="mb-8 bg-gray-50 dark:bg-gray-700 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
+            <div className="mb-8 bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-600">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Answer Explanation
               </h3>
@@ -1850,7 +2001,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
           {/* Explanations for Multiple Choice */}
           {showExplanations && currentQuestion.type === 'multiple-choice' && (
-            <div className="mb-8 bg-gray-50 dark:bg-gray-700 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
+            <div className="mb-8 bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-600">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Answer Explanation
               </h3>
@@ -1902,7 +2053,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
           {/* Explanations for Select All */}
           {showExplanations && currentQuestion.type === 'select-all' && (
-            <div className="mb-8 bg-gray-50 dark:bg-gray-700 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
+            <div className="mb-8 bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-600">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Answer Explanation
               </h3>
@@ -2105,13 +2256,14 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                     style={vscDarkPlus}
                     customStyle={{
                       margin: 0,
-                      padding: '2rem',
+                      padding: '1.5rem',
                       fontSize: '14px',
                       lineHeight: '1.6',
                       borderRadius: 0,
                       height: '100%',
-                      minWidth: '100%'
+                      width: '100%'
                     }}
+                    wrapLongLines={true}
                     showLineNumbers={true}
                   >
                     {currentQuestion.codeContext}
@@ -2122,6 +2274,84 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
           </motion.div>
         )}
       </AnimatePresence>
+      {isShareModalOpen && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900">
+            <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3 dark:border-slate-700">
+              <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">Share this quiz</div>
+              <button
+                onClick={closeShareModal}
+                className="rounded-full bg-slate-100 p-1.5 text-slate-500 transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+              >
+                <span className="sr-only">Close</span>✕
+              </button>
+            </div>
+            <div className="space-y-4 px-5 py-5">
+              {shareStatus === 'loading' && (
+                <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-300">
+                  <span className="inline-flex h-2 w-2 animate-ping rounded-full bg-indigo-500" />
+                  {shareStatusLabel.loading}
+                </div>
+              )}
+
+              {shareStatus === 'error' && (
+                <div className="space-y-4">
+                  <p className="text-sm text-rose-600 dark:text-rose-300">
+                    {shareStatusLabel.error}
+                  </p>
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    <button
+                      onClick={retryShare}
+                      className="flex-1 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-semibold text-white hover:bg-indigo-500"
+                    >
+                      Try Again
+                    </button>
+                    <button
+                      onClick={closeShareModal}
+                      className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {shareStatus === 'success' && (
+                <div className="space-y-4">
+                  <p className="text-sm text-slate-600 dark:text-slate-300">
+                    Anyone with this link can take the same quiz. Share it with teammates, friends, or your study group.
+                  </p>
+                  <div className="space-y-3">
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] text-slate-600 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-200 sm:text-xs">
+                      <code className="break-all">{shareUrl}</code>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={handleCopyShareLink}
+                        className="flex-1 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-semibold text-white hover:bg-indigo-500"
+                      >
+                        {shareCopied ? 'Link Copied' : 'Copy Link'}
+                      </button>
+                      {!shareCopied && (
+                        <button
+                          onClick={closeShareModal}
+                          className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
+                        >
+                          Close
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {shareStatus === 'idle' && (
+                <p className="text-sm text-slate-500 dark:text-slate-300">Preparing share link…</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 } 

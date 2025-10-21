@@ -46,6 +46,11 @@ const EXTENSION_LANGUAGE_MAP: Record<string, string> = {
   '.ps1': 'PowerShell',
   '.bat': 'Batch',
   '.sql': 'SQL',
+  '.ada': 'Ada',
+  '.adb': 'Ada',
+  '.ads': 'Ada',
+  '.s': 'Assembly',
+  '.asm': 'Assembly',
   '.html': 'HTML',
   '.css': 'CSS',
   '.scss': 'SCSS',
@@ -255,73 +260,182 @@ export default function Home() {
     await handleGitHubUrlChange(url);
   };
 
+  const applyRepositoryData = (repositoryInfo: any) => {
+    if (!repositoryInfo) {
+      throw new Error('Missing repository info from server response');
+    }
+
+    console.log('✅ Repository processed successfully');
+    console.log('📁 Files received from API:', repositoryInfo.files?.length || 0);
+
+    setRepositoryFiles(repositoryInfo.files || []);
+
+    let detectedLanguages: Array<{ name: string; percentage: number; fileCount: number }> = [];
+
+    if (repositoryInfo.languagePercentages && repositoryInfo.languageCounts) {
+      detectedLanguages = Object.entries(repositoryInfo.languagePercentages)
+        .map(([language, percentage]) => ({
+          name: language,
+          percentage: percentage as number,
+          fileCount: (repositoryInfo.languageCounts as { [key: string]: number })[language] || 0
+        }))
+        .sort((a, b) => (b.percentage as number) - (a.percentage as number));
+      console.log('🎯 Using backend language analysis:', detectedLanguages);
+    } else {
+      detectedLanguages = detectLanguagesFromFiles(repositoryInfo.files || []);
+      console.log('🔍 Fallback to local language detection:', detectedLanguages);
+    }
+
+    setAvailableLanguages(detectedLanguages);
+    const defaultLanguageNames = detectedLanguages.map(lang => lang.name);
+    setSelectedLanguages(defaultLanguageNames);
+
+    const { code: initialCombinedCode, includedFiles } = buildCombinedCode(
+      repositoryInfo.files || [],
+      defaultLanguageNames
+    );
+
+    console.log('🧩 Combined code prepared for prefetch:', {
+      includedFiles,
+      hasCode: initialCombinedCode.length > 0
+    });
+
+    if (initialCombinedCode) {
+      queuePrefetch(initialCombinedCode, 'repository-processed', defaultLanguageNames);
+    }
+
+    return {
+      success: true,
+      repositoryInfo
+    };
+  };
+
+  const requestRepositoryInfo = async (url: string) => {
+    console.log('🔍 Processing repository (standard) for language detection:', url);
+
+    const repoResponse = await fetch('/api/processRepository', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url })
+    });
+
+    if (!repoResponse.ok) {
+      const responseClone = repoResponse.clone();
+      let errorMessage = `Failed to process repository: ${repoResponse.status}`;
+      try {
+        const errorJson = await repoResponse.json();
+        if (errorJson?.error) {
+          errorMessage = errorJson.error;
+        }
+      } catch {
+        try {
+          const errorText = await responseClone.text();
+          if (errorText) {
+            errorMessage = errorText;
+          }
+        } catch {
+          // ignore additional parsing errors
+        }
+      }
+      throw new Error(errorMessage);
+    }
+
+    const repoData = await repoResponse.json();
+
+    if (!repoData.success || !repoData.repositoryInfo) {
+      throw new Error(repoData.error || 'Repository processing failed');
+    }
+
+    return repoData.repositoryInfo;
+  };
+
+  const requestRepositoryInfoStream = async (url: string) => {
+    console.log('🔁 Attempting streaming repository processing:', url);
+
+    const streamResponse = await fetch('/api/processRepository?stream=1', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ url })
+    });
+
+    if (!streamResponse.ok || !streamResponse.body) {
+      throw new Error(`Failed to process repository via stream: ${streamResponse.status}`);
+    }
+
+    const reader = streamResponse.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let repositoryInfo: any = null;
+    let streamError: string | null = null;
+
+    const flushBuffer = () => {
+      let newlineIndex = buffer.indexOf('\n');
+      while (newlineIndex >= 0) {
+        const line = buffer.slice(0, newlineIndex).trim();
+        buffer = buffer.slice(newlineIndex + 1);
+        if (line) {
+          try {
+            const event = JSON.parse(line);
+            if (event.type === 'result' && event.repositoryInfo) {
+              repositoryInfo = event.repositoryInfo;
+            } else if (event.type === 'error') {
+              streamError = event.message || 'stream-error';
+            }
+          } catch (err) {
+            console.warn('⚠️ Failed to parse processRepository stream payload:', err, line);
+          }
+        }
+        newlineIndex = buffer.indexOf('\n');
+      }
+    };
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (value) {
+        buffer += decoder.decode(value, { stream: !done });
+        flushBuffer();
+      }
+      if (done) {
+        buffer += decoder.decode(new Uint8Array());
+        flushBuffer();
+        break;
+      }
+    }
+
+    if (streamError) {
+      throw new Error(streamError);
+    }
+
+    if (!repositoryInfo) {
+      throw new Error('Streaming processor did not return repository info');
+    }
+
+    return repositoryInfo;
+  };
+
   // Process repository and detect languages
   const processRepository = async (url: string) => {
     try {
-      console.log('🔍 Processing repository for language detection:', url);
-      
-      const repoResponse = await fetch('/api/processRepository', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url })
-      });
-      
-      if (!repoResponse.ok) {
-        throw new Error(`Failed to process repository: ${repoResponse.status}`);
+      const repositoryInfo = await requestRepositoryInfo(url);
+      return applyRepositoryData(repositoryInfo);
+    } catch (primaryError) {
+      console.error('❌ Error processing repository (standard path):', primaryError);
+      try {
+        const repositoryInfo = await requestRepositoryInfoStream(url);
+        console.log('✅ Streaming fallback succeeded');
+        return applyRepositoryData(repositoryInfo);
+      } catch (streamError) {
+        console.error('❌ Streaming fallback failed:', streamError);
+        if (streamError instanceof Error) {
+          const combinedMessage = `${streamError.message}${primaryError instanceof Error ? ` (primary: ${primaryError.message})` : ''}`;
+          throw new Error(combinedMessage);
+        }
+        throw streamError;
       }
-      
-      const repoData = await repoResponse.json();
-      
-      if (!repoData.success) {
-        throw new Error(repoData.error || 'Repository processing failed');
-      }
-      
-      console.log('✅ Repository processed successfully');
-      console.log('📁 Files received from API:', repoData.repositoryInfo.files?.length || 0);
-      
-      // Store repository files for later use
-      setRepositoryFiles(repoData.repositoryInfo.files || []);
-      
-      let detectedLanguages: Array<{ name: string; percentage: number; fileCount: number }> = [];
-
-      if (repoData.repositoryInfo.languagePercentages && repoData.repositoryInfo.languageCounts) {
-        detectedLanguages = Object.entries(repoData.repositoryInfo.languagePercentages)
-          .map(([language, percentage]) => ({
-            name: language,
-            percentage: percentage as number,
-            fileCount: (repoData.repositoryInfo.languageCounts as { [key: string]: number })[language] || 0
-          }))
-          .sort((a, b) => (b.percentage as number) - (a.percentage as number));
-        console.log('🎯 Using backend language analysis:', detectedLanguages);
-      } else {
-        detectedLanguages = detectLanguagesFromFiles(repoData.repositoryInfo.files);
-        console.log('🔍 Fallback to local language detection:', detectedLanguages);
-      }
-
-      setAvailableLanguages(detectedLanguages);
-      const defaultLanguageNames = detectedLanguages.map(lang => lang.name);
-      setSelectedLanguages(defaultLanguageNames);
-
-      const { code: initialCombinedCode, includedFiles } = buildCombinedCode(
-        repoData.repositoryInfo.files || [],
-        defaultLanguageNames
-      );
-
-      console.log('🧩 Combined code prepared for prefetch:', {
-        includedFiles,
-        hasCode: initialCombinedCode.length > 0
-      });
-
-      if (initialCombinedCode) {
-        queuePrefetch(initialCombinedCode, 'repository-processed', defaultLanguageNames);
-      }
-
-      return repoData;
-    } catch (error) {
-      console.error('❌ Error processing repository:', error);
-      throw error;
     }
   };
 
@@ -368,7 +482,12 @@ export default function Home() {
       '.toml': 'TOML',
       '.ini': 'INI',
       '.cfg': 'Config',
-      '.conf': 'Config'
+      '.conf': 'Config',
+      '.ada': 'Ada',
+      '.adb': 'Ada',
+      '.ads': 'Ada',
+      '.s': 'Assembly',
+      '.asm': 'Assembly'
     };
 
     const languageCounts: { [key: string]: number } = {};
@@ -516,7 +635,15 @@ export default function Home() {
     setSelectedFiles(files);
   };
 
+  const normalizeGitHubInput = (raw: string): string => {
+    const trimmed = raw.trim();
+    if (!trimmed) return '';
+    if (/^https?:\/\//i.test(trimmed)) return trimmed;
+    return `https://${trimmed}`;
+  };
+
   const handleGitHubUrlChange = async (url: string) => {
+    const normalizedUrl = normalizeGitHubInput(url);
     setGithubUrl(url);
     setAvailableBranches([]);
     setSelectedBranch('');
@@ -528,7 +655,7 @@ export default function Home() {
     // Extract owner and repo from any GitHub URL format using regex
     // Handles: github.com/owner/repo, github.com/owner/repo/tree/main, github.com/owner/repo/blob/main/file.js, etc.
     const githubUrlRegex = /github\.com\/([^\/\?#]+)\/([^\/\?#]+)/;
-    const match = url.match(githubUrlRegex);
+    const match = normalizedUrl.match(githubUrlRegex);
     
     if (match) {
       const [, owner, repo] = match;
@@ -537,7 +664,7 @@ export default function Home() {
       setGithubRepo({ owner, repo: cleanRepo });
       
       // Fetch available branches
-      await fetchBranches(url);
+      await fetchBranches(normalizedUrl);
     } else {
       setGithubRepo({ owner: '', repo: '' });
     }

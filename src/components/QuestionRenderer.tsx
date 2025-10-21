@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { detectLanguage } from '@/lib/question-plugins/utils';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -48,6 +49,12 @@ export default function QuestionRenderer({
   currentVariantIndex,
   showExplanations
 }: QuestionRendererProps) {
+  const [isVariantExpanded, setIsVariantExpanded] = useState(false);
+
+  useEffect(() => {
+    setIsVariantExpanded(false);
+  }, [currentVariantIndex, question?.id]);
+
   const renderMultipleChoice = () => (
     <div className="space-y-4">
       {question.options?.map((option: string, index: number) => (
@@ -60,7 +67,7 @@ export default function QuestionRenderer({
               : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
           }`}
         >
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 gap-2">
             <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
               selectedAnswers.includes(option)
                 ? 'border-blue-500 bg-blue-500'
@@ -70,7 +77,7 @@ export default function QuestionRenderer({
                 <div className="w-2 h-2 bg-white rounded-full"></div>
               )}
             </div>
-            <span className="text-lg">{option}</span>
+            <span className="text-lg leading-relaxed break-words">{option}</span>
           </div>
         </button>
       ))}
@@ -142,14 +149,16 @@ export default function QuestionRenderer({
     const fvLang = question.language 
       ? { name: question.language, color: question.languageColor || 'text-gray-600', bgColor: question.languageBgColor || 'bg-gray-100' }
       : detectLanguage('');
+    const variantLineCount = typeof currentVariant.code === 'string' ? currentVariant.code.split('\n').length : 0;
+    const shouldClampVariant = variantLineCount > 36;
 
     return (
-      <div className="space-y-8">
-        <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-6 rounded-xl">
+      <div className="space-y-6 sm:space-y-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 bg-gray-50 dark:bg-gray-700 p-4 sm:p-6 rounded-xl">
           <button
             onClick={() => onVariantNavigation('prev')}
             disabled={isFirstVariant}
-            className={`flex items-center space-x-3 px-5 py-3 rounded-lg transition-all font-medium ${
+            className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-all font-medium w-full sm:w-auto ${
               isFirstVariant
                 ? 'text-gray-400 cursor-not-allowed'
                 : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20'
@@ -158,7 +167,7 @@ export default function QuestionRenderer({
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            <span className="hidden sm:inline text-base">Previous</span>
+            <span className="text-sm sm:text-base">Previous</span>
           </button>
 
           <div className="text-center">
@@ -173,20 +182,20 @@ export default function QuestionRenderer({
           <button
             onClick={() => onVariantNavigation('next')}
             disabled={isLastVariant}
-            className={`flex items-center space-x-3 px-5 py-3 rounded-lg transition-all font-medium ${
+            className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-all font-medium w-full sm:w-auto ${
               isLastVariant
                 ? 'text-gray-400 cursor-not-allowed'
                 : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20'
             }`}
           >
-            <span className="hidden sm:inline text-base">Next</span>
+            <span className="text-sm sm:text-base">Next</span>
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
         </div>
 
-        <div className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+        <div className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 bg-[#1e1e1e] border-b border-gray-700">
             <p className="text-sm text-gray-300 font-medium">
               Analyze this code variant and determine if it&apos;s correct
@@ -195,24 +204,42 @@ export default function QuestionRenderer({
               {fvLang.name}
             </span>
           </div>
-          
-          <SyntaxHighlighter
-            language={getHighlighterLanguage(fvLang.name)}
-            style={vscDarkPlus}
-            customStyle={{
-              margin: 0,
-              padding: '1.5rem',
-              fontSize: '0.9375rem',
-              lineHeight: '1.6',
-              borderRadius: 0
-            }}
-            showLineNumbers={true}
-          >
-            {currentVariant.code}
-          </SyntaxHighlighter>
+          <div className={`relative ${shouldClampVariant && !isVariantExpanded ? 'max-h-72 overflow-hidden' : ''}`}>
+            <div className={`overflow-x-auto ${shouldClampVariant && !isVariantExpanded ? 'max-h-72 overflow-y-auto' : 'overflow-y-auto'}`}>
+              <SyntaxHighlighter
+                language={getHighlighterLanguage(fvLang.name)}
+                style={vscDarkPlus}
+                customStyle={{
+                  margin: 0,
+                  padding: '1rem',
+                  fontSize: '0.875rem',
+                  lineHeight: '1.6',
+                  borderRadius: 0,
+                  width: '100%'
+                }}
+                wrapLongLines={true}
+                showLineNumbers={true}
+              >
+                {currentVariant.code}
+              </SyntaxHighlighter>
+            </div>
+            {shouldClampVariant && !isVariantExpanded && (
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#1e1e1e] via-[#1e1e1e]/80 to-transparent" />
+            )}
+          </div>
+          {shouldClampVariant && (
+            <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/60 flex justify-center">
+              <button
+                onClick={() => setIsVariantExpanded((prev) => !prev)}
+                className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-300 dark:hover:text-blue-200 transition-colors"
+              >
+                {isVariantExpanded ? 'Collapse Code' : 'Expand Full Code'}
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full">
           <button
             onClick={() => onVariantSelect(currentVariant.id)}
             className={`flex-1 py-3 px-6 rounded-lg font-medium transition-all ${
@@ -227,7 +254,7 @@ export default function QuestionRenderer({
           {!isLastVariant && (
             <button
               onClick={() => onVariantNavigation('next')}
-              className="flex-1 sm:flex-none py-3 px-6 rounded-lg font-medium bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+              className="w-full sm:w-auto flex-1 sm:flex-none py-3 px-6 rounded-lg font-medium bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
             >
               Skip to Next
             </button>
@@ -272,7 +299,7 @@ export default function QuestionRenderer({
               }`}>
                 {option === 'True' ? '✓' : '✗'}
               </div>
-              <span className="text-xl font-semibold">{option}</span>
+              <span className="text-xl font-semibold leading-relaxed break-words">{option}</span>
             </div>
           </button>
         ))}
@@ -320,7 +347,7 @@ export default function QuestionRenderer({
                   </svg>
                 )}
               </div>
-              <span className="text-base leading-relaxed">{option}</span>
+              <span className="text-base leading-relaxed break-words">{option}</span>
             </div>
           </button>
         ))}

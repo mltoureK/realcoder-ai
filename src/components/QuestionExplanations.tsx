@@ -311,7 +311,7 @@ export default function QuestionExplanations({
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
+                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed break-words mb-2">
                     {option}
                   </p>
                 </div>
@@ -322,7 +322,7 @@ export default function QuestionExplanations({
         
         {/* Overall explanation */}
         <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-          <p className="text-sm text-blue-800 dark:text-blue-200">
+          <p className="text-sm text-blue-800 dark:text-blue-200 leading-relaxed break-words">
             <strong>Overall Explanation:</strong> {question.explanation}
           </p>
         </div>

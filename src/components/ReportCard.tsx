@@ -51,6 +51,9 @@ type Props = {
   ticketsLoading?: boolean;
   ticketsPlanned?: number | null;
   totalStreamedQuestions?: number;
+  shareEnabled?: boolean;
+  shareStatus?: 'idle' | 'loading' | 'success' | 'error';
+  onShareClick?: () => void;
 };
 
 export default function ReportCard({
@@ -61,7 +64,10 @@ export default function ReportCard({
   initialTickets,
   ticketsLoading = false,
   ticketsPlanned = null,
-  totalStreamedQuestions
+  totalStreamedQuestions,
+  shareEnabled = false,
+  shareStatus = 'idle',
+  onShareClick
 }: Props) {
   const analysis = analyzeResults(results);
   const recs = generateRecommendations(analysis);
@@ -919,6 +925,19 @@ useEffect(() => {
               >
                 Retake Quiz
               </button>
+              {shareEnabled && onShareClick && (
+                <button
+                  onClick={onShareClick}
+                  disabled={shareStatus === 'loading'}
+                  className={`w-full rounded-xl border px-4 py-2 text-sm font-semibold transition sm:w-auto ${
+                    shareStatus === 'loading'
+                      ? 'cursor-wait border-indigo-200 text-indigo-300 dark:border-indigo-500/40 dark:text-indigo-400'
+                      : 'border-indigo-200 text-indigo-600 hover:bg-indigo-50 dark:border-indigo-500/40 dark:text-indigo-300 dark:hover:bg-indigo-900/30'
+                  }`}
+                >
+                  {shareStatus === 'loading' ? 'Preparing…' : 'Share'}
+                </button>
+              )}
               <button
                 onClick={onClose}
                 className="w-full rounded-xl bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"

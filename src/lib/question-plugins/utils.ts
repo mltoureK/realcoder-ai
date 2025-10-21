@@ -68,6 +68,11 @@ function getLanguageFromExtension(ext: string): { name: string; color: string; b
     'scala': { name: 'Scala', color: 'text-red-600 dark:text-red-400', bgColor: 'bg-red-100 dark:bg-red-900/30' },
     'sh': { name: 'Shell', color: 'text-green-700 dark:text-green-300', bgColor: 'bg-green-100 dark:bg-green-900/30' },
     'sql': { name: 'SQL', color: 'text-indigo-600 dark:text-indigo-400', bgColor: 'bg-indigo-100 dark:bg-indigo-900/30' },
+    'ada': { name: 'Ada', color: 'text-emerald-700 dark:text-emerald-300', bgColor: 'bg-emerald-100 dark:bg-emerald-900/30' },
+    'adb': { name: 'Ada', color: 'text-emerald-700 dark:text-emerald-300', bgColor: 'bg-emerald-100 dark:bg-emerald-900/30' },
+    'ads': { name: 'Ada', color: 'text-emerald-700 dark:text-emerald-300', bgColor: 'bg-emerald-100 dark:bg-emerald-900/30' },
+    's': { name: 'Assembly', color: 'text-slate-700 dark:text-slate-300', bgColor: 'bg-slate-100 dark:bg-slate-900/30' },
+    'asm': { name: 'Assembly', color: 'text-slate-700 dark:text-slate-300', bgColor: 'bg-slate-100 dark:bg-slate-900/30' },
   };
   
   return extMap[ext] || null;
@@ -84,6 +89,12 @@ function detectLanguageFromSyntax(code: string): { name: string; color: string; 
   if (c.includes('func ') && c.includes(':=')) return { name: 'Go', color: 'text-cyan-700 dark:text-cyan-300', bgColor: 'bg-cyan-100 dark:bg-cyan-900/30' };
   if (c.includes('def ') && (c.includes('self') || c.includes('import '))) return { name: 'Python', color: 'text-blue-700 dark:text-blue-300', bgColor: 'bg-blue-100 dark:bg-blue-900/30' };
   if (c.includes('fn ') && (c.includes('let mut') || c.includes('&str'))) return { name: 'Rust', color: 'text-orange-700 dark:text-orange-300', bgColor: 'bg-orange-100 dark:bg-orange-900/30' };
+  if ((c.includes('procedure ') || c.includes('function ')) && c.includes('begin') && c.includes('end')) {
+    return { name: 'Ada', color: 'text-emerald-700 dark:text-emerald-300', bgColor: 'bg-emerald-100 dark:bg-emerald-900/30' };
+  }
+  if ((c.includes(' mov') || c.includes('\tmov') || c.includes(' jmp') || c.includes('.globl') || c.includes('.section'))) {
+    return { name: 'Assembly', color: 'text-slate-700 dark:text-slate-300', bgColor: 'bg-slate-100 dark:bg-slate-900/30' };
+  }
   if ((c.includes('public ') || c.includes('private ')) && (c.includes('class ') || c.includes('interface '))) {
     if (c.includes('system.out') || c.includes('string[]')) return { name: 'Java', color: 'text-red-700 dark:text-red-300', bgColor: 'bg-red-100 dark:bg-red-900/30' };
     if (c.includes('console.') || c.includes('namespace ')) return { name: 'C#', color: 'text-purple-700 dark:text-purple-300', bgColor: 'bg-purple-100 dark:bg-purple-900/30' };
@@ -367,5 +378,4 @@ function normalizeCodeForComparison(code: string): string {
     .trim()
     .toLowerCase();
 }
-
 

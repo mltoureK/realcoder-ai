@@ -1,0 +1,1526 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761043531405
+Started: 2025-10-21T10:45:31.405Z
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:45:37.463Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1066 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: ada-game-framework-sdlada-0d8238d/.github/workflows/ci-macos-fw.yml\n---\n\nname: CI macOS (Frameworks)\n\non:\n  workflow_dispatch:\n  pull_request:\n\njobs:\n  build:\n    name: CI on macOS (Frameworks)\n\n    runs-on: macos-12\n\n    steps:\n    -\n      name: Checkout\n      uses: actions/checkout@v4\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:45:37.980Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1066 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: ada-game-framework-sdlada-0d8238d/.github/workflows/ci-macos-fw.yml\n---\n\nname: CI macOS (Frameworks)\n\non:\n  workflow_dispatch:\n  pull_request:\n\njobs:\n  build:\n    name: CI on macOS (Frameworks)\n\n    runs-on: macos-12\n\n    steps:\n    -\n      name: Checkout\n      uses: actions/checkout@v4\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:45:43.329Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2087 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: ada-game-framework-sdlada-0d8238d/test/src/pixel_formats.c\n/***********************************************************************************************************************\n * This source code is subject to the Zlib license, see the LICENCE file in the root of this directory.\n ******
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:45:44.634Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 686 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: ada-game-framework-sdlada-0d8238d/.github/workflows/ci-linux.yml\n---\n\nname: CI Linux\n\non:\n  workflow_dispatch:\n  pull_request:\n\njobs:\n  build:\n    name: CI on linux\n\n    runs-on: ubuntu-latest\n\n    steps:\n    -\n      name: Checkout\n      uses: actions/checkout@v4\n    -\n      name: alire-pro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:45:45.248Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 699 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: ada-game-framework-sdlada-0d8238d/src/version.c\n/***********************************************************************************************************************\n *  This source code is subject to the Zlib license, see the LICENCE file in the root of this directory.\n ****************
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:45:50.494Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1066 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: ada-game-framework-sdlada-0d8238d/.github/workflows/ci-macos-fw.yml\n---\n\nname: CI macOS (Frameworks)\n\non:\n  workflow_dispatch:\n  pull_request:\n\njobs:\n  build:\n    name: CI on macOS (Frameworks)\n\n    runs-on: macos-12\n\n    steps:\n    -\n      name: Checkout\n      uses: actions/checkout@v4\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:45:53.004Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 488 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: ada-game-framework-sdlada-0d8238d/test/src/colour.c\n/***********************************************************************************************************************\n * This source code is subject to the Zlib license, see the LICENCE file in the root of this directory.\n *************
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:45:53.333Z
+Question Type: select-all
+Function: Unknown
+Function Size: 488 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: ada-game-framework-sdlada-0d8238d/test/src/colour.c\n/***********************************************************************************************************************\n * This source code is subject to the Zlib license, see the LICENCE file in the root of this directory.\n *************
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:45:56.267Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 686 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: ada-game-framework-sdlada-0d8238d/.github/workflows/ci-linux.yml\n---\n\nname: CI Linux\n\non:\n  workflow_dispatch:\n  pull_request:\n\njobs:\n  build:\n    name: CI on linux\n\n    runs-on: ubuntu-latest\n\n    steps:\n    -\n      name: Checkout\n      uses: actions/checkout@v4\n    -\n      name: alire-pro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:45:57.141Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2087 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: ada-game-framework-sdlada-0d8238d/test/src/pixel_formats.c\n/***********************************************************************************************************************\n * This source code is subject to the Zlib license, see the LICENCE file in the root of this directory.\n ******
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:46:02.467Z
+Question Type: true-false
+Function: Unknown
+Function Size: 488 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: ada-game-framework-sdlada-0d8238d/test/src/colour.c\n/***********************************************************************************************************************\n * This source code is subject to the Zlib license, see the LICENCE file in the root of this directory.\n *************
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:46:04.744Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 686 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: ada-game-framework-sdlada-0d8238d/.github/workflows/ci-linux.yml\n---\n\nname: CI Linux\n\non:\n  workflow_dispatch:\n  pull_request:\n\njobs:\n  build:\n    name: CI on linux\n\n    runs-on: ubuntu-latest\n\n    steps:\n    -\n      name: Checkout\n      uses: actions/checkout@v4\n    -\n      name: alire-pro
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:46:05.510Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2087 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: ada-game-framework-sdlada-0d8238d/test/src/pixel_formats.c\n/***********************************************************************************************************************\n * This source code is subject to the Zlib license, see the LICENCE file in the root of this directory.\n ******
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:46:09.650Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 699 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: ada-game-framework-sdlada-0d8238d/src/version.c\n/***********************************************************************************************************************\n *  This source code is subject to the Zlib license, see the LICENCE file in the root of this directory.\n ****************
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:46:12.592Z
+Question Type: select-all
+Function: Unknown
+Function Size: 699 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: ada-game-framework-sdlada-0d8238d/src/version.c\n/***********************************************************************************************************************\n *  This source code is subject to the Zlib license, see the LICENCE file in the root of this directory.\n ****************
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761043531405
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 5
+Ended: 2025-10-21T10:46:12.612Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:48:33.249Z
+Question Type: true-false
+Function: Unknown
+Function Size: 604 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: update employee rest api\n@PutMapping("/employees/{id}")\n	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails){\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:48:37.255Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 604 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: update employee rest api\n@PutMapping("/employees/{id}")\n	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails){\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:48:37.270Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1308 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: RameshMF-ReactJS-Spring-Boot-CRUD-Full-Stack-App-394c537/springboot-backend/src/main/java/net/javaguides/springboot/controller/EmployeeController.java\npackage net.javaguides.springboot.controller;\n\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport org.springfram
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:48:38.354Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 328 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get employee by id rest api\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id :" + id));\n		return Res
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:48:41.247Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 173 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: create employee rest api\n@PostMapping("/employees")\n	public Employee createEmployee(@RequestBody Employee employee) {\n		return employeeRepository.save(employee);\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:48:43.973Z
+Question Type: select-all
+Function: Unknown
+Function Size: 328 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get employee by id rest api\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id :" + id));\n		return Res
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:48:44.323Z
+Question Type: select-all
+Function: Unknown
+Function Size: 173 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: create employee rest api\n@PostMapping("/employees")\n	public Employee createEmployee(@RequestBody Employee employee) {\n		return employeeRepository.save(employee);\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:48:45.289Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 136 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get all employees\n@GetMapping("/employees")\n	public List<Employee> getAllEmployees(){\n		return employeeRepository.findAll();\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:48:50.327Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1308 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: RameshMF-ReactJS-Spring-Boot-CRUD-Full-Stack-App-394c537/springboot-backend/src/main/java/net/javaguides/springboot/controller/EmployeeController.java\npackage net.javaguides.springboot.controller;\n\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport org.springfram
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:48:50.420Z
+Question Type: true-false
+Function: Unknown
+Function Size: 328 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get employee by id rest api\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id :" + id));\n		return Res
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:48:51.284Z
+Question Type: select-all
+Function: Unknown
+Function Size: 136 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get all employees\n@GetMapping("/employees")\n	public List<Employee> getAllEmployees(){\n		return employeeRepository.findAll();\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:48:56.955Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1308 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: RameshMF-ReactJS-Spring-Boot-CRUD-Full-Stack-App-394c537/springboot-backend/src/main/java/net/javaguides/springboot/controller/EmployeeController.java\npackage net.javaguides.springboot.controller;\n\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport org.springfram
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:49:01.957Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 136 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get all employees\n@GetMapping("/employees")\n	public List<Employee> getAllEmployees(){\n		return employeeRepository.findAll();\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:49:03.792Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 173 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: create employee rest api\n@PostMapping("/employees")\n	public Employee createEmployee(@RequestBody Employee employee) {\n		return employeeRepository.save(employee);\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:49:10.517Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 604 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: update employee rest api\n@PutMapping("/employees/{id}")\n	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails){\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exi
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761043531405
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 5
+Ended: 2025-10-21T10:49:10.519Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:52:39.638Z
+Question Type: select-all
+Function: Unknown
+Function Size: 173 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: create employee rest api\n@PostMapping("/employees")\n	public Employee createEmployee(@RequestBody Employee employee) {\n		return employeeRepository.save(employee);\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:52:44.389Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1308 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: RameshMF-ReactJS-Spring-Boot-CRUD-Full-Stack-App-394c537/springboot-backend/src/main/java/net/javaguides/springboot/controller/EmployeeController.java\npackage net.javaguides.springboot.controller;\n\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport org.springfram
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:52:46.903Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 604 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: update employee rest api\n@PutMapping("/employees/{id}")\n	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails){\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:52:48.040Z
+Question Type: select-all
+Function: Unknown
+Function Size: 328 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get employee by id rest api\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id :" + id));\n		return Res
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:52:53.790Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1308 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: RameshMF-ReactJS-Spring-Boot-CRUD-Full-Stack-App-394c537/springboot-backend/src/main/java/net/javaguides/springboot/controller/EmployeeController.java\npackage net.javaguides.springboot.controller;\n\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport org.springfram
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:52:54.165Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 328 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get employee by id rest api\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id :" + id));\n		return Res
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:52:58.172Z
+Question Type: true-false
+Function: Unknown
+Function Size: 136 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get all employees\n@GetMapping("/employees")\n	public List<Employee> getAllEmployees(){\n		return employeeRepository.findAll();\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:53:00.546Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 173 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: create employee rest api\n@PostMapping("/employees")\n	public Employee createEmployee(@RequestBody Employee employee) {\n		return employeeRepository.save(employee);\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:53:06.368Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 604 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: update employee rest api\n@PutMapping("/employees/{id}")\n	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails){\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:53:06.670Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 328 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: get employee by id rest api\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id :" + id));\n		return Res
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:53:07.093Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 136 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get all employees\n@GetMapping("/employees")\n	public List<Employee> getAllEmployees(){\n		return employeeRepository.findAll();\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:53:09.327Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 173 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: create employee rest api\n@PostMapping("/employees")\n	public Employee createEmployee(@RequestBody Employee employee) {\n		return employeeRepository.save(employee);\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:53:12.938Z
+Question Type: select-all
+Function: Unknown
+Function Size: 136 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get all employees\n@GetMapping("/employees")\n	public List<Employee> getAllEmployees(){\n		return employeeRepository.findAll();\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:53:13.121Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 604 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: update employee rest api\n@PutMapping("/employees/{id}")\n	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails){\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T10:53:16.969Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1308 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: RameshMF-ReactJS-Spring-Boot-CRUD-Full-Stack-App-394c537/springboot-backend/src/main/java/net/javaguides/springboot/controller/EmployeeController.java\npackage net.javaguides.springboot.controller;\n\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport org.springfram
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761043531405
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 5
+Ended: 2025-10-21T10:53:16.971Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:31:35.765Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2076 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: psf-requests-7029833/tests/testserver/server.py\nimport select\nimport socket\nimport ssl\nimport threading\n\n\ndef consume_socket_content(sock, timeout=0.5):\n    chunks = 65536\n    content = b""\n\n    while True:\n        more_to_read = select.select([sock], [], [], timeout)[0]\n        if not more
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:31:40.738Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2074 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: psf-requests-7029833/tests/test_testserver.py\nimport socket\nimport threading\nimport time\n\nimport pytest\nfrom tests.testserver.server import Server\n\nimport requests\n\n\nclass TestTestServer:\n    def test_basic(self):\n        """messages are sent and received properly"""\n        question = b"su
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:31:41.716Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2070 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: psf-requests-7029833/src/requests/auth.py\n"""\nrequests.auth\n~~~~~~~~~~~~~\n\nThis module contains the authentication handlers for Requests.\n"""\n\nimport hashlib\nimport os\nimport re\nimport threading\nimport time\nimport warnings\nfrom base64 import b64encode\n\nfrom ._internal_utils import to_native
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:31:48.280Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2074 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: psf-requests-7029833/tests/test_testserver.py\nimport socket\nimport threading\nimport time\n\nimport pytest\nfrom tests.testserver.server import Server\n\nimport requests\n\n\nclass TestTestServer:\n    def test_basic(self):\n        """messages are sent and received properly"""\n        question = b"su
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:31:48.418Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2076 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: psf-requests-7029833/tests/testserver/server.py\nimport select\nimport socket\nimport ssl\nimport threading\n\n\ndef consume_socket_content(sock, timeout=0.5):\n    chunks = 65536\n    content = b""\n\n    while True:\n        more_to_read = select.select([sock], [], [], timeout)[0]\n        if not more
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:31:51.048Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2074 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: psf-requests-7029833/tests/test_testserver.py\nimport socket\nimport threading\nimport time\n\nimport pytest\nfrom tests.testserver.server import Server\n\nimport requests\n\n\nclass TestTestServer:\n    def test_basic(self):\n        """messages are sent and received properly"""\n        question = b"su
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:31:51.314Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2069 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: psf-requests-7029833/src/requests/api.py\n"""\nrequests.api\n~~~~~~~~~~~~\n\nThis module implements the Requests API.\n\n:copyright: (c) 2012 by Kenneth Reitz.\n:license: Apache2, see LICENSE for more details.\n"""\n\nfrom . import sessions\n\n\ndef request(method, url, **kwargs):\n    """Constructs and s
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:31:55.169Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 2074 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: psf-requests-7029833/src/requests/adapters.py\n"""\nrequests.adapters\n~~~~~~~~~~~~~~~~~\n\nThis module contains the transport adapters that Requests uses to define\nand maintain connections.\n"""\n\nimport os.path\nimport socket  # noqa: F401\nimport typing\nimport warnings\n\nfrom urllib3.exceptions im
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:32:07.682Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2076 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: psf-requests-7029833/tests/testserver/server.py\nimport select\nimport socket\nimport ssl\nimport threading\n\n\ndef consume_socket_content(sock, timeout=0.5):\n    chunks = 65536\n    content = b""\n\n    while True:\n        more_to_read = select.select([sock], [], [], timeout)[0]\n        if not more
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:32:08.495Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2074 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: psf-requests-7029833/src/requests/adapters.py\n"""\nrequests.adapters\n~~~~~~~~~~~~~~~~~\n\nThis module contains the transport adapters that Requests uses to define\nand maintain connections.\n"""\n\nimport os.path\nimport socket  # noqa: F401\nimport typing\nimport warnings\n\nfrom urllib3.exceptions im
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:32:08.553Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2070 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: psf-requests-7029833/src/requests/auth.py\n"""\nrequests.auth\n~~~~~~~~~~~~~\n\nThis module contains the authentication handlers for Requests.\n"""\n\nimport hashlib\nimport os\nimport re\nimport threading\nimport time\nimport warnings\nfrom base64 import b64encode\n\nfrom ._internal_utils import to_native
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:32:18.559Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2069 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: psf-requests-7029833/src/requests/api.py\n"""\nrequests.api\n~~~~~~~~~~~~\n\nThis module implements the Requests API.\n\n:copyright: (c) 2012 by Kenneth Reitz.\n:license: Apache2, see LICENSE for more details.\n"""\n\nfrom . import sessions\n\n\ndef request(method, url, **kwargs):\n    """Constructs and s
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:32:19.347Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2069 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: psf-requests-7029833/src/requests/api.py\n"""\nrequests.api\n~~~~~~~~~~~~\n\nThis module implements the Requests API.\n\n:copyright: (c) 2012 by Kenneth Reitz.\n:license: Apache2, see LICENSE for more details.\n"""\n\nfrom . import sessions\n\n\ndef request(method, url, **kwargs):\n    """Constructs and s
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:32:20.093Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2070 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: psf-requests-7029833/src/requests/auth.py\n"""\nrequests.auth\n~~~~~~~~~~~~~\n\nThis module contains the authentication handlers for Requests.\n"""\n\nimport hashlib\nimport os\nimport re\nimport threading\nimport time\nimport warnings\nfrom base64 import b64encode\n\nfrom ._internal_utils import to_native
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:32:23.049Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2074 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: psf-requests-7029833/src/requests/adapters.py\n"""\nrequests.adapters\n~~~~~~~~~~~~~~~~~\n\nThis module contains the transport adapters that Requests uses to define\nand maintain connections.\n"""\n\nimport os.path\nimport socket  # noqa: F401\nimport typing\nimport warnings\n\nfrom urllib3.exceptions im
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761043531405
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 5
+Ended: 2025-10-21T11:32:23.052Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:38:09.086Z
+Question Type: select-all
+Function: Unknown
+Function Size: 50 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nid,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:38:10.509Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2056 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Items per page in timeline.\nconst ITEMS_PER_PAGE = 15;\n\ninterface TimelineProps {\n  completedMap: CompletedChallenge[];\n  openModal: (arg: string) => void;\n  t: TFunction;\n  username: string;\n}\n\ninterface TimelineInnerProps extends TimelineProps {\n  idToNameMap: Map<string, NameMap>;\n  sort
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:38:10.727Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2056 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Items per page in timeline.\nconst ITEMS_PER_PAGE = 15;\n\ninterface TimelineProps {\n  completedMap: CompletedChallenge[];\n  openModal: (arg: string) => void;\n  t: TFunction;\n  username: string;\n}\n\ninterface TimelineInnerProps extends TimelineProps {\n  idToNameMap: Map<string, NameMap>;\n  sort
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:38:13.966Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 58 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nsuperBlock,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:38:14.575Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1629 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: freeCodeCamp-freeCodeCamp-5fd8651/client/src/components/profile/components/time-line.tsx\nimport Loadable from '@loadable/component';\nimport { graphql, useStaticQuery } from 'gatsby';\nimport { reverse, sortBy } from 'lodash-es';\nimport React, { useMemo, useState } from 'react';\nimport type {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:38:18.140Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2094 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: // eslint-disable-next-line @typescript-eslint/no-unsafe-argument\nchallengeFiles:\n          completedChallenge?.challengeFiles?.map(\n            regenerateMissingProperties\n          ) ?? null\n      }\n    : null;\n\n  const id = challengeData?.id;\n  const startIndex = (pageNo - 1) * ITEMS_PER
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:38:18.522Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2056 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Items per page in timeline.\nconst ITEMS_PER_PAGE = 15;\n\ninterface TimelineProps {\n  completedMap: CompletedChallenge[];\n  openModal: (arg: string) => void;\n  t: TFunction;\n  username: string;\n}\n\ninterface TimelineInnerProps extends TimelineProps {\n  idToNameMap: Map<string, NameMap>;\n  sort
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:38:18.592Z
+Question Type: select-all
+Function: Unknown
+Function Size: 58 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nsuperBlock,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:38:21.105Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 1629 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: freeCodeCamp-freeCodeCamp-5fd8651/client/src/components/profile/components/time-line.tsx\nimport Loadable from '@loadable/component';\nimport { graphql, useStaticQuery } from 'gatsby';\nimport { reverse, sortBy } from 'lodash-es';\nimport React, { useMemo, useState } from 'react';\nimport type {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:38:21.765Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 50 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nid,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:38:30.652Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1629 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: freeCodeCamp-freeCodeCamp-5fd8651/client/src/components/profile/components/time-line.tsx\nimport Loadable from '@loadable/component';\nimport { graphql, useStaticQuery } from 'gatsby';\nimport { reverse, sortBy } from 'lodash-es';\nimport React, { useMemo, useState } from 'react';\nimport type {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:38:31.025Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2094 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: // eslint-disable-next-line @typescript-eslint/no-unsafe-argument\nchallengeFiles:\n          completedChallenge?.challengeFiles?.map(\n            regenerateMissingProperties\n          ) ?? null\n      }\n    : null;\n\n  const id = challengeData?.id;\n  const startIndex = (pageNo - 1) * ITEMS_PER
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:38:32.110Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2094 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: // eslint-disable-next-line @typescript-eslint/no-unsafe-argument\nchallengeFiles:\n          completedChallenge?.challengeFiles?.map(\n            regenerateMissingProperties\n          ) ?? null\n      }\n    : null;\n\n  const id = challengeData?.id;\n  const startIndex = (pageNo - 1) * ITEMS_PER
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:38:34.284Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 50 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nid,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:38:35.132Z
+Question Type: true-false
+Function: Unknown
+Function Size: 58 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nsuperBlock,
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761043531405
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 5
+Ended: 2025-10-21T11:38:35.135Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:55:06.095Z
+Question Type: select-all
+Function: Unknown
+Function Size: 50 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nid,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:55:06.772Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2094 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: // eslint-disable-next-line @typescript-eslint/no-unsafe-argument\nchallengeFiles:\n          completedChallenge?.challengeFiles?.map(\n            regenerateMissingProperties\n          ) ?? null\n      }\n    : null;\n\n  const id = challengeData?.id;\n  const startIndex = (pageNo - 1) * ITEMS_PER
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:55:09.722Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 2094 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: // eslint-disable-next-line @typescript-eslint/no-unsafe-argument\nchallengeFiles:\n          completedChallenge?.challengeFiles?.map(\n            regenerateMissingProperties\n          ) ?? null\n      }\n    : null;\n\n  const id = challengeData?.id;\n  const startIndex = (pageNo - 1) * ITEMS_PER
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:55:11.926Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 50 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nid,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:55:11.936Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1629 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: freeCodeCamp-freeCodeCamp-5fd8651/client/src/components/profile/components/time-line.tsx\nimport Loadable from '@loadable/component';\nimport { graphql, useStaticQuery } from 'gatsby';\nimport { reverse, sortBy } from 'lodash-es';\nimport React, { useMemo, useState } from 'react';\nimport type {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:55:14.640Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1629 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: freeCodeCamp-freeCodeCamp-5fd8651/client/src/components/profile/components/time-line.tsx\nimport Loadable from '@loadable/component';\nimport { graphql, useStaticQuery } from 'gatsby';\nimport { reverse, sortBy } from 'lodash-es';\nimport React, { useMemo, useState } from 'react';\nimport type {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:55:19.764Z
+Question Type: true-false
+Function: Unknown
+Function Size: 58 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nsuperBlock,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:55:21.624Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2056 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Items per page in timeline.\nconst ITEMS_PER_PAGE = 15;\n\ninterface TimelineProps {\n  completedMap: CompletedChallenge[];\n  openModal: (arg: string) => void;\n  t: TFunction;\n  username: string;\n}\n\ninterface TimelineInnerProps extends TimelineProps {\n  idToNameMap: Map<string, NameMap>;\n  sort
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:55:22.227Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 58 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nsuperBlock,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:55:24.067Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2056 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Items per page in timeline.\nconst ITEMS_PER_PAGE = 15;\n\ninterface TimelineProps {\n  completedMap: CompletedChallenge[];\n  openModal: (arg: string) => void;\n  t: TFunction;\n  username: string;\n}\n\ninterface TimelineInnerProps extends TimelineProps {\n  idToNameMap: Map<string, NameMap>;\n  sort
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:55:24.438Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 50 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nid,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:55:29.452Z
+Question Type: select-all
+Function: Unknown
+Function Size: 58 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nsuperBlock,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:55:31.539Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1629 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: freeCodeCamp-freeCodeCamp-5fd8651/client/src/components/profile/components/time-line.tsx\nimport Loadable from '@loadable/component';\nimport { graphql, useStaticQuery } from 'gatsby';\nimport { reverse, sortBy } from 'lodash-es';\nimport React, { useMemo, useState } from 'react';\nimport type {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:55:32.754Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2094 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: // eslint-disable-next-line @typescript-eslint/no-unsafe-argument\nchallengeFiles:\n          completedChallenge?.challengeFiles?.map(\n            regenerateMissingProperties\n          ) ?? null\n      }\n    : null;\n\n  const id = challengeData?.id;\n  const startIndex = (pageNo - 1) * ITEMS_PER
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T11:55:34.204Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2056 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Items per page in timeline.\nconst ITEMS_PER_PAGE = 15;\n\ninterface TimelineProps {\n  completedMap: CompletedChallenge[];\n  openModal: (arg: string) => void;\n  t: TFunction;\n  username: string;\n}\n\ninterface TimelineInnerProps extends TimelineProps {\n  idToNameMap: Map<string, NameMap>;\n  sort
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761043531405
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 5
+Ended: 2025-10-21T11:55:34.205Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-21T12:32:54.237Z
+File: [2 files: index.ts, static-prop.test.tsx]
+Functions Extracted: 1
+
+
+Function 1: createScopedAnimate
+Language: TypeScript
+Lines: 45
+Full Code:
+--------------------------------------------------------------------------------
+export function createScopedAnimate(scope?: AnimationScope) {
+    function scopedAnimate(
+        sequence: AnimationSequence,
+        options?: SequenceOptions
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate(
+        value: string | MotionValue<string>,
+        keyframes: string | UnresolvedValueKeyframe<string>[],
+        options?: ValueAnimationTransition<string>
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate(
+        value: number | MotionValue<number>,
+        keyframes: number | UnresolvedValueKeyframe<number>[],
+        options?: ValueAnimationTransition<number>
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate<V extends string | number>(
+        value: V | MotionValue<V>,
+        keyframes: V | UnresolvedValueKeyframe<V>[],
+        options?: ValueAnimationTransition<V>
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate(
+        element: ElementOrSelector,
+        keyframes: DOMKeyframesDefinition,
+        options?: DynamicAnimationOptions
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate<O extends {}>(
+        object: O | O[],
+        keyframes: ObjectTarget<O>,
+        options?: DynamicAnimationOptions
+    ): AnimationPlaybackControlsWithThen
+    function scopedAnimate<O extends {}>(
+        subjectOrSequence:
+            | AnimationSequence
+            | MotionValue<number>
+            | MotionValue<string>
+            | number
+            | string
+            | ElementOrSelector
+            | O
+            | O[],
+        optionsOrKeyframes?:
+            | SequenceOptions
+            | number
+            | string
+            | UnresolvedValueKeyframe<number>[]
+            | UnresolvedValueKeyframe<string>[]
+            | DOMKeyframesDefinition
+            | ObjectTarget<O>,
+        options?:
+            | ValueAnimationTransition<number>
+            | ValueAnimationTransition<string>
+            | DynamicAnimationOptions
+    ): AnimationPlaybackControlsWithThen {
+        let animations: AnimationPlaybackControlsWithThen[] = []
+        let animationOnComplete: VoidFunction | undefined
+
+        if (isSequence(subjectOrSequence)) {
+            animations = animateSequence(
+                subjectOrSequence,
+                optionsOrKeyframes as SequenceOptions,
+                scope
+            )
+        } else {
+            // Implementation continues...
+        }
+    }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:33:06.747Z
+Question Type: order-sequence
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:33:12.067Z
+Question Type: select-all
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:33:14.516Z
+Question Type: true-false
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:33:24.277Z
+Question Type: function-variant
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:33:24.297Z
+Question Type: function-variant
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:33:28.696Z
+Question Type: multiple-choice
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:33:36.844Z
+Question Type: true-false
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:33:38.598Z
+Question Type: select-all
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:33:41.212Z
+Question Type: order-sequence
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:33:42.083Z
+Question Type: function-variant
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:33:49.355Z
+Question Type: order-sequence
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:33:51.109Z
+Question Type: order-sequence
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:33:58.448Z
+Question Type: select-all
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:34:08.695Z
+Question Type: select-all
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:34:11.229Z
+Question Type: function-variant
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761043531405
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 1
+Ended: 2025-10-21T12:34:11.230Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:34:39.637Z
+Question Type: order-sequence
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:34:39.650Z
+Question Type: order-sequence
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:34:39.670Z
+Question Type: order-sequence
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:34:43.853Z
+Question Type: multiple-choice
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:34:52.214Z
+Question Type: true-false
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:34:54.974Z
+Question Type: function-variant
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:34:58.350Z
+Question Type: select-all
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:35:09.392Z
+Question Type: function-variant
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:35:13.399Z
+Question Type: select-all
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:35:19.048Z
+Question Type: select-all
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:35:22.311Z
+Question Type: function-variant
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:35:25.924Z
+Question Type: true-false
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:35:28.656Z
+Question Type: select-all
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:35:31.558Z
+Question Type: order-sequence
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T12:35:50.704Z
+Question Type: function-variant
+Function: createScopedAnimate
+Function Size: 2543 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createScopedAnimate (TypeScript)\n// Creates an animation function that is optionally scoped to a specific element.\n\nexport function createScopedAnimate(scope?: AnimationScope) {\n    function scopedAnimate(\n        sequence: AnimationSequence,\n        options?: SequenceOptions\n    ): Ani
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761043531405
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 1
+Ended: 2025-10-21T12:35:50.708Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T13:00:24.781Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2056 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Items per page in timeline.\nconst ITEMS_PER_PAGE = 15;\n\ninterface TimelineProps {\n  completedMap: CompletedChallenge[];\n  openModal: (arg: string) => void;\n  t: TFunction;\n  username: string;\n}\n\ninterface TimelineInnerProps extends TimelineProps {\n  idToNameMap: Map<string, NameMap>;\n  sort
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T13:00:27.206Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2056 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Items per page in timeline.\nconst ITEMS_PER_PAGE = 15;\n\ninterface TimelineProps {\n  completedMap: CompletedChallenge[];\n  openModal: (arg: string) => void;\n  t: TFunction;\n  username: string;\n}\n\ninterface TimelineInnerProps extends TimelineProps {\n  idToNameMap: Map<string, NameMap>;\n  sort
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T13:00:31.025Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2094 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: // eslint-disable-next-line @typescript-eslint/no-unsafe-argument\nchallengeFiles:\n          completedChallenge?.challengeFiles?.map(\n            regenerateMissingProperties\n          ) ?? null\n      }\n    : null;\n\n  const id = challengeData?.id;\n  const startIndex = (pageNo - 1) * ITEMS_PER
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T13:00:31.385Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1629 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: freeCodeCamp-freeCodeCamp-f3d2511/client/src/components/profile/components/time-line.tsx\nimport Loadable from '@loadable/component';\nimport { graphql, useStaticQuery } from 'gatsby';\nimport { reverse, sortBy } from 'lodash-es';\nimport React, { useMemo, useState } from 'react';\nimport type {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T13:00:32.951Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 50 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nid,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T13:01:06.520Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 58 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nsuperBlock,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T13:01:06.634Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 50 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nid,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T13:01:07.448Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2056 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: Items per page in timeline.\nconst ITEMS_PER_PAGE = 15;\n\ninterface TimelineProps {\n  completedMap: CompletedChallenge[];\n  openModal: (arg: string) => void;\n  t: TFunction;\n  username: string;\n}\n\ninterface TimelineInnerProps extends TimelineProps {\n  idToNameMap: Map<string, NameMap>;\n  sort
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T13:01:07.561Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1629 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: freeCodeCamp-freeCodeCamp-f3d2511/client/src/components/profile/components/time-line.tsx\nimport Loadable from '@loadable/component';\nimport { graphql, useStaticQuery } from 'gatsby';\nimport { reverse, sortBy } from 'lodash-es';\nimport React, { useMemo, useState } from 'react';\nimport type {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T13:01:14.902Z
+Question Type: select-all
+Function: Unknown
+Function Size: 50 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nid,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T13:01:17.564Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2094 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: // eslint-disable-next-line @typescript-eslint/no-unsafe-argument\nchallengeFiles:\n          completedChallenge?.challengeFiles?.map(\n            regenerateMissingProperties\n          ) ?? null\n      }\n    : null;\n\n  const id = challengeData?.id;\n  const startIndex = (pageNo - 1) * ITEMS_PER
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T13:01:20.062Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1629 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: freeCodeCamp-freeCodeCamp-f3d2511/client/src/components/profile/components/time-line.tsx\nimport Loadable from '@loadable/component';\nimport { graphql, useStaticQuery } from 'gatsby';\nimport { reverse, sortBy } from 'lodash-es';\nimport React, { useMemo, useState } from 'react';\nimport type {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T13:01:21.067Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2094 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: // eslint-disable-next-line @typescript-eslint/no-unsafe-argument\nchallengeFiles:\n          completedChallenge?.challengeFiles?.map(\n            regenerateMissingProperties\n          ) ?? null\n      }\n    : null;\n\n  const id = challengeData?.id;\n  const startIndex = (pageNo - 1) * ITEMS_PER
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T13:01:22.109Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 58 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nsuperBlock,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-21T13:01:31.290Z
+Question Type: select-all
+Function: Unknown
+Function Size: 58 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nsuperBlock,
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761043531405
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 5
+Ended: 2025-10-21T13:01:31.416Z
+================================================================================
+
