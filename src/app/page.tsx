@@ -76,7 +76,7 @@ export default function Home() {
   const [availableBranches, setAvailableBranches] = useState<Array<{name: string, isDefault: boolean}>>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingBranches, setIsLoadingBranches] = useState(false);
-  const [activeTab, setActiveTab] = useState<'upload' | 'github' | 'curated'>('upload');
+  const [activeTab, setActiveTab] = useState<'upload' | 'github' | 'curated'>('curated');
   const [quizSession, setQuizSession] = useState<any>(null);
   const [streamingQuiz, setStreamingQuiz] = useState<{
     code: string;
