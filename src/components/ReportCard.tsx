@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   analyzeResults,
   generateRecommendations,
@@ -355,6 +355,46 @@ export default function ReportCard({
     }),
     [],
   );
+
+  const formatCodeForDisplay = useCallback((code?: string) => {
+    if (!code) return '';
+    const trimmed = code.trim();
+    if (/\n/.test(trimmed)) {
+      return trimmed;
+    }
+
+    let formatted = trimmed
+      .replace(/\r\n/g, '\n')
+      .replace(/}\s*else\s*{/g, '}\nelse {')
+      .replace(/\)\s*{/g, ') {')
+      .replace(/{\s*/g, '{\n')
+      .replace(/;\s*/g, ';\n')
+      .replace(/\s*}\s*/g, '\n}\n')
+      .replace(/\n+/g, '\n');
+
+    const rawLines = formatted
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+
+    let indent = 0;
+    const INDENT = '  ';
+    const indentedLines = rawLines.map((line) => {
+      if (/^[}\])]/.test(line)) {
+        indent = Math.max(indent - 1, 0);
+      }
+
+      const currentLine = `${INDENT.repeat(indent)}${line}`;
+
+      if (/(\{|\[|\()\s*$/.test(line) || line === 'else') {
+        indent += 1;
+      }
+
+      return currentLine;
+    });
+
+    return indentedLines.join('\n').trim();
+  }, []);
 
   const sectionCardClass =
     'rounded-3xl border border-slate-200/70 bg-white shadow-sm dark:border-slate-700/60 dark:bg-slate-900/80 p-5 sm:p-6';
@@ -717,7 +757,7 @@ export default function ReportCard({
                                         wrapLongLines
                                         customStyle={codeBlockStyle}
                                       >
-                                        {t.bugSnippet}
+                                        {formatCodeForDisplay(t.bugSnippet)}
                                       </SyntaxHighlighter>
                                     </div>
                                   )}
@@ -785,7 +825,7 @@ export default function ReportCard({
                                         wrapLongLines
                                         customStyle={codeBlockStyle}
                                       >
-                                        {t.fixedSnippet}
+                                        {formatCodeForDisplay(t.fixedSnippet)}
                                       </SyntaxHighlighter>
                                     </div>
                                   )}
@@ -813,7 +853,7 @@ export default function ReportCard({
                                               wrapLongLines
                                               customStyle={compactCodeBlockStyle}
                                             >
-                                              {t.sourceQuestion.codeContext}
+                                              {formatCodeForDisplay(t.sourceQuestion.codeContext)}
                                             </SyntaxHighlighter>
                                           </div>
                                         </div>

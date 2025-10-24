@@ -3,6 +3,7 @@
 // Builds quiz based on code with question types: Multiple choice, drag-n-drop
 
 import { NextRequest, NextResponse } from 'next/server';
+import OpenAI from 'openai';
 import { orchestrateGeneration } from '@/lib/question-plugins/orchestrator';
 import { functionVariantPlugin } from '@/lib/question-plugins/functionVariant';
 import { multipleChoicePlugin } from '@/lib/question-plugins/multipleChoice';
@@ -50,6 +51,99 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const openaiClient = new OpenAI({ apiKey: openaiApiKey });
+
+    const formatVariantCode = (code: string): string => {
+      if (!code) return '';
+
+      let formatted = code
+        .replace(/\r\n/g, '\n')
+        .replace(/}\s*else\s*{/g, '}\nelse {')
+        .replace(/\)\s*{/g, ') {')
+        .replace(/\{\s*/g, '{\n')
+        .replace(/;\s*/g, ';\n')
+        .replace(/\s*}\s*/g, '\n}\n')
+        .replace(/\n+/g, '\n');
+
+      const rawLines = formatted
+        .split('\n')
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0);
+
+      let indent = 0;
+      const INDENT = '  ';
+      const indentedLines = rawLines.map((line) => {
+        if (/^[}\])]/.test(line)) {
+          indent = Math.max(indent - 1, 0);
+        }
+
+        const currentLine = `${INDENT.repeat(indent)}${line}`;
+
+        if (/(\{|\[|\()\s*$/.test(line) || line === 'else') {
+          indent += 1;
+        }
+
+        return currentLine;
+      });
+
+      return indentedLines.join('\n').trim();
+    };
+
+    const withTimeout = async <T>(promise: Promise<T>, ms: number): Promise<T> => {
+      let timeoutHandle: ReturnType<typeof setTimeout>;
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        timeoutHandle = setTimeout(() => reject(new Error('Lesson generation timed out')), ms);
+      });
+      try {
+        return await Promise.race([promise, timeoutPromise]);
+      } finally {
+        clearTimeout(timeoutHandle);
+      }
+    };
+
+    const generateLesson = async (concept: string, codeContext: string, questionType: string): Promise<string> => {
+      if (!concept?.trim()) return '';
+
+      const prompt = `
+You are an expert programming educator. Create a brief lesson that teaches the concept being tested.
+
+**Lesson Requirements:**
+- **Concept**: ${concept}
+- **Why Learn This**: Why is this important for developers?
+- **Key Points**: 2-3 essential things to remember
+- **Real Example**: How is this used in actual projects?
+
+**Tone:** Encouraging and practical
+**Length:** 4-5 sentences maximum
+**Focus:** What developers actually need to know
+
+**Code Context:** ${codeContext || 'Not provided'}
+**Question Type:** ${questionType}
+
+Generate a lesson that prepares the learner for this question.
+      `;
+
+      try {
+        const response = await withTimeout(
+          openaiClient.chat.completions.create({
+            model: 'gpt-4o-mini',
+            messages: [{ role: 'user', content: prompt }],
+            temperature: 0.7
+          }),
+          Number(process.env.LESSON_GENERATION_TIMEOUT_MS ?? 6000)
+        );
+
+        const content = response.choices?.[0]?.message?.content?.trim();
+        if (content) {
+          return content;
+        }
+        return buildFallbackLesson(concept, codeContext, questionType);
+      } catch (lessonError) {
+        console.error('❌ Error generating lesson:', lessonError);
+        return buildFallbackLesson(concept, codeContext, questionType);
+      }
+    };
+
     console.log('🤖 Using OpenAI to generate questions based on actual code');
     
     // NEW APPROACH: Extract complete functions from high-score files
@@ -96,8 +190,21 @@ export async function POST(request: NextRequest) {
     // Helper to map raw -> UI
     const mapToUi = (q: unknown, index: number) => {
       console.log('🔍 mapToUi called with:', JSON.stringify(q, null, 2));
-      const questionData = (q as Record<string, unknown>)?.quiz as Record<string, unknown>;
-      
+      const rawRecord = typeof q === 'object' && q !== null ? (q as Record<string, unknown>) : undefined;
+      const questionData = rawRecord?.quiz as Record<string, unknown> | undefined;
+      if (!questionData || typeof questionData !== 'object') {
+        return {
+          id: `q-${Date.now().toString(36)}-${index}`,
+          type: 'unknown',
+          question: 'Unable to parse generated question',
+          options: [],
+          correctAnswer: null,
+          explanation: 'The AI returned an unexpected format.',
+          difficulty: 'medium',
+          variants: [],
+          lesson: ''
+        };
+      }
       // Create deterministic ID based on content hash to ensure consistency
       let contentHash = '';
       try {
@@ -120,7 +227,7 @@ export async function POST(request: NextRequest) {
             ...variant,
             code:
               typeof variant.code === 'string'
-                ? removeComments(variant.code)
+                ? formatVariantCode(removeComments(variant.code))
                 : variant.code
           }));
 
@@ -138,7 +245,8 @@ export async function POST(request: NextRequest) {
           languageColor: questionData.languageColor,
           languageBgColor: questionData.languageBgColor,
           codeContext: questionData.codeContext || (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext) || '',
-          variants: sanitizedVariants
+          variants: sanitizedVariants,
+          lesson: ''
         };
       } else if (questionData.type === 'multiple-choice') {
         const optionsValue = (questionData as { options?: unknown }).options;
@@ -188,7 +296,8 @@ export async function POST(request: NextRequest) {
           languageColor: questionData.languageColor,
           languageBgColor: questionData.languageBgColor,
           codeContext: questionData.codeContext || (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext) || '',
-          variants: []
+          variants: [],
+          lesson: ''
         };
       } else if (questionData.type === 'order-sequence') {
         return {
@@ -209,7 +318,8 @@ export async function POST(request: NextRequest) {
           correctOrder: questionData.correctOrder || [],
           acceptableOrders: questionData.acceptableOrders || [],
           constraints: questionData.constraints || [],
-          variants: []
+          variants: [],
+          lesson: ''
         };
         } else if (questionData.type === 'true-false') {
         const opts = questionData.options || ['True', 'False'];
@@ -238,7 +348,8 @@ export async function POST(request: NextRequest) {
           languageColor: questionData.languageColor,
           languageBgColor: questionData.languageBgColor,
           codeContext: questionData.codeContext || (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext) || '',
-          variants: []
+          variants: [],
+          lesson: ''
         };
       } else if (questionData.type === 'select-all') {
         const opts = questionData.options || [];
@@ -259,7 +370,8 @@ export async function POST(request: NextRequest) {
           languageColor: questionData.languageColor,
           languageBgColor: questionData.languageBgColor,
           codeContext: questionData.codeContext || (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext) || '',
-          variants: []
+          variants: [],
+          lesson: ''
         };
       } else {
         return {
@@ -270,7 +382,8 @@ export async function POST(request: NextRequest) {
           correctAnswer: null,
           explanation: questionData.explanation || '',
           difficulty: 'medium',
-          variants: questionData.variants || []
+          variants: questionData.variants || [],
+          lesson: ''
         };
       }
     };
@@ -313,6 +426,12 @@ export async function POST(request: NextRequest) {
                   console.error('❌ mapToUi failed during streaming:', mapError);
                   return;
                 }
+                try {
+                  ui.lesson = await generateLesson(ui.question, ui.codeContext ?? '', ui.type);
+                } catch (lessonError) {
+                  console.error('❌ Failed to attach lesson (streaming):', lessonError);
+                }
+
                 if (ui.variants && ui.variants.length > 0) {
                   ui.variants = shuffleVariants(ui.variants);
                   ui.variants = balanceVariantVerbosity(ui.variants);
@@ -487,135 +606,37 @@ export async function POST(request: NextRequest) {
     console.log(`📝 Selected functions:`, shuffledGeneratedQuestions.map((q: unknown) => (q as Record<string, unknown>).snippet).slice(0, 5));
     
     // Convert to UI format
-      questions = shuffledGeneratedQuestions.map((q: unknown, index: number) => {
-        // Add debugging and safety checks
-        console.log(`🔍 Processing question ${index + 1}:`, JSON.stringify(q, null, 2));
-        
-        if (!q || !(q as Record<string, unknown>)?.quiz) {
-          console.warn(`⚠️ Question ${index + 1} has invalid structure:`, q);
-          return {
-            id: (index + 1).toString(),
-            type: 'unknown',
-            question: 'Invalid question structure',
-            options: [],
-            correctAnswer: null,
-            explanation: 'This question could not be processed',
-            difficulty: 'medium',
-            variants: []
-          };
-        }
-        
-        const questionData = (q as Record<string, unknown>)?.quiz as Record<string, unknown>;
-        
-        if (questionData.type === 'function-variant') {
-          return {
-            id: (index + 1).toString(),
-            type: questionData.type,
-            question: questionData.question || 'Missing question text',
-            options: [],
-            correctAnswer: null,
-            explanation: '',
-            difficulty: 'medium',
-            variants: (questionData.variants || []).map((v: unknown) => ({
-              ...v,
-              code: typeof v.code === 'string' ? removeComments(v.code) : v.code
-            }))
-          };
-        } else if (questionData.type === 'multiple-choice') {
-          const opts = questionData.options || [];
-          const ansNum = parseInt(questionData.answer);
-          let idx = -1;
-          if (!isNaN(ansNum)) {
-            if (ansNum >= 1 && ansNum <= opts.length) idx = ansNum - 1; // 1-based
-            else if (ansNum >= 0 && ansNum < opts.length) idx = ansNum; // 0-based
-          }
-          // Debug: Check what codeContext we have
-          console.log('🔍 MCQ Processing - questionData.codeContext:', questionData.codeContext);
-          console.log("🔍 MCQ Processing - (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext):", (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext));
-          const finalCodeContext = questionData.codeContext ?? (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext) ?? '';
-          console.log('🔍 MCQ Processing - final codeContext:', finalCodeContext);
-          
-          return {
-            id: (index + 1).toString(),
-            type: questionData.type,
-            question: questionData.question || 'Missing question text',
-            options: opts,
-            correctAnswer: idx >= 0 ? opts[idx] : null,
-            explanation: questionData.explanation || '',
-            difficulty: 'medium',
-            // Include codeContext for MCQ so users can see the function code
-            codeContext: finalCodeContext,
-            variants: []
-          };
-        } else if (questionData.type === 'order-sequence') {
-          return {
-            id: (index + 1).toString(),
-            type: questionData.type,
-            question: questionData.question || 'Arrange the steps in correct order',
-            options: questionData.steps || [],
-            correctAnswer: questionData.correctOrder || [],
-            explanation: questionData.explanation || '',
-            difficulty: 'medium',
-            steps: questionData.steps || [],
-            correctOrder: questionData.correctOrder || [],
-            acceptableOrders: questionData.acceptableOrders || [],
-            constraints: questionData.constraints || [],
-            variants: []
-          };
-        } else if (questionData.type === 'true-false') {
-          const opts = questionData.options || ['True', 'False'];
-          const answer = questionData.answer;
-          let idx = -1;
-          
-          // Handle string answers (TRUE, FALSE, True, False, etc.) - case insensitive
-          if (typeof answer === 'string') {
-            const normalizedAnswer = answer.toLowerCase().trim();
-            if (normalizedAnswer === 'true') idx = 0;
-            else if (normalizedAnswer === 'false') idx = 1;
-          }
-          
-          return {
-            id: (index + 1).toString(),
-            type: questionData.type,
-            question: questionData.question || 'Is this statement true or false?',
-            options: opts,
-            correctAnswer: idx >= 0 ? opts[idx] : null,
-            explanation: questionData.explanation || '',
-            difficulty: 'medium',
-            codeContext: questionData.codeContext || (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext),
-            variants: []
-          };
-        } else if (questionData.type === 'select-all') {
-          const opts = questionData.options || [];
-          const correctAnswers = questionData.correctAnswers || [];
-          
-          return {
-            id: (index + 1).toString(),
-            type: questionData.type,
-            question: questionData.question || 'Select all that apply',
-            options: opts,
-            correctAnswers: correctAnswers, // Array of indices
-            correctAnswer: null, // Not used for select-all
-            explanation: questionData.explanation || '',
-            difficulty: 'medium',
-            codeContext: questionData.codeContext || (typeof q === 'object' && q !== null && (q as { codeContext?: string }).codeContext),
-            variants: []
-          };
-        } else {
-          // Fallback for unknown question types
-          console.warn(`⚠️ Question ${index + 1} has unknown type: ${questionData.type}`);
-          return {
-            id: (index + 1).toString(),
-            type: questionData.type || 'unknown',
-            question: questionData.question || 'Missing question text',
-            options: questionData.options || [],
-            correctAnswer: null,
-            explanation: questionData.explanation || '',
-            difficulty: 'medium',
-            variants: questionData.variants || []
-          };
-        }
-      });
+    questions = shuffledGeneratedQuestions
+      .map((q: unknown, index: number) => {
+        try {
+          return mapToUi(q, index);
+        } catch (mapError) {
+          console.error('❌ mapToUi failed (non-streaming):', mapError);
+      return {
+        id: `fallback-${index}`,
+        type: 'unknown',
+        question: 'Unable to render this question',
+        options: [],
+        correctAnswer: null,
+        explanation: 'An unexpected error occurred while preparing the quiz question.',
+        difficulty: 'medium',
+        variants: [],
+        lesson: ''
+      };
+    }
+  })
+  .filter(Boolean);
+
+    await Promise.allSettled(
+      (questions as Array<Record<string, unknown>>).map(async (question) => {
+        if (!question) return;
+        const concept = typeof question.question === 'string' ? question.question : '';
+        const codeContext = typeof question.codeContext === 'string' ? question.codeContext : '';
+        const questionType = typeof question.type === 'string' ? question.type : 'unknown';
+        const lesson = await generateLesson(concept, codeContext, questionType);
+        question.lesson = lesson;
+      })
+    );
       
       // Shuffle variants for all questions to randomize correct answer position and balance verbosity
       questions.forEach((question: unknown) => {

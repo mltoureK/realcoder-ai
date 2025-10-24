@@ -8,9 +8,9 @@ import QuizInterface from '@/components/QuizInterface';
 import CuratedRepos from '@/components/CuratedRepos';
 import Auth from '@/components/Auth';
 import UserProfile from '@/components/UserProfile';
-import FounderCounter from '@/components/FounderCounter';
 import { useAuth } from '@/context/AuthContext';
 import { checkQuizLimit, incrementQuizCount } from '@/lib/user-management';
+import { FiUpload, FiGithub, FiTarget } from 'react-icons/fi';
 
 interface GitHubRepo {
   owner: string;
@@ -818,7 +818,7 @@ export default function Home() {
         questions: selectedQuestions,
         currentQuestionIndex: 0,
         score: 0,
-        lives: 3,
+        lives: 5,
         lastLifeRefill: new Date(),
         completed: true,
         repositoryInfo: {
@@ -827,7 +827,8 @@ export default function Home() {
           branch: selectedBranch || 'main'
         },
         isCached: true,
-        isStreaming: false
+        isStreaming: false,
+        expectedTotalQuestions: selectedQuestions.length
       };
           
           setQuizSession(cachedSession);
@@ -857,7 +858,7 @@ export default function Home() {
             questions: cachedToUse,
             currentQuestionIndex: 0,
             score: 0,
-            lives: 3,
+            lives: 5,
             lastLifeRefill: new Date(),
             completed: false,
             repositoryInfo: {
@@ -866,7 +867,8 @@ export default function Home() {
               branch: selectedBranch || 'main'
             },
             isCached: true,
-            isStreaming: true // Mark that we're still streaming new questions
+            isStreaming: true, // Mark that we're still streaming new questions
+            expectedTotalQuestions: cachedToUse.length
           };
           
           setQuizSession(cachedSession);
@@ -937,24 +939,28 @@ export default function Home() {
         }
         
         // Initialize empty session and mount UI early
+        const cachedMergeList = typeof window !== 'undefined' && Array.isArray((window as any).__cachedQuestionsToMerge)
+          ? (window as any).__cachedQuestionsToMerge
+          : null;
+
         const initialSession = {
           id: Date.now().toString(),
           title: 'Generated Quiz',
           questions: [] as any[],
           currentQuestionIndex: 0,
           score: 0,
-          lives: 3,
+          lives: 5,
           lastLifeRefill: new Date(),
           completed: false,
           repositoryInfo: {
             owner: githubRepo.owner,
             repo: githubRepo.repo,
             branch: selectedBranch || 'main'
-          }
+          },
+          isStreaming: true,
+          expectedTotalQuestions: cachedMergeList?.length
         } as any;
-        const mergingCachedQuestions = typeof window !== 'undefined'
-          && Array.isArray((window as any).__cachedQuestionsToMerge)
-          && (window as any).__cachedQuestionsToMerge.length > 0;
+        const mergingCachedQuestions = Boolean(cachedMergeList && cachedMergeList.length > 0);
         setQuizSession((prev: any) => {
           if (prev && prev.isCached && mergingCachedQuestions) {
             console.log('♻️ Preserving cached quiz while streaming new questions');
@@ -981,6 +987,16 @@ export default function Home() {
               const evt = JSON.parse(line);
               if (evt.type === 'meta') {
                 console.log('🧩 Expecting ~', evt.expectedTotal, 'questions');
+                const cachedCount = (typeof window !== 'undefined' && Array.isArray((window as any).__cachedQuestionsToMerge))
+                  ? (window as any).__cachedQuestionsToMerge.length
+                  : 0;
+                setQuizSession((prev: any) => {
+                  if (!prev) return prev;
+                  const totalExpected = typeof evt.expectedTotal === 'number'
+                    ? evt.expectedTotal + cachedCount
+                    : prev.expectedTotalQuestions;
+                  return { ...prev, expectedTotalQuestions: totalExpected };
+                });
               } else if (evt.type === 'question') {
                 total += 1;
                 console.log('📝 Received question', total, ':', evt.question);
@@ -1091,7 +1107,7 @@ export default function Home() {
           questions: [] as any[],
           currentQuestionIndex: 0,
           score: 0,
-          lives: 3,
+          lives: 5,
           lastLifeRefill: new Date(),
           completed: false,
           repositoryInfo: {
@@ -1201,91 +1217,102 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-14 sm:h-16">
+    <div className="relative min-h-screen overflow-hidden bg-[#05040f] text-slate-100">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.18),_transparent_60%)]" />
+      <div className="pointer-events-none absolute -top-32 right-[-140px] h-[420px] w-[420px] rounded-full bg-cyan-500/20 blur-[140px]" />
+      <div className="pointer-events-none absolute bottom-[-180px] left-[-160px] h-[380px] w-[380px] rounded-full bg-fuchsia-500/20 blur-[150px]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,_rgba(34,211,238,0.12)_0%,_transparent_45%,_rgba(244,114,182,0.1)_80%)]" />
+      <div className="relative z-10 flex min-h-screen flex-col">
+        {/* Header */}
+        <header className="sticky top-0 z-20 border-b border-cyan-400/15 bg-black/40 backdrop-blur-xl">
+          <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:h-20 sm:px-6">
             <div className="flex items-center">
-              <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-lg font-semibold tracking-tight text-cyan-100 drop-shadow sm:text-2xl">
                 RealCoder AI
               </h1>
-              <span className="ml-2 sm:ml-3 px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full">
+              <span className="ml-2 rounded-full border border-cyan-400/40 px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300/80 shadow-[0_0_14px_rgba(34,211,238,0.35)] sm:ml-3">
                 Beta
               </span>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
               {loading ? (
-                <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-gray-600"></div>
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-cyan-400/60 border-t-transparent"></div>
               ) : user ? (
                 <UserProfile />
               ) : (
                 <button
                   onClick={() => setShowAuth(true)}
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
+                  className="rounded-full bg-cyan-500/90 px-4 py-2 text-sm font-semibold uppercase tracking-wide text-black shadow-[0_0_18px_rgba(34,211,238,0.55)] transition-all hover:bg-cyan-400 hover:shadow-[0_0_22px_rgba(34,211,238,0.7)] sm:text-base"
                 >
                   Sign In
                 </button>
               )}
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
-        <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
-            Learn from Real Code
-          </h2>
-          <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-4">
-            Upload your project files or connect a GitHub repository to generate personalized quizzes and test your coding knowledge.
-          </p>
-        </div>
-
-        {/* Founder Counter - Above the fold */}
-        <FounderCounter />
-
-        {/* Input Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6 lg:p-8">
-          {/* Tab Navigation */}
-          <div className="flex space-x-1 mb-6 sm:mb-8 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-            <button
-              onClick={() => setActiveTab('upload')}
-              className={`flex-1 py-2 px-2 sm:px-4 rounded-md text-xs sm:text-sm font-medium transition-colors ${
-                activeTab === 'upload'
-                  ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-              }`}
-            >
-              <span className="hidden sm:inline">📁 Upload Files</span>
-              <span className="sm:hidden">📁 Upload</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('github')}
-              className={`flex-1 py-2 px-2 sm:px-4 rounded-md text-xs sm:text-sm font-medium transition-colors ${
-                activeTab === 'github'
-                  ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-              }`}
-            >
-              <span className="hidden sm:inline">🐙 GitHub Repo</span>
-              <span className="sm:hidden">🐙 GitHub</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('curated')}
-              className={`flex-1 py-2 px-2 sm:px-4 rounded-md text-xs sm:text-sm font-medium transition-colors ${
-                activeTab === 'curated'
-                  ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-              }`}
-            >
-              <span className="hidden sm:inline">🎯 Curated Repos</span>
-              <span className="sm:hidden">🎯 Curated</span>
-            </button>
+        {/* Main Content */}
+        <main className="relative mx-auto w-full max-w-5xl flex-1 px-4 pb-20 pt-10 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="mx-auto mb-6 inline-flex items-center rounded-full border border-cyan-400/20 bg-white/5 px-4 py-1 text-xs uppercase tracking-[0.45em] text-cyan-200/80 backdrop-blur">
+              Learn by shipping
+            </div>
+            <h2 className="mb-4 text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
+              <span className="bg-gradient-to-r from-cyan-300 via-sky-400 to-fuchsia-400 bg-clip-text text-transparent">
+                Master real-world code, faster.
+              </span>
+            </h2>
+            <p className="mx-auto mb-12 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
+              Generate quizzes from any repository, sharpen your intuition, and explore curated codebases, all inside a neon-powered workspace tuned for developers.
+            </p>
           </div>
 
-          {/* Controls Row */}
+          {/* Input Card */}
+          <div className="relative overflow-hidden rounded-2xl border border-cyan-400/20 bg-black/60 p-5 shadow-[0_0_45px_rgba(56,189,248,0.15)] backdrop-blur-xl sm:p-8">
+            <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent"></div>
+            <div className="pointer-events-none absolute inset-y-4 left-0 w-px bg-cyan-400/10"></div>
+            <div className="pointer-events-none absolute inset-y-4 right-0 w-px bg-cyan-400/10"></div>
+            {/* Tab Navigation */}
+            <div className="mb-6 grid grid-cols-3 gap-2 rounded-full border border-cyan-400/20 bg-white/5 p-1 backdrop-blur sm:mb-8">
+              <button
+                onClick={() => setActiveTab('upload')}
+                className={`flex items-center justify-center rounded-full px-2 py-2 text-[11px] font-medium uppercase tracking-wide transition-all sm:text-xs ${
+                  activeTab === 'upload'
+                    ? 'border border-cyan-300/60 bg-cyan-400/20 text-cyan-100 shadow-[0_0_18px_rgba(34,211,238,0.4)]'
+                    : 'text-slate-400 hover:text-cyan-100'
+                }`}
+              >
+                <FiUpload className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">Upload Files</span>
+                <span className="sm:hidden">Upload</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('github')}
+                className={`flex items-center justify-center rounded-full px-2 py-2 text-[11px] font-medium uppercase tracking-wide transition-all sm:text-xs ${
+                  activeTab === 'github'
+                    ? 'border border-cyan-300/60 bg-cyan-400/20 text-cyan-100 shadow-[0_0_18px_rgba(34,211,238,0.4)]'
+                    : 'text-slate-400 hover:text-cyan-100'
+                }`}
+              >
+                <FiGithub className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">GitHub Repo</span>
+                <span className="sm:hidden">GitHub</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('curated')}
+                className={`flex items-center justify-center rounded-full px-2 py-2 text-[11px] font-medium uppercase tracking-wide transition-all sm:text-xs ${
+                  activeTab === 'curated'
+                    ? 'border border-cyan-300/60 bg-cyan-400/20 text-cyan-100 shadow-[0_0_18px_rgba(34,211,238,0.4)]'
+                    : 'text-slate-400 hover:text-cyan-100'
+                }`}
+              >
+                <FiTarget className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">Curated Repos</span>
+                <span className="sm:hidden">Curated</span>
+              </button>
+            </div>
+
+            {/* Controls Row */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
             </div>
@@ -1293,12 +1320,13 @@ export default function Home() {
 
           {/* Upload Files Tab */}
           {activeTab === 'upload' && (
-            <div className="space-y-6">
+            <div className="space-y-6 animate-fadeIn">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.3em] text-cyan-200/80">
                   Select Project Files
                 </label>
-                <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-colors">
+                <div className="group relative overflow-hidden rounded-xl border border-cyan-400/30 bg-white/5 p-6 text-center transition-all hover:border-cyan-300/70 hover:shadow-[0_0_28px_rgba(34,211,238,0.35)] sm:p-8">
+                  <div className="pointer-events-none absolute inset-2 rounded-lg border border-white/10 opacity-0 transition-opacity group-hover:opacity-100" />
                   <input
                     type="file"
                     multiple
@@ -1309,16 +1337,16 @@ export default function Home() {
                   />
                   <label htmlFor="file-upload" className="cursor-pointer">
                     <div className="space-y-4">
-                      <div className="mx-auto w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                        <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-cyan-500/10">
+                        <svg className="h-7 w-7 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
                       </div>
                       <div>
-                        <p className="text-lg font-medium text-gray-900 dark:text-white">
+                        <p className="text-lg font-semibold text-white">
                           Drop files here or click to upload
                         </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <p className="text-sm text-slate-300/80">
                           Supports JavaScript, TypeScript, Python, Java, C++, and more
                         </p>
                       </div>
@@ -1330,21 +1358,19 @@ export default function Home() {
               {/* Selected Files */}
               {selectedFiles.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-cyan-200/90">
                     Selected Files ({selectedFiles.length})
                   </h3>
-                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                  <div className="max-h-40 space-y-2 overflow-y-auto">
                     {selectedFiles.map((file, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
+                      <div key={index} className="flex items-center justify-between rounded-lg border border-white/5 bg-white/5 p-3 backdrop-blur">
                         <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded flex items-center justify-center">
-                            <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
-                              {file.name.split('.').pop()?.toUpperCase()}
-                            </span>
+                          <div className="flex h-8 w-8 items-center justify-center rounded bg-cyan-500/15 text-[10px] font-semibold uppercase tracking-wide text-cyan-300">
+                            {file.name.split('.').pop()?.toUpperCase()}
                           </div>
-                          <span className="text-sm text-gray-900 dark:text-white">{file.name}</span>
+                          <span className="text-sm text-white">{file.name}</span>
                         </div>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                        <span className="text-xs text-slate-400">
                           {(file.size / 1024).toFixed(1)} KB
                         </span>
                       </div>
@@ -1357,9 +1383,9 @@ export default function Home() {
 
           {/* GitHub Repo Tab */}
           {activeTab === 'github' && (
-            <div className="space-y-6">
+            <div className="space-y-6 animate-fadeIn">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.3em] text-cyan-200/80">
                   GitHub Repository URL
                 </label>
                 <input
@@ -1367,23 +1393,21 @@ export default function Home() {
                   value={githubUrl}
                   onChange={(e) => handleGitHubUrlChange(e.target.value)}
                   placeholder="e.g., https://github.com/facebook/react"
-                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white ${
+                  className={`w-full rounded-xl border bg-black/40 px-4 py-3 text-sm text-white placeholder:text-slate-500 transition-all focus:outline-none focus:ring-2 focus:ring-cyan-300/80 focus:border-cyan-300 ${
                     githubRepo.owner && githubRepo.repo 
-                      ? 'border-green-500 focus:border-green-500' 
-                      : 'border-gray-300 dark:border-gray-600'
+                      ? 'border-emerald-400/60 shadow-[0_0_18px_rgba(16,185,129,0.35)] focus:ring-emerald-300/80'
+                      : 'border-white/10 hover:border-cyan-200/40'
                   }`}
                 />
                 {githubRepo.owner && githubRepo.repo && (
-                  <div className="mt-2 flex items-center space-x-2 text-sm text-green-600 dark:text-green-400">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>✓ Repository found: {githubRepo.owner}/{githubRepo.repo}</span>
+                  <div className="mt-2 flex items-center space-x-2 text-sm text-emerald-300">
+                    <div className="h-2 w-2 animate-pulse rounded-full bg-emerald-400"></div>
+                    <span>Repository found: {githubRepo.owner}/{githubRepo.repo}</span>
                   </div>
                 )}
                 {githubUrl && !githubRepo.owner && (
-                  <div className="mt-2 flex items-center space-x-2 text-sm text-red-600 dark:text-red-400">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="mt-2 flex items-center space-x-2 text-sm text-rose-300">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                     <span>Invalid GitHub URL format</span>
@@ -1394,21 +1418,21 @@ export default function Home() {
               {/* Branch Selector */}
               {githubRepo.owner && githubRepo.repo && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.3em] text-cyan-200/80">
                     Select Branch
                   </label>
                   {isLoadingBranches ? (
-                    <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700">
-                      <div className="flex items-center space-x-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Loading branches...</span>
+                    <div className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3">
+                      <div className="flex items-center space-x-3 text-sm text-slate-300">
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-cyan-400/70 border-t-transparent"></div>
+                        <span>Loading branches...</span>
                       </div>
                     </div>
                   ) : availableBranches.length > 0 ? (
                     <select
                       value={selectedBranch}
                       onChange={(e) => handleBranchChange(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                      className="w-full rounded-xl border border-white/10 bg-black/60 px-4 py-3 text-sm text-white transition-all focus:outline-none focus:ring-2 focus:ring-cyan-300/80 focus:border-cyan-300"
                     >
                       {availableBranches.map((branch) => (
                         <option key={branch.name} value={branch.name}>
@@ -1417,13 +1441,13 @@ export default function Home() {
                       ))}
                     </select>
                   ) : (
-                    <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-sm text-gray-600 dark:text-gray-400">
+                    <div className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-slate-300">
                       No branches found
                     </div>
                   )}
                   {selectedBranch && (
-                    <div className="mt-2 text-sm text-blue-600 dark:text-blue-400">
-                      ✓ Selected branch: <span className="font-mono">{selectedBranch}</span>
+                    <div className="mt-2 text-sm text-cyan-200">
+                      Selected branch: <span className="font-mono text-cyan-100">{selectedBranch}</span>
                     </div>
                   )}
                 </div>
@@ -1432,17 +1456,17 @@ export default function Home() {
               {/* Language Selection */}
               {availableLanguages.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  <label className="mb-3 block text-xs font-semibold uppercase tracking-[0.3em] text-cyan-200/80">
                     Select Programming Languages to Test
                   </label>
                   
                   {/* GitHub-style Language Bar */}
                   <div className="mb-4">
-                    <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600">
+                    <div className="flex overflow-hidden rounded-lg border border-white/10 bg-white/5 backdrop-blur">
                       {availableLanguages.map((language, index) => (
                         <div
                           key={language.name}
-                          className="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          className="flex cursor-pointer items-center justify-between px-3 py-2 text-xs text-slate-200 transition-colors hover:bg-cyan-400/10"
                           style={{
                             width: `${language.percentage}%`,
                             backgroundColor: selectedLanguages.includes(language.name) 
@@ -1457,10 +1481,10 @@ export default function Home() {
                             }
                           }}
                         >
-                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+                          <span className="text-sm font-medium text-white truncate">
                             {language.name}
                           </span>
-                          <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+                          <span className="ml-2 text-[11px] text-cyan-100/70">
                             {language.percentage}%
                           </span>
                         </div>
@@ -1469,9 +1493,9 @@ export default function Home() {
                   </div>
 
                   {/* Individual Language Checkboxes */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
                     {availableLanguages.map((language) => (
-                      <label key={language.name} className="flex items-center space-x-3 cursor-pointer p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                      <label key={language.name} className="flex cursor-pointer items-center space-x-3 rounded-xl border border-white/8 bg-white/5 p-3 text-sm transition-all duration-200 hover:-translate-y-1 hover:border-cyan-300/40 hover:bg-cyan-400/5 hover:shadow-[0_0_22px_rgba(56,189,248,0.25)]">
                         <input
                           type="checkbox"
                           checked={selectedLanguages.includes(language.name)}
@@ -1482,13 +1506,13 @@ export default function Home() {
                               setSelectedLanguages(selectedLanguages.filter(l => l !== language.name));
                             }
                           }}
-                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          className="rounded border-white/20 text-cyan-300 focus:ring-cyan-300 focus:ring-offset-0 focus:ring-offset-transparent"
                         />
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+                          <div className="truncate text-sm font-medium text-white">
                             {language.name}
                           </div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                          <div className="text-xs text-cyan-100/70">
                             {language.fileCount} files ({language.percentage}%)
                           </div>
                         </div>
@@ -1497,14 +1521,14 @@ export default function Home() {
                   </div>
 
                   <div className="mt-3 flex items-center justify-between text-sm">
-                    <div className="text-gray-600 dark:text-gray-400">
+                    <div className="text-slate-300">
                       {selectedLanguages.length > 0 ? (
-                        <span className="text-green-600 dark:text-green-400">
-                          ✓ {selectedLanguages.length} language{selectedLanguages.length !== 1 ? 's' : ''} selected
+                        <span className="text-emerald-300">
+                          {selectedLanguages.length} language{selectedLanguages.length !== 1 ? 's' : ''} selected
                         </span>
                       ) : (
-                        <span className="text-red-600 dark:text-red-400">
-                          ⚠️ No languages selected
+                        <span className="text-rose-300">
+                          No languages selected
                         </span>
                       )}
                     </div>
@@ -1517,7 +1541,7 @@ export default function Home() {
                           setSelectedLanguages(availableLanguages.map(lang => lang.name));
                         }
                       }}
-                      className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
+                      className="font-semibold text-cyan-200 transition-colors hover:text-cyan-100"
                     >
                       {selectedLanguages.length === availableLanguages.length ? 'Deselect All' : 'Select All'}
                     </button>
@@ -1527,12 +1551,12 @@ export default function Home() {
               
               {/* Trending Repositories */}
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Try trending repositories:</p>
+                <div className="mb-3 flex items-center justify-between">
+                  <p className="text-sm uppercase tracking-[0.25em] text-cyan-200/70">Try trending repositories</p>
                   <button
                     onClick={loadTrendingRepos}
                     disabled={isLoadingTrending}
-                    className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-50"
+                    className="text-xs font-semibold text-cyan-200 transition-colors hover:text-cyan-100 disabled:opacity-40"
                   >
                     {isLoadingTrending ? 'Loading...' : 'Refresh'}
                   </button>
@@ -1542,13 +1566,13 @@ export default function Home() {
                   <div className="space-y-3">
                     {/* Popular Quick Access */}
                     <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Popular:</p>
-                      <div className="flex flex-wrap gap-2">
+                      <p className="mb-2 text-xs text-slate-300/80">Popular:</p>
+                      <div className="flex flex-wrap gap-2 text-xs">
                         {trendingRepos.slice(0, 6).map((repo) => (
                           <button
                             key={repo.url}
                             onClick={() => handleRepositorySelect(repo.url)}
-                            className="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                            className="rounded-full border border-cyan-300/30 bg-cyan-400/10 px-3 py-1 text-cyan-100 transition-colors hover:border-cyan-200/60 hover:bg-cyan-400/20"
                             title={repo.description}
                           >
                             {repo.name}
@@ -1559,21 +1583,21 @@ export default function Home() {
                     
                     {/* Categorized List */}
                     <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Browse by category:</p>
-                      <div className="max-h-40 overflow-y-auto space-y-2">
+                      <p className="mb-2 text-xs text-slate-300/80">Browse by category:</p>
+                      <div className="max-h-40 space-y-2 overflow-y-auto">
                         {['Frontend Framework', 'Backend Framework', 'Language', 'Build Tool'].map(category => {
                           const categoryRepos = trendingRepos.filter(repo => repo.category === category);
                           if (categoryRepos.length === 0) return null;
                           
                           return (
                             <div key={category} className="space-y-1">
-                              <p className="text-xs font-medium text-gray-600 dark:text-gray-300">{category}:</p>
-                              <div className="flex flex-wrap gap-1">
+                              <p className="text-xs font-medium text-cyan-200/80">{category}:</p>
+                              <div className="flex flex-wrap gap-1 text-[11px]">
                                 {categoryRepos.slice(0, 4).map(repo => (
                                   <button
                                     key={repo.url}
                                     onClick={() => handleRepositorySelect(repo.url)}
-                                    className="px-2 py-1 text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                                    className="rounded border border-white/10 bg-white/5 px-2 py-1 text-cyan-100 transition-colors hover:border-cyan-300/40 hover:bg-cyan-400/10"
                                     title={`${repo.description} • ${repo.stars} stars • ${repo.difficulty}`}
                                   >
                                     {repo.name}
@@ -1587,7 +1611,7 @@ export default function Home() {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 text-xs">
                     {/* Fallback to basic popular repos */}
                     {[
                       { name: 'React', url: 'https://github.com/facebook/react' },
@@ -1598,7 +1622,7 @@ export default function Home() {
                       <button
                         key={repo.url}
                         onClick={() => handleRepositorySelect(repo.url)}
-                        className="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                        className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-cyan-100 transition-colors hover:border-cyan-300/40 hover:bg-cyan-400/10"
                       >
                         {repo.name}
                       </button>
@@ -1611,31 +1635,31 @@ export default function Home() {
 
           {/* Curated Repos Tab */}
           {activeTab === 'curated' && (
-            <div className="space-y-6">
+            <div className="space-y-6 animate-fadeIn">
               <CuratedRepos onRepoSelect={handleRepositorySelect} />
             </div>
           )}
 
           {/* Quiz Limit Display (only for non-premium users) */}
           {user && quizLimit && !quizLimit.isPremium && (
-            <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-              <div className="flex items-center justify-between">
+            <div className="mt-6 rounded-2xl border border-cyan-400/20 bg-black/50 p-5 shadow-[0_0_30px_rgba(56,189,248,0.1)] backdrop-blur">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   {user.isAnonymous ? (
                     <>
-                      <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                      <p className="text-sm font-semibold text-cyan-100">
                         {quizLimit.weeklyRemaining} quizzes remaining (anonymous)
                       </p>
-                      <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                      <p className="mt-1 text-xs text-slate-300">
                         Sign up to get 5 quizzes per week • Unlimited with premium
                       </p>
                     </>
                   ) : (
                     <>
-                      <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                      <p className="text-sm font-semibold text-cyan-100">
                         {quizLimit.weeklyRemaining} quizzes remaining this week
                       </p>
-                      <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                      <p className="mt-1 text-xs text-slate-300">
                         {quizLimit.monthlyRemaining} remaining this month • Resets {new Date(quizLimit.weekResetDate || Date.now()).toLocaleDateString()}
                       </p>
                     </>
@@ -1643,7 +1667,7 @@ export default function Home() {
                 </div>
                 <button
                   onClick={() => setShowUpgradeModal(true)}
-                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-medium rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all"
+                  className="rounded-full border border-fuchsia-400/40 bg-gradient-to-r from-fuchsia-500/70 to-cyan-400/80 px-6 py-2 text-sm font-semibold uppercase tracking-wide text-black shadow-[0_0_24px_rgba(232,121,249,0.35)] transition-transform hover:-translate-y-0.5 hover:shadow-[0_0_28px_rgba(56,189,248,0.4)]"
                 >
                   {user.isAnonymous ? 'Sign Up' : 'Upgrade'}
                 </button>
@@ -1652,34 +1676,36 @@ export default function Home() {
           )}
 
           {/* Generate Quiz Button */}
-          <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <div className="mt-10 border-t border-white/10 pt-8">
             {/* Time Estimate Warning for repos without cache */}
             {activeTab === 'github' && githubRepo.owner && githubRepo.repo && availableBranches.length > 0 && displayedCachedQuestionCount < 15 && (
-              <div className="mb-4 p-4 bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-300 dark:border-amber-700 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <svg className="w-6 h-6 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+              <div className="mb-6 rounded-2xl border border-cyan-400/20 bg-black/60 p-5 shadow-[0_0_35px_rgba(56,189,248,0.15)] backdrop-blur">
+                <div className="flex items-start gap-4">
+                  <div className="mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-200">
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                  </div>
                   <div className="flex-1">
-                    <h4 className="font-semibold text-amber-900 dark:text-amber-100 text-sm mb-1">
-                      ⏱️ First Generation Takes ~40 seconds
+                    <h4 className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">
+                      Building Your Quiz
                     </h4>
-                    <p className="text-xs text-amber-800 dark:text-amber-200 mb-2">
+                    <p className="mb-3 text-sm leading-relaxed text-slate-200">
                       {displayedCachedQuestionCount === 0
                         ? hidePassedQuestions && user && hiddenQuestionDelta > 0
-                          ? 'No cached questions remain after hiding the ones you already passed.'
-                          : 'This repository has no cached questions yet.'
-                        : `This repository has only ${displayedCachedQuestionCount} cached question${displayedCachedQuestionCount !== 1 ? 's' : ''}.`}
-                      The AI needs time to analyze the code and generate quality questions.
+                          ? 'No questions remain after filtering out the ones you already passed.'
+                          : 'This repository is new to our system.'
+                        : `This repository has ${displayedCachedQuestionCount} question${displayedCachedQuestionCount !== 1 ? 's' : ''} in our database.`}
+                      We're creating fresh questions tailored to this codebase.
                     </p>
-                    <div className="bg-white dark:bg-gray-800 rounded p-2 border border-amber-200 dark:border-amber-800">
-                      <p className="text-xs font-medium text-amber-900 dark:text-amber-100 mb-1">
-                        💡 Help speed it up for everyone:
+                    <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.3em] text-cyan-200">
+                        How you can help:
                       </p>
-                      <ul className="text-xs text-amber-800 dark:text-amber-200 space-y-0.5 ml-4 list-disc">
-                        <li>Wait for generation to complete (grab a ☕!)</li>
-                        <li>Upvote good questions after taking the quiz</li>
-                        <li>Next time it'll be instant with cached questions!</li>
+                      <ul className="ml-4 list-disc space-y-1 text-xs text-slate-200">
+                        <li>Let the generation finish (perfect time for a coffee break!)</li>
+                        <li>Rate questions after taking the quiz</li>
+                        <li>Future quizzes will load instantly</li>
                       </ul>
                     </div>
                   </div>
@@ -1690,11 +1716,11 @@ export default function Home() {
             <button
               onClick={handleGenerateQuiz}
               disabled={!canGenerateQuiz() || isLoading}
-              className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full rounded-full border border-cyan-400/30 bg-gradient-to-r from-cyan-500/80 via-sky-500/80 to-fuchsia-500/70 px-6 py-3 text-base font-semibold uppercase tracking-wide text-black shadow-[0_0_30px_rgba(56,189,248,0.45)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_36px_rgba(244,114,182,0.45)] focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-[#05040f] disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/5 disabled:text-slate-400 disabled:shadow-none"
             >
               {isLoading ? (
                 <div className="flex items-center justify-center space-x-2">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-black/40 border-t-transparent"></div>
                   <span>Generating Quiz...</span>
                 </div>
               ) : displayedCachedQuestionCount >= 15 ? (
@@ -1706,7 +1732,7 @@ export default function Home() {
               )}
             </button>
             <div className="mt-3 space-y-2">
-              <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+              <p className="text-xs text-center text-slate-400">
                 Uses 1 life • Quiz will be generated based on your code
               </p>
               
@@ -1714,17 +1740,17 @@ export default function Home() {
               {activeTab === 'github' && githubRepo.owner && githubRepo.repo && availableBranches.length > 0 && (
                 <div className="flex items-center justify-center gap-2">
                   {displayedCachedQuestionCount > 0 ? (
-                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-300 dark:border-green-700 rounded-lg px-4 py-2">
+                    <div className="rounded-xl border border-emerald-400/30 bg-emerald-500/5 px-4 py-3 shadow-[0_0_24px_rgba(16,185,129,0.15)]">
                       <div className="flex items-center gap-2">
-                        <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="h-5 w-5 text-emerald-300" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
                           <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
                         <div>
-                          <div className="text-sm font-bold text-green-800 dark:text-green-200">
+                          <div className="text-sm font-semibold text-emerald-200">
                             {displayedCachedQuestionCount >= 50 ? '⚡ INSTANT QUIZ' : `${displayedCachedQuestionCount} Cached Questions`}
                           </div>
-                          <div className="text-xs text-green-600 dark:text-green-400">
+                          <div className="text-xs text-emerald-200/80">
                             {displayedCachedQuestionCount >= 50 
                               ? 'All questions from community (no loading!)' 
                               : displayedCachedQuestionCount >= 8
@@ -1734,7 +1760,7 @@ export default function Home() {
                               : `${Math.min(10, displayedCachedQuestionCount)} will load instantly`}
                           </div>
                           {hidePassedQuestions && user && hiddenQuestionDelta > 0 && (
-                            <div className="text-[11px] text-green-700 dark:text-green-300">
+                            <div className="text-[11px] text-emerald-200/70">
                               Hiding {hiddenQuestionDelta} passed question{hiddenQuestionDelta !== 1 ? 's' : ''} (from {cachedQuestionCountAll} total)
                             </div>
                           )}
@@ -1742,14 +1768,12 @@ export default function Home() {
                       </div>
                     </div>
                   ) : (
-                    <div className="bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-2">
-                      <div className="flex items-center gap-2">
-                        <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                    <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+                      <div className="flex items-center gap-3 text-xs text-slate-200">
+                        <svg className="h-4 w-4 text-cyan-300" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                         </svg>
-                        <span className="text-xs text-gray-600 dark:text-gray-400">
-                          No cached questions yet - be the first to build the question bank!
-                        </span>
+                        <span>No cached questions yet - be the first to build the question bank!</span>
                       </div>
                     </div>
                   )}
@@ -1758,17 +1782,15 @@ export default function Home() {
               
               {/* Hide Passed Questions Toggle - Only show for logged-in users */}
               {activeTab === 'github' && user && (
-                <div className="flex items-center justify-center mt-3">
-                  <label className="flex items-center gap-2 cursor-pointer">
+                <div className="mt-3 flex items-center justify-center">
+                  <label className="flex cursor-pointer items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition-colors hover:border-cyan-300/30 hover:bg-cyan-400/10">
                     <input
                       type="checkbox"
                       checked={hidePassedQuestions}
                       onChange={(e) => setHidePassedQuestions(e.target.checked)}
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      className="h-4 w-4 rounded border-white/20 bg-black/60 text-cyan-300 focus:ring-cyan-300 focus:ring-offset-0"
                     />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                      Hide questions I've already passed
-                    </span>
+                    <span>Hide questions I've already passed</span>
                   </label>
                 </div>
               )}
@@ -1777,35 +1799,41 @@ export default function Home() {
         </div>
 
         {/* Features Section */}
-        <div className="mt-12 sm:mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-          <div className="text-center">
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="mt-16 grid grid-cols-1 gap-6 sm:mt-20 md:grid-cols-3">
+          <div className="rounded-2xl border border-cyan-400/15 bg-white/5 p-6 text-center shadow-[0_0_30px_rgba(56,189,248,0.12)] backdrop-blur">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-cyan-500/10 text-cyan-200">
+              <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Smart Questions</h3>
-            <p className="text-gray-600 dark:text-gray-400">AI-generated questions based on your actual code patterns and logic.</p>
+            <h3 className="mb-2 text-lg font-semibold text-white">Smart Questions</h3>
+            <p className="text-sm text-slate-300">
+              Questions crafted from your actual code patterns and logic.
+            </p>
           </div>
           
-          <div className="text-center">
-            <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="rounded-2xl border border-cyan-400/15 bg-white/5 p-6 text-center shadow-[0_0_30px_rgba(56,189,248,0.12)] backdrop-blur">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-200">
+              <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Learn by Doing</h3>
-            <p className="text-gray-600 dark:text-gray-400">Practice with real-world code from popular repositories and your own projects.</p>
+            <h3 className="mb-2 text-lg font-semibold text-white">Learn by Doing</h3>
+            <p className="text-sm text-slate-300">
+              Practice with real-world code from popular repositories and your own projects.
+            </p>
           </div>
           
-          <div className="text-center">
-            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="rounded-2xl border border-cyan-400/15 bg-white/5 p-6 text-center shadow-[0_0_30px_rgba(56,189,248,0.12)] backdrop-blur">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-fuchsia-500/10 text-fuchsia-200">
+              <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Track Progress</h3>
-            <p className="text-gray-600 dark:text-gray-400">Monitor your learning progress and identify areas for improvement.</p>
+            <h3 className="mb-2 text-lg font-semibold text-white">Track Progress</h3>
+            <p className="text-sm text-slate-300">
+              Monitor your learning progress and identify areas for improvement.
+            </p>
           </div>
         </div>
       </main>
@@ -1836,63 +1864,61 @@ export default function Home() {
 
       {/* Upgrade Modal (Simple placeholder - Task 9 will enhance this) */}
       {showUpgradeModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
-            <button
-              onClick={() => setShowUpgradeModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-            
-            <div className="text-center">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900 dark:to-blue-900">
-                <svg className="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+          <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-cyan-400/20 bg-black/80 p-8 shadow-[0_0_45px_rgba(56,189,248,0.3)]">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.22),_transparent_70%)]" />
+            <div className="relative">
+              <button
+                onClick={() => setShowUpgradeModal(false)}
+                className="absolute right-4 top-4 text-cyan-200/70 transition-colors hover:text-cyan-100"
+              >
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
-              </div>
-              <h3 className="mt-4 text-2xl font-bold text-gray-900 dark:text-white">
-                Quiz Limit Reached
-              </h3>
-              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                {quizLimit?.reason}
-              </p>
-              
-              <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
-                  🏆 Upgrade to Founder Tier
-                </h4>
-                <ul className="text-sm text-left text-gray-700 dark:text-gray-300 space-y-2">
-                  <li>✅ Unlimited quizzes</li>
-                  <li>✅ Founder badge</li>
-                  <li>✅ Lifetime pricing ($5/month)</li>
-                  <li>✅ Support development</li>
-                </ul>
-              </div>
+              </button>
 
-              <div className="mt-6 flex gap-3">
-                <button
-                  onClick={() => setShowUpgradeModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                >
-                  Maybe Later
-                </button>
-                <button
-                  onClick={() => {
-                    setShowUpgradeModal(false);
-                    router.push('/pricing');
-                  }}
-                  className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all font-medium"
-                >
-                  Upgrade Now
-                </button>
+              <div className="text-center">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-cyan-400/30 bg-gradient-to-br from-fuchsia-500/40 via-cyan-400/30 to-transparent text-white shadow-[0_0_26px_rgba(244,114,182,0.4)]">
+                  <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <h3 className="mt-4 text-2xl font-bold text-white">Quiz Limit Reached</h3>
+                <p className="mt-2 text-sm text-slate-300">{quizLimit?.reason}</p>
+
+                <div className="mt-6 rounded-xl border border-cyan-400/20 bg-white/5 p-5 text-left">
+                  <h4 className="mb-3 text-base font-semibold text-white">🏆 Unlock More Quizzes</h4>
+                  <ul className="space-y-2 text-sm text-slate-200">
+                    <li>✅ Increase your weekly quiz allowance</li>
+                    <li>✅ Save and revisit quiz history</li>
+                    <li>✅ Access premium curated repositories</li>
+                    <li>✅ Priority question generation during peak hours</li>
+                  </ul>
+                </div>
+
+                <div className="mt-6 flex gap-3">
+                  <button
+                    onClick={() => setShowUpgradeModal(false)}
+                    className="flex-1 rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-slate-200 transition-all hover:border-cyan-300/40 hover:bg-cyan-400/10"
+                  >
+                    Maybe Later
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowUpgradeModal(false);
+                      router.push('/pricing');
+                    }}
+                    className="flex-1 rounded-full border border-fuchsia-400/40 bg-gradient-to-r from-fuchsia-500/80 to-cyan-400/80 px-4 py-2 text-sm font-semibold uppercase tracking-wide text-black shadow-[0_0_26px_rgba(244,114,182,0.45)] transition-transform hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(56,189,248,0.45)]"
+                  >
+                    Upgrade Now
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       )}
     </div>
+  </div>
   );
 }

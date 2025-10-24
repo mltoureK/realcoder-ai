@@ -1,0 +1,2399 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761264140637
+Started: 2025-10-24T00:02:20.648Z
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:02:26.620Z
+Question Type: select-all
+Function: Unknown
+Function Size: 58 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nsuperBlock,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:02:27.500Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1629 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: freeCodeCamp-freeCodeCamp-02e1e1c/client/src/components/profile/components/time-line.tsx\nimport Loadable from '@loadable/component';\nimport { graphql, useStaticQuery } from 'gatsby';\nimport { reverse, sortBy } from 'lodash-es';\nimport React, { useMemo, useState } from 'react';\nimport type {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:02:30.662Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2094 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: // eslint-disable-next-line @typescript-eslint/no-unsafe-argument\nchallengeFiles:\n          completedChallenge?.challengeFiles?.map(\n            regenerateMissingProperties\n          ) ?? null\n      }\n    : null;\n\n  const id = challengeData?.id;\n  const startIndex = (pageNo - 1) * ITEMS_PER
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:02:32.648Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 58 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nsuperBlock,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:02:38.996Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2056 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Items per page in timeline.\nconst ITEMS_PER_PAGE = 15;\n\ninterface TimelineProps {\n  completedMap: CompletedChallenge[];\n  openModal: (arg: string) => void;\n  t: TFunction;\n  username: string;\n}\n\ninterface TimelineInnerProps extends TimelineProps {\n  idToNameMap: Map<string, NameMap>;\n  sort
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:02:43.817Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2056 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Items per page in timeline.\nconst ITEMS_PER_PAGE = 15;\n\ninterface TimelineProps {\n  completedMap: CompletedChallenge[];\n  openModal: (arg: string) => void;\n  t: TFunction;\n  username: string;\n}\n\ninterface TimelineInnerProps extends TimelineProps {\n  idToNameMap: Map<string, NameMap>;\n  sort
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:02:44.438Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1629 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: freeCodeCamp-freeCodeCamp-02e1e1c/client/src/components/profile/components/time-line.tsx\nimport Loadable from '@loadable/component';\nimport { graphql, useStaticQuery } from 'gatsby';\nimport { reverse, sortBy } from 'lodash-es';\nimport React, { useMemo, useState } from 'react';\nimport type {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:02:45.762Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2056 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: Items per page in timeline.\nconst ITEMS_PER_PAGE = 15;\n\ninterface TimelineProps {\n  completedMap: CompletedChallenge[];\n  openModal: (arg: string) => void;\n  t: TFunction;\n  username: string;\n}\n\ninterface TimelineInnerProps extends TimelineProps {\n  idToNameMap: Map<string, NameMap>;\n  sort
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:02:47.851Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 1629 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: freeCodeCamp-freeCodeCamp-02e1e1c/client/src/components/profile/components/time-line.tsx\nimport Loadable from '@loadable/component';\nimport { graphql, useStaticQuery } from 'gatsby';\nimport { reverse, sortBy } from 'lodash-es';\nimport React, { useMemo, useState } from 'react';\nimport type {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:02:49.374Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2094 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: // eslint-disable-next-line @typescript-eslint/no-unsafe-argument\nchallengeFiles:\n          completedChallenge?.challengeFiles?.map(\n            regenerateMissingProperties\n          ) ?? null\n      }\n    : null;\n\n  const id = challengeData?.id;\n  const startIndex = (pageNo - 1) * ITEMS_PER
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:02:52.500Z
+Question Type: true-false
+Function: Unknown
+Function Size: 50 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nid,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:02:55.522Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2094 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: // eslint-disable-next-line @typescript-eslint/no-unsafe-argument\nchallengeFiles:\n          completedChallenge?.challengeFiles?.map(\n            regenerateMissingProperties\n          ) ?? null\n      }\n    : null;\n\n  const id = challengeData?.id;\n  const startIndex = (pageNo - 1) * ITEMS_PER
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:02:58.000Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 58 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nsuperBlock,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:02:58.392Z
+Question Type: select-all
+Function: Unknown
+Function Size: 50 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nid,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:03:09.732Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 50 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nid,
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761264140637
+Repository: Unknown
+Total Questions Generated: 13
+Total Chunks Processed: 5
+Ended: 2025-10-24T00:03:09.738Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T00:03:43.185Z
+File: [2 files: index.js, bulk-operations.js]
+Functions Extracted: 4
+
+
+Function 1: createBulkOperation
+Language: JavaScript
+Lines: 27
+Full Code:
+--------------------------------------------------------------------------------
+function createBulkOperation(singular, multiple) {
+    return async function (knex, table, data, options) {
+        const result = {
+            successful: 0,
+            unsuccessful: 0,
+            unsuccessfulData: [],
+            errors: []
+        };
+
+        for (const chunkedData of _.chunk(data, CHUNK_SIZE)) {
+            try {
+                await multiple(knex, table, chunkedData, options);
+                result.successful += chunkedData.length;
+            } catch (errToIgnore) {
+                if (options.throwErrors) {
+                    throw errToIgnore;
+                }
+                for (const singularData of chunkedData) {
+                    try {
+                        await singular(knex, table, singularData, options);
+                        result.successful += 1;
+                    } catch (err) {
+                        err.errorDetails = singularData;
+                        result.errors.push(err);
+                        result.unsuccessfulData.push(singularData);
+                        result.unsuccessful += 1;
+                    }
+                }
+            }
+        }
+
+        return result;
+    };
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: bulkAdd
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+bulkAdd: function bulkAdd(data, tableName, options = {}) {
+            tableName = tableName || this.prototype.tableName;
+
+            return insert(Bookshelf.knex, tableName, data, options);
+        },
+--------------------------------------------------------------------------------
+
+
+Function 3: bulkEdit
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+bulkEdit: async function bulkEdit(ids, tableName, options = {}) {
+            tableName = tableName || this.prototype.tableName;
+
+            const result = await edit(Bookshelf.knex, tableName, ids, options);
+
+            if (result.successful > 0 && tableName === this.prototype.tableName) {
+                await this.addActions('edited', ids, options);
+            }
+
+            return result;
+        },
+--------------------------------------------------------------------------------
+
+
+Function 4: bulkDestroy
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+bulkDestroy: async function bulkDestroy(ids, tableName, options = {}) {
+            tableName = tableName || this.prototype.tableName;
+
+            if (tableName === this.prototype.tableName) {
+                // Implementation code here
+            }
+        },
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:03:50.827Z
+Question Type: select-all
+Function: bulkDestroy
+Function Size: 377 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: bulkDestroy (JavaScript)\n// Deletes multiple records from the specified table based on provided IDs.\n\nbulkDestroy: async function bulkDestroy(ids, tableName, options = {}) {\n            tableName = tableName || this.prototype.tableName;\n\n            if (tableName === this.prototype.tabl
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:03:51.317Z
+Question Type: select-all
+Function: createBulkOperation
+Function Size: 1297 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createBulkOperation (JavaScript)\n// Creates a bulk operation function that handles inserting or editing data in chunks.\n\nfunction createBulkOperation(singular, multiple) {\n    return async function (knex, table, data, options) {\n        const result = {\n            successful: 0,\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:03:55.698Z
+Question Type: order-sequence
+Function: createBulkOperation
+Function Size: 1297 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createBulkOperation (JavaScript)\n// Creates a bulk operation function that handles inserting or editing data in chunks.\n\nfunction createBulkOperation(singular, multiple) {\n    return async function (knex, table, data, options) {\n        const result = {\n            successful: 0,\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:04:00.917Z
+Question Type: select-all
+Function: bulkEdit
+Function Size: 529 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: bulkEdit (JavaScript)\n// Edits multiple records in the specified table based on provided IDs and options.\n\nbulkEdit: async function bulkEdit(ids, tableName, options = {}) {\n            tableName = tableName || this.prototype.tableName;\n\n            const result = await edit(Bookshelf.kn
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:04:01.999Z
+Question Type: select-all
+Function: bulkAdd
+Function Size: 314 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: bulkAdd (JavaScript)\n// Adds multiple records to the specified table using bulk insert operation.\n\nbulkAdd: function bulkAdd(data, tableName, options = {}) {\n            tableName = tableName || this.prototype.tableName;\n\n            return insert(Bookshelf.knex, tableName, data, option
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:04:05.937Z
+Question Type: true-false
+Function: bulkAdd
+Function Size: 314 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: bulkAdd (JavaScript)\n// Adds multiple records to the specified table using bulk insert operation.\n\nbulkAdd: function bulkAdd(data, tableName, options = {}) {\n            tableName = tableName || this.prototype.tableName;\n\n            return insert(Bookshelf.knex, tableName, data, option
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:04:08.657Z
+Question Type: order-sequence
+Function: bulkAdd
+Function Size: 314 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: bulkAdd (JavaScript)\n// Adds multiple records to the specified table using bulk insert operation.\n\nbulkAdd: function bulkAdd(data, tableName, options = {}) {\n            tableName = tableName || this.prototype.tableName;\n\n            return insert(Bookshelf.knex, tableName, data, option
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:04:11.701Z
+Question Type: multiple-choice
+Function: bulkEdit
+Function Size: 529 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: bulkEdit (JavaScript)\n// Edits multiple records in the specified table based on provided IDs and options.\n\nbulkEdit: async function bulkEdit(ids, tableName, options = {}) {\n            tableName = tableName || this.prototype.tableName;\n\n            const result = await edit(Bookshelf.kn
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:04:13.354Z
+Question Type: function-variant
+Function: createBulkOperation
+Function Size: 1297 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createBulkOperation (JavaScript)\n// Creates a bulk operation function that handles inserting or editing data in chunks.\n\nfunction createBulkOperation(singular, multiple) {\n    return async function (knex, table, data, options) {\n        const result = {\n            successful: 0,\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:04:16.276Z
+Question Type: function-variant
+Function: bulkDestroy
+Function Size: 377 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: bulkDestroy (JavaScript)\n// Deletes multiple records from the specified table based on provided IDs.\n\nbulkDestroy: async function bulkDestroy(ids, tableName, options = {}) {\n            tableName = tableName || this.prototype.tableName;\n\n            if (tableName === this.prototype.tabl
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:04:19.864Z
+Question Type: true-false
+Function: createBulkOperation
+Function Size: 1297 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createBulkOperation (JavaScript)\n// Creates a bulk operation function that handles inserting or editing data in chunks.\n\nfunction createBulkOperation(singular, multiple) {\n    return async function (knex, table, data, options) {\n        const result = {\n            successful: 0,\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:04:21.746Z
+Question Type: function-variant
+Function: bulkEdit
+Function Size: 529 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: bulkEdit (JavaScript)\n// Edits multiple records in the specified table based on provided IDs and options.\n\nbulkEdit: async function bulkEdit(ids, tableName, options = {}) {\n            tableName = tableName || this.prototype.tableName;\n\n            const result = await edit(Bookshelf.kn
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:04:25.857Z
+Question Type: order-sequence
+Function: bulkEdit
+Function Size: 529 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: bulkEdit (JavaScript)\n// Edits multiple records in the specified table based on provided IDs and options.\n\nbulkEdit: async function bulkEdit(ids, tableName, options = {}) {\n            tableName = tableName || this.prototype.tableName;\n\n            const result = await edit(Bookshelf.kn
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:04:31.380Z
+Question Type: order-sequence
+Function: bulkDestroy
+Function Size: 377 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: bulkDestroy (JavaScript)\n// Deletes multiple records from the specified table based on provided IDs.\n\nbulkDestroy: async function bulkDestroy(ids, tableName, options = {}) {\n            tableName = tableName || this.prototype.tableName;\n\n            if (tableName === this.prototype.tabl
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:04:34.562Z
+Question Type: function-variant
+Function: bulkAdd
+Function Size: 314 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: bulkAdd (JavaScript)\n// Adds multiple records to the specified table using bulk insert operation.\n\nbulkAdd: function bulkAdd(data, tableName, options = {}) {\n            tableName = tableName || this.prototype.tableName;\n\n            return insert(Bookshelf.knex, tableName, data, option
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761264140637
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 4
+Ended: 2025-10-24T00:04:37.670Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:04:56.962Z
+Question Type: multiple-choice
+Function: bulkDestroy
+Function Size: 377 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: bulkDestroy (JavaScript)\n// Deletes multiple records from the specified table based on provided IDs.\n\nbulkDestroy: async function bulkDestroy(ids, tableName, options = {}) {\n            tableName = tableName || this.prototype.tableName;\n\n            if (tableName === this.prototype.tabl
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:05:00.962Z
+Question Type: select-all
+Function: createBulkOperation
+Function Size: 1297 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createBulkOperation (JavaScript)\n// Creates a bulk operation function that handles inserting or editing data in chunks.\n\nfunction createBulkOperation(singular, multiple) {\n    return async function (knex, table, data, options) {\n        const result = {\n            successful: 0,\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:05:06.564Z
+Question Type: order-sequence
+Function: bulkDestroy
+Function Size: 377 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: bulkDestroy (JavaScript)\n// Deletes multiple records from the specified table based on provided IDs.\n\nbulkDestroy: async function bulkDestroy(ids, tableName, options = {}) {\n            tableName = tableName || this.prototype.tableName;\n\n            if (tableName === this.prototype.tabl
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:05:06.573Z
+Question Type: order-sequence
+Function: bulkAdd
+Function Size: 314 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: bulkAdd (JavaScript)\n// Adds multiple records to the specified table using bulk insert operation.\n\nbulkAdd: function bulkAdd(data, tableName, options = {}) {\n            tableName = tableName || this.prototype.tableName;\n\n            return insert(Bookshelf.knex, tableName, data, option
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:05:12.009Z
+Question Type: select-all
+Function: bulkAdd
+Function Size: 314 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: bulkAdd (JavaScript)\n// Adds multiple records to the specified table using bulk insert operation.\n\nbulkAdd: function bulkAdd(data, tableName, options = {}) {\n            tableName = tableName || this.prototype.tableName;\n\n            return insert(Bookshelf.knex, tableName, data, option
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:05:13.673Z
+Question Type: order-sequence
+Function: createBulkOperation
+Function Size: 1297 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: createBulkOperation (JavaScript)\n// Creates a bulk operation function that handles inserting or editing data in chunks.\n\nfunction createBulkOperation(singular, multiple) {\n    return async function (knex, table, data, options) {\n        const result = {\n            successful: 0,\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:05:18.926Z
+Question Type: function-variant
+Function: bulkAdd
+Function Size: 314 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: bulkAdd (JavaScript)\n// Adds multiple records to the specified table using bulk insert operation.\n\nbulkAdd: function bulkAdd(data, tableName, options = {}) {\n            tableName = tableName || this.prototype.tableName;\n\n            return insert(Bookshelf.knex, tableName, data, option
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:05:19.022Z
+Question Type: select-all
+Function: bulkEdit
+Function Size: 529 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: bulkEdit (JavaScript)\n// Edits multiple records in the specified table based on provided IDs and options.\n\nbulkEdit: async function bulkEdit(ids, tableName, options = {}) {\n            tableName = tableName || this.prototype.tableName;\n\n            const result = await edit(Bookshelf.kn
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:05:20.021Z
+Question Type: true-false
+Function: bulkAdd
+Function Size: 314 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: bulkAdd (JavaScript)\n// Adds multiple records to the specified table using bulk insert operation.\n\nbulkAdd: function bulkAdd(data, tableName, options = {}) {\n            tableName = tableName || this.prototype.tableName;\n\n            return insert(Bookshelf.knex, tableName, data, option
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:05:28.398Z
+Question Type: true-false
+Function: createBulkOperation
+Function Size: 1297 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createBulkOperation (JavaScript)\n// Creates a bulk operation function that handles inserting or editing data in chunks.\n\nfunction createBulkOperation(singular, multiple) {\n    return async function (knex, table, data, options) {\n        const result = {\n            successful: 0,\n      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:05:29.906Z
+Question Type: select-all
+Function: bulkDestroy
+Function Size: 377 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: bulkDestroy (JavaScript)\n// Deletes multiple records from the specified table based on provided IDs.\n\nbulkDestroy: async function bulkDestroy(ids, tableName, options = {}) {\n            tableName = tableName || this.prototype.tableName;\n\n            if (tableName === this.prototype.tabl
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T00:05:32.200Z
+Question Type: function-variant
+Function: bulkDestroy
+Function Size: 377 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: bulkDestroy (JavaScript)\n// Deletes multiple records from the specified table based on provided IDs.\n\nbulkDestroy: async function bulkDestroy(ids, tableName, options = {}) {\n            tableName = tableName || this.prototype.tableName;\n\n            if (tableName === this.prototype.tabl
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761264140637
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 4
+Ended: 2025-10-24T00:05:36.206Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T02:02:44.921Z
+File: /
+Functions Extracted: 4
+
+
+Function 1: shapesEqual
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function shapesEqual(shape1, shape2) {
+    if (shape1._length !== shape2._length || shape1.c !== shape2.c) {
+      return false;
+    }
+    var i;
+    var len = shape1._length;
+    for (i = 0; i < len; i += 1) {
+      if (shape1.v[i][0] !== shape2.v[i][0]
+            || shape1.v[i][1] !== shape2.v[i][1]
+            || shape1.o[i][0] !== shape2.o[i][0]
+            || shape1.o[i][1] !== shape2.o[i][1]
+            || shape1.i[i][0] !== shape2.i[i][0]
+            || shape1.i[i][1] !== shape2.i[i][1]) {
+        return false;
+      }
+    }
+    return true;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: setVValue
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function setVValue(newPath) {
+    if (!shapesEqual(this.v, newPath)) {
+      this.v = shapePool.clone(newPath);
+      this.localShapeCollection.releaseShapes();
+      this.localShapeCollection.addShape(this.v);
+      this._mdf = true;
+      this.paths = this.localShapeCollection;
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: processEffectsSequence
+Language: JavaScript
+Lines: 21
+Full Code:
+--------------------------------------------------------------------------------
+function processEffectsSequence() {
+    if (this.elem.globalData.frameId === this.frameId) {
+      return;
+    } if (!this.effectsSequence.length) {
+      this._mdf = false;
+      return;
+    }
+    if (this.lock) {
+      this.setVValue(this.pv);
+      return;
+    }
+    this.lock = true;
+    this._mdf = false;
+    var finalValue;
+    if (this.kf) {
+      finalValue = this.pv;
+    } else if (this.data.ks) {
+      finalValue = this.data.ks.k;
+    } else {
+      finalValue = this.data.pt.k;
+    }
+    var i;
+    var len = this.effectsSequence.length;
+    for (i = 0; i < len; i += 1) {
+      finalValue = this.effectsSequence[i](finalValue);
+    }
+    this.setVValue(finalValue);
+    this.lock = false;
+    this.frameId = this.elem.globalData.frameId;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 4: getShapeProp
+Language: JavaScript
+Lines: 21
+Full Code:
+--------------------------------------------------------------------------------
+function getShapeProp(elem, data, type) {
+    var prop;
+    if (type === 3 || type === 4) {
+      var dataProp = type === 3 ? data.pt : data.ks;
+      var keys = dataProp.k;
+      if (keys.length) {
+        prop = new KeyframedShapeProperty(elem, data, type);
+      } else {
+        prop = new ShapeProperty(elem, data, type);
+      }
+    } else if (type === 5) {
+      prop = new RectShapeProperty(elem, data);
+    } else if (type === 6) {
+      prop = new EllShapeProperty(elem, data);
+    } else if (type === 7) {
+      prop = new StarShapeProperty(elem, data);
+    }
+    if (prop.k) {
+      elem.addDynamicProperty(prop);
+    }
+    return prop;
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:02:47.452Z
+Question Type: multiple-choice
+Function: shapesEqual
+Function Size: 668 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: shapesEqual (JavaScript)\n// Compares two shape objects for equality based on their properties.\n\nfunction shapesEqual(shape1, shape2) {\n    if (shape1._length !== shape2._length || shape1.c !== shape2.c) {\n      return false;\n    }\n    var i;\n    var len = shape1._length;\n    for (i = 0;
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:02:56.305Z
+Question Type: order-sequence
+Function: shapesEqual
+Function Size: 668 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: shapesEqual (JavaScript)\n// Compares two shape objects for equality based on their properties.\n\nfunction shapesEqual(shape1, shape2) {\n    if (shape1._length !== shape2._length || shape1.c !== shape2.c) {\n      return false;\n    }\n    var i;\n    var len = shape1._length;\n    for (i = 0;
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:02:57.484Z
+Question Type: order-sequence
+Function: setVValue
+Function Size: 396 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: setVValue (JavaScript)\n// Sets the value of the shape if it is different from the new path.\n\nfunction setVValue(newPath) {\n    if (!shapesEqual(this.v, newPath)) {\n      this.v = shapePool.clone(newPath);\n      this.localShapeCollection.releaseShapes();\n      this.localShapeCollection.a
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:02:59.676Z
+Question Type: function-variant
+Function: setVValue
+Function Size: 396 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setVValue (JavaScript)\n// Sets the value of the shape if it is different from the new path.\n\nfunction setVValue(newPath) {\n    if (!shapesEqual(this.v, newPath)) {\n      this.v = shapePool.clone(newPath);\n      this.localShapeCollection.releaseShapes();\n      this.localShapeCollection.a
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:03:00.530Z
+Question Type: true-false
+Function: processEffectsSequence
+Function Size: 871 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: processEffectsSequence (JavaScript)\n// Processes the effects sequence applied to the shape property.\n\nfunction processEffectsSequence() {\n    if (this.elem.globalData.frameId === this.frameId) {\n      return;\n    } if (!this.effectsSequence.length) {\n      this._mdf = false;\n      retur
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:03:03.921Z
+Question Type: true-false
+Function: getShapeProp
+Function Size: 760 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getShapeProp (JavaScript)\n// Creates and returns a shape property based on the provided type.\n\nfunction getShapeProp(elem, data, type) {\n    var prop;\n    if (type === 3 || type === 4) {\n      var dataProp = type === 3 ? data.pt : data.ks;\n      var keys = dataProp.k;\n      if (keys.len
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:03:09.601Z
+Question Type: select-all
+Function: getShapeProp
+Function Size: 760 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getShapeProp (JavaScript)\n// Creates and returns a shape property based on the provided type.\n\nfunction getShapeProp(elem, data, type) {\n    var prop;\n    if (type === 3 || type === 4) {\n      var dataProp = type === 3 ? data.pt : data.ks;\n      var keys = dataProp.k;\n      if (keys.len
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:03:15.740Z
+Question Type: select-all
+Function: shapesEqual
+Function Size: 668 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: shapesEqual (JavaScript)\n// Compares two shape objects for equality based on their properties.\n\nfunction shapesEqual(shape1, shape2) {\n    if (shape1._length !== shape2._length || shape1.c !== shape2.c) {\n      return false;\n    }\n    var i;\n    var len = shape1._length;\n    for (i = 0;
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:03:17.646Z
+Question Type: order-sequence
+Function: getShapeProp
+Function Size: 760 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: getShapeProp (JavaScript)\n// Creates and returns a shape property based on the provided type.\n\nfunction getShapeProp(elem, data, type) {\n    var prop;\n    if (type === 3 || type === 4) {\n      var dataProp = type === 3 ? data.pt : data.ks;\n      var keys = dataProp.k;\n      if (keys.len
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:03:20.725Z
+Question Type: order-sequence
+Function: processEffectsSequence
+Function Size: 871 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: processEffectsSequence (JavaScript)\n// Processes the effects sequence applied to the shape property.\n\nfunction processEffectsSequence() {\n    if (this.elem.globalData.frameId === this.frameId) {\n      return;\n    } if (!this.effectsSequence.length) {\n      this._mdf = false;\n      retur
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:03:20.790Z
+Question Type: select-all
+Function: setVValue
+Function Size: 396 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setVValue (JavaScript)\n// Sets the value of the shape if it is different from the new path.\n\nfunction setVValue(newPath) {\n    if (!shapesEqual(this.v, newPath)) {\n      this.v = shapePool.clone(newPath);\n      this.localShapeCollection.releaseShapes();\n      this.localShapeCollection.a
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:03:28.644Z
+Question Type: select-all
+Function: processEffectsSequence
+Function Size: 871 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: processEffectsSequence (JavaScript)\n// Processes the effects sequence applied to the shape property.\n\nfunction processEffectsSequence() {\n    if (this.elem.globalData.frameId === this.frameId) {\n      return;\n    } if (!this.effectsSequence.length) {\n      this._mdf = false;\n      retur
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:03:31.861Z
+Question Type: function-variant
+Function: shapesEqual
+Function Size: 668 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: shapesEqual (JavaScript)\n// Compares two shape objects for equality based on their properties.\n\nfunction shapesEqual(shape1, shape2) {\n    if (shape1._length !== shape2._length || shape1.c !== shape2.c) {\n      return false;\n    }\n    var i;\n    var len = shape1._length;\n    for (i = 0;
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761264140637
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 4
+Ended: 2025-10-24T02:03:36.052Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T02:03:51.333Z
+File: };
+Functions Extracted: 6
+
+
+Function 1: findComp
+Language: JavaScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+function findComp(id, comps) {
+            var i = 0;
+            var len = comps.length;
+            while (i < len) {
+              if (comps[i].id === id) {
+                return comps[i];
+              }
+              i += 1;
+            }
+            return null;
+          }
+--------------------------------------------------------------------------------
+
+
+Function 2: findCompLayers
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function findCompLayers(id, comps) {
+            var comp = findComp(id, comps);
+            if (comp) {
+              if (!comp.layers.__used) {
+                comp.layers.__used = true;
+                return comp.layers;
+              }
+              return JSON.parse(JSON.stringify(comp.layers));
+            }
+            return null;
+          }
+--------------------------------------------------------------------------------
+
+
+Function 3: completeShapes
+Language: JavaScript
+Lines: 19
+Full Code:
+--------------------------------------------------------------------------------
+function completeShapes(arr) {
+            var i;
+            var len = arr.length;
+            var j;
+            var jLen;
+            for (i = len - 1; i >= 0; i -= 1) {
+              if (arr[i].ty === 'sh') {
+                if (arr[i].ks.k.i) {
+                  convertPathsToAbsoluteValues(arr[i].ks.k);
+                } else {
+                  jLen = arr[i].ks.k.length;
+                  for (j = 0; j < jLen; j += 1) {
+                    if (arr[i].ks.k[j].s) {
+                      convertPathsToAbsoluteValues(arr[i].ks.k[j].s[0]);
+                    }
+                    if (arr[i].ks.k[j].e) {
+                      convertPathsToAbsoluteValues(arr[i].ks.k[j].e[0]);
+                    }
+                  }
+                }
+              } else if (arr[i].ty === 'gr') {
+                completeShapes(arr[i].it);
+              }
+            }
+          }
+--------------------------------------------------------------------------------
+
+
+Function 4: convertPathsToAbsoluteValues
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+function convertPathsToAbsoluteValues(path) {
+            var i;
+            var len = path.i.length;
+            for (i = 0; i < len; i += 1) {
+              path.i[i][0] += path.v[i][0];
+              path.i[i][1] += path.v[i][1];
+              path.o[i][0] += path.v[i][0];
+              path.o[i][1] += path.v[i][1];
+            }
+          }
+--------------------------------------------------------------------------------
+
+
+Function 5: checkVersion
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function checkVersion(minimum, animVersionString) {
+            var animVersion = animVersionString ? animVersionString.split('.') : [100, 100, 100];
+            if (minimum[0] > animVersion[0]) {
+              return true;
+            } if (animVersion[0] > minimum[0]) {
+              return false;
+            }
+            if (minimum[1] > animVersion[1]) {
+              return true;
+            } if (animVersion[1] > minimum[1]) {
+              return false;
+            }
+            if (minimum[2] > animVersion[2]) {
+              return true;
+            } if (animVersion[2] > minimum[2]) {
+              return false;
+            }
+            return null;
+          }
+--------------------------------------------------------------------------------
+
+
+Function 6: completeData
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function completeData(animationData) {
+            if (animationData.__complete) {
+              return;
+            }
+            checkColors(animationData);
+            checkText(animationData);
+            checkChars(animationData);
+            checkPathProperties(animationData);
+            checkShapes(animationData);
+            completeLayers(animationData.layers, animationData.assets);
+            completeChars(animationData.chars, animationData.assets);
+            animationData.__complete = true;
+          }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:03:53.641Z
+Question Type: multiple-choice
+Function: findComp
+Function Size: 381 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: findComp (JavaScript)\n// Finds a composition by its ID from an array of compositions.\n\nfunction findComp(id, comps) {\n            var i = 0;\n            var len = comps.length;\n            while (i < len) {\n              if (comps[i].id === id) {\n                return comps[i];\n       
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:03:58.399Z
+Question Type: select-all
+Function: completeData
+Function Size: 653 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: completeData (JavaScript)\n// Completes the animation data by checking various properties and marking it as complete.\n\nfunction completeData(animationData) {\n            if (animationData.__complete) {\n              return;\n            }\n            checkColors(animationData);\n          
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:04:04.189Z
+Question Type: function-variant
+Function: completeData
+Function Size: 653 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: completeData (JavaScript)\n// Completes the animation data by checking various properties and marking it as complete.\n\nfunction completeData(animationData) {\n            if (animationData.__complete) {\n              return;\n            }\n            checkColors(animationData);\n          
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:04:06.924Z
+Question Type: function-variant
+Function: findCompLayers
+Function Size: 502 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: findCompLayers (JavaScript)\n// Finds the layers of a composition by its ID, marking them as used if they haven't been accessed before.\n\nfunction findCompLayers(id, comps) {\n            var comp = findComp(id, comps);\n            if (comp) {\n              if (!comp.layers.__used) {\n     
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:04:09.007Z
+Question Type: select-all
+Function: convertPathsToAbsoluteValues
+Function Size: 472 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: convertPathsToAbsoluteValues (JavaScript)\n// Converts relative path values to absolute values for a given path.\n\nfunction convertPathsToAbsoluteValues(path) {\n            var i;\n            var len = path.i.length;\n            for (i = 0; i < len; i += 1) {\n              path.i[i][0] +=
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:04:14.330Z
+Question Type: true-false
+Function: findCompLayers
+Function Size: 502 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: findCompLayers (JavaScript)\n// Finds the layers of a composition by its ID, marking them as used if they haven't been accessed before.\n\nfunction findCompLayers(id, comps) {\n            var comp = findComp(id, comps);\n            if (comp) {\n              if (!comp.layers.__used) {\n     
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:04:17.252Z
+Question Type: function-variant
+Function: completeShapes
+Function Size: 1003 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: completeShapes (JavaScript)\n// Completes the shape data by converting relative path values to absolute values.\n\nfunction completeShapes(arr) {\n            var i;\n            var len = arr.length;\n            var j;\n            var jLen;\n            for (i = len - 1; i >= 0; i -= 1) {\n  
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761264140637
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 6
+Ended: 2025-10-24T02:04:21.093Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:44:15.221Z
+Question Type: select-all
+Function: Unknown
+Function Size: 136 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get all employees\n@GetMapping("/employees")\n	public List<Employee> getAllEmployees(){\n		return employeeRepository.findAll();\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:44:18.878Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 173 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: create employee rest api\n@PostMapping("/employees")\n	public Employee createEmployee(@RequestBody Employee employee) {\n		return employeeRepository.save(employee);\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:44:22.799Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1308 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: RameshMF-ReactJS-Spring-Boot-CRUD-Full-Stack-App-394c537/springboot-backend/src/main/java/net/javaguides/springboot/controller/EmployeeController.java\npackage net.javaguides.springboot.controller;\n\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport org.springfram
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:44:25.877Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 604 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: update employee rest api\n@PutMapping("/employees/{id}")\n	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails){\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:44:28.562Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1308 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: RameshMF-ReactJS-Spring-Boot-CRUD-Full-Stack-App-394c537/springboot-backend/src/main/java/net/javaguides/springboot/controller/EmployeeController.java\npackage net.javaguides.springboot.controller;\n\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport org.springfram
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:44:29.059Z
+Question Type: select-all
+Function: Unknown
+Function Size: 328 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get employee by id rest api\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id :" + id));\n		return Res
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:44:33.117Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 328 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get employee by id rest api\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id :" + id));\n		return Res
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:44:35.035Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 328 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get employee by id rest api\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id :" + id));\n		return Res
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:44:36.058Z
+Question Type: true-false
+Function: Unknown
+Function Size: 604 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: update employee rest api\n@PutMapping("/employees/{id}")\n	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails){\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:44:43.622Z
+Question Type: true-false
+Function: Unknown
+Function Size: 136 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get all employees\n@GetMapping("/employees")\n	public List<Employee> getAllEmployees(){\n		return employeeRepository.findAll();\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:44:45.274Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 173 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: create employee rest api\n@PostMapping("/employees")\n	public Employee createEmployee(@RequestBody Employee employee) {\n		return employeeRepository.save(employee);\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:44:45.373Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 604 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: update employee rest api\n@PutMapping("/employees/{id}")\n	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails){\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:44:45.879Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 136 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get all employees\n@GetMapping("/employees")\n	public List<Employee> getAllEmployees(){\n		return employeeRepository.findAll();\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:44:54.141Z
+Question Type: select-all
+Function: Unknown
+Function Size: 173 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: create employee rest api\n@PostMapping("/employees")\n	public Employee createEmployee(@RequestBody Employee employee) {\n		return employeeRepository.save(employee);\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T02:44:54.754Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1308 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: RameshMF-ReactJS-Spring-Boot-CRUD-Full-Stack-App-394c537/springboot-backend/src/main/java/net/javaguides/springboot/controller/EmployeeController.java\npackage net.javaguides.springboot.controller;\n\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport org.springfram
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761264140637
+Repository: Unknown
+Total Questions Generated: 14
+Total Chunks Processed: 5
+Ended: 2025-10-24T02:44:58.447Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T03:01:45.864Z
+File: [2 files: hover.ts, use-transform.ts]
+Functions Extracted: 3
+
+
+Function 1: hover
+Language: TypeScript
+Lines: 36
+Full Code:
+--------------------------------------------------------------------------------
+export function hover(
+    elementOrSelector: ElementOrSelector,
+    onHoverStart: OnHoverStartEvent,
+    options: EventOptions = {}
+): VoidFunction {
+    const [elements, eventOptions, cancel] = setupGesture(
+        elementOrSelector,
+        options
+    );
+
+    const onPointerEnter = (enterEvent: PointerEvent) => {
+        if (!isValidHover(enterEvent)) return;
+
+        const { target } = enterEvent;
+        const onHoverEnd = onHoverStart(target as Element, enterEvent);
+
+        if (typeof onHoverEnd !== "function" || !target) return;
+
+        const onPointerLeave = (leaveEvent: PointerEvent) => {
+            if (!isValidHover(leaveEvent)) return;
+
+            onHoverEnd(leaveEvent);
+            target.removeEventListener(
+                "pointerleave",
+                onPointerLeave as EventListener
+            );
+        };
+
+        target.addEventListener(
+            "pointerleave",
+            onPointerLeave as EventListener,
+            eventOptions
+        );
+    };
+
+    elements.forEach((element) => {
+        element.addEventListener(
+            "pointerenter",
+            onPointerEnter as EventListener,
+            eventOptions
+        );
+    });
+
+    return cancel;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: useTransform
+Language: TypeScript
+Lines: 28
+Full Code:
+--------------------------------------------------------------------------------
+export function useTransform<I, O>(
+    value: MotionValue<number>,
+    inputRange: InputRange,
+    outputRange: O[],
+    options?: TransformOptions<O>
+): MotionValue<O> {
+    if (typeof input === "function") {
+        return useComputed(input);
+    }
+
+    const transformer =
+        typeof inputRangeOrTransformer === "function"
+            ? inputRangeOrTransformer
+            : transform(inputRangeOrTransformer!, outputRange!, options);
+
+    return Array.isArray(input)
+        ? useListTransform(
+              input,
+              transformer as MultiTransformer<AnyResolvedKeyframe, O>
+          )
+        : useListTransform([input], ([latest]) =>
+              (transformer as SingleTransformer<I, O>)(latest)
+          );
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: useListTransform
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function useListTransform<I, O>(
+    values: MotionValue<I>[],
+    transformer: MultiTransformer<I, O>
+): MotionValue<O> {
+    const latest = useConstant<I[]>(() => []);
+
+    return useCombineMotionValues(values, () => {
+        latest.length = 0;
+        const numValues = values.length;
+        for (let i = 0; i < numValues; i++) {
+            latest[i] = values[i].get();
+        }
+
+        return transformer(latest);
+    });
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:01:51.006Z
+Question Type: true-false
+Function: useListTransform
+Function Size: 554 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useListTransform (TypeScript)\n// Transforms an array of MotionValues using a provided transformer function.\n\nfunction useListTransform<I, O>(\n    values: MotionValue<I>[],\n    transformer: MultiTransformer<I, O>\n): MotionValue<O> {\n    const latest = useConstant<I[]>(() => []);\n\n    ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:01:56.161Z
+Question Type: true-false
+Function: useTransform
+Function Size: 902 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useTransform (TypeScript)\n// Creates a MotionValue that transforms the output of another MotionValue by mapping it from one range of values into another.\n\nexport function useTransform<I, O>(\n    value: MotionValue<number>,\n    inputRange: InputRange,\n    outputRange: O[],\n    options?: 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:02:06.049Z
+Question Type: function-variant
+Function: useListTransform
+Function Size: 554 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useListTransform (TypeScript)\n// Transforms an array of MotionValues using a provided transformer function.\n\nfunction useListTransform<I, O>(\n    values: MotionValue<I>[],\n    transformer: MultiTransformer<I, O>\n): MotionValue<O> {\n    const latest = useConstant<I[]>(() => []);\n\n    ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:02:06.544Z
+Question Type: function-variant
+Function: useTransform
+Function Size: 902 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useTransform (TypeScript)\n// Creates a MotionValue that transforms the output of another MotionValue by mapping it from one range of values into another.\n\nexport function useTransform<I, O>(\n    value: MotionValue<number>,\n    inputRange: InputRange,\n    outputRange: O[],\n    options?: 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:02:09.477Z
+Question Type: order-sequence
+Function: useTransform
+Function Size: 902 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: useTransform (TypeScript)\n// Creates a MotionValue that transforms the output of another MotionValue by mapping it from one range of values into another.\n\nexport function useTransform<I, O>(\n    value: MotionValue<number>,\n    inputRange: InputRange,\n    outputRange: O[],\n    options?: 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:02:12.862Z
+Question Type: order-sequence
+Function: hover
+Function Size: 1344 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: hover (TypeScript)\n// Creates a hover gesture that filters out touch events and manages pointer events for hover functionality.\n\nexport function hover(\n    elementOrSelector: ElementOrSelector,\n    onHoverStart: OnHoverStartEvent,\n    options: EventOptions = {}\n): VoidFunction {\n    con
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:02:15.661Z
+Question Type: multiple-choice
+Function: hover
+Function Size: 1344 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: hover (TypeScript)\n// Creates a hover gesture that filters out touch events and manages pointer events for hover functionality.\n\nexport function hover(\n    elementOrSelector: ElementOrSelector,\n    onHoverStart: OnHoverStartEvent,\n    options: EventOptions = {}\n): VoidFunction {\n    con
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:02:18.269Z
+Question Type: select-all
+Function: useTransform
+Function Size: 902 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useTransform (TypeScript)\n// Creates a MotionValue that transforms the output of another MotionValue by mapping it from one range of values into another.\n\nexport function useTransform<I, O>(\n    value: MotionValue<number>,\n    inputRange: InputRange,\n    outputRange: O[],\n    options?: 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761264140637
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 3
+Ended: 2025-10-24T03:02:22.607Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:02:28.212Z
+Question Type: true-false
+Function: useTransform
+Function Size: 902 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useTransform (TypeScript)\n// Creates a MotionValue that transforms the output of another MotionValue by mapping it from one range of values into another.\n\nexport function useTransform<I, O>(\n    value: MotionValue<number>,\n    inputRange: InputRange,\n    outputRange: O[],\n    options?: 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:02:29.377Z
+Question Type: true-false
+Function: hover
+Function Size: 1344 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: hover (TypeScript)\n// Creates a hover gesture that filters out touch events and manages pointer events for hover functionality.\n\nexport function hover(\n    elementOrSelector: ElementOrSelector,\n    onHoverStart: OnHoverStartEvent,\n    options: EventOptions = {}\n): VoidFunction {\n    con
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:02:37.782Z
+Question Type: function-variant
+Function: useListTransform
+Function Size: 554 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useListTransform (TypeScript)\n// Transforms an array of MotionValues using a provided transformer function.\n\nfunction useListTransform<I, O>(\n    values: MotionValue<I>[],\n    transformer: MultiTransformer<I, O>\n): MotionValue<O> {\n    const latest = useConstant<I[]>(() => []);\n\n    ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:02:39.584Z
+Question Type: select-all
+Function: useTransform
+Function Size: 902 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useTransform (TypeScript)\n// Creates a MotionValue that transforms the output of another MotionValue by mapping it from one range of values into another.\n\nexport function useTransform<I, O>(\n    value: MotionValue<number>,\n    inputRange: InputRange,\n    outputRange: O[],\n    options?: 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:02:42.576Z
+Question Type: function-variant
+Function: useListTransform
+Function Size: 554 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useListTransform (TypeScript)\n// Transforms an array of MotionValues using a provided transformer function.\n\nfunction useListTransform<I, O>(\n    values: MotionValue<I>[],\n    transformer: MultiTransformer<I, O>\n): MotionValue<O> {\n    const latest = useConstant<I[]>(() => []);\n\n    ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:02:45.649Z
+Question Type: order-sequence
+Function: hover
+Function Size: 1344 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: hover (TypeScript)\n// Creates a hover gesture that filters out touch events and manages pointer events for hover functionality.\n\nexport function hover(\n    elementOrSelector: ElementOrSelector,\n    onHoverStart: OnHoverStartEvent,\n    options: EventOptions = {}\n): VoidFunction {\n    con
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:02:47.331Z
+Question Type: select-all
+Function: useTransform
+Function Size: 902 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useTransform (TypeScript)\n// Creates a MotionValue that transforms the output of another MotionValue by mapping it from one range of values into another.\n\nexport function useTransform<I, O>(\n    value: MotionValue<number>,\n    inputRange: InputRange,\n    outputRange: O[],\n    options?: 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:02:58.099Z
+Question Type: order-sequence
+Function: hover
+Function Size: 1344 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: hover (TypeScript)\n// Creates a hover gesture that filters out touch events and manages pointer events for hover functionality.\n\nexport function hover(\n    elementOrSelector: ElementOrSelector,\n    onHoverStart: OnHoverStartEvent,\n    options: EventOptions = {}\n): VoidFunction {\n    con
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:02:58.226Z
+Question Type: order-sequence
+Function: useTransform
+Function Size: 902 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: useTransform (TypeScript)\n// Creates a MotionValue that transforms the output of another MotionValue by mapping it from one range of values into another.\n\nexport function useTransform<I, O>(\n    value: MotionValue<number>,\n    inputRange: InputRange,\n    outputRange: O[],\n    options?: 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:03:02.720Z
+Question Type: order-sequence
+Function: useListTransform
+Function Size: 554 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: useListTransform (TypeScript)\n// Transforms an array of MotionValues using a provided transformer function.\n\nfunction useListTransform<I, O>(\n    values: MotionValue<I>[],\n    transformer: MultiTransformer<I, O>\n): MotionValue<O> {\n    const latest = useConstant<I[]>(() => []);\n\n    ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:03:11.331Z
+Question Type: select-all
+Function: hover
+Function Size: 1344 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: hover (TypeScript)\n// Creates a hover gesture that filters out touch events and manages pointer events for hover functionality.\n\nexport function hover(\n    elementOrSelector: ElementOrSelector,\n    onHoverStart: OnHoverStartEvent,\n    options: EventOptions = {}\n): VoidFunction {\n    con
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:03:12.527Z
+Question Type: select-all
+Function: useListTransform
+Function Size: 554 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useListTransform (TypeScript)\n// Transforms an array of MotionValues using a provided transformer function.\n\nfunction useListTransform<I, O>(\n    values: MotionValue<I>[],\n    transformer: MultiTransformer<I, O>\n): MotionValue<O> {\n    const latest = useConstant<I[]>(() => []);\n\n    ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:03:13.888Z
+Question Type: function-variant
+Function: hover
+Function Size: 1344 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: hover (TypeScript)\n// Creates a hover gesture that filters out touch events and manages pointer events for hover functionality.\n\nexport function hover(\n    elementOrSelector: ElementOrSelector,\n    onHoverStart: OnHoverStartEvent,\n    options: EventOptions = {}\n): VoidFunction {\n    con
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:03:14.261Z
+Question Type: multiple-choice
+Function: useListTransform
+Function Size: 554 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useListTransform (TypeScript)\n// Transforms an array of MotionValues using a provided transformer function.\n\nfunction useListTransform<I, O>(\n    values: MotionValue<I>[],\n    transformer: MultiTransformer<I, O>\n): MotionValue<O> {\n    const latest = useConstant<I[]>(() => []);\n\n    ret
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:03:25.442Z
+Question Type: function-variant
+Function: useTransform
+Function Size: 902 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useTransform (TypeScript)\n// Creates a MotionValue that transforms the output of another MotionValue by mapping it from one range of values into another.\n\nexport function useTransform<I, O>(\n    value: MotionValue<number>,\n    inputRange: InputRange,\n    outputRange: O[],\n    options?: 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761264140637
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 3
+Ended: 2025-10-24T03:03:28.208Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T03:12:19.125Z
+File: [8 files: => boolean, locale needed later, index.d.ts, index.js, index.js, >, ms, index.js]
+Functions Extracted: 4
+
+
+Function 1: localeData
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const localeData = function () {
+    return {
+      months: instance =>
+        (instance ? instance.format('MMMM') : getShort(this, 'months')),
+      monthsShort: instance =>
+        (instance ? instance.format('MMM') : getShort(this, 'monthsShort', 'months', 3)),
+      firstDayOfWeek: () => this.$locale().weekStart || 0,
+      weekdays: instance => (instance ? instance.format('dddd') : getShort(this, 'weekdays')),
+      weekdaysMin: instance =>
+        (instance ? instance.format('dd') : getShort(this, 'weekdaysMin', 'weekdays', 2)),
+      weekdaysShort: instance =>
+        (instance ? instance.format('ddd') : getShort(this, 'weekdaysShort', 'weekdays', 3)),
+      longDateFormat: format => getLongDateFormat(this.$locale(), format),
+      meridiem: this.$locale().meridiem,
+      ordinal: this.$locale().ordinal
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: isoWeekYear
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+proto.isoWeekYear = function () {
+    const nowWeekThursday = getCurrentWeekThursday(this)
+    return nowWeekThursday.year()
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: isoWeek
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+proto.isoWeek = function (week) {
+    if (!this.$utils().u(week)) {
+      return this.add((week - this.isoWeek()) * 7, D)
+    }
+    const nowWeekThursday = getCurrentWeekThursday(this)
+    const diffWeekThursday = getYearFirstThursday(this.isoWeekYear(), this.$u)
+    return nowWeekThursday.diff(diffWeekThursday, W) + 1
+  }
+--------------------------------------------------------------------------------
+
+
+Function 4: format
+Language: JavaScript
+Lines: 40
+Full Code:
+--------------------------------------------------------------------------------
+format(formatStr) {
+    const locale = this.$locale()
+
+    if (!this.isValid()) return locale.invalidDate || C.INVALID_DATE_STRING
+
+    const str = formatStr || C.FORMAT_DEFAULT
+    const zoneStr = Utils.z(this)
+    const { $H, $m, $M } = this
+    const {
+      weekdays, months, meridiem
+    } = locale
+    const getShort = (arr, index, full, length) => (
+      (arr && (arr[index] || arr(this, str))) || full[index].slice(0, length)
+    )
+    const get$H = num => (
+      Utils.s($H % 12 || 12, num, '0')
+    )
+
+    const meridiemFunc = meridiem || ((hour, minute, isLowercase) => {
+      const m = (hour < 12 ? 'AM' : 'PM')
+      return isLowercase ? m.toLowerCase() : m
+    })
+
+    const matches = (match) => {
+      switch (match) {
+        case 'YY':
+          return String(this.$y).slice(-2)
+        case 'YYYY':
+          return Utils.s(this.$y, 4, '0')
+        case 'M':
+          return $M + 1
+        case 'MM':
+          return Utils.s($M + 1, 2, '0')
+        case 'MMM':
+          return getShort(locale.monthsShort, $M, months, 3)
+        case 'MMMM':
+          return getShort(months, $M)
+        case 'D':
+          return this.$D
+        case 'DD':
+          return Utils.s(this.$D, 2, '0')
+        case 'd':
+          return String(this.$W)
+        case 'dd':
+          return getShort(locale.weekdaysMin, this.$W, weekdays, 2)
+        case 'ddd':
+          return getShort(locale.weekdaysShort, this.$W, weekdays, 3)
+        case 'dddd':
+          return weekdays[this.$W]
+        case 'H':
+          return String($H)
+        case 'HH':
+          return Utils.s($H, 2, '0')
+        case 'h':
+          return get$H(1)
+        case 'hh':
+          return get$H(2)
+        case 'a':
+          return meridiemFunc($H, $m, true)
+        case 'A':
+          return meridiemFunc($H, $m, false)
+        case 'm':
+          return String($m)
+        case 'mm':
+          return Utils.s($m, 2, '0')
+        case 's':
+          return String(this.$s)
+        case 'ss':
+          return Utils.s(this.$s, 2, '0')
+        case 'SSS':
+          return Utils.s(this.$ms, 3, '0')
+        case 'Z':
+          return zoneStr
+      }
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:12:27.014Z
+Question Type: function-variant
+Function: isoWeekYear
+Function Size: 221 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isoWeekYear (JavaScript)\n// Calculates the ISO week year for the current date.\n\nproto.isoWeekYear = function () {\n    const nowWeekThursday = getCurrentWeekThursday(this)\n    return nowWeekThursday.year()\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:12:29.154Z
+Question Type: order-sequence
+Function: isoWeek
+Function Size: 417 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isoWeek (JavaScript)\n// Sets or gets the ISO week number for the current date.\n\nproto.isoWeek = function (week) {\n    if (!this.$utils().u(week)) {\n      return this.add((week - this.isoWeek()) * 7, D)\n    }\n    const nowWeekThursday = getCurrentWeekThursday(this)\n    const diffWeekThur
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:12:29.683Z
+Question Type: select-all
+Function: localeData
+Function Size: 961 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: localeData (JavaScript)\n// Returns locale data for formatting dates, including months, weekdays, and date formats.\n\nconst localeData = function () {\n    return {\n      months: instance =>\n        (instance ? instance.format('MMMM') : getShort(this, 'months')),\n      monthsShort: instanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:12:36.469Z
+Question Type: select-all
+Function: format
+Function Size: 2247 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: format (JavaScript)\n// Formats the date into a string based on the provided format string.\n\nformat(formatStr) {\n    const locale = this.$locale()\n\n    if (!this.isValid()) return locale.invalidDate || C.INVALID_DATE_STRING\n\n    const str = formatStr || C.FORMAT_DEFAULT\n    const zoneStr
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:12:39.591Z
+Question Type: select-all
+Function: isoWeek
+Function Size: 417 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isoWeek (JavaScript)\n// Sets or gets the ISO week number for the current date.\n\nproto.isoWeek = function (week) {\n    if (!this.$utils().u(week)) {\n      return this.add((week - this.isoWeek()) * 7, D)\n    }\n    const nowWeekThursday = getCurrentWeekThursday(this)\n    const diffWeekThur
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:12:41.238Z
+Question Type: order-sequence
+Function: format
+Function Size: 2247 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: format (JavaScript)\n// Formats the date into a string based on the provided format string.\n\nformat(formatStr) {\n    const locale = this.$locale()\n\n    if (!this.isValid()) return locale.invalidDate || C.INVALID_DATE_STRING\n\n    const str = formatStr || C.FORMAT_DEFAULT\n    const zoneStr
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:12:43.952Z
+Question Type: function-variant
+Function: isoWeek
+Function Size: 417 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isoWeek (JavaScript)\n// Sets or gets the ISO week number for the current date.\n\nproto.isoWeek = function (week) {\n    if (!this.$utils().u(week)) {\n      return this.add((week - this.isoWeek()) * 7, D)\n    }\n    const nowWeekThursday = getCurrentWeekThursday(this)\n    const diffWeekThur
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:12:49.337Z
+Question Type: multiple-choice
+Function: localeData
+Function Size: 961 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: localeData (JavaScript)\n// Returns locale data for formatting dates, including months, weekdays, and date formats.\n\nconst localeData = function () {\n    return {\n      months: instance =>\n        (instance ? instance.format('MMMM') : getShort(this, 'months')),\n      monthsShort: instanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:12:50.381Z
+Question Type: select-all
+Function: isoWeekYear
+Function Size: 221 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isoWeekYear (JavaScript)\n// Calculates the ISO week year for the current date.\n\nproto.isoWeekYear = function () {\n    const nowWeekThursday = getCurrentWeekThursday(this)\n    return nowWeekThursday.year()\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:12:51.502Z
+Question Type: function-variant
+Function: localeData
+Function Size: 961 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: localeData (JavaScript)\n// Returns locale data for formatting dates, including months, weekdays, and date formats.\n\nconst localeData = function () {\n    return {\n      months: instance =>\n        (instance ? instance.format('MMMM') : getShort(this, 'months')),\n      monthsShort: instanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:12:54.893Z
+Question Type: order-sequence
+Function: localeData
+Function Size: 961 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: localeData (JavaScript)\n// Returns locale data for formatting dates, including months, weekdays, and date formats.\n\nconst localeData = function () {\n    return {\n      months: instance =>\n        (instance ? instance.format('MMMM') : getShort(this, 'months')),\n      monthsShort: instanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:12:55.988Z
+Question Type: true-false
+Function: isoWeekYear
+Function Size: 221 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isoWeekYear (JavaScript)\n// Calculates the ISO week year for the current date.\n\nproto.isoWeekYear = function () {\n    const nowWeekThursday = getCurrentWeekThursday(this)\n    return nowWeekThursday.year()\n  }
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761264140637
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 4
+Ended: 2025-10-24T03:12:59.215Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:13:03.267Z
+Question Type: true-false
+Function: isoWeek
+Function Size: 417 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isoWeek (JavaScript)\n// Sets or gets the ISO week number for the current date.\n\nproto.isoWeek = function (week) {\n    if (!this.$utils().u(week)) {\n      return this.add((week - this.isoWeek()) * 7, D)\n    }\n    const nowWeekThursday = getCurrentWeekThursday(this)\n    const diffWeekThur
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:13:04.922Z
+Question Type: select-all
+Function: isoWeekYear
+Function Size: 221 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: isoWeekYear (JavaScript)\n// Calculates the ISO week year for the current date.\n\nproto.isoWeekYear = function () {\n    const nowWeekThursday = getCurrentWeekThursday(this)\n    return nowWeekThursday.year()\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:13:11.729Z
+Question Type: order-sequence
+Function: isoWeek
+Function Size: 417 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: isoWeek (JavaScript)\n// Sets or gets the ISO week number for the current date.\n\nproto.isoWeek = function (week) {\n    if (!this.$utils().u(week)) {\n      return this.add((week - this.isoWeek()) * 7, D)\n    }\n    const nowWeekThursday = getCurrentWeekThursday(this)\n    const diffWeekThur
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:13:11.754Z
+Question Type: order-sequence
+Function: isoWeekYear
+Function Size: 221 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: isoWeekYear (JavaScript)\n// Calculates the ISO week year for the current date.\n\nproto.isoWeekYear = function () {\n    const nowWeekThursday = getCurrentWeekThursday(this)\n    return nowWeekThursday.year()\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:13:14.767Z
+Question Type: function-variant
+Function: isoWeekYear
+Function Size: 221 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isoWeekYear (JavaScript)\n// Calculates the ISO week year for the current date.\n\nproto.isoWeekYear = function () {\n    const nowWeekThursday = getCurrentWeekThursday(this)\n    return nowWeekThursday.year()\n  }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:13:18.967Z
+Question Type: function-variant
+Function: isoWeek
+Function Size: 417 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isoWeek (JavaScript)\n// Sets or gets the ISO week number for the current date.\n\nproto.isoWeek = function (week) {\n    if (!this.$utils().u(week)) {\n      return this.add((week - this.isoWeek()) * 7, D)\n    }\n    const nowWeekThursday = getCurrentWeekThursday(this)\n    const diffWeekThur
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:13:20.371Z
+Question Type: multiple-choice
+Function: localeData
+Function Size: 961 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: localeData (JavaScript)\n// Returns locale data for formatting dates, including months, weekdays, and date formats.\n\nconst localeData = function () {\n    return {\n      months: instance =>\n        (instance ? instance.format('MMMM') : getShort(this, 'months')),\n      monthsShort: instanc
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761264140637
+Repository: Unknown
+Total Questions Generated: 4
+Total Chunks Processed: 4
+Ended: 2025-10-24T03:13:23.934Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T03:33:24.298Z
+File: [2 files: help-modal.tsx, certification with projects.]
+Functions Extracted: 4
+
+
+Function 1: generateSearchLink
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+export const generateSearchLink = (title: string, block: string, superBlock: string) => {
+  const titleText = t(`intro:${superBlock}.blocks.${block}.title`);
+  const selector = 'in:title';
+  const query = encodeURIComponent(`${titleText} - ${title} ${selector}`);
+
+  const search = `${forumLocation}/search?q=${query}`;
+  return search;
+};
+--------------------------------------------------------------------------------
+
+
+Function 2: handleClaim
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+const handleClaim = (certSlug: keyof typeof certSlugTypeMap) => (e: MouseEvent<HTMLButtonElement>) => {
+  e.preventDefault();
+
+  return isHonest
+    ? verifyCert(certSlug)
+    : createFlashMessage(honestyInfoMessage);
+};
+--------------------------------------------------------------------------------
+
+
+Function 3: initialiseState
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function initialiseState() {
+  setProjectTitle('');
+  setChallengeFiles(null);
+  setSolution(null);
+  setExamResults(null);
+  setIsOpen(false);
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: getProjectSolution
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+const getProjectSolution = (projectId: string, projectTitle: string) => {
+  const { completedChallenges, openModal } = props;
+  const completedProject = find(completedChallenges, ({ id }) => projectId === id);
+  if (!completedProject) {
+    return null;
+  }
+  const { solution, challengeFiles, examResults } = completedProject;
+  const showUserCode = () => {
+    setProjectTitle(projectTitle);
+    setChallengeFiles(challengeFiles);
+    setSolution(solution);
+    setIsOpen(true);
+  };
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:33:27.252Z
+Question Type: true-false
+Function: initialiseState
+Function Size: 255 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: initialiseState (TypeScript)\n// Initializes the state for the certification settings component.\n\nfunction initialiseState() {\n  setProjectTitle('');\n  setChallengeFiles(null);\n  setSolution(null);\n  setExamResults(null);\n  setIsOpen(false);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:33:29.227Z
+Question Type: select-all
+Function: handleClaim
+Function Size: 333 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleClaim (TypeScript)\n// Handles the claiming of a certification based on honesty verification.\n\nconst handleClaim = (certSlug: keyof typeof certSlugTypeMap) => (e: MouseEvent<HTMLButtonElement>) => {\n  e.preventDefault();\n\n  return isHonest\n    ? verifyCert(certSlug)\n    : createFla
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:33:30.559Z
+Question Type: select-all
+Function: generateSearchLink
+Function Size: 469 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: generateSearchLink (TypeScript)\n// Generates a search link for the forum based on the title, block, and superBlock.\n\nexport const generateSearchLink = (title: string, block: string, superBlock: string) => {\n  const titleText = t(`intro:${superBlock}.blocks.${block}.title`);\n  const sele
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:33:31.613Z
+Question Type: function-variant
+Function: initialiseState
+Function Size: 255 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: initialiseState (TypeScript)\n// Initializes the state for the certification settings component.\n\nfunction initialiseState() {\n  setProjectTitle('');\n  setChallengeFiles(null);\n  setSolution(null);\n  setExamResults(null);\n  setIsOpen(false);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:33:39.569Z
+Question Type: select-all
+Function: initialiseState
+Function Size: 255 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: initialiseState (TypeScript)\n// Initializes the state for the certification settings component.\n\nfunction initialiseState() {\n  setProjectTitle('');\n  setChallengeFiles(null);\n  setSolution(null);\n  setExamResults(null);\n  setIsOpen(false);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:33:41.620Z
+Question Type: select-all
+Function: getProjectSolution
+Function Size: 620 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getProjectSolution (TypeScript)\n// Retrieves the solution for a project and updates the state to show the user's code.\n\nconst getProjectSolution = (projectId: string, projectTitle: string) => {\n  const { completedChallenges, openModal } = props;\n  const completedProject = find(completed
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:33:43.714Z
+Question Type: order-sequence
+Function: initialiseState
+Function Size: 255 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: initialiseState (TypeScript)\n// Initializes the state for the certification settings component.\n\nfunction initialiseState() {\n  setProjectTitle('');\n  setChallengeFiles(null);\n  setSolution(null);\n  setExamResults(null);\n  setIsOpen(false);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:33:43.842Z
+Question Type: order-sequence
+Function: getProjectSolution
+Function Size: 620 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getProjectSolution (TypeScript)\n// Retrieves the solution for a project and updates the state to show the user's code.\n\nconst getProjectSolution = (projectId: string, projectTitle: string) => {\n  const { completedChallenges, openModal } = props;\n  const completedProject = find(completed
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:33:46.784Z
+Question Type: multiple-choice
+Function: getProjectSolution
+Function Size: 620 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: getProjectSolution (TypeScript)\n// Retrieves the solution for a project and updates the state to show the user's code.\n\nconst getProjectSolution = (projectId: string, projectTitle: string) => {\n  const { completedChallenges, openModal } = props;\n  const completedProject = find(completed
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:33:53.340Z
+Question Type: true-false
+Function: generateSearchLink
+Function Size: 469 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: generateSearchLink (TypeScript)\n// Generates a search link for the forum based on the title, block, and superBlock.\n\nexport const generateSearchLink = (title: string, block: string, superBlock: string) => {\n  const titleText = t(`intro:${superBlock}.blocks.${block}.title`);\n  const sele
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761264140637
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 4
+Ended: 2025-10-24T03:33:57.276Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T03:34:08.289Z
+File: freeCodeCamp-freeCodeCamp-dd08d1a/client/src/templates/Challenges/ms-trophy/link-ms-user.tsx
+Functions Extracted: 1
+
+
+Function 1: LinkMsUser
+Language: TypeScript
+Lines: 76
+Full Code:
+--------------------------------------------------------------------------------
+function LinkMsUser({
+  isSignedIn,
+  msUsername,
+  linkMsUsername,
+  unlinkMsUsername,
+  isProcessing,
+  setIsProcessing
+}: Props): JSX.Element {
+  const { t } = useTranslation();
+  const [msTranscriptUrl, setMsTranscriptUrl] = useState('');
+
+  function handleLinkUsername(e: React.FormEvent) {
+    e.preventDefault();
+    setIsProcessing(true);
+    linkMsUsername({ msTranscriptUrl });
+  }
+
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    e.preventDefault();
+    setMsTranscriptUrl(e.target.value);
+  }
+
+  const isValid = isMicrosoftTranscriptLink(msTranscriptUrl);
+  const isPristine = msTranscriptUrl === '';
+  const isDisabled = isProcessing || !isValid;
+  const showWarning = !isPristine && !isValid;
+
+  return !isSignedIn ? (
+    <>
+      <ChallengeHeading heading={t('learn.ms.link-header')} />
+      <Spacer size='xs' />
+
+      <p>{t('learn.ms.link-signin')}</p>
+      <Login />
+    </>
+  ) : msUsername ? (
+    <>
+      <p>{t('learn.ms.linked', { msUsername })}</p>
+      <Button
+        block={true}
+        variant='primary'
+        disabled={isProcessing}
+        onClick={unlinkMsUsername}
+      >
+        {t('buttons.unlink-account')}
+      </Button>
+    </>
+  ) : (
+    <div>
+      <ChallengeHeading heading={'learn.ms.link-header'} />
+      <Spacer size='xs' />
+
+      <p>{t('learn.ms.unlinked')}</p>
+      <ol className='link-ms-user-ol'>
+        <li>
+          <Trans i18nKey='learn.ms.link-li-1'>
+            <a
+              href='https://learn.microsoft.com/users/me/transcript'
+              rel='noreferrer'
+              target='_blank'
+            >
+              placeholder
+            </a>
+          </Trans>
+        </li>
+        <li>{t('learn.ms.link-li-2')}</li>
+        <li>{t('learn.ms.link-li-3')}</li>
+        <li>{t('learn.ms.link-li-4')}</li>
+        <li>
+          <Trans i18nKey='learn.ms.link-li-5'>
+            <pre className='language-html'>placeholder</pre>
+          </Trans>
+        </li>
+        <li>{t('learn.ms.link-li-6')}</li>
+      </ol>
+
+      <Spacer size='m' />
+      <form onSubmit={handleLinkUsername}>
+        <FormGroup validationState={isValid ? 'success' : 'error'}>
+          <ControlLabel htmlFor='transcript-link'>
+            <strong>{t('learn.ms.transcript-label')}</strong>
+          </ControlLabel>
+          <FormControl
+            id='transcript-link'
+            type='url'
+            onChange={handleInputChange}
+            placeholder='https://learn.microsoft.com/en-us/users/username/transcript/transcriptId'
+          />
+        </FormGroup>
+        <Button
+          disabled={isDisabled}
+          block={true}
+          variant='primary'
+          onClick={handleLinkUsername}
+        >
+          {t('buttons.link-account')}
+        </Button>
+        {showWarning && (
+          <HelpBlock>
+            <Trans i18nKey='learn.ms.invalid-transcript'>
+              placeholder <code>placeholder</code> placeholder
+            </Trans>
+          </HelpBlock>
+        )}
+      </form>
+    </div>
+  );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:34:19.922Z
+Question Type: order-sequence
+Function: LinkMsUser
+Function Size: 3237 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: LinkMsUser (TypeScript)\n// The LinkMsUser component handles linking and unlinking a Microsoft username by managing the input for a transcript URL and interacting with Redux actions based on the user's sign-in status.\n\nfunction LinkMsUser({\n  isSignedIn,\n  msUsername,\n  linkMsUsername,\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:34:20.825Z
+Question Type: order-sequence
+Function: LinkMsUser
+Function Size: 3237 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: LinkMsUser (TypeScript)\n// The LinkMsUser component handles linking and unlinking a Microsoft username by managing the input for a transcript URL and interacting with Redux actions based on the user's sign-in status.\n\nfunction LinkMsUser({\n  isSignedIn,\n  msUsername,\n  linkMsUsername,\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:34:27.843Z
+Question Type: select-all
+Function: LinkMsUser
+Function Size: 3237 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: LinkMsUser (TypeScript)\n// The LinkMsUser component handles linking and unlinking a Microsoft username by managing the input for a transcript URL and interacting with Redux actions based on the user's sign-in status.\n\nfunction LinkMsUser({\n  isSignedIn,\n  msUsername,\n  linkMsUsername,\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:34:30.253Z
+Question Type: function-variant
+Function: LinkMsUser
+Function Size: 3237 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: LinkMsUser (TypeScript)\n// The LinkMsUser component handles linking and unlinking a Microsoft username by managing the input for a transcript URL and interacting with Redux actions based on the user's sign-in status.\n\nfunction LinkMsUser({\n  isSignedIn,\n  msUsername,\n  linkMsUsername,\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:34:37.142Z
+Question Type: function-variant
+Function: LinkMsUser
+Function Size: 3237 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: LinkMsUser (TypeScript)\n// The LinkMsUser component handles linking and unlinking a Microsoft username by managing the input for a transcript URL and interacting with Redux actions based on the user's sign-in status.\n\nfunction LinkMsUser({\n  isSignedIn,\n  msUsername,\n  linkMsUsername,\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:34:49.170Z
+Question Type: select-all
+Function: LinkMsUser
+Function Size: 3237 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: LinkMsUser (TypeScript)\n// The LinkMsUser component handles linking and unlinking a Microsoft username by managing the input for a transcript URL and interacting with Redux actions based on the user's sign-in status.\n\nfunction LinkMsUser({\n  isSignedIn,\n  msUsername,\n  linkMsUsername,\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:34:49.187Z
+Question Type: select-all
+Function: LinkMsUser
+Function Size: 3237 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: LinkMsUser (TypeScript)\n// The LinkMsUser component handles linking and unlinking a Microsoft username by managing the input for a transcript URL and interacting with Redux actions based on the user's sign-in status.\n\nfunction LinkMsUser({\n  isSignedIn,\n  msUsername,\n  linkMsUsername,\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:34:50.868Z
+Question Type: function-variant
+Function: LinkMsUser
+Function Size: 3237 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: LinkMsUser (TypeScript)\n// The LinkMsUser component handles linking and unlinking a Microsoft username by managing the input for a transcript URL and interacting with Redux actions based on the user's sign-in status.\n\nfunction LinkMsUser({\n  isSignedIn,\n  msUsername,\n  linkMsUsername,\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:34:53.351Z
+Question Type: multiple-choice
+Function: LinkMsUser
+Function Size: 3237 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: LinkMsUser (TypeScript)\n// The LinkMsUser component handles linking and unlinking a Microsoft username by managing the input for a transcript URL and interacting with Redux actions based on the user's sign-in status.\n\nfunction LinkMsUser({\n  isSignedIn,\n  msUsername,\n  linkMsUsername,\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:34:54.310Z
+Question Type: true-false
+Function: LinkMsUser
+Function Size: 3237 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: LinkMsUser (TypeScript)\n// The LinkMsUser component handles linking and unlinking a Microsoft username by managing the input for a transcript URL and interacting with Redux actions based on the user's sign-in status.\n\nfunction LinkMsUser({\n  isSignedIn,\n  msUsername,\n  linkMsUsername,\n 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761264140637
+Repository: Unknown
+Total Questions Generated: 5
+Total Chunks Processed: 1
+Ended: 2025-10-24T03:34:58.391Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:35:01.393Z
+Question Type: true-false
+Function: generateSearchLink
+Function Size: 469 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: generateSearchLink (TypeScript)\n// Generates a search link for the forum based on the title, block, and superBlock.\n\nexport const generateSearchLink = (title: string, block: string, superBlock: string) => {\n  const titleText = t(`intro:${superBlock}.blocks.${block}.title`);\n  const sele
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:35:04.371Z
+Question Type: select-all
+Function: handleClaim
+Function Size: 333 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleClaim (TypeScript)\n// Handles the claiming of a certification based on honesty verification.\n\nconst handleClaim = (certSlug: keyof typeof certSlugTypeMap) => (e: MouseEvent<HTMLButtonElement>) => {\n  e.preventDefault();\n\n  return isHonest\n    ? verifyCert(certSlug)\n    : createFla
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:35:10.907Z
+Question Type: order-sequence
+Function: LinkMsUser
+Function Size: 3237 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: LinkMsUser (TypeScript)\n// The LinkMsUser component handles linking and unlinking a Microsoft username by managing the input for a transcript URL and interacting with Redux actions based on the user's sign-in status.\n\nfunction LinkMsUser({\n  isSignedIn,\n  msUsername,\n  linkMsUsername,\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:35:10.918Z
+Question Type: order-sequence
+Function: LinkMsUser
+Function Size: 3237 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: LinkMsUser (TypeScript)\n// The LinkMsUser component handles linking and unlinking a Microsoft username by managing the input for a transcript URL and interacting with Redux actions based on the user's sign-in status.\n\nfunction LinkMsUser({\n  isSignedIn,\n  msUsername,\n  linkMsUsername,\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:35:13.866Z
+Question Type: function-variant
+Function: handleClaim
+Function Size: 333 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: handleClaim (TypeScript)\n// Handles the claiming of a certification based on honesty verification.\n\nconst handleClaim = (certSlug: keyof typeof certSlugTypeMap) => (e: MouseEvent<HTMLButtonElement>) => {\n  e.preventDefault();\n\n  return isHonest\n    ? verifyCert(certSlug)\n    : createFla
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:35:15.627Z
+Question Type: select-all
+Function: initialiseState
+Function Size: 255 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: initialiseState (TypeScript)\n// Initializes the state for the certification settings component.\n\nfunction initialiseState() {\n  setProjectTitle('');\n  setChallengeFiles(null);\n  setSolution(null);\n  setExamResults(null);\n  setIsOpen(false);\n}
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761264140637
+Repository: Unknown
+Total Questions Generated: 4
+Total Chunks Processed: 5
+Ended: 2025-10-24T03:35:18.716Z
+================================================================================
+

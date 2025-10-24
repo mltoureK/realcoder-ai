@@ -1,0 +1,4028 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761278079464
+Started: 2025-10-24T03:54:39.465Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T03:54:39.466Z
+File: motiondivision-motion-b5df740/packages/framer-motion/src/projection/geometry/delta-calc.ts
+Functions Extracted: 4
+
+
+Function 1: calcAxisDelta
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function calcAxisDelta(
+    delta: AxisDelta,
+    source: Axis,
+    target: Axis,
+    origin: number = 0.5
+) {
+    delta.origin = origin;
+    delta.originPoint = mixNumber(source.min, source.max, delta.origin);
+    delta.scale = calcLength(target) / calcLength(source);
+    delta.translate =
+        mixNumber(target.min, target.max, delta.origin) - delta.originPoint;
+
+    if (
+        (delta.scale >= SCALE_MIN && delta.scale <= SCALE_MAX) ||
+        isNaN(delta.scale)
+    ) {
+        delta.scale = 1.0;
+    }
+
+    if (
+        (delta.translate >= TRANSLATE_MIN &&
+            delta.translate <= TRANSLATE_MAX) ||
+        isNaN(delta.translate)
+    ) {
+        delta.translate = 0.0;
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: calcBoxDelta
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export function calcBoxDelta(
+    delta: Delta,
+    source: Box,
+    target: Box,
+    origin?: ResolvedValues
+): void {
+    calcAxisDelta(
+        delta.x,
+        source.x,
+        target.x,
+        origin ? (origin.originX as number) : undefined
+    );
+    calcAxisDelta(
+        delta.y,
+        source.y,
+        target.y,
+        origin ? (origin.originY as number) : undefined
+    );
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: calcRelativeBox
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function calcRelativeBox(target: Box, relative: Box, parent: Box) {
+    calcRelativeAxis(target.x, relative.x, parent.x);
+    calcRelativeAxis(target.y, relative.y, parent.y);
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: calcRelativePosition
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function calcRelativePosition(target: Box, layout: Box, parent: Box) {
+    calcRelativeAxisPosition(target.x, layout.x, parent.x);
+    calcRelativeAxisPosition(target.y, layout.y, parent.y);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T03:54:39.928Z
+File: motiondivision-motion-b5df740/packages/framer-motion/src/value/use-transform.ts
+Functions Extracted: 2
+
+
+Function 1: useTransform
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function useTransform<I, O>(
+    input:
+        | MotionValue<I>
+        | MotionValue<string>[]
+        | MotionValue<number>[]
+        | MotionValue<AnyResolvedKeyframe>[]
+        | (() => O),
+    inputRangeOrTransformer?: InputRange | Transformer<I, O>,
+    outputRange?: O[],
+    options?: TransformOptions<O>
+): MotionValue<O> {
+    if (typeof input === "function") {
+        return useComputed(input)
+    }
+
+    const transformer =
+        typeof inputRangeOrTransformer === "function"
+            ? inputRangeOrTransformer
+            : transform(inputRangeOrTransformer!, outputRange!, options)
+
+    return Array.isArray(input)
+        ? useListTransform(
+              input,
+              transformer as MultiTransformer<AnyResolvedKeyframe, O>
+          )
+        : useListTransform([input], ([latest]) =>
+              (transformer as SingleTransformer<I, O>)(latest)
+          )
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: useListTransform
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function useListTransform<I, O>(
+    values: MotionValue<I>[],
+    transformer: MultiTransformer<I, O>
+): MotionValue<O> {
+    const latest = useConstant<I[]>(() => [])
+
+    return useCombineMotionValues(values, () => {
+        latest.length = 0
+        const numValues = values.length
+        for (let i = 0; i < numValues; i++) {
+            latest[i] = values[i].get()
+        }
+
+        return transformer(latest)
+    })
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:54:44.278Z
+Question Type: true-false
+Function: calcAxisDelta
+Function Size: 818 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: calcAxisDelta (TypeScript)\n// Calculates the delta values for an axis based on source and target axes.\n\nexport function calcAxisDelta(\n    delta: AxisDelta,\n    source: Axis,\n    target: Axis,\n    origin: number = 0.5\n) {\n    delta.origin = origin;\n    delta.originPoint = mixNumber(sour
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:54:44.980Z
+Question Type: select-all
+Function: calcRelativeBox
+Function Size: 312 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: calcRelativeBox (TypeScript)\n// Calculates the relative position of a box based on its parent and relative boxes.\n\nexport function calcRelativeBox(target: Box, relative: Box, parent: Box) {\n    calcRelativeAxis(target.x, relative.x, parent.x);\n    calcRelativeAxis(target.y, relative.y, 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:54:46.799Z
+Question Type: select-all
+Function: calcRelativePosition
+Function Size: 330 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: calcRelativePosition (TypeScript)\n// Calculates the relative position of a box based on its layout and parent boxes.\n\nexport function calcRelativePosition(target: Box, layout: Box, parent: Box) {\n    calcRelativeAxisPosition(target.x, layout.x, parent.x);\n    calcRelativeAxisPosition(ta
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:54:57.300Z
+Question Type: function-variant
+Function: calcRelativeBox
+Function Size: 312 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: calcRelativeBox (TypeScript)\n// Calculates the relative position of a box based on its parent and relative boxes.\n\nexport function calcRelativeBox(target: Box, relative: Box, parent: Box) {\n    calcRelativeAxis(target.x, relative.x, parent.x);\n    calcRelativeAxis(target.y, relative.y, 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:54:57.798Z
+Question Type: order-sequence
+Function: calcRelativeBox
+Function Size: 312 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: calcRelativeBox (TypeScript)\n// Calculates the relative position of a box based on its parent and relative boxes.\n\nexport function calcRelativeBox(target: Box, relative: Box, parent: Box) {\n    calcRelativeAxis(target.x, relative.x, parent.x);\n    calcRelativeAxis(target.y, relative.y, 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:54:59.160Z
+Question Type: function-variant
+Function: calcAxisDelta
+Function Size: 818 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: calcAxisDelta (TypeScript)\n// Calculates the delta values for an axis based on source and target axes.\n\nexport function calcAxisDelta(\n    delta: AxisDelta,\n    source: Axis,\n    target: Axis,\n    origin: number = 0.5\n) {\n    delta.origin = origin;\n    delta.originPoint = mixNumber(sour
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:55:01.568Z
+Question Type: order-sequence
+Function: calcBoxDelta
+Function Size: 506 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: calcBoxDelta (TypeScript)\n// Calculates the delta values for a box based on source and target boxes.\n\nexport function calcBoxDelta(\n    delta: Delta,\n    source: Box,\n    target: Box,\n    origin?: ResolvedValues\n): void {\n    calcAxisDelta(\n        delta.x,\n        source.x,\n        tar
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:55:08.089Z
+Question Type: select-all
+Function: calcAxisDelta
+Function Size: 818 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: calcAxisDelta (TypeScript)\n// Calculates the delta values for an axis based on source and target axes.\n\nexport function calcAxisDelta(\n    delta: AxisDelta,\n    source: Axis,\n    target: Axis,\n    origin: number = 0.5\n) {\n    delta.origin = origin;\n    delta.originPoint = mixNumber(sour
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:55:11.227Z
+Question Type: function-variant
+Function: calcRelativePosition
+Function Size: 330 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: calcRelativePosition (TypeScript)\n// Calculates the relative position of a box based on its layout and parent boxes.\n\nexport function calcRelativePosition(target: Box, layout: Box, parent: Box) {\n    calcRelativeAxisPosition(target.x, layout.x, parent.x);\n    calcRelativeAxisPosition(ta
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761278079464
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 4
+Ended: 2025-10-24T03:55:13.956Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:55:18.429Z
+Question Type: true-false
+Function: useListTransform
+Function Size: 566 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useListTransform (TypeScript)\n// Combines multiple MotionValues and applies a transformation function to their latest values.\n\nfunction useListTransform<I, O>(\n    values: MotionValue<I>[],\n    transformer: MultiTransformer<I, O>\n): MotionValue<O> {\n    const latest = useConstant<I[]>((
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:55:26.533Z
+Question Type: order-sequence
+Function: useListTransform
+Function Size: 566 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useListTransform (TypeScript)\n// Combines multiple MotionValues and applies a transformation function to their latest values.\n\nfunction useListTransform<I, O>(\n    values: MotionValue<I>[],\n    transformer: MultiTransformer<I, O>\n): MotionValue<O> {\n    const latest = useConstant<I[]>((
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T03:55:27.142Z
+File: [3 files: index.tsx, hover.ts, utils.ts]
+Functions Extracted: 2
+
+
+Function 1: createMotionComponent
+Language: TypeScript
+Lines: 54
+Full Code:
+--------------------------------------------------------------------------------
+export function createMotionComponent<Props, TagName extends keyof DOMMotionComponents | string = "div">(Component: TagName | string | React.ComponentType<Props>, { forwardMotionProps = false }: MotionComponentOptions = {}, preloadedFeatures?: FeaturePackages, createVisualElement?: CreateVisualElement<Props, TagName>) {
+    preloadedFeatures && loadFeatures(preloadedFeatures);
+
+    const useVisualState = isSVGComponent(Component) ? useSVGVisualState : useHTMLVisualState;
+
+    function MotionDOMComponent(props: MotionComponentProps<Props>, externalRef?: React.Ref<HTMLElement | SVGElement>) {
+        let MeasureLayout: undefined | React.ComponentType<MotionProps>;
+
+        const configAndProps = {
+            ...useContext(MotionConfigContext),
+            ...props,
+            layoutId: useLayoutId(props),
+        };
+
+        const { isStatic } = configAndProps;
+
+        const context = useCreateMotionContext<HTMLElement | SVGElement>(props);
+
+        const visualState = useVisualState(props, isStatic);
+
+        if (!isStatic && isBrowser) {
+            useStrictMode(configAndProps, preloadedFeatures);
+
+            const layoutProjection = getProjectionFunctionality(configAndProps);
+            MeasureLayout = layoutProjection.MeasureLayout;
+
+            context.visualElement = useVisualElement(
+                Component,
+                visualState,
+                configAndProps,
+                createVisualElement,
+                layoutProjection.ProjectionNode
+            );
+        }
+
+        return (
+            <MotionContext.Provider value={context}>
+                {MeasureLayout && context.visualElement ? (
+                    <MeasureLayout
+                        visualElement={context.visualElement}
+                        {...configAndProps}
+                    />
+                ) : null}
+                {useRender<Props, TagName>(
+                    Component,
+                    props,
+                    useMotionRef<HTMLElement | SVGElement, HTMLRenderState | SVGRenderState>(visualState, context.visualElement, externalRef),
+                    visualState,
+                    isStatic,
+                    forwardMotionProps
+                )}
+            </MotionContext.Provider>
+        );
+    }
+
+    MotionDOMComponent.displayName = `motion.${
+        typeof Component === "string"
+            ? Component
+            : `create(${Component.displayName ?? Component.name ?? ""})`
+    }`;
+
+    const ForwardRefMotionComponent = forwardRef(MotionDOMComponent as any);
+    (ForwardRefMotionComponent as any)[motionComponentSymbol] = Component;
+
+    return ForwardRefMotionComponent as MotionComponent<TagName, Props>;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: hover
+Language: TypeScript
+Lines: 31
+Full Code:
+--------------------------------------------------------------------------------
+export function hover(elementOrSelector: ElementOrSelector, onHoverStart: OnHoverStartEvent, options: EventOptions = {}): VoidFunction {
+    const [elements, eventOptions, cancel] = setupGesture(elementOrSelector, options);
+
+    const onPointerEnter = (enterEvent: PointerEvent) => {
+        if (!isValidHover(enterEvent)) return;
+
+        const { target } = enterEvent;
+        const onHoverEnd = onHoverStart(target as Element, enterEvent);
+
+        if (typeof onHoverEnd !== "function" || !target) return;
+
+        const onPointerLeave = (leaveEvent: PointerEvent) => {
+            if (!isValidHover(leaveEvent)) return;
+
+            onHoverEnd(leaveEvent);
+            target.removeEventListener("pointerleave", onPointerLeave as EventListener);
+        };
+
+        target.addEventListener("pointerleave", onPointerLeave as EventListener, eventOptions);
+    };
+
+    elements.forEach((element) => {
+        element.addEventListener("pointerenter", onPointerEnter as EventListener, eventOptions);
+    });
+
+    return cancel;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:55:29.042Z
+Question Type: function-variant
+Function: useListTransform
+Function Size: 566 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useListTransform (TypeScript)\n// Combines multiple MotionValues and applies a transformation function to their latest values.\n\nfunction useListTransform<I, O>(\n    values: MotionValue<I>[],\n    transformer: MultiTransformer<I, O>\n): MotionValue<O> {\n    const latest = useConstant<I[]>((
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:55:30.439Z
+Question Type: order-sequence
+Function: useTransform
+Function Size: 1034 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: useTransform (TypeScript)\n// Transforms the output of a MotionValue based on input ranges or a transformation function.\n\nexport function useTransform<I, O>(\n    input:\n        | MotionValue<I>\n        | MotionValue<string>[]\n        | MotionValue<number>[]\n        | MotionValue<AnyResol
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:55:32.332Z
+Question Type: function-variant
+Function: useTransform
+Function Size: 1034 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: useTransform (TypeScript)\n// Transforms the output of a MotionValue based on input ranges or a transformation function.\n\nexport function useTransform<I, O>(\n    input:\n        | MotionValue<I>\n        | MotionValue<string>[]\n        | MotionValue<number>[]\n        | MotionValue<AnyResol
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761278079464
+Repository: Unknown
+Total Questions Generated: 4
+Total Chunks Processed: 2
+Ended: 2025-10-24T03:55:35.295Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:55:45.029Z
+Question Type: function-variant
+Function: createMotionComponent
+Function Size: 2797 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createMotionComponent (TypeScript)\n// Creates a motion component that can be used for animations in React.\n\nexport function createMotionComponent<Props, TagName extends keyof DOMMotionComponents | string = "div">(Component: TagName | string | React.ComponentType<Props>, { forwardMotionP
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:55:46.829Z
+Question Type: true-false
+Function: createMotionComponent
+Function Size: 2797 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createMotionComponent (TypeScript)\n// Creates a motion component that can be used for animations in React.\n\nexport function createMotionComponent<Props, TagName extends keyof DOMMotionComponents | string = "div">(Component: TagName | string | React.ComponentType<Props>, { forwardMotionP
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:55:47.856Z
+Question Type: order-sequence
+Function: hover
+Function Size: 1133 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: hover (TypeScript)\n// Creates a hover gesture that handles pointer enter and leave events.\n\nexport function hover(elementOrSelector: ElementOrSelector, onHoverStart: OnHoverStartEvent, options: EventOptions = {}): VoidFunction {\n    const [elements, eventOptions, cancel] = setupGesture(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:55:58.451Z
+Question Type: select-all
+Function: createMotionComponent
+Function Size: 2797 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createMotionComponent (TypeScript)\n// Creates a motion component that can be used for animations in React.\n\nexport function createMotionComponent<Props, TagName extends keyof DOMMotionComponents | string = "div">(Component: TagName | string | React.ComponentType<Props>, { forwardMotionP
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:55:59.030Z
+Question Type: function-variant
+Function: hover
+Function Size: 1133 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: hover (TypeScript)\n// Creates a hover gesture that handles pointer enter and leave events.\n\nexport function hover(elementOrSelector: ElementOrSelector, onHoverStart: OnHoverStartEvent, options: EventOptions = {}): VoidFunction {\n    const [elements, eventOptions, cancel] = setupGesture(
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761278079464
+Repository: Unknown
+Total Questions Generated: 4
+Total Chunks Processed: 2
+Ended: 2025-10-24T03:56:02.094Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T03:56:27.445Z
+File: greensock-GSAP-9f8eca1/esm/GSDevTools.js
+Functions Extracted: 5
+
+
+Function 1: _createElement
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function _createElement(type, container, cssText) {
+  var element = _doc.createElementNS ? _doc.createElementNS(type === "svg" ? _svgNS : _domNS, type) : _doc.createElement(type);
+
+  if (container) {
+    if (_isString(container)) {
+      container = _doc.querySelector(container);
+    }
+
+    container.appendChild(element);
+  }
+
+  if (type === "svg") {
+    element.setAttribute("xmlns", _svgNS);
+    element.setAttribute("xmlns:xlink", _domNS);
+  }
+
+  cssText && (element.style.cssText = cssText);
+  return element;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: _getChildrenOf
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function _getChildrenOf(timeline, includeTimelines) {
+  var a = [],
+      cnt = 0,
+      Tween = gsap.core.Tween,
+      tween = timeline._first;
+
+  while (tween) {
+    if (tween instanceof Tween) {
+      if (tween.vars.id) {
+        a[cnt++] = tween;
+      }
+    } else {
+      if (includeTimelines && tween.vars.id) {
+        a[cnt++] = tween;
+      }
+
+      a = a.concat(_getChildrenOf(tween, includeTimelines));
+      cnt = a.length;
+    }
+
+    tween = tween._next;
+  }
+
+  return a;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: _merge
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function _merge() {
+  var t = _globalTimeline._first,
+      duration,
+      next,
+      target;
+
+  if (_rootInstance) {
+    duration = _recordedRoot._dur;
+
+    while (t) {
+      next = t._next;
+      target = t._targets && t._targets[0];
+
+      if (!(_isFunction(target) && target === t.vars.onComplete && !t._dur) && !(target && target._gsIgnore)) {
+        _recordedRoot.add(t, t._start - t._delay);
+      }
+
+      t = next;
+    }
+
+    return duration !== _recordedRoot.duration();
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: _updateRootDuration
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function _updateRootDuration() {
+  if (_rootInstance) {
+    _rootInstance.update();
+
+    _rootIsDirty = false;
+  }
+
+  gsap.ticker.remove(_updateRootDuration);
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: _initCore
+Language: JavaScript
+Lines: 40
+Full Code:
+--------------------------------------------------------------------------------
+function _initCore(core) {
+  gsap = core || _getGSAP();
+
+  if (!_coreInitted) {
+    if (gsap && _windowExists()) {
+      _doc = document;
+      _docEl = _doc.documentElement;
+      _win = window;
+
+      _context = gsap.core.context || function () {};
+
+      gsap.registerPlugin(Draggable);
+      _globalTimeline = gsap.globalTimeline;
+      _globalTimeline._sort = true;
+      _globalTimeline.autoRemoveChildren = false;
+      Animation = gsap.core.Animation;
+      _independentRoot = gsap.timeline({
+        data: "indy",
+        autoRemoveChildren: true,
+        smoothChildTiming: true
+      });
+
+      _independentRoot.kill();
+
+      _independentRoot._dp = 0; //don't let it revert to the global timeline as its parent.
+
+      _independentRoot.to({}, {
+        duration: 1e12
+      });
+
+      _recordedRoot = gsap.timeline({
+        data: "root",
+        id: "Global Timeline",
+        autoRemoveChildren: false,
+        smoothChildTiming: true,
+        parent: _independentRoot
+      }, 0);
+      _rootTween = gsap.to(_recordedRoot, {
+        duration: 1,
+        time: 1,
+        ease: "none",
+        data: "root",
+        id: "_rootTween",
+        paused: true,
+        immediateRender: false,
+        parent: _independentRoot
+      }, 0);
+    }
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:56:29.930Z
+Question Type: multiple-choice
+Function: _getChildrenOf
+Function Size: 608 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _getChildrenOf (JavaScript)\n// Recursively retrieves all child tweens and timelines from a given timeline.\n\nfunction _getChildrenOf(timeline, includeTimelines) {\n  var a = [],\n      cnt = 0,\n      Tween = gsap.core.Tween,\n      tween = timeline._first;\n\n  while (tween) {\n    if (tween i
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:56:33.693Z
+Question Type: select-all
+Function: _merge
+Function Size: 602 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _merge (JavaScript)\n// Merges animations from the global timeline into the recorded root timeline.\n\nfunction _merge() {\n  var t = _globalTimeline._first,\n      duration,\n      next,\n      target;\n\n  if (_rootInstance) {\n    duration = _recordedRoot._dur;\n\n    while (t) {\n      next = t.
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:56:34.742Z
+Question Type: true-false
+Function: _initCore
+Function Size: 1376 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _initCore (JavaScript)\n// Initializes the GSAP core and sets up the necessary timelines and instances.\n\nfunction _initCore(core) {\n  gsap = core || _getGSAP();\n\n  if (!_coreInitted) {\n    if (gsap && _windowExists()) {\n      _doc = document;\n      _docEl = _doc.documentElement;\n      _w
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:56:40.006Z
+Question Type: select-all
+Function: _createElement
+Function Size: 675 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _createElement (JavaScript)\n// Creates a new DOM element of the specified type, optionally appending it to a container and applying CSS styles.\n\nfunction _createElement(type, container, cssText) {\n  var element = _doc.createElementNS ? _doc.createElementNS(type === "svg" ? _svgNS : _dom
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:56:42.533Z
+Question Type: true-false
+Function: _merge
+Function Size: 602 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _merge (JavaScript)\n// Merges animations from the global timeline into the recorded root timeline.\n\nfunction _merge() {\n  var t = _globalTimeline._first,\n      duration,\n      next,\n      target;\n\n  if (_rootInstance) {\n    duration = _recordedRoot._dur;\n\n    while (t) {\n      next = t.
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:56:43.509Z
+Question Type: function-variant
+Function: _createElement
+Function Size: 675 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _createElement (JavaScript)\n// Creates a new DOM element of the specified type, optionally appending it to a container and applying CSS styles.\n\nfunction _createElement(type, container, cssText) {\n  var element = _doc.createElementNS ? _doc.createElementNS(type === "svg" ? _svgNS : _dom
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:56:49.351Z
+Question Type: select-all
+Function: _updateRootDuration
+Function Size: 275 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _updateRootDuration (JavaScript)\n// Updates the duration of the root instance and marks it as clean.\n\nfunction _updateRootDuration() {\n  if (_rootInstance) {\n    _rootInstance.update();\n\n    _rootIsDirty = false;\n  }\n\n  gsap.ticker.remove(_updateRootDuration);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:56:52.893Z
+Question Type: select-all
+Function: _getChildrenOf
+Function Size: 608 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _getChildrenOf (JavaScript)\n// Recursively retrieves all child tweens and timelines from a given timeline.\n\nfunction _getChildrenOf(timeline, includeTimelines) {\n  var a = [],\n      cnt = 0,\n      Tween = gsap.core.Tween,\n      tween = timeline._first;\n\n  while (tween) {\n    if (tween i
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:56:58.422Z
+Question Type: order-sequence
+Function: _merge
+Function Size: 602 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _merge (JavaScript)\n// Merges animations from the global timeline into the recorded root timeline.\n\nfunction _merge() {\n  var t = _globalTimeline._first,\n      duration,\n      next,\n      target;\n\n  if (_rootInstance) {\n    duration = _recordedRoot._dur;\n\n    while (t) {\n      next = t.
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:57:02.358Z
+Question Type: order-sequence
+Function: _updateRootDuration
+Function Size: 275 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: _updateRootDuration (JavaScript)\n// Updates the duration of the root instance and marks it as clean.\n\nfunction _updateRootDuration() {\n  if (_rootInstance) {\n    _rootInstance.update();\n\n    _rootIsDirty = false;\n  }\n\n  gsap.ticker.remove(_updateRootDuration);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:57:04.804Z
+Question Type: function-variant
+Function: _initCore
+Function Size: 1376 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _initCore (JavaScript)\n// Initializes the GSAP core and sets up the necessary timelines and instances.\n\nfunction _initCore(core) {\n  gsap = core || _getGSAP();\n\n  if (!_coreInitted) {\n    if (gsap && _windowExists()) {\n      _doc = document;\n      _docEl = _doc.documentElement;\n      _w
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:57:06.372Z
+Question Type: order-sequence
+Function: _createElement
+Function Size: 675 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: _createElement (JavaScript)\n// Creates a new DOM element of the specified type, optionally appending it to a container and applying CSS styles.\n\nfunction _createElement(type, container, cssText) {\n  var element = _doc.createElementNS ? _doc.createElementNS(type === "svg" ? _svgNS : _dom
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761278079464
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 5
+Ended: 2025-10-24T03:57:09.157Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T03:57:20.862Z
+File: only call if moving forward in the timeline (in case it's nested in a timeline that gets reversed)
+Functions Extracted: 6
+
+
+Function 1: loadState
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+ _proto4.loadState = function loadState(done) {
+    done || (done = function done() {
+      return 0;
+    });
+    var queue = [];
+    this.actions.forEach(function (c) {
+      if (c.vars.loadState) {
+        var i,
+            f = function f(targets) {
+          targets && (c.targets = targets);
+          i = queue.indexOf(f);
+
+          if (~i) {
+            queue.splice(i, 1);
+            queue.length || done();
+          }
+        };
+
+        queue.push(f);
+        c.vars.loadState(f);
+      }
+    });
+    queue.length || done();
+    return this;
+  };
+--------------------------------------------------------------------------------
+
+
+Function 2: setState
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+ _proto4.setState = function setState() {
+    this.actions.forEach(function (c) {
+      return c.targets = c.vars.setState && c.vars.setState(c);
+    });
+    return this;
+  };
+--------------------------------------------------------------------------------
+
+
+Function 3: killConflicts
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+ _proto4.killConflicts = function killConflicts(soft) {
+    this.state.interrupt(soft);
+
+    this._kill.forEach(function (state) {
+      return state.interrupt(soft);
+    });
+
+    return this;
+  };
+--------------------------------------------------------------------------------
+
+
+Function 4: run
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+ _proto4.run = function run(skipGetState, merge) {
+    var _this5 = this;
+
+    if (this !== _batch) {
+      skipGetState || this.getState(merge);
+      this.loadState(function () {
+        if (!_this5._killed) {
+          _this5.setState();
+
+          _this5.animate();
+        }
+      });
+    }
+
+    return this;
+  };
+--------------------------------------------------------------------------------
+
+
+Function 5: getStateById
+Language: JavaScript
+Lines: 13
+Full Code:
+--------------------------------------------------------------------------------
+ _proto4.getStateById = function getStateById(id) {
+    var i = this.actions.length,
+        s;
+
+    while (i--) {
+      s = this.actions[i].getStateById(id);
+
+      if (s) {
+        return s;
+      }
+    }
+
+    return this.state.idLookup[id] && this.state;
+  };
+--------------------------------------------------------------------------------
+
+
+Function 6: convertCoordinates
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+Flip.convertCoordinates = function convertCoordinates(fromElement, toElement, point) {
+    var m = getGlobalMatrix(toElement, true, true).multiply(getGlobalMatrix(fromElement));
+    return point ? m.apply(point) : m;
+  };
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:57:23.931Z
+Question Type: true-false
+Function: killConflicts
+Function Size: 298 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: killConflicts (JavaScript)\n// Interrupts the current state and any conflicting states.\n\n _proto4.killConflicts = function killConflicts(soft) {\n    this.state.interrupt(soft);\n\n    this._kill.forEach(function (state) {\n      return state.interrupt(soft);\n    });\n\n    return this;\n  };
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:57:31.480Z
+Question Type: order-sequence
+Function: setState
+Function Size: 290 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: setState (JavaScript)\n// Sets the state of each action based on their respective setState variables.\n\n _proto4.setState = function setState() {\n    this.actions.forEach(function (c) {\n      return c.targets = c.vars.setState && c.vars.setState(c);\n    });\n    return this;\n  };
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:57:31.708Z
+Question Type: order-sequence
+Function: run
+Function Size: 432 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: run (JavaScript)\n// Runs the animation sequence, loading the state and setting it before animating.\n\n _proto4.run = function run(skipGetState, merge) {\n    var _this5 = this;\n\n    if (this !== _batch) {\n      skipGetState || this.getState(merge);\n      this.loadState(function () {\n     
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:57:34.567Z
+Question Type: function-variant
+Function: getStateById
+Function Size: 374 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getStateById (JavaScript)\n// Retrieves the state by its ID from the actions or the current state.\n\n _proto4.getStateById = function getStateById(id) {\n    var i = this.actions.length,\n        s;\n\n    while (i--) {\n      s = this.actions[i].getStateById(id);\n\n      if (s) {\n        retur
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T03:57:35.995Z
+Question Type: select-all
+Function: killConflicts
+Function Size: 298 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: killConflicts (JavaScript)\n// Interrupts the current state and any conflicting states.\n\n _proto4.killConflicts = function killConflicts(soft) {\n    this.state.interrupt(soft);\n\n    this._kill.forEach(function (state) {\n      return state.interrupt(soft);\n    });\n\n    return this;\n  };
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761278079464
+Repository: Unknown
+Total Questions Generated: 4
+Total Chunks Processed: 6
+Ended: 2025-10-24T03:57:40.472Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T04:06:57.678Z
+File: the API is ~stable, so this should be fine
+Functions Extracted: 3
+
+
+Function 1: isBubbledError
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function isBubbledError(error: unknown): error is BubbledError {
+  if (typeof error !== 'object' || error === null) return false
+  return error instanceof BubbledError
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: closeSpanWithError
+Language: TypeScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+const closeSpanWithError = (span: Span, error?: Error) => {
+  if (isBubbledError(error) && error.bubble) {
+    span.setAttribute('next.bubble', true)
+  } else {
+    if (error) {
+      span.recordException(error)
+      span.setAttribute('error.type', error.name)
+    }
+    span.setStatus({ code: SpanStatusCode.ERROR, message: error?.message })
+  }
+  span.end()
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: getTracePropagationData
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+public getTracePropagationData(): ClientTraceDataEntry[] {
+    const activeContext = context.active()
+    const entries: ClientTraceDataEntry[] = []
+    propagation.inject(activeContext, entries, clientTraceDataSetter)
+    return entries
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:07:01.298Z
+Question Type: true-false
+Function: isBubbledError
+Function Size: 282 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isBubbledError (TypeScript)\n// Checks if the provided error is an instance of BubbledError.\n\nexport function isBubbledError(error: unknown): error is BubbledError {\n  if (typeof error !== 'object' || error === null) return false\n  return error instanceof BubbledError\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:07:04.442Z
+Question Type: select-all
+Function: closeSpanWithError
+Function Size: 490 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: closeSpanWithError (TypeScript)\n// Closes a span and records an error if present, setting appropriate attributes.\n\nconst closeSpanWithError = (span: Span, error?: Error) => {\n  if (isBubbledError(error) && error.bubble) {\n    span.setAttribute('next.bubble', true)\n  } else {\n    if (err
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:07:04.671Z
+Question Type: select-all
+Function: getTracePropagationData
+Function Size: 358 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getTracePropagationData (TypeScript)\n// Returns trace propagation data for the currently active context.\n\npublic getTracePropagationData(): ClientTraceDataEntry[] {\n    const activeContext = context.active()\n    const entries: ClientTraceDataEntry[] = []\n    propagation.inject(activeCon
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T04:07:04.835Z
+File: <reference path="../../runtime/base/dev-extensions.ts" />
+Functions Extracted: 4
+
+
+Function 1: connect
+Language: TypeScript
+Lines: 37
+Full Code:
+--------------------------------------------------------------------------------
+export function connect({
+  addMessageListener,
+  sendMessage,
+  onUpdateError = console.error,
+}: ClientOptions) {
+  addMessageListener((msg) => {
+    switch (msg.type) {
+      case 'turbopack-connected':
+        handleSocketConnected(sendMessage)
+        break
+      default:
+        try {
+          if (Array.isArray(msg.data)) {
+            for (let i = 0; i < msg.data.length; i++) {
+              handleSocketMessage(msg.data[i] as ServerMessage)
+            }
+          } else {
+            handleSocketMessage(msg.data as ServerMessage)
+          }
+          applyAggregatedUpdates()
+        } catch (e: unknown) {
+          console.warn(
+            '[Fast Refresh] performing full reload\n\n' +
+              "Fast Refresh will perform a full reload when you edit a file that's imported by modules outside of the React rendering tree.\n" +
+              'You might have a file which exports a React component but also exports a value that is imported by a non-React component file.\n' +
+              'Consider migrating the non-React component export to a separate file and importing it into both files.\n\n' +
+              'It is also possible the parent component of the component you edited is a class component, which disables Fast Refresh.\n' +
+              'Fast Refresh requires at least one parent function component in your React tree.'
+          )
+          onUpdateError(e)
+          location.reload()
+        }
+        break
+    }
+  })
+
+  const queued = globalThis.TURBOPACK_CHUNK_UPDATE_LISTENERS
+  if (queued != null && !Array.isArray(queued)) {
+    throw new Error('A separate HMR handler was already registered')
+  }
+  globalThis.TURBOPACK_CHUNK_UPDATE_LISTENERS = {
+    push: ([chunkPath, callback]: [ChunkListPath, UpdateCallback]) => {
+      subscribeToChunkUpdate(chunkPath, sendMessage, callback)
+    },
+  }
+
+  if (Array.isArray(queued)) {
+    for (const [chunkPath, callback] of queued) {
+      subscribeToChunkUpdate(chunkPath, sendMessage, callback)
+    }
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: resourceKey
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function resourceKey(resource: ResourceIdentifier): ResourceKey {
+  return JSON.stringify({
+    path: resource.path,
+    headers: resource.headers || null,
+  })
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: subscribeToUpdates
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+function subscribeToUpdates(
+  sendMessage: SendMessage,
+  resource: ResourceIdentifier
+): () => void {
+  sendJSON(sendMessage, {
+    type: 'turbopack-subscribe',
+    ...resource,
+  })
+
+  return () => {
+    sendJSON(sendMessage, {
+      type: 'turbopack-unsubscribe',
+      ...resource,
+    })
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: handleSocketConnected
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function handleSocketConnected(sendMessage: SendMessage) {
+  for (const key of updateCallbackSets.keys()) {
+    subscribeToUpdates(sendMessage, JSON.parse(key))
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:07:06.449Z
+Question Type: order-sequence
+Function: getTracePropagationData
+Function Size: 358 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: getTracePropagationData (TypeScript)\n// Returns trace propagation data for the currently active context.\n\npublic getTracePropagationData(): ClientTraceDataEntry[] {\n    const activeContext = context.active()\n    const entries: ClientTraceDataEntry[] = []\n    propagation.inject(activeCon
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:07:09.545Z
+Question Type: select-all
+Function: isBubbledError
+Function Size: 282 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isBubbledError (TypeScript)\n// Checks if the provided error is an instance of BubbledError.\n\nexport function isBubbledError(error: unknown): error is BubbledError {\n  if (typeof error !== 'object' || error === null) return false\n  return error instanceof BubbledError\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:07:11.071Z
+Question Type: true-false
+Function: closeSpanWithError
+Function Size: 490 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: closeSpanWithError (TypeScript)\n// Closes a span and records an error if present, setting appropriate attributes.\n\nconst closeSpanWithError = (span: Span, error?: Error) => {\n  if (isBubbledError(error) && error.bubble) {\n    span.setAttribute('next.bubble', true)\n  } else {\n    if (err
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:07:13.485Z
+Question Type: select-all
+Function: isBubbledError
+Function Size: 282 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isBubbledError (TypeScript)\n// Checks if the provided error is an instance of BubbledError.\n\nexport function isBubbledError(error: unknown): error is BubbledError {\n  if (typeof error !== 'object' || error === null) return false\n  return error instanceof BubbledError\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:07:18.138Z
+Question Type: order-sequence
+Function: getTracePropagationData
+Function Size: 358 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: getTracePropagationData (TypeScript)\n// Returns trace propagation data for the currently active context.\n\npublic getTracePropagationData(): ClientTraceDataEntry[] {\n    const activeContext = context.active()\n    const entries: ClientTraceDataEntry[] = []\n    propagation.inject(activeCon
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:07:26.398Z
+Question Type: function-variant
+Function: closeSpanWithError
+Function Size: 490 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: closeSpanWithError (TypeScript)\n// Closes a span and records an error if present, setting appropriate attributes.\n\nconst closeSpanWithError = (span: Span, error?: Error) => {\n  if (isBubbledError(error) && error.bubble) {\n    span.setAttribute('next.bubble', true)\n  } else {\n    if (err
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:07:26.581Z
+Question Type: function-variant
+Function: getTracePropagationData
+Function Size: 358 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getTracePropagationData (TypeScript)\n// Returns trace propagation data for the currently active context.\n\npublic getTracePropagationData(): ClientTraceDataEntry[] {\n    const activeContext = context.active()\n    const entries: ClientTraceDataEntry[] = []\n    propagation.inject(activeCon
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:07:27.331Z
+Question Type: order-sequence
+Function: closeSpanWithError
+Function Size: 490 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: closeSpanWithError (TypeScript)\n// Closes a span and records an error if present, setting appropriate attributes.\n\nconst closeSpanWithError = (span: Span, error?: Error) => {\n  if (isBubbledError(error) && error.bubble) {\n    span.setAttribute('next.bubble', true)\n  } else {\n    if (err
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:07:27.515Z
+Question Type: order-sequence
+Function: isBubbledError
+Function Size: 282 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: isBubbledError (TypeScript)\n// Checks if the provided error is an instance of BubbledError.\n\nexport function isBubbledError(error: unknown): error is BubbledError {\n  if (typeof error !== 'object' || error === null) return false\n  return error instanceof BubbledError\n}
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761278079464
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 3
+Ended: 2025-10-24T04:07:31.455Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:07:37.257Z
+Question Type: select-all
+Function: subscribeToUpdates
+Function Size: 428 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: subscribeToUpdates (TypeScript)\n// Subscribes to updates for a given resource and returns an unsubscribe function.\n\nfunction subscribeToUpdates(\n  sendMessage: SendMessage,\n  resource: ResourceIdentifier\n): () => void {\n  sendJSON(sendMessage, {\n    type: 'turbopack-subscribe',\n    ...r
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:07:42.217Z
+Question Type: order-sequence
+Function: handleSocketConnected
+Function Size: 299 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: handleSocketConnected (TypeScript)\n// Handles the socket connection by subscribing to updates for all registered keys.\n\nfunction handleSocketConnected(sendMessage: SendMessage) {\n  for (const key of updateCallbackSets.keys()) {\n    subscribeToUpdates(sendMessage, JSON.parse(key))\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:07:43.771Z
+Question Type: order-sequence
+Function: subscribeToUpdates
+Function Size: 428 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: subscribeToUpdates (TypeScript)\n// Subscribes to updates for a given resource and returns an unsubscribe function.\n\nfunction subscribeToUpdates(\n  sendMessage: SendMessage,\n  resource: ResourceIdentifier\n): () => void {\n  sendJSON(sendMessage, {\n    type: 'turbopack-subscribe',\n    ...r
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:07:44.120Z
+Question Type: order-sequence
+Function: connect
+Function Size: 2112 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: connect (TypeScript)\n// Establishes a connection by adding a message listener and handling updates.\n\nexport function connect({\n  addMessageListener,\n  sendMessage,\n  onUpdateError = console.error,\n}: ClientOptions) {\n  addMessageListener((msg) => {\n    switch (msg.type) {\n      case 'tu
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T04:07:46.218Z
+File: [2 files: @ts-expect-error - Argument of type 'Buffer<ArrayBufferLike>' is not assignable to parameter of type 'BufferSource'., context.ts]
+Functions Extracted: 4
+
+
+Function 1: buildEnvironmentVariablesFrom
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+function buildEnvironmentVariablesFrom(
+  injectedEnvironments: Record<string, string>
+): Record<string, string | undefined> {
+  const pairs = Object.keys(process.env).map((key) => [key, process.env[key]])
+  const env = Object.fromEntries(pairs)
+  for (const key of Object.keys(injectedEnvironments)) {
+    env[key] = injectedEnvironments[key]
+  }
+  env.NEXT_RUNTIME = 'edge'
+  return env
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: throwUnsupportedAPIError
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function throwUnsupportedAPIError(name: string) {
+  const error =
+    new Error(`A Node.js API is used (${name}) which is not supported in the Edge Runtime.
+Learn more: https://nextjs.org/docs/api-reference/edge-runtime`)
+  decorateServerError(error, COMPILER_NAMES.edgeServer)
+  throw error
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: createProcessPolyfill
+Language: TypeScript
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+function createProcessPolyfill(env: Record<string, string>) {
+  const processPolyfill = { env: buildEnvironmentVariablesFrom(env) }
+  const overriddenValue: Record<string, any> = {}
+
+  for (const key of Object.keys(process)) {
+    if (key === 'env') continue
+    Object.defineProperty(processPolyfill, key, {
+      get() {
+        if (overriddenValue[key] !== undefined) {
+          return overriddenValue[key]
+        }
+        if (typeof (process as any)[key] === 'function') {
+          return () => throwUnsupportedAPIError(`process.${key}`)
+        }
+        return undefined
+      },
+      set(value) {
+        overriddenValue[key] = value
+      },
+      enumerable: false,
+    })
+  }
+  return processPolyfill
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: createModuleContext
+Language: TypeScript
+Lines: 47
+Full Code:
+--------------------------------------------------------------------------------
+async function createModuleContext(options: ModuleContextOptions) {
+  const warnedEvals = new Set<string>()
+  const warnedWasmCodegens = new Set<string>()
+  const { edgeFunctionEntry } = options
+  const wasm = await loadWasm(edgeFunctionEntry.wasm ?? [])
+  const runtime = new EdgeRuntime({
+    codeGeneration:
+      process.env.NODE_ENV !== 'production'
+        ? { strings: true, wasm: true }
+        : undefined,
+    extend: (context) => {
+      context.process = createProcessPolyfill(edgeFunctionEntry.env)
+
+      Object.defineProperty(context, 'require', {
+        enumerable: false,
+        value: (id: string) => {
+          const value = NativeModuleMap.get(id)
+          if (!value) {
+            throw TypeError('Native module not found: ' + id)
+          }
+          return value
+        },
+      })
+
+      if (process.env.NODE_ENV !== 'production') {
+        context.__next_log_error__ = function (err: unknown) {
+          options.onError(err)
+        }
+      }
+
+      context.__next_eval__ = function __next_eval__(fn: Function) {
+        const key = fn.toString()
+        if (!warnedEvals.has(key)) {
+          const warning = getServerError(
+            new Error(
+              `Dynamic Code Evaluation (e. g. 'eval', 'new Function') not allowed in Edge Runtime
+Learn More: https://nextjs.org/docs/messages/edge-dynamic-code-evaluation`
+            ),
+            COMPILER_NAMES.edgeServer
+          )
+          warning.name = 'DynamicCodeEvaluationWarning'
+          Error.captureStackTrace(warning, __next_eval__)
+          warnedEvals.add(key)
+          options.onWarning(warning)
+        }
+        return fn()
+      }
+
+      context.__next_webassembly_compile__ =
+        function __next_webassembly_compile__(fn: Function) {
+          const key = fn.toString()
+          if (!warnedWasmCodegens.has(key)) {
+            const warning = getServerError(
+              new Error(`Dynamic WASM code generation (e. g. 'WebAssembly.compile') not allowed in Edge Runtime.
+Learn More: https://nextjs.org/docs/messages/edge-dynamic-code-evaluation`),
+              COMPILER_NAMES.edgeServer
+            )
+            warning.name = 'DynamicWasmCodeGenerationWarning'
+            Error.captureStackTrace(warning, __next_webassembly_compile__)
+            warnedWasmCodegens.add(key)
+            options.onWarning(warning)
+          }
+          return fn()
+        }
+
+      context.__next_webassembly_instantiate__ =
+        async function __next_webassembly_instantiate__(fn: Function) {
+          const result = await fn()
+        }
+    }
+  })
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:07:48.873Z
+Question Type: true-false
+Function: subscribeToUpdates
+Function Size: 428 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: subscribeToUpdates (TypeScript)\n// Subscribes to updates for a given resource and returns an unsubscribe function.\n\nfunction subscribeToUpdates(\n  sendMessage: SendMessage,\n  resource: ResourceIdentifier\n): () => void {\n  sendJSON(sendMessage, {\n    type: 'turbopack-subscribe',\n    ...r
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:07:51.781Z
+Question Type: function-variant
+Function: resourceKey
+Function Size: 283 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: resourceKey (TypeScript)\n// Generates a unique resource key by stringifying the resource path and headers.\n\nfunction resourceKey(resource: ResourceIdentifier): ResourceKey {\n  return JSON.stringify({\n    path: resource.path,\n    headers: resource.headers || null,\n  })\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:07:52.004Z
+Question Type: select-all
+Function: resourceKey
+Function Size: 283 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: resourceKey (TypeScript)\n// Generates a unique resource key by stringifying the resource path and headers.\n\nfunction resourceKey(resource: ResourceIdentifier): ResourceKey {\n  return JSON.stringify({\n    path: resource.path,\n    headers: resource.headers || null,\n  })\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:07:53.522Z
+Question Type: function-variant
+Function: subscribeToUpdates
+Function Size: 428 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: subscribeToUpdates (TypeScript)\n// Subscribes to updates for a given resource and returns an unsubscribe function.\n\nfunction subscribeToUpdates(\n  sendMessage: SendMessage,\n  resource: ResourceIdentifier\n): () => void {\n  sendJSON(sendMessage, {\n    type: 'turbopack-subscribe',\n    ...r
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761278079464
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 4
+Ended: 2025-10-24T04:07:55.988Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T04:17:54.870Z
+File: [3 files: tutorial002.py, tutorial002_py39.py, tutorial002_py310.py]
+Functions Extracted: 5
+
+
+Function 1: create_hero
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+@app.post("/heroes/", response_model=HeroPublic)
+def create_hero(hero: HeroCreate, session: Session = Depends(get_session)):
+    db_hero = Hero.model_validate(hero)
+    session.add(db_hero)
+    session.commit()
+    session.refresh(db_hero)
+    return db_hero
+--------------------------------------------------------------------------------
+
+
+Function 2: read_heroes
+Language: Python
+Lines: 11
+Full Code:
+--------------------------------------------------------------------------------
+@app.get("/heroes/", response_model=List[HeroPublic])
+def read_heroes(
+    session: Session = Depends(get_session),
+    offset: int = 0,
+    limit: int = Query(default=100, le=100),
+):
+    heroes = session.exec(select(Hero).offset(offset).limit(limit)).all()
+    return heroes
+--------------------------------------------------------------------------------
+
+
+Function 3: read_hero
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+@app.get("/heroes/{hero_id}", response_model=HeroPublic)
+def read_hero(hero_id: int, session: Session = Depends(get_session)):
+    hero = session.get(Hero, hero_id)
+    if not hero:
+        raise HTTPException(status_code=404, detail="Hero not found")
+    return hero
+--------------------------------------------------------------------------------
+
+
+Function 4: update_hero
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+@app.patch("/heroes/{hero_id}", response_model=HeroPublic)
+def update_hero(
+    hero_id: int, hero: HeroUpdate, session: Session = Depends(get_session)
+):
+    hero_db = session.get(Hero, hero_id)
+    if not hero_db:
+        raise HTTPException(status_code=404, detail="Hero not found")
+    hero_data = hero.model_dump(exclude_unset=True)
+    hero_db.sqlmodel_update(hero_data)
+    session.add(hero_db)
+    session.commit()
+    session.refresh(hero_db)
+    return hero_db
+--------------------------------------------------------------------------------
+
+
+Function 5: delete_hero
+Language: Python
+Lines: 11
+Full Code:
+--------------------------------------------------------------------------------
+@app.delete("/heroes/{hero_id}")
+def delete_hero(hero_id: int, session: Session = Depends(get_session)):
+    hero = session.get(Hero, hero_id)
+    if not hero:
+        raise HTTPException(status_code=404, detail="Hero not found")
+    session.delete(hero)
+    session.commit()
+    return {"ok": True}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:00.802Z
+Question Type: select-all
+Function: read_hero
+Function Size: 354 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: read_hero (Python)\n// Retrieves a specific hero by ID from the database.\n\n@app.get("/heroes/{hero_id}", response_model=HeroPublic)\ndef read_hero(hero_id: int, session: Session = Depends(get_session)):\n    hero = session.get(Hero, hero_id)\n    if not hero:\n        raise HTTPException(sta
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T04:18:00.877Z
+File: [3 files: tutorial005.py, tutorial005_an.py, tutorial002.py]
+Functions Extracted: 7
+
+
+Function 1: get_user
+Language: Python
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+def get_user(db, username: str):
+    if username in db:
+        user_dict = db[username]
+        return UserInDB(**user_dict)
+--------------------------------------------------------------------------------
+
+
+Function 2: authenticate_user
+Language: Python
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+def authenticate_user(fake_db, username: str, password: str):
+    user = get_user(fake_db, username)
+    if not user:
+        return False
+    if not verify_password(password, user.hashed_password):
+        return False
+    return user
+--------------------------------------------------------------------------------
+
+
+Function 3: create_access_token
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+--------------------------------------------------------------------------------
+
+
+Function 4: get_current_user
+Language: Python
+Lines: 24
+Full Code:
+--------------------------------------------------------------------------------
+async def get_current_user(
+    security_scopes: SecurityScopes, token: str = Depends(oauth2_scheme)
+):
+    if security_scopes.scopes:
+        authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
+    else:
+        authenticate_value = "Bearer"
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": authenticate_value},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        scope: str = payload.get("scope", "")
+        token_scopes = scope.split(" ")
+        token_data = TokenData(scopes=token_scopes, username=username)
+    except (InvalidTokenError, ValidationError):
+        raise credentials_exception
+    user = get_user(fake_users_db, username=token_data.username)
+    if user is None:
+        raise credentials_exception
+    for scope in security_scopes.scopes:
+        if scope not in token_data.scopes:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Not enough permissions",
+                headers={"WWW-Authenticate": authenticate_value},
+            )
+    return user
+--------------------------------------------------------------------------------
+
+
+Function 5: get_current_active_user
+Language: Python
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+async def get_current_active_user(
+    current_user: User = Security(get_current_user, scopes=["me"]),
+):
+    if current_user.disabled:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    return current_user
+--------------------------------------------------------------------------------
+
+
+Function 6: login_for_access_token
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+@app.post("/token")
+async def login_for_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+) -> Token:
+    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.username, "scope": " ".join(form_data.scopes)},
+        expires_delta=access_token_expires,
+    )
+    return Token(access_token=access_token, token_type="bearer")
+--------------------------------------------------------------------------------
+
+
+Function 7: create_user
+Language: Python
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+@app.post("/user/", response_model=UserOut)
+async def create_user(user_in: UserIn):
+    user_saved = fake_save_user(user_in)
+    return user_saved
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:06.908Z
+Question Type: multiple-choice
+Function: read_heroes
+Function Size: 384 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: read_heroes (Python)\n// Retrieves a list of heroes from the database with pagination support.\n\n@app.get("/heroes/", response_model=List[HeroPublic])\ndef read_heroes(\n    session: Session = Depends(get_session),\n    offset: int = 0,\n    limit: int = Query(default=100, le=100),\n):\n    her
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:06.927Z
+Question Type: function-variant
+Function: update_hero
+Function Size: 560 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: update_hero (Python)\n// Updates an existing hero's details in the database.\n\n@app.patch("/heroes/{hero_id}", response_model=HeroPublic)\ndef update_hero(\n    hero_id: int, hero: HeroUpdate, session: Session = Depends(get_session)\n):\n    hero_db = session.get(Hero, hero_id)\n    if not her
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:07.816Z
+Question Type: function-variant
+Function: delete_hero
+Function Size: 377 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: delete_hero (Python)\n// Deletes a hero from the database by ID.\n\n@app.delete("/heroes/{hero_id}")\ndef delete_hero(hero_id: int, session: Session = Depends(get_session)):\n    hero = session.get(Hero, hero_id)\n    if not hero:\n        raise HTTPException(status_code=404, detail="Hero not 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:09.074Z
+Question Type: function-variant
+Function: create_hero
+Function Size: 385 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: create_hero (Python)\n// Creates a new hero in the database and returns the created hero's public representation.\n\n@app.post("/heroes/", response_model=HeroPublic)\ndef create_hero(hero: HeroCreate, session: Session = Depends(get_session)):\n    db_hero = Hero.model_validate(hero)\n    sess
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:14.148Z
+Question Type: true-false
+Function: delete_hero
+Function Size: 377 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: delete_hero (Python)\n// Deletes a hero from the database by ID.\n\n@app.delete("/heroes/{hero_id}")\ndef delete_hero(hero_id: int, session: Session = Depends(get_session)):\n    hero = session.get(Hero, hero_id)\n    if not hero:\n        raise HTTPException(status_code=404, detail="Hero not 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:15.148Z
+Question Type: true-false
+Function: create_hero
+Function Size: 385 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: create_hero (Python)\n// Creates a new hero in the database and returns the created hero's public representation.\n\n@app.post("/heroes/", response_model=HeroPublic)\ndef create_hero(hero: HeroCreate, session: Session = Depends(get_session)):\n    db_hero = Hero.model_validate(hero)\n    sess
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:18.299Z
+Question Type: select-all
+Function: update_hero
+Function Size: 560 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: update_hero (Python)\n// Updates an existing hero's details in the database.\n\n@app.patch("/heroes/{hero_id}", response_model=HeroPublic)\ndef update_hero(\n    hero_id: int, hero: HeroUpdate, session: Session = Depends(get_session)\n):\n    hero_db = session.get(Hero, hero_id)\n    if not her
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:22.220Z
+Question Type: select-all
+Function: delete_hero
+Function Size: 377 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: delete_hero (Python)\n// Deletes a hero from the database by ID.\n\n@app.delete("/heroes/{hero_id}")\ndef delete_hero(hero_id: int, session: Session = Depends(get_session)):\n    hero = session.get(Hero, hero_id)\n    if not hero:\n        raise HTTPException(status_code=404, detail="Hero not 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:23.745Z
+Question Type: order-sequence
+Function: read_heroes
+Function Size: 384 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: read_heroes (Python)\n// Retrieves a list of heroes from the database with pagination support.\n\n@app.get("/heroes/", response_model=List[HeroPublic])\ndef read_heroes(\n    session: Session = Depends(get_session),\n    offset: int = 0,\n    limit: int = Query(default=100, le=100),\n):\n    her
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761278079464
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 5
+Ended: 2025-10-24T04:18:27.159Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:29.271Z
+Question Type: multiple-choice
+Function: get_current_user
+Function Size: 1470 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: get_current_user (Python)\n// Retrieves the current user based on the provided JWT token and checks for permissions.\n\nasync def get_current_user(\n    security_scopes: SecurityScopes, token: str = Depends(oauth2_scheme)\n):\n    if security_scopes.scopes:\n        authenticate_value = f'Bear
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:34.106Z
+Question Type: order-sequence
+Function: get_user
+Function Size: 236 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: get_user (Python)\n// Fetches a user from the database by username and returns a UserInDB object.\n\ndef get_user(db, username: str):\n    if username in db:\n        user_dict = db[username]\n        return UserInDB(**user_dict)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:35.326Z
+Question Type: order-sequence
+Function: create_user
+Function Size: 230 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: create_user (Python)\n// Creates a new user and returns the user data.\n\n@app.post("/user/", response_model=UserOut)\nasync def create_user(user_in: UserIn):\n    user_saved = fake_save_user(user_in)\n    return user_saved
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:36.917Z
+Question Type: function-variant
+Function: get_current_active_user
+Function Size: 337 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: get_current_active_user (Python)\n// Checks if the current user is active and returns the user.\n\nasync def get_current_active_user(\n    current_user: User = Security(get_current_user, scopes=["me"]),\n):\n    if current_user.disabled:\n        raise HTTPException(status_code=400, detail="In
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:37.294Z
+Question Type: select-all
+Function: authenticate_user
+Function Size: 339 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: authenticate_user (Python)\n// Authenticates a user by checking the username and password.\n\ndef authenticate_user(fake_db, username: str, password: str):\n    user = get_user(fake_db, username)\n    if not user:\n        return False\n    if not verify_password(password, user.hashed_password
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:48.292Z
+Question Type: function-variant
+Function: get_current_active_user
+Function Size: 337 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: get_current_active_user (Python)\n// Checks if the current user is active and returns the user.\n\nasync def get_current_active_user(\n    current_user: User = Security(get_current_user, scopes=["me"]),\n):\n    if current_user.disabled:\n        raise HTTPException(status_code=400, detail="In
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:48.492Z
+Question Type: function-variant
+Function: get_user
+Function Size: 236 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: get_user (Python)\n// Fetches a user from the database by username and returns a UserInDB object.\n\ndef get_user(db, username: str):\n    if username in db:\n        user_dict = db[username]\n        return UserInDB(**user_dict)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:49.841Z
+Question Type: function-variant
+Function: login_for_access_token
+Function Size: 706 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: login_for_access_token (Python)\n// Handles user login and returns an access token.\n\n@app.post("/token")\nasync def login_for_access_token(\n    form_data: OAuth2PasswordRequestForm = Depends(),\n) -> Token:\n    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:51.211Z
+Question Type: true-false
+Function: get_current_user
+Function Size: 1470 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: get_current_user (Python)\n// Retrieves the current user based on the provided JWT token and checks for permissions.\n\nasync def get_current_user(\n    security_scopes: SecurityScopes, token: str = Depends(oauth2_scheme)\n):\n    if security_scopes.scopes:\n        authenticate_value = f'Bear
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:55.975Z
+Question Type: select-all
+Function: create_user
+Function Size: 230 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: create_user (Python)\n// Creates a new user and returns the user data.\n\n@app.post("/user/", response_model=UserOut)\nasync def create_user(user_in: UserIn):\n    user_saved = fake_save_user(user_in)\n    return user_saved
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:57.103Z
+Question Type: true-false
+Function: login_for_access_token
+Function Size: 706 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: login_for_access_token (Python)\n// Handles user login and returns an access token.\n\n@app.post("/token")\nasync def login_for_access_token(\n    form_data: OAuth2PasswordRequestForm = Depends(),\n) -> Token:\n    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:18:59.658Z
+Question Type: select-all
+Function: get_current_user
+Function Size: 1470 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: get_current_user (Python)\n// Retrieves the current user based on the provided JWT token and checks for permissions.\n\nasync def get_current_user(\n    security_scopes: SecurityScopes, token: str = Depends(oauth2_scheme)\n):\n    if security_scopes.scopes:\n        authenticate_value = f'Bear
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761278079464
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 7
+Ended: 2025-10-24T04:19:03.877Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T04:23:50.309Z
+File: stack trace.
+Functions Extracted: 6
+
+
+Function 1: createPostponeReason
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function createPostponeReason(route: string, expression: string) {
+  return (
+    `Route ${route} needs to bail out of prerendering at this point because it used ${expression}. ` +
+    `React throws this special object to indicate where. It should not be caught by ` +
+    `your own try/catch. Learn more: https://nextjs.org/docs/messages/ppr-caught-error`
+  )
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: isDynamicPostpone
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+export function isDynamicPostpone(err: unknown) {
+  if (
+    typeof err === 'object' &&
+    err !== null &&
+    typeof (err as any).message === 'string'
+  ) {
+    return isDynamicPostponeReason((err as any).message)
+  }
+  return false
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: isDynamicPostponeReason
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function isDynamicPostponeReason(reason: string) {
+  return (
+    reason.includes(
+      'needs to bail out of prerendering at this point because it used'
+    ) &&
+    reason.includes(
+      'Learn more: https://nextjs.org/docs/messages/ppr-caught-error'
+    )
+  )
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: createPrerenderInterruptedError
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function createPrerenderInterruptedError(message: string): Error {
+  const error = new Error(message)
+  ;(error as any).digest = NEXT_PRERENDER_INTERRUPTED
+  return error
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: isPrerenderInterruptedError
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+export function isPrerenderInterruptedError(
+  error: unknown
+): error is DigestError {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    (error as any).digest === NEXT_PRERENDER_INTERRUPTED &&
+    'name' in error &&
+    'message' in error &&
+    error instanceof Error
+  )
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: consumeDynamicAccess
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function consumeDynamicAccess(
+  serverDynamic: DynamicTrackingState,
+  clientDynamic: DynamicTrackingState
+): DynamicTrackingState['dynamicAccesses'] {
+  // Function implementation is not provided in the snippet.
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:23:53.074Z
+Question Type: multiple-choice
+Function: isDynamicPostpone
+Function Size: 342 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isDynamicPostpone (TypeScript)\n// Checks if the provided error is a dynamic postpone error.\n\nexport function isDynamicPostpone(err: unknown) {\n  if (\n    typeof err === 'object' &&\n    err !== null &&\n    typeof (err as any).message === 'string'\n  ) {\n    return isDynamicPostponeReason(
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T04:23:53.230Z
+File: [3 files: If we end up here, there was no work store or work unit store present., This keeps autocompletion working for static routes., This function has to be called initially.]
+Functions Extracted: 5
+
+
+Function 1: makeHangingCookies
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function makeHangingCookies(
+  workStore: WorkStore,
+  prerenderStore: PrerenderStoreModern
+): Promise<ReadonlyRequestCookies> {
+  const cachedPromise = CachedCookies.get(prerenderStore)
+  if (cachedPromise) {
+    return cachedPromise
+  }
+
+  const promise = makeHangingPromise<ReadonlyRequestCookies>(
+    prerenderStore.renderSignal,
+    workStore.route,
+    '`cookies()`'
+  )
+  CachedCookies.set(prerenderStore, promise)
+
+  return promise
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: makeUntrackedCookiesWithDevWarnings
+Language: TypeScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+function makeUntrackedCookiesWithDevWarnings(
+  requestStore: RequestStore,
+  underlyingCookies: ReadonlyRequestCookies,
+  route?: string
+): Promise<ReadonlyRequestCookies> {
+  if (requestStore.asyncApiPromises) {
+    let promise: Promise<ReadonlyRequestCookies>
+    if (underlyingCookies === requestStore.mutableCookies) {
+      promise = requestStore.asyncApiPromises.mutableCookies
+    } else if (underlyingCookies === requestStore.cookies) {
+      promise = requestStore.asyncApiPromises.cookies
+    } else {
+      throw new InvariantError(
+        'Received an underlying cookies object that does not match either `cookies` or `mutableCookies`'
+      )
+    }
+    return instrumentCookiesPromiseWithDevWarnings(promise, route)
+  }
+
+  const cachedCookies = CachedCookies.get(underlyingCookies)
+  if (cachedCookies) {
+    return cachedCookies
+  }
+
+  const promise = makeDevtoolsIOAwarePromise(
+    underlyingCookies,
+    requestStore,
+    RenderStage.Runtime
+  )
+
+  const proxiedPromise = instrumentCookiesPromiseWithDevWarnings(promise, route)
+
+  CachedCookies.set(underlyingCookies, proxiedPromise)
+
+  return proxiedPromise
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: init
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+export function init(opts: {
+  ts: TypeScript
+  info: tsModule.server.PluginCreateInfo
+}) {
+  const projectDir = opts.info.project.getCurrentDirectory()
+  ts = opts.ts
+  info = opts.info
+  appDirRegExp = new RegExp(
+    '^' + (projectDir + '(/src)?/app').replace(/[\/]/g, '[\\/]')
+  )
+
+  log('Initialized Next.js TypeScript plugin: ' + projectDir)
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: getTypeChecker
+Language: TypeScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+export function getTypeChecker() {
+  const program = info.languageService.getProgram()
+  if (!program) {
+    log('Failed to get program while while running getTypeChecker.')
+    return
+  }
+  const typeChecker = program.getTypeChecker()
+  if (!typeChecker) {
+    log('Failed to get type checker while running getTypeChecker.')
+    return
+  }
+  return typeChecker
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: getSource
+Language: TypeScript
+Lines: 11
+Full Code:
+--------------------------------------------------------------------------------
+export function getSource(fileName: string) {
+  const program = info.languageService.getProgram()
+  if (!program) {
+    log('Failed to get program while running getSource for: ' + fileName)
+    return
+  }
+
+  const sourceFile = program.getSourceFile(fileName)
+  if (!sourceFile) {
+    log('Failed to get source file while running getSource for: ' + fileName)
+    return
+  }
+
+  return sourceFile
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:23:54.803Z
+Question Type: true-false
+Function: createPostponeReason
+Function Size: 490 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createPostponeReason (TypeScript)\n// Creates a message indicating that a route needs to bail out of prerendering.\n\nfunction createPostponeReason(route: string, expression: string) {\n  return (\n    `Route ${route} needs to bail out of prerendering at this point because it used ${expressi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:23:58.924Z
+Question Type: function-variant
+Function: isPrerenderInterruptedError
+Function Size: 416 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isPrerenderInterruptedError (TypeScript)\n// Checks if the provided error is a prerender interrupted error.\n\nexport function isPrerenderInterruptedError(\n  error: unknown\n): error is DigestError {\n  return (\n    typeof error === 'object' &&\n    error !== null &&\n    (error as any).digest
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:24:01.150Z
+Question Type: order-sequence
+Function: isDynamicPostponeReason
+Function Size: 392 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isDynamicPostponeReason (TypeScript)\n// Determines if the reason string indicates a dynamic postpone situation.\n\nfunction isDynamicPostponeReason(reason: string) {\n  return (\n    reason.includes(\n      'needs to bail out of prerendering at this point because it used'\n    ) &&\n    reason
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:24:02.434Z
+Question Type: select-all
+Function: createPostponeReason
+Function Size: 490 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createPostponeReason (TypeScript)\n// Creates a message indicating that a route needs to bail out of prerendering.\n\nfunction createPostponeReason(route: string, expression: string) {\n  return (\n    `Route ${route} needs to bail out of prerendering at this point because it used ${expressi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:24:08.620Z
+Question Type: order-sequence
+Function: consumeDynamicAccess
+Function Size: 345 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: consumeDynamicAccess (TypeScript)\n// Consumes dynamic access from server and client dynamic tracking states.\n\nexport function consumeDynamicAccess(\n  serverDynamic: DynamicTrackingState,\n  clientDynamic: DynamicTrackingState\n): DynamicTrackingState['dynamicAccesses'] {\n  // Function imp
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:24:11.518Z
+Question Type: order-sequence
+Function: isPrerenderInterruptedError
+Function Size: 416 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isPrerenderInterruptedError (TypeScript)\n// Checks if the provided error is a prerender interrupted error.\n\nexport function isPrerenderInterruptedError(\n  error: unknown\n): error is DigestError {\n  return (\n    typeof error === 'object' &&\n    error !== null &&\n    (error as any).digest
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:24:15.089Z
+Question Type: function-variant
+Function: createPrerenderInterruptedError
+Function Size: 302 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createPrerenderInterruptedError (TypeScript)\n// Creates an error indicating that prerendering has been interrupted.\n\nfunction createPrerenderInterruptedError(message: string): Error {\n  const error = new Error(message)\n  ;(error as any).digest = NEXT_PRERENDER_INTERRUPTED\n  return error
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:24:18.321Z
+Question Type: order-sequence
+Function: isDynamicPostpone
+Function Size: 342 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: isDynamicPostpone (TypeScript)\n// Checks if the provided error is a dynamic postpone error.\n\nexport function isDynamicPostpone(err: unknown) {\n  if (\n    typeof err === 'object' &&\n    err !== null &&\n    typeof (err as any).message === 'string'\n  ) {\n    return isDynamicPostponeReason(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:24:20.040Z
+Question Type: select-all
+Function: createPrerenderInterruptedError
+Function Size: 302 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createPrerenderInterruptedError (TypeScript)\n// Creates an error indicating that prerendering has been interrupted.\n\nfunction createPrerenderInterruptedError(message: string): Error {\n  const error = new Error(message)\n  ;(error as any).digest = NEXT_PRERENDER_INTERRUPTED\n  return error
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:24:20.859Z
+Question Type: function-variant
+Function: consumeDynamicAccess
+Function Size: 345 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: consumeDynamicAccess (TypeScript)\n// Consumes dynamic access from server and client dynamic tracking states.\n\nexport function consumeDynamicAccess(\n  serverDynamic: DynamicTrackingState,\n  clientDynamic: DynamicTrackingState\n): DynamicTrackingState['dynamicAccesses'] {\n  // Function imp
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:24:22.856Z
+Question Type: select-all
+Function: isDynamicPostponeReason
+Function Size: 392 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isDynamicPostponeReason (TypeScript)\n// Determines if the reason string indicates a dynamic postpone situation.\n\nfunction isDynamicPostponeReason(reason: string) {\n  return (\n    reason.includes(\n      'needs to bail out of prerendering at this point because it used'\n    ) &&\n    reason
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:24:23.993Z
+Question Type: select-all
+Function: isDynamicPostpone
+Function Size: 342 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: isDynamicPostpone (TypeScript)\n// Checks if the provided error is a dynamic postpone error.\n\nexport function isDynamicPostpone(err: unknown) {\n  if (\n    typeof err === 'object' &&\n    err !== null &&\n    typeof (err as any).message === 'string'\n  ) {\n    return isDynamicPostponeReason(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:24:27.950Z
+Question Type: true-false
+Function: isPrerenderInterruptedError
+Function Size: 416 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: isPrerenderInterruptedError (TypeScript)\n// Checks if the provided error is a prerender interrupted error.\n\nexport function isPrerenderInterruptedError(\n  error: unknown\n): error is DigestError {\n  return (\n    typeof error === 'object' &&\n    error !== null &&\n    (error as any).digest
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761278079464
+Repository: Unknown
+Total Questions Generated: 12
+Total Chunks Processed: 6
+Ended: 2025-10-24T04:24:35.191Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:24:41.077Z
+Question Type: select-all
+Function: getTypeChecker
+Function Size: 473 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getTypeChecker (TypeScript)\n// Retrieves the TypeScript type checker from the language service.\n\nexport function getTypeChecker() {\n  const program = info.languageService.getProgram()\n  if (!program) {\n    log('Failed to get program while while running getTypeChecker.')\n    return\n  }\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:24:43.480Z
+Question Type: select-all
+Function: makeHangingCookies
+Function Size: 565 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeHangingCookies (TypeScript)\n// Creates a hanging promise for ReadonlyRequestCookies, caching the result.\n\nfunction makeHangingCookies(\n  workStore: WorkStore,\n  prerenderStore: PrerenderStoreModern\n): Promise<ReadonlyRequestCookies> {\n  const cachedPromise = CachedCookies.get(preren
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:24:44.036Z
+Question Type: function-variant
+Function: getSource
+Function Size: 521 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getSource (TypeScript)\n// Retrieves the source file from the TypeScript program based on the provided filename.\n\nexport function getSource(fileName: string) {\n  const program = info.languageService.getProgram()\n  if (!program) {\n    log('Failed to get program while running getSource for
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:24:46.167Z
+Question Type: order-sequence
+Function: getTypeChecker
+Function Size: 473 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: getTypeChecker (TypeScript)\n// Retrieves the TypeScript type checker from the language service.\n\nexport function getTypeChecker() {\n  const program = info.languageService.getProgram()\n  if (!program) {\n    log('Failed to get program while while running getTypeChecker.')\n    return\n  }\n 
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T04:24:49.364Z
+File: @ts-expect-error - Argument of type 'Buffer<ArrayBufferLike>' is not assignable to parameter of type 'BufferSource'.
+Functions Extracted: 4
+
+
+Function 1: buildEnvironmentVariablesFrom
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function buildEnvironmentVariablesFrom(
+  injectedEnvironments: Record<string, string>
+): Record<string, string | undefined> {
+  const pairs = Object.keys(process.env).map((key) => [key, process.env[key]])
+  const env = Object.fromEntries(pairs)
+  for (const key of Object.keys(injectedEnvironments)) {
+    env[key] = injectedEnvironments[key]
+  }
+  env.NEXT_RUNTIME = 'edge'
+  return env
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: throwUnsupportedAPIError
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function throwUnsupportedAPIError(name: string) {
+  const error =
+    new Error(`A Node.js API is used (${name}) which is not supported in the Edge Runtime.
+Learn more: https://nextjs.org/docs/api-reference/edge-runtime`)
+  decorateServerError(error, COMPILER_NAMES.edgeServer)
+  throw error
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: createProcessPolyfill
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function createProcessPolyfill(env: Record<string, string>) {
+  const processPolyfill = { env: buildEnvironmentVariablesFrom(env) }
+  const overriddenValue: Record<string, any> = {}
+
+  for (const key of Object.keys(process)) {
+    if (key === 'env') continue
+    Object.defineProperty(processPolyfill, key, {
+      get() {
+        if (overriddenValue[key] !== undefined) {
+          return overriddenValue[key]
+        }
+        if (typeof (process as any)[key] === 'function') {
+          return () => throwUnsupportedAPIError(`process.${key}`)
+        }
+        return undefined
+      },
+      set(value) {
+        overriddenValue[key] = value
+      },
+      enumerable: false,
+    })
+  }
+  return processPolyfill
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: createModuleContext
+Language: TypeScript
+Lines: 41
+Full Code:
+--------------------------------------------------------------------------------
+async function createModuleContext(options: ModuleContextOptions) {
+  const warnedEvals = new Set<string>()
+  const warnedWasmCodegens = new Set<string>()
+  const { edgeFunctionEntry } = options
+  const wasm = await loadWasm(edgeFunctionEntry.wasm ?? [])
+  const runtime = new EdgeRuntime({
+    codeGeneration:
+      process.env.NODE_ENV !== 'production'
+        ? { strings: true, wasm: true }
+        : undefined,
+    extend: (context) => {
+      context.process = createProcessPolyfill(edgeFunctionEntry.env)
+
+      Object.defineProperty(context, 'require', {
+        enumerable: false,
+        value: (id: string) => {
+          const value = NativeModuleMap.get(id)
+          if (!value) {
+            throw TypeError('Native module not found: ' + id)
+          }
+          return value
+        },
+      })
+
+      if (process.env.NODE_ENV !== 'production') {
+        context.__next_log_error__ = function (err: unknown) {
+          options.onError(err)
+        }
+      }
+
+      context.__next_eval__ = function __next_eval__(fn: Function) {
+        const key = fn.toString()
+        if (!warnedEvals.has(key)) {
+          const warning = getServerError(
+            new Error(
+              `Dynamic Code Evaluation (e. g. 'eval', 'new Function') not allowed in Edge Runtime
+Learn More: https://nextjs.org/docs/messages/edge-dynamic-code-evaluation`
+            ),
+            COMPILER_NAMES.edgeServer
+          )
+          warning.name = 'DynamicCodeEvaluationWarning'
+          Error.captureStackTrace(warning, __next_eval__)
+          warnedEvals.add(key)
+          options.onWarning(warning)
+        }
+        return fn()
+      }
+
+      context.__next_webassembly_compile__ =
+        function __next_webassembly_compile__(fn: Function) {
+          const key = fn.toString()
+          if (!warnedWasmCodegens.has(key)) {
+            const warning = getServerError(
+              new Error(`Dynamic WASM code generation (e. g. 'WebAssembly.compile') not allowed in Edge Runtime.
+Learn More: https://nextjs.org/docs/messages/edge-dynamic-code-evaluation`),
+              COMPILER_NAMES.edgeServer
+            )
+            warning.name = 'DynamicWasmCodeGenerationWarning'
+            Error.captureStackTrace(warning, __next_webassembly_compile__)
+            warnedWasmCodegens.add(key)
+            options.onWarning(warning)
+          }
+          return fn()
+        }
+
+      context.__next_webassembly_instantiate__ =
+        async function __next_webassembly_instantiate__(fn: Function) {
+          const result = await fn()
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:24:51.726Z
+Question Type: order-sequence
+Function: makeHangingCookies
+Function Size: 565 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeHangingCookies (TypeScript)\n// Creates a hanging promise for ReadonlyRequestCookies, caching the result.\n\nfunction makeHangingCookies(\n  workStore: WorkStore,\n  prerenderStore: PrerenderStoreModern\n): Promise<ReadonlyRequestCookies> {\n  const cachedPromise = CachedCookies.get(preren
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T04:24:52.117Z
+Question Type: true-false
+Function: makeHangingCookies
+Function Size: 565 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: makeHangingCookies (TypeScript)\n// Creates a hanging promise for ReadonlyRequestCookies, caching the result.\n\nfunction makeHangingCookies(\n  workStore: WorkStore,\n  prerenderStore: PrerenderStoreModern\n): Promise<ReadonlyRequestCookies> {\n  const cachedPromise = CachedCookies.get(preren
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761278079464
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 5
+Ended: 2025-10-24T04:24:55.835Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T05:50:36.652Z
+File: [8 files: stargazers.data.ts, config.ts, volcano.data.js, Converts the real DOM to virtual DOM (for client-side hydration)., PlotRender.js, remove old plot (and listeners), quadtreeNodes.js, index.ts]
+Functions Extracted: 3
+
+
+Function 1: load
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+async load() {
+    let stargazers_count;
+    try {
+      ({stargazers_count} = await github(`/repos/${REPO}`));
+    } catch (error) {
+      if (process.env.CI) throw error;
+      stargazers_count = NaN;
+    }
+    return stargazers_count;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: github
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+async function github(
+  path,
+  {
+    authorization = process.env.GITHUB_TOKEN && `token ${process.env.GITHUB_TOKEN}`,
+    accept = "application/vnd.github.v3+json"
+  } = {}
+) {
+  const url = new URL(path, "https://api.github.com");
+  const headers = {...(authorization && {authorization}), accept};
+  const response = await fetch(url, {headers});
+  if (!response.ok) throw new Error(`fetch error: ${response.status} ${url}`);
+  return await response.json();
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: quadtree_nodes
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export default function quadtree_nodes() {
+  const nodes = [];
+  this.visit((node, x1, y1, x2, y2) => void nodes.push({x1, y1, x2, y2}));
+  return nodes;
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:50:41.655Z
+Question Type: true-false
+Function: load
+Function Size: 329 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: load (JavaScript)\n// Loads the stargazers count from a GitHub repository.\n\nasync load() {\n    let stargazers_count;\n    try {\n      ({stargazers_count} = await github(`/repos/${REPO}`));\n    } catch (error) {\n      if (process.env.CI) throw error;\n      stargazers_count = NaN;\n    }\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:50:43.392Z
+Question Type: select-all
+Function: github
+Function Size: 532 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: github (JavaScript)\n// Fetches data from the GitHub API.\n\nasync function github(\n  path,\n  {\n    authorization = process.env.GITHUB_TOKEN && `token ${process.env.GITHUB_TOKEN}`,\n    accept = "application/vnd.github.v3+json"\n  } = {}\n) {\n  const url = new URL(path, "https://api.github.co
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:50:45.183Z
+Question Type: order-sequence
+Function: quadtree_nodes
+Function Size: 254 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: quadtree_nodes (JavaScript)\n// Collects and returns nodes from a quadtree structure.\n\nexport default function quadtree_nodes() {\n  const nodes = [];\n  this.visit((node, x1, y1, x2, y2) => void nodes.push({x1, y1, x2, y2}));\n  return nodes;\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:50:47.356Z
+Question Type: order-sequence
+Function: load
+Function Size: 329 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: load (JavaScript)\n// Loads the stargazers count from a GitHub repository.\n\nasync load() {\n    let stargazers_count;\n    try {\n      ({stargazers_count} = await github(`/repos/${REPO}`));\n    } catch (error) {\n      if (process.env.CI) throw error;\n      stargazers_count = NaN;\n    }\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:50:49.846Z
+Question Type: select-all
+Function: quadtree_nodes
+Function Size: 254 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: quadtree_nodes (JavaScript)\n// Collects and returns nodes from a quadtree structure.\n\nexport default function quadtree_nodes() {\n  const nodes = [];\n  this.visit((node, x1, y1, x2, y2) => void nodes.push({x1, y1, x2, y2}));\n  return nodes;\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:50:53.581Z
+Question Type: order-sequence
+Function: quadtree_nodes
+Function Size: 254 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: quadtree_nodes (JavaScript)\n// Collects and returns nodes from a quadtree structure.\n\nexport default function quadtree_nodes() {\n  const nodes = [];\n  this.visit((node, x1, y1, x2, y2) => void nodes.push({x1, y1, x2, y2}));\n  return nodes;\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:50:57.103Z
+Question Type: select-all
+Function: github
+Function Size: 532 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: github (JavaScript)\n// Fetches data from the GitHub API.\n\nasync function github(\n  path,\n  {\n    authorization = process.env.GITHUB_TOKEN && `token ${process.env.GITHUB_TOKEN}`,\n    accept = "application/vnd.github.v3+json"\n  } = {}\n) {\n  const url = new URL(path, "https://api.github.co
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:50:57.330Z
+Question Type: function-variant
+Function: github
+Function Size: 532 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: github (JavaScript)\n// Fetches data from the GitHub API.\n\nasync function github(\n  path,\n  {\n    authorization = process.env.GITHUB_TOKEN && `token ${process.env.GITHUB_TOKEN}`,\n    accept = "application/vnd.github.v3+json"\n  } = {}\n) {\n  const url = new URL(path, "https://api.github.co
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761278079464
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 3
+Ended: 2025-10-24T05:51:01.418Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:51:06.235Z
+Question Type: true-false
+Function: quadtree_nodes
+Function Size: 254 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: quadtree_nodes (JavaScript)\n// Collects and returns nodes from a quadtree structure.\n\nexport default function quadtree_nodes() {\n  const nodes = [];\n  this.visit((node, x1, y1, x2, y2) => void nodes.push({x1, y1, x2, y2}));\n  return nodes;\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:51:06.679Z
+Question Type: select-all
+Function: quadtree_nodes
+Function Size: 254 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: quadtree_nodes (JavaScript)\n// Collects and returns nodes from a quadtree structure.\n\nexport default function quadtree_nodes() {\n  const nodes = [];\n  this.visit((node, x1, y1, x2, y2) => void nodes.push({x1, y1, x2, y2}));\n  return nodes;\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:51:12.359Z
+Question Type: function-variant
+Function: quadtree_nodes
+Function Size: 254 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: quadtree_nodes (JavaScript)\n// Collects and returns nodes from a quadtree structure.\n\nexport default function quadtree_nodes() {\n  const nodes = [];\n  this.visit((node, x1, y1, x2, y2) => void nodes.push({x1, y1, x2, y2}));\n  return nodes;\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:51:14.389Z
+Question Type: true-false
+Function: github
+Function Size: 532 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: github (JavaScript)\n// Fetches data from the GitHub API.\n\nasync function github(\n  path,\n  {\n    authorization = process.env.GITHUB_TOKEN && `token ${process.env.GITHUB_TOKEN}`,\n    accept = "application/vnd.github.v3+json"\n  } = {}\n) {\n  const url = new URL(path, "https://api.github.co
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:51:14.533Z
+Question Type: function-variant
+Function: github
+Function Size: 532 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: github (JavaScript)\n// Fetches data from the GitHub API.\n\nasync function github(\n  path,\n  {\n    authorization = process.env.GITHUB_TOKEN && `token ${process.env.GITHUB_TOKEN}`,\n    accept = "application/vnd.github.v3+json"\n  } = {}\n) {\n  const url = new URL(path, "https://api.github.co
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:51:21.572Z
+Question Type: order-sequence
+Function: github
+Function Size: 532 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: github (JavaScript)\n// Fetches data from the GitHub API.\n\nasync function github(\n  path,\n  {\n    authorization = process.env.GITHUB_TOKEN && `token ${process.env.GITHUB_TOKEN}`,\n    accept = "application/vnd.github.v3+json"\n  } = {}\n) {\n  const url = new URL(path, "https://api.github.co
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:51:23.375Z
+Question Type: select-all
+Function: quadtree_nodes
+Function Size: 254 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: quadtree_nodes (JavaScript)\n// Collects and returns nodes from a quadtree structure.\n\nexport default function quadtree_nodes() {\n  const nodes = [];\n  this.visit((node, x1, y1, x2, y2) => void nodes.push({x1, y1, x2, y2}));\n  return nodes;\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:51:28.094Z
+Question Type: function-variant
+Function: load
+Function Size: 329 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: load (JavaScript)\n// Loads the stargazers count from a GitHub repository.\n\nasync load() {\n    let stargazers_count;\n    try {\n      ({stargazers_count} = await github(`/repos/${REPO}`));\n    } catch (error) {\n      if (process.env.CI) throw error;\n      stargazers_count = NaN;\n    }\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:51:30.292Z
+Question Type: multiple-choice
+Function: load
+Function Size: 329 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: load (JavaScript)\n// Loads the stargazers count from a GitHub repository.\n\nasync load() {\n    let stargazers_count;\n    try {\n      ({stargazers_count} = await github(`/repos/${REPO}`));\n    } catch (error) {\n      if (process.env.CI) throw error;\n      stargazers_count = NaN;\n    }\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:51:30.301Z
+Question Type: function-variant
+Function: load
+Function Size: 329 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: load (JavaScript)\n// Loads the stargazers count from a GitHub repository.\n\nasync load() {\n    let stargazers_count;\n    try {\n      ({stargazers_count} = await github(`/repos/${REPO}`));\n    } catch (error) {\n      if (process.env.CI) throw error;\n      stargazers_count = NaN;\n    }\n   
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761278079464
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 3
+Ended: 2025-10-24T05:51:38.606Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T05:54:45.735Z
+File: [8 files: ViewEmployeeComponent.jsx, Execute callback, EmployeeService.js, CreateEmployeeComponent.jsx, Service worker found. Proceed as normal., Is not localhost. Just register service worker, HeaderComponent.js, index.js]
+Functions Extracted: 2
+
+
+Function 1: componentDidMount
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+componentDidMount(){
+    EmployeeService.getEmployeeById(this.state.id).then( res => {
+        this.setState({employee: res.data});
+    })
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: registerValidSW
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function registerValidSW(swUrl, config) {
+  navigator.serviceWorker
+    .register(swUrl)
+    .then(registration => {
+      registration.onupdatefound = () => {
+        const installingWorker = registration.installing;
+        if (installingWorker == null) {
+          return;
+        }
+        installingWorker.onstatechange = () => {
+          if (installingWorker.state === 'installed') {
+            if (navigator.serviceWorker.controller) {
+
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:54:54.658Z
+Question Type: order-sequence
+Function: componentDidMount
+Function Size: 265 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID when the component mounts and updates the state.\n\ncomponentDidMount(){\n    EmployeeService.getEmployeeById(this.state.id).then( res => {\n        this.setState({employee: res.data});\n    })\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:54:56.975Z
+Question Type: function-variant
+Function: registerValidSW
+Function Size: 561 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: registerValidSW (JavaScript)\n// Registers a service worker and handles updates to the service worker.\n\nfunction registerValidSW(swUrl, config) {\n  navigator.serviceWorker\n    .register(swUrl)\n    .then(registration => {\n      registration.onupdatefound = () => {\n        const installing
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:54:57.353Z
+Question Type: order-sequence
+Function: registerValidSW
+Function Size: 561 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: registerValidSW (JavaScript)\n// Registers a service worker and handles updates to the service worker.\n\nfunction registerValidSW(swUrl, config) {\n  navigator.serviceWorker\n    .register(swUrl)\n    .then(registration => {\n      registration.onupdatefound = () => {\n        const installing
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:54:58.894Z
+Question Type: function-variant
+Function: registerValidSW
+Function Size: 561 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: registerValidSW (JavaScript)\n// Registers a service worker and handles updates to the service worker.\n\nfunction registerValidSW(swUrl, config) {\n  navigator.serviceWorker\n    .register(swUrl)\n    .then(registration => {\n      registration.onupdatefound = () => {\n        const installing
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:55:04.349Z
+Question Type: true-false
+Function: componentDidMount
+Function Size: 265 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID when the component mounts and updates the state.\n\ncomponentDidMount(){\n    EmployeeService.getEmployeeById(this.state.id).then( res => {\n        this.setState({employee: res.data});\n    })\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:55:06.331Z
+Question Type: multiple-choice
+Function: componentDidMount
+Function Size: 265 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID when the component mounts and updates the state.\n\ncomponentDidMount(){\n    EmployeeService.getEmployeeById(this.state.id).then( res => {\n        this.setState({employee: res.data});\n    })\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:55:06.781Z
+Question Type: true-false
+Function: registerValidSW
+Function Size: 561 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: registerValidSW (JavaScript)\n// Registers a service worker and handles updates to the service worker.\n\nfunction registerValidSW(swUrl, config) {\n  navigator.serviceWorker\n    .register(swUrl)\n    .then(registration => {\n      registration.onupdatefound = () => {\n        const installing
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:55:07.307Z
+Question Type: select-all
+Function: registerValidSW
+Function Size: 561 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: registerValidSW (JavaScript)\n// Registers a service worker and handles updates to the service worker.\n\nfunction registerValidSW(swUrl, config) {\n  navigator.serviceWorker\n    .register(swUrl)\n    .then(registration => {\n      registration.onupdatefound = () => {\n        const installing
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761278079464
+Repository: Unknown
+Total Questions Generated: 7
+Total Chunks Processed: 2
+Ended: 2025-10-24T05:55:12.878Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:55:17.151Z
+Question Type: true-false
+Function: componentDidMount
+Function Size: 265 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID when the component mounts and updates the state.\n\ncomponentDidMount(){\n    EmployeeService.getEmployeeById(this.state.id).then( res => {\n        this.setState({employee: res.data});\n    })\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:55:18.891Z
+Question Type: select-all
+Function: componentDidMount
+Function Size: 265 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID when the component mounts and updates the state.\n\ncomponentDidMount(){\n    EmployeeService.getEmployeeById(this.state.id).then( res => {\n        this.setState({employee: res.data});\n    })\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:55:23.572Z
+Question Type: order-sequence
+Function: registerValidSW
+Function Size: 561 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: registerValidSW (JavaScript)\n// Registers a service worker and handles updates to the service worker.\n\nfunction registerValidSW(swUrl, config) {\n  navigator.serviceWorker\n    .register(swUrl)\n    .then(registration => {\n      registration.onupdatefound = () => {\n        const installing
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:55:23.927Z
+Question Type: true-false
+Function: registerValidSW
+Function Size: 561 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: registerValidSW (JavaScript)\n// Registers a service worker and handles updates to the service worker.\n\nfunction registerValidSW(swUrl, config) {\n  navigator.serviceWorker\n    .register(swUrl)\n    .then(registration => {\n      registration.onupdatefound = () => {\n        const installing
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:55:26.194Z
+Question Type: select-all
+Function: componentDidMount
+Function Size: 265 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID when the component mounts and updates the state.\n\ncomponentDidMount(){\n    EmployeeService.getEmployeeById(this.state.id).then( res => {\n        this.setState({employee: res.data});\n    })\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:55:26.690Z
+Question Type: function-variant
+Function: registerValidSW
+Function Size: 561 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: registerValidSW (JavaScript)\n// Registers a service worker and handles updates to the service worker.\n\nfunction registerValidSW(swUrl, config) {\n  navigator.serviceWorker\n    .register(swUrl)\n    .then(registration => {\n      registration.onupdatefound = () => {\n        const installing
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:55:37.382Z
+Question Type: order-sequence
+Function: componentDidMount
+Function Size: 265 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID when the component mounts and updates the state.\n\ncomponentDidMount(){\n    EmployeeService.getEmployeeById(this.state.id).then( res => {\n        this.setState({employee: res.data});\n    })\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:55:39.880Z
+Question Type: order-sequence
+Function: componentDidMount
+Function Size: 265 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches employee data by ID when the component mounts and updates the state.\n\ncomponentDidMount(){\n    EmployeeService.getEmployeeById(this.state.id).then( res => {\n        this.setState({employee: res.data});\n    })\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T05:55:39.895Z
+Question Type: select-all
+Function: registerValidSW
+Function Size: 561 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: registerValidSW (JavaScript)\n// Registers a service worker and handles updates to the service worker.\n\nfunction registerValidSW(swUrl, config) {\n  navigator.serviceWorker\n    .register(swUrl)\n    .then(registration => {\n      registration.onupdatefound = () => {\n        const installing
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761278079464
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 2
+Ended: 2025-10-24T05:55:43.657Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:04:18.755Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 184 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error - this is fine (PRs welcome though)\nacc[hintName] = hint.transform(\n          getCookieValue(cookieString, hintName) ?? hint.fallback\n        )\n      } else {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:04:20.988Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1103 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-next-line @typescript-eslint/no-empty-function\n() => {}\n\nraf.use = impl => (nativeRaf = impl)\nraf.now = typeof performance != 'undefined' ? () => performance.now() : Date.now\nraf.batchedUpdates = fn => fn()\nraf.catch = console.error\n\nraf.frameLoop = 'always'\n\nraf.advance = ()
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:04:23.335Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 184 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: @ts-expect-error - this is fine (PRs welcome though)\nacc[hintName] = hint.transform(\n          getCookieValue(cookieString, hintName) ?? hint.fallback\n        )\n      } else {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:04:26.849Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 184 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error - this is fine (PRs welcome though)\nacc[hintName] = hint.transform(\n          getCookieValue(cookieString, hintName) ?? hint.fallback\n        )\n      } else {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:04:32.180Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2060 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: pmndrs-react-spring-b2d53b9/packages/rafz/src/index.ts\nimport type {\n  FrameFn,\n  FrameUpdateFn,\n  NativeRaf,\n  Rafz,\n  Timeout,\n  Throttled,\n} from './types'\n\nexport type { FrameFn, FrameUpdateFn, Timeout, Throttled, Rafz }\n\nlet updateQueue = makeQueue<FrameUpdateFn>()\n\n/**\n * Schedule an 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:04:32.835Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1882 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Flush timeouts whose time is up.\nconst count = findTimeout(ts)\n  if (count) {\n    eachSafely(timeouts.splice(0, count), t => t.handler())\n    pendingCount -= count\n  }\n\n  if (!pendingCount) {\n    stop()\n\n    return\n  }\n\n  onStartQueue.flush()\n  updateQueue.flush(prevTs ? Math.min(64, ts - p
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:04:37.479Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1103 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-next-line @typescript-eslint/no-empty-function\n() => {}\n\nraf.use = impl => (nativeRaf = impl)\nraf.now = typeof performance != 'undefined' ? () => performance.now() : Date.now\nraf.batchedUpdates = fn => fn()\nraf.catch = console.error\n\nraf.frameLoop = 'always'\n\nraf.advance = ()
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:04:44.298Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1103 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: eslint-disable-next-line @typescript-eslint/no-empty-function\n() => {}\n\nraf.use = impl => (nativeRaf = impl)\nraf.now = typeof performance != 'undefined' ? () => performance.now() : Date.now\nraf.batchedUpdates = fn => fn()\nraf.catch = console.error\n\nraf.frameLoop = 'always'\n\nraf.advance = ()
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:04:44.743Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1882 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Flush timeouts whose time is up.\nconst count = findTimeout(ts)\n  if (count) {\n    eachSafely(timeouts.splice(0, count), t => t.handler())\n    pendingCount -= count\n  }\n\n  if (!pendingCount) {\n    stop()\n\n    return\n  }\n\n  onStartQueue.flush()\n  updateQueue.flush(prevTs ? Math.min(64, ts - p
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:04:50.843Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2060 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: pmndrs-react-spring-b2d53b9/packages/rafz/src/index.ts\nimport type {\n  FrameFn,\n  FrameUpdateFn,\n  NativeRaf,\n  Rafz,\n  Timeout,\n  Throttled,\n} from './types'\n\nexport type { FrameFn, FrameUpdateFn, Timeout, Throttled, Rafz }\n\nlet updateQueue = makeQueue<FrameUpdateFn>()\n\n/**\n * Schedule an 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:04:52.228Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1475 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: pmndrs-react-spring-b2d53b9/docs/app/helpers/client-hints.ts\nexport type ClientHint<Value> = {\n  cookieName: string\n  getValueCode: string\n  fallback: Value\n  transform?: (value: string) => Value\n}\n\nexport type ClientHintsValue<ClientHintsRecord> = {\n  [K in keyof ClientHintsRecord]: Client
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:04:54.046Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2060 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: pmndrs-react-spring-b2d53b9/packages/rafz/src/index.ts\nimport type {\n  FrameFn,\n  FrameUpdateFn,\n  NativeRaf,\n  Rafz,\n  Timeout,\n  Throttled,\n} from './types'\n\nexport type { FrameFn, FrameUpdateFn, Timeout, Throttled, Rafz }\n\nlet updateQueue = makeQueue<FrameUpdateFn>()\n\n/**\n * Schedule an 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:05:00.185Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1882 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Flush timeouts whose time is up.\nconst count = findTimeout(ts)\n  if (count) {\n    eachSafely(timeouts.splice(0, count), t => t.handler())\n    pendingCount -= count\n  }\n\n  if (!pendingCount) {\n    stop()\n\n    return\n  }\n\n  onStartQueue.flush()\n  updateQueue.flush(prevTs ? Math.min(64, ts - p
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:05:10.236Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1475 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: pmndrs-react-spring-b2d53b9/docs/app/helpers/client-hints.ts\nexport type ClientHint<Value> = {\n  cookieName: string\n  getValueCode: string\n  fallback: Value\n  transform?: (value: string) => Value\n}\n\nexport type ClientHintsValue<ClientHintsRecord> = {\n  [K in keyof ClientHintsRecord]: Client
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:05:10.913Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1475 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: pmndrs-react-spring-b2d53b9/docs/app/helpers/client-hints.ts\nexport type ClientHint<Value> = {\n  cookieName: string\n  getValueCode: string\n  fallback: Value\n  transform?: (value: string) => Value\n}\n\nexport type ClientHintsValue<ClientHintsRecord> = {\n  [K in keyof ClientHintsRecord]: Client
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761278079464
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 5
+Ended: 2025-10-24T14:05:14.715Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:32:42.408Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 507 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: pusher-pusher-js-79fc50b/types/src/core/connection/handshake/index.d.ts\nimport TransportConnection from '../../transports/transport_connection';\nexport default class Handshake {\n    transport: TransportConnection;\n    callback: (HandshakePayload: any) => void;\n    onMessage: Function;\n    o
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:32:47.213Z
+Question Type: select-all
+Function: Unknown
+Function Size: 866 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: We need to bind clear functions this way to avoid exceptions on IE8\nfunction clearTimeout(timer) {\n  global.clearTimeout(timer);\n}\nfunction clearInterval(timer) {\n  global.clearInterval(timer);\n}\n\n/** Cross-browser compatible one-off timer abstraction.\n *\n * @param {Number} delay\n * @param 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:32:52.271Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 332 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: pusher-pusher-js-79fc50b/src/d.ts/tweetnacl-util/index.d.ts\ndeclare module 'tweetnacl-util' {\n  export function encodeUTF8(data: Uint8Array): string;\n  export function decodeUTF8(data: string): Uint8Array;\n  export function encodeBase64(data: Uint8Array): string;\n  export function decodeBas
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:32:54.914Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2092 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: pusher-pusher-js-79fc50b/src/core/connection/handshake/index.ts\nimport Util from '../../util';\nimport * as Collections from '../../utils/collections';\nimport Protocol from '../protocol/protocol';\nimport Connection from '../connection';\nimport TransportConnection from '../../transports/trans
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:33:02.581Z
+Question Type: select-all
+Function: Unknown
+Function Size: 507 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: pusher-pusher-js-79fc50b/types/src/core/connection/handshake/index.d.ts\nimport TransportConnection from '../../transports/transport_connection';\nexport default class Handshake {\n    transport: TransportConnection;\n    callback: (HandshakePayload: any) => void;\n    onMessage: Function;\n    o
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:33:07.977Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2092 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: pusher-pusher-js-79fc50b/src/core/connection/handshake/index.ts\nimport Util from '../../util';\nimport * as Collections from '../../utils/collections';\nimport Protocol from '../protocol/protocol';\nimport Connection from '../connection';\nimport TransportConnection from '../../transports/trans
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:33:09.205Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 186 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: pusher-pusher-js-79fc50b/src/core/utils/timers/index.ts\nimport Timer from './abstract_timer';\nimport TimedCallback from './timed_callback';\nimport { Delay } from './scheduling';
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:33:15.312Z
+Question Type: true-false
+Function: Unknown
+Function Size: 332 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: pusher-pusher-js-79fc50b/src/d.ts/tweetnacl-util/index.d.ts\ndeclare module 'tweetnacl-util' {\n  export function encodeUTF8(data: Uint8Array): string;\n  export function decodeUTF8(data: string): Uint8Array;\n  export function encodeBase64(data: Uint8Array): string;\n  export function decodeBas
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:33:24.936Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2092 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: pusher-pusher-js-79fc50b/src/core/connection/handshake/index.ts\nimport Util from '../../util';\nimport * as Collections from '../../utils/collections';\nimport Protocol from '../protocol/protocol';\nimport Connection from '../connection';\nimport TransportConnection from '../../transports/trans
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:33:27.754Z
+Question Type: select-all
+Function: Unknown
+Function Size: 332 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: pusher-pusher-js-79fc50b/src/d.ts/tweetnacl-util/index.d.ts\ndeclare module 'tweetnacl-util' {\n  export function encodeUTF8(data: Uint8Array): string;\n  export function decodeUTF8(data: string): Uint8Array;\n  export function encodeBase64(data: Uint8Array): string;\n  export function decodeBas
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:33:27.785Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 866 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: We need to bind clear functions this way to avoid exceptions on IE8\nfunction clearTimeout(timer) {\n  global.clearTimeout(timer);\n}\nfunction clearInterval(timer) {\n  global.clearInterval(timer);\n}\n\n/** Cross-browser compatible one-off timer abstraction.\n *\n * @param {Number} delay\n * @param 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:33:31.819Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 866 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: We need to bind clear functions this way to avoid exceptions on IE8\nfunction clearTimeout(timer) {\n  global.clearTimeout(timer);\n}\nfunction clearInterval(timer) {\n  global.clearInterval(timer);\n}\n\n/** Cross-browser compatible one-off timer abstraction.\n *\n * @param {Number} delay\n * @param 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:33:37.443Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 507 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: pusher-pusher-js-79fc50b/types/src/core/connection/handshake/index.d.ts\nimport TransportConnection from '../../transports/transport_connection';\nexport default class Handshake {\n    transport: TransportConnection;\n    callback: (HandshakePayload: any) => void;\n    onMessage: Function;\n    o
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:33:37.719Z
+Question Type: true-false
+Function: Unknown
+Function Size: 186 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: pusher-pusher-js-79fc50b/src/core/utils/timers/index.ts\nimport Timer from './abstract_timer';\nimport TimedCallback from './timed_callback';\nimport { Delay } from './scheduling';
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:33:38.218Z
+Question Type: select-all
+Function: Unknown
+Function Size: 186 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: pusher-pusher-js-79fc50b/src/core/utils/timers/index.ts\nimport Timer from './abstract_timer';\nimport TimedCallback from './timed_callback';\nimport { Delay } from './scheduling';
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761278079464
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 5
+Ended: 2025-10-24T14:33:44.318Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T14:40:10.444Z
+File: [3 files: Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work, and disabling the 3 failing tests in safari, collections.ts]
+Functions Extracted: 2
+
+
+Function 1: extend
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function extend<T>(target: any, ...sources: any[]): T {
+  for (var i = 0; i < sources.length; i++) {
+    var extensions = sources[i];
+    for (var property in extensions) {
+      if (
+        extensions[property] &&
+        extensions[property].constructor &&
+        extensions[property].constructor === Object
+      ) {
+        target[property] = extend(target[property] || {}, extensions[property]);
+      } else {
+        target[property] = extensions[property];
+      }
+    }
+  }
+  return target;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: stringify
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export function stringify(): string {
+  var m = ['Pusher'];
+  for (var i = 0; i < arguments.length; i++) {
+    if (typeof arguments[i] === 'string') {
+      m.push(arguments[i]);
+    } else {
+      m.push(safeJSONStringify(arguments[i]));
+    }
+  }
+  return m.join(' : ');
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:40:19.742Z
+Question Type: true-false
+Function: extend
+Function Size: 660 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: extend (TypeScript)\n// Merges multiple objects into the target argument, performing a deep-merge for properties that are plain Objects.\n\nexport function extend<T>(target: any, ...sources: any[]): T {\n  for (var i = 0; i < sources.length; i++) {\n    var extensions = sources[i];\n    for (
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:40:23.612Z
+Question Type: function-variant
+Function: extend
+Function Size: 660 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: extend (TypeScript)\n// Merges multiple objects into the target argument, performing a deep-merge for properties that are plain Objects.\n\nexport function extend<T>(target: any, ...sources: any[]): T {\n  for (var i = 0; i < sources.length; i++) {\n    var extensions = sources[i];\n    for (
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:40:26.803Z
+Question Type: select-all
+Function: extend
+Function Size: 660 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: extend (TypeScript)\n// Merges multiple objects into the target argument, performing a deep-merge for properties that are plain Objects.\n\nexport function extend<T>(target: any, ...sources: any[]): T {\n  for (var i = 0; i < sources.length; i++) {\n    var extensions = sources[i];\n    for (
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:40:31.324Z
+Question Type: function-variant
+Function: stringify
+Function Size: 389 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: stringify (TypeScript)\n// Creates a string representation of the arguments, joining them with ' : '.\n\nexport function stringify(): string {\n  var m = ['Pusher'];\n  for (var i = 0; i < arguments.length; i++) {\n    if (typeof arguments[i] === 'string') {\n      m.push(arguments[i]);\n    } 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761278079464
+Repository: Unknown
+Total Questions Generated: 4
+Total Chunks Processed: 2
+Ended: 2025-10-24T14:40:36.496Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:40:49.034Z
+Question Type: order-sequence
+Function: extend
+Function Size: 660 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: extend (TypeScript)\n// Merges multiple objects into the target argument, performing a deep-merge for properties that are plain Objects.\n\nexport function extend<T>(target: any, ...sources: any[]): T {\n  for (var i = 0; i < sources.length; i++) {\n    var extensions = sources[i];\n    for (
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:40:49.050Z
+Question Type: order-sequence
+Function: stringify
+Function Size: 389 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: stringify (TypeScript)\n// Creates a string representation of the arguments, joining them with ' : '.\n\nexport function stringify(): string {\n  var m = ['Pusher'];\n  for (var i = 0; i < arguments.length; i++) {\n    if (typeof arguments[i] === 'string') {\n      m.push(arguments[i]);\n    } 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:40:49.653Z
+Question Type: select-all
+Function: stringify
+Function Size: 389 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: stringify (TypeScript)\n// Creates a string representation of the arguments, joining them with ' : '.\n\nexport function stringify(): string {\n  var m = ['Pusher'];\n  for (var i = 0; i < arguments.length; i++) {\n    if (typeof arguments[i] === 'string') {\n      m.push(arguments[i]);\n    } 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:40:58.384Z
+Question Type: function-variant
+Function: stringify
+Function Size: 389 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: stringify (TypeScript)\n// Creates a string representation of the arguments, joining them with ' : '.\n\nexport function stringify(): string {\n  var m = ['Pusher'];\n  for (var i = 0; i < arguments.length; i++) {\n    if (typeof arguments[i] === 'string') {\n      m.push(arguments[i]);\n    } 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:41:08.276Z
+Question Type: select-all
+Function: stringify
+Function Size: 389 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: stringify (TypeScript)\n// Creates a string representation of the arguments, joining them with ' : '.\n\nexport function stringify(): string {\n  var m = ['Pusher'];\n  for (var i = 0; i < arguments.length; i++) {\n    if (typeof arguments[i] === 'string') {\n      m.push(arguments[i]);\n    } 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:41:09.226Z
+Question Type: select-all
+Function: extend
+Function Size: 660 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: extend (TypeScript)\n// Merges multiple objects into the target argument, performing a deep-merge for properties that are plain Objects.\n\nexport function extend<T>(target: any, ...sources: any[]): T {\n  for (var i = 0; i < sources.length; i++) {\n    var extensions = sources[i];\n    for (
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:41:10.648Z
+Question Type: true-false
+Function: extend
+Function Size: 660 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: extend (TypeScript)\n// Merges multiple objects into the target argument, performing a deep-merge for properties that are plain Objects.\n\nexport function extend<T>(target: any, ...sources: any[]): T {\n  for (var i = 0; i < sources.length; i++) {\n    var extensions = sources[i];\n    for (
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:41:11.245Z
+Question Type: function-variant
+Function: extend
+Function Size: 660 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: extend (TypeScript)\n// Merges multiple objects into the target argument, performing a deep-merge for properties that are plain Objects.\n\nexport function extend<T>(target: any, ...sources: any[]): T {\n  for (var i = 0; i < sources.length; i++) {\n    var extensions = sources[i];\n    for (
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:41:22.952Z
+Question Type: true-false
+Function: stringify
+Function Size: 389 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: stringify (TypeScript)\n// Creates a string representation of the arguments, joining them with ' : '.\n\nexport function stringify(): string {\n  var m = ['Pusher'];\n  for (var i = 0; i < arguments.length; i++) {\n    if (typeof arguments[i] === 'string') {\n      m.push(arguments[i]);\n    } 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:41:26.880Z
+Question Type: order-sequence
+Function: stringify
+Function Size: 389 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: stringify (TypeScript)\n// Creates a string representation of the arguments, joining them with ' : '.\n\nexport function stringify(): string {\n  var m = ['Pusher'];\n  for (var i = 0; i < arguments.length; i++) {\n    if (typeof arguments[i] === 'string') {\n      m.push(arguments[i]);\n    } 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:41:29.625Z
+Question Type: order-sequence
+Function: extend
+Function Size: 660 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: extend (TypeScript)\n// Merges multiple objects into the target argument, performing a deep-merge for properties that are plain Objects.\n\nexport function extend<T>(target: any, ...sources: any[]): T {\n  for (var i = 0; i < sources.length; i++) {\n    var extensions = sources[i];\n    for (
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:41:34.460Z
+Question Type: multiple-choice
+Function: extend
+Function Size: 660 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: extend (TypeScript)\n// Merges multiple objects into the target argument, performing a deep-merge for properties that are plain Objects.\n\nexport function extend<T>(target: any, ...sources: any[]): T {\n  for (var i = 0; i < sources.length; i++) {\n    var extensions = sources[i];\n    for (
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:41:34.635Z
+Question Type: function-variant
+Function: stringify
+Function Size: 389 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: stringify (TypeScript)\n// Creates a string representation of the arguments, joining them with ' : '.\n\nexport function stringify(): string {\n  var m = ['Pusher'];\n  for (var i = 0; i < arguments.length; i++) {\n    if (typeof arguments[i] === 'string') {\n      m.push(arguments[i]);\n    } 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:41:37.364Z
+Question Type: select-all
+Function: extend
+Function Size: 660 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: extend (TypeScript)\n// Merges multiple objects into the target argument, performing a deep-merge for properties that are plain Objects.\n\nexport function extend<T>(target: any, ...sources: any[]): T {\n  for (var i = 0; i < sources.length; i++) {\n    var extensions = sources[i];\n    for (
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T14:41:44.905Z
+Question Type: function-variant
+Function: extend
+Function Size: 660 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: extend (TypeScript)\n// Merges multiple objects into the target argument, performing a deep-merge for properties that are plain Objects.\n\nexport function extend<T>(target: any, ...sources: any[]): T {\n  for (var i = 0; i < sources.length; i++) {\n    var extensions = sources[i];\n    for (
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761278079464
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 2
+Ended: 2025-10-24T14:41:50.395Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T15:03:24.413Z
+File: [2 files: HeaderComponent.js, 8 are considered localhost for IPv4.]
+Functions Extracted: 2
+
+
+Function 1: render
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+render() {
+    return (
+        <div>
+            <header>
+                <nav className="navbar navbar-expand-md navbar-dark bg-dark">
+                <div><a href="https://javaguides.net" className="navbar-brand">Employee Management App</a></div>
+                </nav>
+            </header>
+        </div>
+    )
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: register
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+export function register(config) {
+  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+    // service worker registration logic
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T15:03:29.026Z
+Question Type: select-all
+Function: register
+Function Size: 253 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: register (JavaScript)\n// Registers a service worker in production environment.\n\nexport function register(config) {\n  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {\n    // service worker registration logic\n  }\n}
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T15:03:29.412Z
+File: [6 files: FooterComponent.jsx, ResourceNotFoundException.java, UpdateEmployeeComponent.jsx, App.js, MavenWrapperDownloader.java, ListEmployeeComponent.jsx]
+Functions Extracted: 4
+
+
+Function 1: updateEmployee
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+updateEmployee = (e) => {
+        e.preventDefault();
+        let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};
+        console.log('employee => ' + JSON.stringify(employee));
+        console.log('id => ' + JSON.stringify(this.state.id));
+        EmployeeService.updateEmployee(employee, this.state.id).then( res => {
+            this.props.history.push('/employees');
+        });
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: componentDidMount
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+componentDidMount(){
+        EmployeeService.getEmployeeById(this.state.id).then( (res) =>{
+            let employee = res.data;
+            this.setState({firstName: employee.firstName,
+                lastName: employee.lastName,
+                emailId : employee.emailId
+            });
+        });
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: deleteEmployee
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+deleteEmployee(id){
+        EmployeeService.deleteEmployee(id).then( res => {
+            this.setState({employees: this.state.employees.filter(employee => employee.id !== id)});
+        });
+    }
+--------------------------------------------------------------------------------
+
+
+Function 4: componentDidMount
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+componentDidMount(){
+        EmployeeService.getEmployees().then((res) => {
+            this.setState({ employees: res.data});
+        });
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T15:03:36.955Z
+Question Type: order-sequence
+Function: render
+Function Size: 406 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: render (JavaScript)\n// Renders the header component with a navigation bar.\n\nrender() {\n    return (\n        <div>\n            <header>\n                <nav className="navbar navbar-expand-md navbar-dark bg-dark">\n                <div><a href="https://javaguides.net" className="navbar-br
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T15:03:36.994Z
+Question Type: order-sequence
+Function: render
+Function Size: 406 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: render (JavaScript)\n// Renders the header component with a navigation bar.\n\nrender() {\n    return (\n        <div>\n            <header>\n                <nav className="navbar navbar-expand-md navbar-dark bg-dark">\n                <div><a href="https://javaguides.net" className="navbar-br
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T15:03:40.337Z
+Question Type: function-variant
+Function: register
+Function Size: 253 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: register (JavaScript)\n// Registers a service worker in production environment.\n\nexport function register(config) {\n  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {\n    // service worker registration logic\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T15:03:41.218Z
+Question Type: select-all
+Function: register
+Function Size: 253 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: register (JavaScript)\n// Registers a service worker in production environment.\n\nexport function register(config) {\n  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {\n    // service worker registration logic\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T15:03:48.455Z
+Question Type: function-variant
+Function: register
+Function Size: 253 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: register (JavaScript)\n// Registers a service worker in production environment.\n\nexport function register(config) {\n  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {\n    // service worker registration logic\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T15:03:49.505Z
+Question Type: order-sequence
+Function: register
+Function Size: 253 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: register (JavaScript)\n// Registers a service worker in production environment.\n\nexport function register(config) {\n  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {\n    // service worker registration logic\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T15:03:49.532Z
+Question Type: multiple-choice
+Function: render
+Function Size: 406 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: render (JavaScript)\n// Renders the header component with a navigation bar.\n\nrender() {\n    return (\n        <div>\n            <header>\n                <nav className="navbar navbar-expand-md navbar-dark bg-dark">\n                <div><a href="https://javaguides.net" className="navbar-br
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T15:03:56.692Z
+Question Type: select-all
+Function: render
+Function Size: 406 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: render (JavaScript)\n// Renders the header component with a navigation bar.\n\nrender() {\n    return (\n        <div>\n            <header>\n                <nav className="navbar navbar-expand-md navbar-dark bg-dark">\n                <div><a href="https://javaguides.net" className="navbar-br
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T15:04:02.013Z
+Question Type: order-sequence
+Function: register
+Function Size: 253 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: register (JavaScript)\n// Registers a service worker in production environment.\n\nexport function register(config) {\n  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {\n    // service worker registration logic\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T15:04:02.342Z
+Question Type: select-all
+Function: render
+Function Size: 406 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: render (JavaScript)\n// Renders the header component with a navigation bar.\n\nrender() {\n    return (\n        <div>\n            <header>\n                <nav className="navbar navbar-expand-md navbar-dark bg-dark">\n                <div><a href="https://javaguides.net" className="navbar-br
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T15:04:05.061Z
+Question Type: true-false
+Function: register
+Function Size: 253 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: register (JavaScript)\n// Registers a service worker in production environment.\n\nexport function register(config) {\n  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {\n    // service worker registration logic\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T15:04:06.577Z
+Question Type: true-false
+Function: render
+Function Size: 406 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: render (JavaScript)\n// Renders the header component with a navigation bar.\n\nrender() {\n    return (\n        <div>\n            <header>\n                <nav className="navbar navbar-expand-md navbar-dark bg-dark">\n                <div><a href="https://javaguides.net" className="navbar-br
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T15:04:10.392Z
+Question Type: function-variant
+Function: render
+Function Size: 406 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: render (JavaScript)\n// Renders the header component with a navigation bar.\n\nrender() {\n    return (\n        <div>\n            <header>\n                <nav className="navbar navbar-expand-md navbar-dark bg-dark">\n                <div><a href="https://javaguides.net" className="navbar-br
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761278079464
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 2
+Ended: 2025-10-24T15:04:14.519Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T15:04:20.176Z
+Question Type: true-false
+Function: updateEmployee
+Function Size: 571 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateEmployee (JavaScript)\n// Handles the update of an employee's details and redirects to the employee list.\n\nupdateEmployee = (e) => {\n        e.preventDefault();\n        let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T15:04:23.736Z
+Question Type: select-all
+Function: componentDidMount
+Function Size: 437 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches the employee details by ID when the component mounts and sets the state.\n\ncomponentDidMount(){\n        EmployeeService.getEmployeeById(this.state.id).then( (res) =>{\n            let employee = res.data;\n            this.setState({firstName: empl
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T15:04:27.055Z
+Question Type: order-sequence
+Function: updateEmployee
+Function Size: 571 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: updateEmployee (JavaScript)\n// Handles the update of an employee's details and redirects to the employee list.\n\nupdateEmployee = (e) => {\n        e.preventDefault();\n        let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T15:04:33.670Z
+Question Type: function-variant
+Function: updateEmployee
+Function Size: 571 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateEmployee (JavaScript)\n// Handles the update of an employee's details and redirects to the employee list.\n\nupdateEmployee = (e) => {\n        e.preventDefault();\n        let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T15:04:34.303Z
+Question Type: function-variant
+Function: componentDidMount
+Function Size: 268 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: componentDidMount (JavaScript)\n// Fetches the list of employees when the component mounts and sets the state.\n\ncomponentDidMount(){\n        EmployeeService.getEmployees().then((res) => {\n            this.setState({ employees: res.data});\n        });\n    }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T15:04:34.655Z
+Question Type: true-false
+Function: deleteEmployee
+Function Size: 335 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deleteEmployee (JavaScript)\n// Deletes an employee by ID and updates the state to remove the deleted employee from the list.\n\ndeleteEmployee(id){\n        EmployeeService.deleteEmployee(id).then( res => {\n            this.setState({employees: this.state.employees.filter(employee => emplo
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T15:04:36.731Z
+Question Type: select-all
+Function: updateEmployee
+Function Size: 571 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updateEmployee (JavaScript)\n// Handles the update of an employee's details and redirects to the employee list.\n\nupdateEmployee = (e) => {\n        e.preventDefault();\n        let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};\n   
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761278079464
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 4
+Ended: 2025-10-24T15:04:42.629Z
+================================================================================
+

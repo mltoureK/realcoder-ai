@@ -1781,107 +1781,156 @@ export default function CuratedRepos({ onRepoSelect }: { onRepoSelect: (url: str
   const [searchTerm, setSearchTerm] = useState('');
 
   const languages = Object.keys(CURATED_REPOS);
-  const filteredRepos = CURATED_REPOS[selectedLanguage].filter(repo =>
+  const repoPool = CURATED_REPOS[selectedLanguage];
+  const filteredRepos = repoPool.filter(repo =>
     repo.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     repo.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
     repo.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  const highlightedCategories = Array.from(new Set(repoPool.map(repo => repo.category))).slice(0, 3);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          🎯 Curated Repository Collection
-        </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-          Hand-picked repositories for the best learning experience. These repos generate high-quality questions!
-        </p>
-      </div>
+    <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-black/40 p-5 sm:p-8 shadow-[0_25px_70px_-35px_rgba(45,212,191,0.45)]">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.15),_transparent_65%)]" />
+      <div className="pointer-events-none absolute right-[-120px] top-[-140px] h-[280px] w-[280px] rounded-full bg-fuchsia-500/25 blur-[120px]" />
+      <div className="pointer-events-none absolute left-[-160px] bottom-[-160px] h-[320px] w-[320px] rounded-full bg-cyan-400/20 blur-[140px]" />
 
-      {/* Language Tabs */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        {languages.map((language) => (
-          <button
-            key={language}
-            onClick={() => setSelectedLanguage(language)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              selectedLanguage === language
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-            }`}
-          >
-            {language}
-          </button>
-        ))}
-      </div>
-
-      {/* Search */}
-      <div className="relative">
-        <input
-          type="text"
-          placeholder={`Search ${selectedLanguage} repositories...`}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <svg className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-      </div>
-
-      {/* Repository Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
-        {filteredRepos.map((repo) => (
-          <div
-            key={repo.url}
-            onClick={() => onRepoSelect(repo.url)}
-            className="p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
-          >
-            <div className="flex items-start justify-between mb-2">
-              <div className="flex items-center space-x-2">
-                <span className="text-lg">{repo.icon}</span>
-                <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
-                  {repo.name}
-                </h4>
+      <div className="relative flex flex-col gap-6">
+        <header className="flex flex-col gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-cyan-200">
+                Curated
               </div>
-              <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
-                ⭐ {repo.stars}
-              </span>
-            </div>
-            
-            <p className="text-xs text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
-              {repo.description}
-            </p>
-            
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <span className={`px-2 py-1 text-xs rounded-full ${
-                  repo.difficulty === 'Beginner' 
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                    : repo.difficulty === 'Intermediate'
-                    ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                }`}>
-                  {repo.difficulty}
-                </span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  {repo.category}
-                </span>
-              </div>
-              
-              <button className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-xs font-medium">
-                Select →
-              </button>
+              <h3 className="mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+                Repository Collection
+              </h3>
+              <p className="mt-2 text-sm text-slate-300/90 sm:text-base">
+                Hand-picked, production-grade codebases that generate the highest quality quiz questions.
+              </p>
             </div>
           </div>
-        ))}
-      </div>
 
-      {filteredRepos.length === 0 && (
-        <div className="text-center py-8">
-          <p className="text-gray-500 dark:text-gray-400">No repositories found matching your search.</p>
+          <div className="flex flex-wrap items-center gap-2">
+            {languages.map((language) => {
+              const isActive = selectedLanguage === language;
+              return (
+                <button
+                  key={language}
+                  onClick={() => {
+                    setSelectedLanguage(language);
+                    setSearchTerm('');
+                  }}
+                  className={`group relative overflow-hidden rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'border-cyan-400/40 bg-gradient-to-r from-cyan-400/30 via-sky-400/20 to-fuchsia-400/30 text-white shadow-[0_0_25px_rgba(56,189,248,0.4)]'
+                      : 'border-white/10 bg-white/5 text-slate-200 hover:border-cyan-400/30 hover:bg-cyan-400/10'
+                  }`}
+                >
+                  <span className="relative z-10">{language}</span>
+                  {isActive && (
+                    <span className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.4),_transparent_65%)] opacity-90" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
+            {highlightedCategories.map((category) => (
+              <span key={category} className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-medium">
+                <span className="h-1.5 w-1.5 rounded-full bg-cyan-300" />
+                {category}
+              </span>
+            ))}
+          </div>
+
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder={`Search ${selectedLanguage} repositories...`}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full rounded-2xl border border-white/10 bg-white/5 py-3 pl-12 pr-4 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-300/70 focus:ring-offset-2 focus:ring-offset-[#05040f]"
+            />
+          </div>
+        </header>
+
+        <div className="relative rounded-2xl border border-white/10 bg-white/5">
+          <div className="max-h-[26rem] overflow-y-auto px-2 py-3 sm:px-3">
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {filteredRepos.map((repo) => {
+                const difficultyBg =
+                  repo.difficulty === 'Beginner'
+                    ? 'bg-emerald-500/15 text-emerald-200 border-emerald-400/30'
+                    : repo.difficulty === 'Intermediate'
+                    ? 'bg-amber-500/15 text-amber-200 border-amber-400/30'
+                    : 'bg-rose-500/15 text-rose-200 border-rose-400/30';
+
+                return (
+                  <div
+                    key={repo.url}
+                    onClick={() => onRepoSelect(repo.url)}
+                    className="group relative h-full cursor-pointer overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/70 via-slate-900/30 to-slate-900/50 p-4 transition-all duration-200 hover:-translate-y-1 hover:border-cyan-300/40 hover:shadow-[0_12px_40px_-12px_rgba(59,130,246,0.45)]"
+                  >
+                    <div className="absolute inset-0 -z-10 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.25),_transparent_65%)]" />
+                    </div>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-2 text-white">
+                        <span className="text-xl">{repo.icon}</span>
+                        <div>
+                          <p className="text-sm font-semibold leading-tight">{repo.name}</p>
+                          <p className="text-[11px] text-slate-400">{repo.category}</p>
+                        </div>
+                      </div>
+                      <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/25 bg-amber-500/10 px-2 py-1 text-[11px] font-semibold text-amber-200">
+                        ⭐ {repo.stars}
+                      </span>
+                    </div>
+
+                    <p className="mt-3 line-clamp-3 text-[13px] leading-relaxed text-slate-300">
+                      {repo.description}
+                    </p>
+
+                    <div className="mt-4 flex items-center justify-between text-xs text-slate-300">
+                      <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 ${difficultyBg}`}>
+                        {repo.difficulty}
+                      </span>
+                      <span className="flex items-center gap-1 text-[11px] text-cyan-200 group-hover:text-cyan-100">
+                        Select
+                        <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l3.999 4a1 1 0 010 1.414l-3.999 4a1 1 0 11-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {filteredRepos.length === 0 && (
+              <div className="flex min-h-[12rem] flex-col items-center justify-center gap-2 text-center">
+                <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.35em] text-slate-400">
+                  No matches
+                </div>
+                <p className="text-sm text-slate-300">
+                  Try another keyword or explore a different language.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
-      )}
-    </div>
+
+        <footer className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-slate-300">
+          Uses 1 life · Selecting a curated repo streams fresh questions tailored to that codebase.
+        </footer>
+      </div>
+    </section>
   );
 }

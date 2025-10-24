@@ -1,0 +1,530 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761262526806
+Started: 2025-10-23T23:35:26.806Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-23T23:35:26.809Z
+File: [2 files: index.ts, profile.tsx]
+Functions Extracted: 5
+
+
+Function 1: base64URLEncode
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+export function base64URLEncode(buf: Buffer): string {
+  return buf
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: mapErr
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+export async function mapErr<T>(promise: Promise<T>): Promise<Result<T>> {
+  try {
+    return { hasError: false, data: await promise };
+  } catch (error) {
+    return { hasError: true, error };
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: syncMapErr
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+export function syncMapErr<T>(fn: () => T): Result<T> {
+  try {
+    return { hasError: false, data: fn() };
+  } catch (error) {
+    return { hasError: true, error };
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: UserProfile
+Language: TypeScript
+Lines: 31
+Full Code:
+--------------------------------------------------------------------------------
+function UserProfile({ user, isSessionUser }: ProfileProps): JSX.Element {
+  const [isEditing, setIsEditing] = useState(false);
+
+  const {
+    profileUI: {
+      showCerts,
+      showHeatMap,
+      showPoints,
+      showPortfolio,
+      showTimeLine
+    },
+    calendar,
+    completedChallenges,
+    username,
+    points,
+    portfolio
+  } = user;
+
+  return (
+    <>
+      {isSessionUser && (
+        <EditModal
+          user={user}
+          isEditing={isEditing}
+          isSessionUser={isSessionUser}
+          setIsEditing={setIsEditing}
+        />
+      )}
+      <Camper
+        user={user}
+        isSessionUser={isSessionUser}
+        setIsEditing={setIsEditing}
+      />
+      {showPoints ? <Stats points={points} calendar={calendar} /> : null}
+      {showHeatMap ? <HeatMap calendar={calendar} /> : null}
+      {showPortfolio ? (
+        <PortfolioProjects portfolioProjects={portfolio} />
+      ) : null}
+      {showCerts ? <Certifications user={user} /> : null}
+      {showTimeLine ? (
+        <Timeline completedMap={completedChallenges} username={username} />
+      ) : null}
+      <Spacer size='m' />
+    </>
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: Profile
+Language: TypeScript
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+function Profile({ user, isSessionUser }: ProfileProps): JSX.Element {
+  const { t } = useTranslation();
+  const {
+    profileUI: { isLocked },
+    username
+  } = user;
+
+  const showUserProfile = !isLocked || isSessionUser;
+
+  return (
+    <>
+      <Helmet>
+        <title>{t('buttons.profile')} | freeCodeCamp.org</title>
+      </Helmet>
+      <Spacer size='m' />
+      <Container>
+        <Spacer size='m' />
+        {isLocked && (
+          <Message username={username} isSessionUser={isSessionUser} t={t} />
+        )}
+        {showUserProfile && (
+          <UserProfile user={user} isSessionUser={isSessionUser} />
+        )}
+        {!isSessionUser && (
+          <Row className='text-center'>
+            <Link to={`/user/${username}/report-user`}>
+              {t('buttons.flag-user')}
+            </Link>
+          </Row>
+        )}
+        <Spacer size='m' />
+      </Container>
+    </>
+  );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:35:29.560Z
+Question Type: multiple-choice
+Function: syncMapErr
+Function Size: 304 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: syncMapErr (TypeScript)\n// Wrapper around a synchronise function to catch throws and return them as part of the value.\n\nexport function syncMapErr<T>(fn: () => T): Result<T> {\n  try {\n    return { hasError: false, data: fn() };\n  } catch (error) {\n    return { hasError: true, error };\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:35:31.311Z
+Question Type: select-all
+Function: base64URLEncode
+Function Size: 257 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: base64URLEncode (TypeScript)\n// Utility to encode a buffer to a base64 URI.\n\nexport function base64URLEncode(buf: Buffer): string {\n  return buf\n    .toString('base64')\n    .replace(/\+/g, '-')\n    .replace(/\//g, '_')\n    .replace(/=/g, '');\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:35:33.143Z
+Question Type: true-false
+Function: mapErr
+Function Size: 317 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mapErr (TypeScript)\n// Wrapper around a promise to catch errors and return them as part of the promise.\n\nexport async function mapErr<T>(promise: Promise<T>): Promise<Result<T>> {\n  try {\n    return { hasError: false, data: await promise };\n  } catch (error) {\n    return { hasError: tru
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:35:36.891Z
+Question Type: select-all
+Function: UserProfile
+Function Size: 1254 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: UserProfile (TypeScript)\n// Renders the user profile, including editing options and various user statistics.\n\nfunction UserProfile({ user, isSessionUser }: ProfileProps): JSX.Element {\n  const [isEditing, setIsEditing] = useState(false);\n\n  const {\n    profileUI: {\n      showCerts,\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:35:36.971Z
+Question Type: select-all
+Function: Profile
+Function Size: 1048 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: Profile (TypeScript)\n// Main profile component that conditionally renders user profile and messages based on user session state.\n\nfunction Profile({ user, isSessionUser }: ProfileProps): JSX.Element {\n  const { t } = useTranslation();\n  const {\n    profileUI: { isLocked },\n    username\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:35:39.275Z
+Question Type: function-variant
+Function: mapErr
+Function Size: 317 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: mapErr (TypeScript)\n// Wrapper around a promise to catch errors and return them as part of the promise.\n\nexport async function mapErr<T>(promise: Promise<T>): Promise<Result<T>> {\n  try {\n    return { hasError: false, data: await promise };\n  } catch (error) {\n    return { hasError: tru
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:35:46.038Z
+Question Type: true-false
+Function: UserProfile
+Function Size: 1254 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: UserProfile (TypeScript)\n// Renders the user profile, including editing options and various user statistics.\n\nfunction UserProfile({ user, isSessionUser }: ProfileProps): JSX.Element {\n  const [isEditing, setIsEditing] = useState(false);\n\n  const {\n    profileUI: {\n      showCerts,\n    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:35:46.477Z
+Question Type: select-all
+Function: syncMapErr
+Function Size: 304 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: syncMapErr (TypeScript)\n// Wrapper around a synchronise function to catch throws and return them as part of the value.\n\nexport function syncMapErr<T>(fn: () => T): Result<T> {\n  try {\n    return { hasError: false, data: fn() };\n  } catch (error) {\n    return { hasError: true, error };\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:35:48.053Z
+Question Type: order-sequence
+Function: base64URLEncode
+Function Size: 257 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: base64URLEncode (TypeScript)\n// Utility to encode a buffer to a base64 URI.\n\nexport function base64URLEncode(buf: Buffer): string {\n  return buf\n    .toString('base64')\n    .replace(/\+/g, '-')\n    .replace(/\//g, '_')\n    .replace(/=/g, '');\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:35:55.827Z
+Question Type: function-variant
+Function: Profile
+Function Size: 1048 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: Profile (TypeScript)\n// Main profile component that conditionally renders user profile and messages based on user session state.\n\nfunction Profile({ user, isSessionUser }: ProfileProps): JSX.Element {\n  const { t } = useTranslation();\n  const {\n    profileUI: { isLocked },\n    username\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:35:57.398Z
+Question Type: function-variant
+Function: syncMapErr
+Function Size: 304 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: syncMapErr (TypeScript)\n// Wrapper around a synchronise function to catch throws and return them as part of the value.\n\nexport function syncMapErr<T>(fn: () => T): Result<T> {\n  try {\n    return { hasError: false, data: fn() };\n  } catch (error) {\n    return { hasError: true, error };\n 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761262526806
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 5
+Ended: 2025-10-23T23:35:57.411Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-23T23:36:00.058Z
+File: not being used to render anything
+Functions Extracted: 1
+
+
+Function 1: courseCompletionStatus
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+const courseCompletionStatus = () => {
+  if (completedCount === 0) {
+    return t('learn.not-started');
+  }
+  if (isBlockCompleted) {
+    return t('learn.completed');
+  }
+  return `${percentageCompleted}% ${t('learn.completed')}`;
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:36:09.698Z
+Question Type: function-variant
+Function: courseCompletionStatus
+Function Size: 391 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on the completed count and whether the block is completed.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    retu
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-23T23:36:10.437Z
+File: [2 files: show.tsx, just need the body to exist, but doesn't seem to use the properties.]
+Functions Extracted: 3
+
+
+Function 1: handleDownloadLink
+Language: TypeScript
+Lines: 31
+Full Code:
+--------------------------------------------------------------------------------
+function handleDownloadLink(downloadLinks: string[]) {
+    const win = downloadLinks.find(link => link.match(/\.exe/));
+    const macARM = downloadLinks.find(
+      link => link.match(/aarch64/) && link.match(/\.dmg/)
+    );
+    const macX64 = downloadLinks.find(
+      link => link.match(/x64/) && link.match(/\.dmg/)
+    );
+    const linuxARM = downloadLinks.find(
+      link => link.match(/aarch64/) && link.match(/tar\.gz/)
+    );
+    const linuxX64 = downloadLinks.find(
+      link => link.match(/amd64/) && link.match(/AppImage/)
+    );
+
+    if (os.os === 'WIN') {
+      if (isEmpty(win)) return '';
+
+      return win;
+    }
+
+    if (os.os === 'MAC') {
+      if (os.architecture.toLowerCase() === 'arm') {
+        if (isEmpty(macARM)) return '';
+
+        return macARM;
+      } else {
+        if (isEmpty(macX64)) return '';
+
+        return macX64;
+      }
+    }
+
+    if (os.os === 'LINUX') {
+      if (os.architecture.toLowerCase() === 'arm') {
+        if (isEmpty(linuxARM)) return '';
+
+        return linuxARM;
+      } else {
+        if (isEmpty(linuxX64)) return '';
+
+        return linuxX64;
+      }
+    }
+
+    return '';
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: checkLatestVersion
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+async function checkLatestVersion() {
+      try {
+        const response = await fetch(
+          'https://api.github.com/repos/freeCodeCamp/exam-env/releases/latest'
+        );
+        if (response.ok) {
+          const data = (await response.json()) as GitProps;
+          const { tag_name, assets } = data;
+          setLatestVersion(tag_name);
+          const urls = assets.map(link => link.browser_download_url);
+          setDownloadLink(handleDownloadLink(urls));
+          setDownloadLinks(urls);
+        }
+      } catch {
+        setLatestVersion('...');
+      }
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: createStripePaymentIntent
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+export function createStripePaymentIntent(body: {
+  email: string | undefined;
+  name: string | undefined;
+  amount: number;
+  duration: DonationDuration;
+}): PaymentIntentResponse {
+  return post('/donate/create-stripe-payment-intent', body);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:36:11.822Z
+Question Type: function-variant
+Function: courseCompletionStatus
+Function Size: 391 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on the completed count and whether the block is completed.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    retu
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:36:12.563Z
+Question Type: order-sequence
+Function: courseCompletionStatus
+Function Size: 391 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on the completed count and whether the block is completed.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    retu
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:36:12.587Z
+Question Type: order-sequence
+Function: courseCompletionStatus
+Function Size: 391 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on the completed count and whether the block is completed.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    retu
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:36:15.159Z
+Question Type: true-false
+Function: courseCompletionStatus
+Function Size: 391 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: courseCompletionStatus (JavaScript)\n// Determines the course completion status based on the completed count and whether the block is completed.\n\nconst courseCompletionStatus = () => {\n  if (completedCount === 0) {\n    return t('learn.not-started');\n  }\n  if (isBlockCompleted) {\n    retu
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761262526806
+Repository: Unknown
+Total Questions Generated: 3
+Total Chunks Processed: 1
+Ended: 2025-10-23T23:36:15.258Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:36:22.843Z
+Question Type: select-all
+Function: checkLatestVersion
+Function Size: 736 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: checkLatestVersion (TypeScript)\n// Fetches the latest version of the exam environment from GitHub and updates the state with the download links.\n\nasync function checkLatestVersion() {\n      try {\n        const response = await fetch(\n          'https://api.github.com/repos/freeCodeCamp/
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:36:22.867Z
+Question Type: select-all
+Function: checkLatestVersion
+Function Size: 736 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: checkLatestVersion (TypeScript)\n// Fetches the latest version of the exam environment from GitHub and updates the state with the download links.\n\nasync function checkLatestVersion() {\n      try {\n        const response = await fetch(\n          'https://api.github.com/repos/freeCodeCamp/
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:36:26.942Z
+Question Type: true-false
+Function: createStripePaymentIntent
+Function Size: 369 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createStripePaymentIntent (TypeScript)\n// Creates a Stripe payment intent with the provided donation details.\n\nexport function createStripePaymentIntent(body: {\n  email: string | undefined;\n  name: string | undefined;\n  amount: number;\n  duration: DonationDuration;\n}): PaymentIntentResp
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:36:27.808Z
+Question Type: order-sequence
+Function: handleDownloadLink
+Function Size: 1274 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: handleDownloadLink (TypeScript)\n// Determines the appropriate download link based on the operating system and architecture.\n\nfunction handleDownloadLink(downloadLinks: string[]) {\n    const win = downloadLinks.find(link => link.match(/\.exe/));\n    const macARM = downloadLinks.find(\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:36:36.249Z
+Question Type: order-sequence
+Function: checkLatestVersion
+Function Size: 736 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: checkLatestVersion (TypeScript)\n// Fetches the latest version of the exam environment from GitHub and updates the state with the download links.\n\nasync function checkLatestVersion() {\n      try {\n        const response = await fetch(\n          'https://api.github.com/repos/freeCodeCamp/
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-23T23:36:37.087Z
+Question Type: function-variant
+Function: createStripePaymentIntent
+Function Size: 369 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: createStripePaymentIntent (TypeScript)\n// Creates a Stripe payment intent with the provided donation details.\n\nexport function createStripePaymentIntent(body: {\n  email: string | undefined;\n  name: string | undefined;\n  amount: number;\n  duration: DonationDuration;\n}): PaymentIntentResp
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761262526806
+Repository: Unknown
+Total Questions Generated: 5
+Total Chunks Processed: 3
+Ended: 2025-10-23T23:36:37.510Z
+================================================================================
+

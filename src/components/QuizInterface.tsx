@@ -45,8 +45,8 @@ function getHighlighterLanguage(lang: string): string {
   return langMap[lang] || 'javascript';
 }
 
-const STARTING_LIVES = 3;
-const MAX_LIVES = 3;
+const STARTING_LIVES = 5;
+const MAX_LIVES = 5;
 
 export default function QuizInterface({ quizSession, onClose }: QuizInterfaceProps) {
   const { user } = useAuth();
@@ -63,19 +63,59 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   const [isVariantCodeExpanded, setIsVariantCodeExpanded] = useState(false);
 
   const funTips = [
-    'Tip: Off-by-one bugs are 0-based 90% of the time.',
-    'Fact: await Promise.all is faster than serial awaits.',
-    'Tip: Prefer === over == unless you love surprises.',
-    'Fact: map + filter beats pushing in for-loops for clarity.',
-    'Tip: In Python, default args are evaluated once, beware lists.',
-    'Fact: In Java, put constants on the left: "foo".equals(x).',
-    'Tip: Throttle for rate limits; debounce for noisy inputs.',
-    'Fact: NaN !== NaN. But Number.isNaN(NaN) is true.',
+    'Remember to trace the data flow through each branch before committing to an answer.',
+    'Double-check the assumptions a function makes about its arguments.',
+    'When in doubt, rewrite the snippet in plain English to expose hidden logic.',
+    'Look for error handling—what happens when inputs are unexpected?',
+    'Scan the return paths; many bugs come from one branch returning too early.',
+    'Complex conditions often hide the real intention. Simplify them mentally first.',
+    'Name collisions and shadowed variables can change behavior—watch the scopes.',
+    'Before optimising, ensure you understand the baseline behaviour of the code.',
   ];
 
   const sanitizeExplanation = useCallback((text?: string | null) => {
     if (!text) return text ?? '';
     return text.replace(/—/g, ',');
+  }, []);
+
+  const formatVariantForDisplay = useCallback((code?: string) => {
+    if (!code) return '';
+    const trimmed = code.trim();
+    if (/\n/.test(trimmed)) {
+      return trimmed;
+    }
+
+    let formatted = trimmed
+      .replace(/\r\n/g, '\n')
+      .replace(/}\s*else\s*{/g, '}\nelse {')
+      .replace(/\)\s*{/g, ') {')
+      .replace(/\{\s*/g, '{\n')
+      .replace(/;\s*/g, ';\n')
+      .replace(/\s*}\s*/g, '\n}\n')
+      .replace(/\n+/g, '\n');
+
+    const rawLines = formatted
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+
+    let indent = 0;
+    const INDENT = '  ';
+    const indentedLines = rawLines.map((line) => {
+      if (/^[}\])]/.test(line)) {
+        indent = Math.max(indent - 1, 0);
+      }
+
+      const currentLine = `${INDENT.repeat(indent)}${line}`;
+
+      if (/(\{|\[|\()\s*$/.test(line) || line === 'else') {
+        indent += 1;
+      }
+
+      return currentLine;
+    });
+
+    return indentedLines.join('\n').trim();
   }, []);
 
   // ALL HOOKS MUST BE DECLARED BEFORE ANY CONDITIONAL RETURNS
@@ -179,15 +219,17 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   }, [shareUrl]);
   const [isCodeContextExpanded, setIsCodeContextExpanded] = useState(false);
 
+  const totalQuestions = Array.isArray(quizSession.questions) ? quizSession.questions.length : 0;
+  const hasQuestion = totalQuestions > 0 && currentQuestionIndex < totalQuestions;
+
   const isStreamFinished = useMemo(() => {
     if (quizSession.completed) return true;
-    if (Object.prototype.hasOwnProperty.call(quizSession, 'isStreaming')) {
-      return !quizSession.isStreaming;
-    }
-    return false;
-  }, [quizSession.completed, quizSession.isStreaming]);
+    if (!quizSession.isStreaming) return true;
+    if (totalQuestions === 0) return false;
+    return currentQuestionIndex >= totalQuestions - 1;
+  }, [quizSession.completed, quizSession.isStreaming, currentQuestionIndex, totalQuestions]);
 
-  const totalStreamedQuestions = quizSession.questions?.length ?? 0;
+  const totalStreamedQuestions = totalQuestions;
   const answeredQuestions = Math.max(results.length, currentQuestionIndex + (showExplanations ? 1 : 0));
   const accuracyPercentage = answeredQuestions > 0 ? Math.round((score / answeredQuestions) * 100) : 0;
 
@@ -318,11 +360,12 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
     };
   }, []);
 
-  const totalQuestions = Array.isArray(quizSession.questions) ? quizSession.questions.length : 0;
-  const hasQuestion = totalQuestions > 0 && currentQuestionIndex < totalQuestions;
+  // totalQuestions/hasQuestion moved up to ensure availability for memo hooks
   const currentQuestion: any = hasQuestion ? quizSession.questions[currentQuestionIndex] : undefined;
   const codeContextLineCount = typeof currentQuestion?.codeContext === 'string' ? currentQuestion.codeContext.split('\n').length : 0;
   const shouldClampCodeContext = codeContextLineCount > 36;
+  
+
 
   useEffect(() => {
     setIsCodeContextExpanded(false);
@@ -661,18 +704,15 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   const handleNextQuestion = () => {
     const nextIndex = currentQuestionIndex + 1;
     const nextAvailable = nextIndex < totalQuestions;
-    
-    // Check if we're trying to finish the quiz before streaming is complete
+
     const isFinishingQuiz = !nextAvailable;
-    const isStreamingComplete = isStreamFinished;
-    
-    // If finishing while streaming, show "slow down tiger" message and prevent finishing
-    if (isFinishingQuiz && !isStreamingComplete) {
+
+    if (isFinishingQuiz && totalQuestions === 0 && quizSession.isStreaming) {
       setShowStreamingWarning(true);
       setTimeout(() => setShowStreamingWarning(false), 3000);
-      return; // Don't allow finishing the quiz
+      return;
     }
-    
+
     if (nextAvailable) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswers([]);
@@ -822,14 +862,14 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 onClick={() => handleAnswerSelect(option)}
                 className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
                   selectedAnswers.includes(option)
-                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                    ? 'border-slate-300 bg-slate-100 dark:bg-slate-800/60'
+                    : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-500'
                 }`}
               >
                 <div className="flex items-start gap-3">
                   <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                     selectedAnswers.includes(option)
-                      ? 'border-blue-500 bg-blue-500'
+                      ? 'border-slate-900 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900'
                       : 'border-gray-300 dark:border-gray-600'
                   }`}>
                     {selectedAnswers.includes(option) && (
@@ -851,7 +891,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         const filledToken = selectedAnswers[0];
         return (
           <div className="space-y-6">
-            <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600">
+            <div className="bg-slate-100 dark:bg-slate-800/80 rounded-xl p-4 border border-gray-200 dark:border-gray-600">
               <p className="text-base text-gray-700 dark:text-gray-200 font-mono whitespace-pre-wrap">
                 {parts[0]}
                 <span
@@ -864,7 +904,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                   className={`inline-flex items-center px-3 py-1 rounded-md border-2 mx-1 select-none ${
                     filledToken
                       ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-200'
-                      : 'border-dashed border-blue-400 text-blue-600 dark:text-blue-300'
+                      : 'border-dashed border-slate-400 text-slate-700 dark:text-slate-200'
                   }`}
                   role="button"
                 >
@@ -885,7 +925,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                   onClick={() => handleAnswerSelect(option)}
                   className={`px-4 py-2 rounded-full border-2 text-sm font-medium transition-all ${
                     selectedAnswers.includes(option)
-                      ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-200'
+                      ? 'border-blue-600 bg-slate-100 dark:bg-slate-800/70 text-blue-700 dark:text-blue-200'
                       : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
                   }`}
                 >
@@ -922,14 +962,14 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         return (
           <div className="space-y-6 sm:space-y-8">
             {/* Navigation Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 bg-gray-50 dark:bg-gray-700 p-4 sm:p-6 rounded-xl">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 bg-slate-100 dark:bg-slate-800/80 p-4 sm:p-6 rounded-xl">
               <button
                 onClick={() => handleVariantNavigation('prev')}
                 disabled={isFirstVariant}
                 className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-all font-medium w-full sm:w-auto ${
                   isFirstVariant
                     ? 'text-gray-400 cursor-not-allowed'
-                    : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20'
+                    : 'text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/60'
                 }`}
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -953,7 +993,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-all font-medium w-full sm:w-auto ${
                   isLastVariant
                     ? 'text-gray-400 cursor-not-allowed'
-                    : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20'
+                    : 'text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/60'
                 }`}
               >
                 <span className="text-sm sm:text-base">Next</span>
@@ -997,10 +1037,10 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 )}
               </div>
               {shouldClampVariant && (
-                <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/60 flex justify-center">
+                <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-slate-100 dark:bg-slate-800/80/60 flex justify-center">
                   <button
                     onClick={() => setIsVariantCodeExpanded((prev) => !prev)}
-                    className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-300 dark:hover:text-blue-200 transition-colors"
+                    className="text-sm font-medium text-slate-900 dark:text-slate-100 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
                   >
                     {isVariantCodeExpanded ? 'Collapse Code' : 'Expand Full Code'}
                   </button>
@@ -1014,8 +1054,8 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 onClick={() => handleVariantSelect(currentVariant.id)}
                 className={`flex-1 py-3 px-6 rounded-lg font-medium transition-all ${
                   selectedAnswers.includes(currentVariant.id)
-                    ? 'bg-green-600 text-white hover:bg-green-700'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                    ? 'bg-emerald-600 text-white hover:bg-emerald-500'
+                    : 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-slate-700 dark:hover:bg-slate-200'
                 }`}
               >
                 {selectedAnswers.includes(currentVariant.id) ? '✓ Selected' : 'Select This Variant'}
@@ -1039,7 +1079,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                   onClick={() => setCurrentVariantIndex(index)}
                   className={`w-4 h-4 rounded-full transition-all hover:scale-110 ${
                     index === currentVariantIndex
-                      ? 'bg-blue-600 shadow-lg'
+                      ? 'bg-slate-900 shadow-lg dark:bg-slate-100'
                       : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
                   }`}
                 />
@@ -1075,7 +1115,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             </div>
             
             {/* Instructions */}
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <div className="bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-lg p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-blue-800 dark:text-blue-200 text-sm font-medium">
@@ -1183,17 +1223,17 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 </span>
               </h3>
               <div
-                className="min-h-[200px] border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700"
+                className="min-h-[200px] border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-slate-100 dark:bg-slate-800/80"
                 onDragOver={(e) => {
                   e.preventDefault();
-                  e.currentTarget.classList.add('border-blue-400', 'bg-blue-50', 'dark:bg-blue-900/20');
+                  e.currentTarget.classList.add('border-slate-400', 'bg-slate-100', 'dark:bg-slate-800/60');
                 }}
                 onDragLeave={(e) => {
-                  e.currentTarget.classList.remove('border-blue-400', 'bg-blue-50', 'dark:bg-blue-900/20');
+                  e.currentTarget.classList.remove('border-slate-400', 'bg-slate-100', 'dark:bg-slate-800/60');
                 }}
                 onDrop={(e) => {
                   e.preventDefault();
-                  e.currentTarget.classList.remove('border-blue-400', 'bg-blue-50', 'dark:bg-blue-900/20');
+                  e.currentTarget.classList.remove('border-slate-400', 'bg-slate-100', 'dark:bg-slate-800/60');
                   const stepId = e.dataTransfer.getData('text/plain');
                   if (!stepId) return;
                   
@@ -1301,7 +1341,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                           <div className={`w-8 h-8 text-white rounded-full flex items-center justify-center text-sm font-bold ${
                             showExplanations && step.isDistractor 
                               ? 'bg-red-600' 
-                              : 'bg-blue-600'
+                              : 'bg-slate-900 dark:bg-slate-100'
                           }`}>
                             {index + 1}
                           </div>
@@ -1334,7 +1374,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
               {/* Solution panel: show authoritative correct order with per-step explanations */}
               {showExplanations && Array.isArray(currentQuestion.correctOrder) && Array.isArray(currentQuestion.steps) && (
-                <div className="mt-4 bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-600">
+                <div className="mt-4 bg-slate-100 dark:bg-slate-800/80 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-600">
                   <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-3">Solution: Authoritative Order</h4>
                   <div className="space-y-2">
                     {currentQuestion.correctOrder.map((id: string, idx: number) => {
@@ -1348,7 +1388,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                           className={`p-3 rounded-lg border-2 ${userMatchedPosition ? 'border-green-200 bg-green-50 dark:bg-green-900/20' : 'border-blue-200 bg-white dark:bg-gray-800 dark:border-blue-900/40'}`}
                         >
                           <div className="flex items-start space-x-3">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${userMatchedPosition ? 'bg-green-600 text-white' : 'bg-blue-600 text-white'}`}>{idx + 1}</div>
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${userMatchedPosition ? 'bg-green-600 text-white' : 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'}`}>{idx + 1}</div>
                             <div className="flex-1 min-w-0">
                               <div className="overflow-x-auto">
                                 <pre className="text-sm font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">{step.code}</pre>
@@ -1370,7 +1410,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                   </div>
 
                   {currentQuestion.explanation && (
-                    <div className="mt-4 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                    <div className="mt-4 p-3 rounded-lg bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
                       <p className="text-sm text-blue-800 dark:text-blue-200"><strong>Overall Explanation:</strong> {sanitizeExplanation(currentQuestion.explanation)}</p>
                     </div>
                   )}
@@ -1391,14 +1431,14 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                   onClick={() => handleAnswerSelect(option)}
                   className={`p-6 rounded-xl border-2 transition-all text-center ${
                     selectedAnswers.includes(option)
-                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-200'
-                      : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 text-gray-700 dark:text-gray-300'
+                      ? 'border-slate-300 bg-slate-100 dark:bg-slate-800/60 text-blue-700 dark:text-blue-200'
+                      : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-500 text-gray-700 dark:text-gray-300'
                   }`}
                 >
                   <div className="flex flex-col items-center space-y-3">
                     <div className={`w-12 h-12 rounded-full border-2 flex items-center justify-center text-2xl font-bold ${
                       selectedAnswers.includes(option)
-                        ? 'border-blue-500 bg-blue-500 text-white'
+                        ? 'border-slate-900 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-white'
                         : 'border-gray-300 dark:border-gray-600'
                     }`}>
                       {option === 'True' ? '✓' : '✗'}
@@ -1410,7 +1450,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             </div>
             
             {/* Additional context or hint */}
-            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+            <div className="bg-slate-100 dark:bg-slate-800/80 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
               <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
                 💡 Consider the code behavior, edge cases, and JavaScript runtime characteristics
               </p>
@@ -1422,7 +1462,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
         return (
           <div className="space-y-6">
             {/* Instructions */}
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <div className="bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-lg p-4">
               <p className="text-blue-800 dark:text-blue-200 text-sm font-medium">
                 📝 Select all statements that are correct. You can select multiple options.
               </p>
@@ -1439,14 +1479,14 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                   onClick={() => handleAnswerSelect(option)}
                   className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
                     selectedAnswers.includes(option)
-                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                      : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                      ? 'border-slate-300 bg-slate-100 dark:bg-slate-800/60'
+                      : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-500'
                   }`}
                 >
                   <div className="flex items-start gap-3">
                     <div className={`w-6 h-6 border-2 rounded-md flex items-center justify-center mt-0.5 flex-shrink-0 ${
                       selectedAnswers.includes(option)
-                        ? 'border-blue-500 bg-blue-500'
+                        ? 'border-slate-900 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900'
                         : 'border-gray-300 dark:border-gray-600'
                     }`}>
                       {selectedAnswers.includes(option) && (
@@ -1462,7 +1502,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             </div>
 
             {/* Selection Counter */}
-            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+            <div className="bg-slate-100 dark:bg-slate-800/80 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
               <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
                 {selectedAnswers.length === 0 
                   ? "No options selected yet"
@@ -1499,8 +1539,8 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   // Report prompt modal
   if (showReportPrompt) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gradient-to-br from-slate-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
-        <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-100 dark:bg-slate-950">
+        <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex flex-col items-center text-center">
             <div
               className="w-40 h-40 rounded-xl bg-center bg-cover"
@@ -1511,7 +1551,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">We can analyze your answers and generate personalized bug-fix tickets.</p>
             <div className="mt-6 grid grid-cols-2 gap-3 w-full">
               <button
-                className="py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
+                className="py-3 rounded-lg bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-semibold hover:bg-slate-700 dark:hover:bg-slate-200 transition-colors"
                 onClick={() => {
                   setIsGeneratingReport(true);
                   setShowReportPrompt(false);
@@ -1523,7 +1563,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 Yes
               </button>
               <button
-                className="py-3 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700"
+                className="py-3 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors"
                 onClick={() => {
                   // Skip server generation; still show local report UI
                   setGeneratedTickets([]);
@@ -1552,8 +1592,8 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
   // Loading screen while generating report
   if (isGeneratingReport) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gradient-to-br from-slate-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
-        <div className="w-full max-w-lg bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6 flex flex-col items-center">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-100 dark:bg-slate-950">
+        <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6 flex flex-col items-center">
           <div
             className="w-48 h-48 rounded-xl bg-center bg-cover"
             style={{ backgroundImage: `url(/report-bot.png)` }}
@@ -1561,7 +1601,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
           />
           <div className="mt-4 text-sm text-gray-700 dark:text-gray-300">Generating your report card…</div>
           <div className="mt-3 w-full">
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+            <div className="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-2 overflow-hidden">
               <div className="bg-indigo-600 h-2 rounded-full transition-all" style={{ width: `${loadingPct}%` }} />
             </div>
           </div>
@@ -1577,45 +1617,45 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
   return (
     <div
-      className="fixed inset-0 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 z-50 overflow-y-auto overflow-x-hidden"
+      className="fixed inset-0 bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 z-50 overflow-y-auto overflow-x-hidden"
       style={{ WebkitOverflowScrolling: 'touch' }}
     >
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="w-full max-w-full sm:max-w-3xl lg:max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3 sm:gap-4">
+      <div className="bg-white/90 dark:bg-slate-900/80 backdrop-blur shadow border-b border-slate-200/60 dark:border-slate-800/60">
+        <div className="w-full max-w-full sm:max-w-3xl lg:max-w-4xl mx-auto px-4 sm:px-6 py-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between text-slate-600 dark:text-slate-300">
+            <div className="flex items-center gap-3 sm:gap-4 text-slate-900 dark:text-slate-100">
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
-              <h1 className="text-lg sm:text-xl font-bold leading-snug break-words text-gray-900 dark:text-white">
+              <h1 className="text-lg sm:text-xl font-semibold leading-snug break-words">
                 {quizSession.title}
               </h1>
             </div>
-            
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+
+            <div className="flex flex-wrap items-start sm:justify-end gap-3">
               {/* Progress */}
-              <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed break-words">
+              <div className="px-3 py-2 rounded-xl bg-white/70 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-800/60 shadow-sm text-sm leading-relaxed break-words">
                 {hasQuestion ? (
                   <>
                     Question {currentQuestionIndex + 1} of {totalQuestions}
-                    {quizSession.isStreaming && (
-                      <span className="ml-3 px-2 py-1 text-xs bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 rounded-full flex items-center gap-1">
-                        <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                    {quizSession.isStreaming && totalQuestions === 0 && (
+                      <span className="ml-2 inline-flex items-center gap-1 px-2 py-1 text-[11px] bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-200 rounded-full">
+                        <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
                         Streaming...
                       </span>
                     )}
                     {currentQuestion.isCached && (
-                      <span className="ml-3 px-2 py-1 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full flex items-center gap-1">
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      <span className="ml-2 inline-flex items-center gap-1 px-2 py-1 text-[11px] bg-emerald-100/70 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200 rounded-full">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
-                        Community Reviewed
+                        Community reviewed
                       </span>
                     )}
                   </>
@@ -1623,48 +1663,48 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                   <>Loading questions…</>
                 )}
               </div>
-              
+
               {/* Score */}
-              <div className="text-sm font-medium text-gray-900 dark:text-white">
-                Score: {score}
+              <div className="px-3 py-2 rounded-xl bg-white/70 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-800/60 shadow-sm text-sm font-semibold text-slate-900 dark:text-slate-100">
+                Score&nbsp;<span className="text-base">{score}</span>
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                Accuracy: {totalStreamedQuestions > 0 ? `${accuracyPercentage}%` : '—'}
+              <div className="px-3 py-2 rounded-xl bg-white/70 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-800/60 shadow-sm text-sm">
+                Accuracy&nbsp;<span className="text-base font-semibold text-slate-900 dark:text-slate-100">{totalStreamedQuestions > 0 ? `${accuracyPercentage}%` : '—'}</span>
                 {totalStreamedQuestions > 0 && (
-                  <span className="ml-1 text-xs">
+                  <span className="ml-1 text-xs text-slate-500 dark:text-slate-400">
                     ({score}/{totalStreamedQuestions})
                   </span>
                 )}
               </div>
-              
+
               {/* Timers */}
-              <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 gap-2 sm:gap-4 w-full sm:w-auto text-sm text-gray-700 dark:text-gray-300">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 gap-3 sm:gap-4 w-full sm:w-auto text-sm">
                 {/* Per-question timer */}
-                <div className="w-full sm:w-40">
-                  <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
+                <div className="w-full sm:w-44 px-3 py-2 rounded-xl bg-white/70 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-800/60 shadow-sm">
+                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
                     <span>Q Time</span>
                     <span className={`${questionTimeLeft <= 3 ? 'text-red-600 dark:text-red-400 animate-pulse' : (questionTimeTotal > 0 && questionTimeLeft / questionTimeTotal <= 0.2 ? 'text-red-600 dark:text-red-400' : '')}`}>
                       {formatTime(questionTimeLeft)}
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+                  <div className="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-2 overflow-hidden">
                     <div
-                      className={`${questionTimeLeft <= 3 ? 'bg-red-600 animate-pulse' : (questionTimeTotal > 0 && questionTimeLeft / questionTimeTotal <= 0.2 ? 'bg-red-600 animate-pulse' : 'bg-blue-600')} h-2 rounded-full transition-all duration-500`}
+                      className={`${questionTimeLeft <= 3 ? 'bg-red-500 animate-pulse' : (questionTimeTotal > 0 && questionTimeLeft / questionTimeTotal <= 0.2 ? 'bg-red-500 animate-pulse' : 'bg-slate-900 dark:bg-slate-100')} h-2 rounded-full transition-all duration-500`}
                       style={{ width: `${questionTimeTotal > 0 ? (questionTimeLeft / questionTimeTotal) * 100 : 0}%` }}
                     ></div>
                   </div>
                 </div>
                 {/* Overall timer */}
-                <div className="w-full sm:w-40">
-                  <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
+                <div className="w-full sm:w-44 px-3 py-2 rounded-xl bg-white/70 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-800/60 shadow-sm">
+                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
                     <span>Total</span>
                     <span className={`${overallTimeTotal > 0 && overallTimeLeft / overallTimeTotal <= 0.15 ? 'text-red-600 dark:text-red-400' : ''}`}>
                       {formatTime(overallTimeLeft)}
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+                  <div className="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-2 overflow-hidden">
                     <div
-                      className={`${overallTimeTotal > 0 && overallTimeLeft / overallTimeTotal <= 0.15 ? 'bg-red-600 animate-pulse' : 'bg-indigo-600'} h-2 rounded-full transition-all duration-500`}
+                      className={`${overallTimeTotal > 0 && overallTimeLeft / overallTimeTotal <= 0.15 ? 'bg-red-500 animate-pulse' : 'bg-slate-900 dark:bg-slate-100'} h-2 rounded-full transition-all duration-500`}
                       style={{ width: `${overallTimeTotal > 0 ? (overallTimeLeft / overallTimeTotal) * 100 : 0}%` }}
                     ></div>
                   </div>
@@ -1672,8 +1712,8 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               </div>
 
               {/* Lives */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Lives:</span>
+              <div className="flex items-center gap-2 flex-wrap px-3 py-2 rounded-xl bg-white/70 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-800/60 shadow-sm">
+                <span className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Lives</span>
                 <div className="flex items-center gap-1">
                   {Array.from({ length: MAX_LIVES }, (_, i) => (
                     <button
@@ -1685,8 +1725,8 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                       }}
                       className={`w-4 h-4 rounded-full transition-colors ${
                         i < lives
-                          ? 'bg-red-500 hover:bg-red-600'
-                          : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 cursor-pointer'
+                          ? 'bg-rose-500 hover:bg-rose-600'
+                          : 'bg-slate-300 dark:bg-slate-600 hover:bg-slate-400 dark:hover:bg-slate-500 cursor-pointer'
                       }`}
                       title={i >= lives ? 'Click to restore life' : 'Life active'}
                     />
@@ -1704,9 +1744,9 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
           
           {/* Progress Bar */}
           <div className="mt-4">
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-              <div 
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+            <div className="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-2">
+              <div
+                className="bg-slate-900 dark:bg-slate-100 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${hasQuestion ? ((currentQuestionIndex + 1) / totalQuestions) * 100 : 0}%` }}
               ></div>
             </div>
@@ -1745,20 +1785,20 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
       </AnimatePresence>
 
       {/* Question Card */}
-      <div className="w-full max-w-full sm:max-w-3xl lg:max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8">
+      <div className="w-full max-w-full sm:max-w-3xl lg:max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-[0_20px_50px_-30px_rgba(15,23,42,0.65)] ring-1 ring-slate-200/80 dark:ring-slate-800/80 p-5 sm:p-7 lg:p-9 transition-colors">
           {!hasQuestion ? (
             <div className="space-y-6 animate-pulse">
-              <div className="h-7 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
+              <div className="h-7 bg-gray-200 dark:bg-gray-800 rounded w-2/3" />
               <div className="space-y-3">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full" />
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-11/12" />
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-10/12" />
+                <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-full" />
+                <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-11/12" />
+                <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-10/12" />
               </div>
               <div className="flex gap-3">
-                <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-24" />
-                <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-24" />
-                <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-24" />
+                <div className="h-10 bg-gray-200 dark:bg-gray-800 rounded w-24" />
+                <div className="h-10 bg-gray-200 dark:bg-gray-800 rounded w-24" />
+                <div className="h-10 bg-gray-200 dark:bg-gray-800 rounded w-24" />
               </div>
               <div className="flex justify-end">
                 <button className={`bg-green-600 text-white py-3 px-8 rounded-lg font-medium opacity-60 cursor-not-allowed ${shakingNext ? 'animate-shake' : ''}`} onClick={handleNextQuestion}>
@@ -1772,11 +1812,11 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
             {/* Community Reviewed Badge - Prominent */}
             {currentQuestion.isCached && (
               <div className="mb-4">
-                <span className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 text-green-800 dark:text-green-300 rounded-lg border-2 border-green-300 dark:border-green-700 font-semibold text-sm shadow-sm">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                <span className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100/70 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-200 rounded-lg border border-emerald-200 dark:border-emerald-700 font-medium text-sm">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  ✨ Community Reviewed Question
+                  Community reviewed question
                 </span>
               </div>
             )}
@@ -1830,10 +1870,10 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                   )}
                 </div>
                 {shouldClampCodeContext && (
-                  <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700/60 border-t border-gray-200 dark:border-gray-700 flex justify-center">
+                  <div className="px-4 py-3 bg-slate-100 dark:bg-slate-800/80/60 border-t border-gray-200 dark:border-gray-700 flex justify-center">
                     <button
                       onClick={() => setIsCodeContextExpanded((prev) => !prev)}
-                      className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-300 dark:hover:text-blue-200 transition-colors"
+                      className="text-sm font-medium text-slate-900 dark:text-slate-100 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
                     >
                       {isCodeContextExpanded ? 'Collapse Code' : 'Expand Full Code'}
                     </button>
@@ -1842,7 +1882,6 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               </div>
             )}
           </div>
-
           {/* Answer Options */}
           <div className="mb-8">
             {renderQuestion()}
@@ -1850,7 +1889,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
           {/* Explanations for all question types */}
           {showExplanations && (currentQuestion.type === 'function-variant' && currentQuestion.variants) && (
-            <div className="mb-8 bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-600 w-full max-w-full">
+            <div className="mb-8 bg-slate-100 dark:bg-slate-800/80 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-600 w-full max-w-full">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Answer Explanations
               </h3>
@@ -1918,7 +1957,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                                 wrapLongLines={true}
                                 showLineNumbers={true}
                               >
-                                {variant.code}
+                                {formatVariantForDisplay(variant.code)}
                               </SyntaxHighlighter>
                             </div>
                           </div>
@@ -1940,7 +1979,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
           {/* Explanations for True/False and other question types */}
           {showExplanations && currentQuestion.type === 'true-false' && (
-            <div className="mb-8 bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-600">
+            <div className="mb-8 bg-slate-100 dark:bg-slate-800/80 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-600">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Answer Explanation
               </h3>
@@ -2010,12 +2049,12 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
           {/* Explanations for Multiple Choice */}
           {showExplanations && currentQuestion.type === 'multiple-choice' && (
-            <div className="mb-8 bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-600">
+            <div className="mb-8 bg-slate-100 dark:bg-slate-800/80 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-600">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Answer Explanation
               </h3>
               <div className="space-y-4">
-                <div className={`p-4 rounded-lg border-2 ${
+              <div className={`p-4 rounded-lg border-2 ${
                   selectedAnswers.includes(currentQuestion.correctAnswer)
                     ? 'border-green-200 bg-green-50 dark:bg-green-900/20'
                     : 'border-red-200 bg-red-50 dark:bg-red-900/20'
@@ -2031,20 +2070,8 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                       </span>
                     </div>
                     <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <span className="font-semibold text-gray-900 dark:text-white">
-                          Your Answer: {selectedAnswers[0] || 'None'}
-                        </span>
-                        <span className="font-semibold text-gray-900 dark:text-white">
-                          | Correct Answer: {currentQuestion.correctAnswer}
-                        </span>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          selectedAnswers.includes(currentQuestion.correctAnswer)
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                        }`}>
-                          {selectedAnswers.includes(currentQuestion.correctAnswer) ? 'Correct ✓' : 'Incorrect ✗'}
-                        </span>
+                      <div className="mb-2 text-sm font-semibold text-gray-900 dark:text-white">
+                        Correct Answer: {currentQuestion.correctAnswer}
                       </div>
                       <p className={`text-sm ${
                         selectedAnswers.includes(currentQuestion.correctAnswer)
@@ -2062,7 +2089,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
 
           {/* Explanations for Select All */}
           {showExplanations && currentQuestion.type === 'select-all' && (
-            <div className="mb-8 bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-600">
+            <div className="mb-8 bg-slate-100 dark:bg-slate-800/80 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-600">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Answer Explanation
               </h3>
@@ -2136,7 +2163,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                 })}
                 
                 {/* Overall explanation */}
-                <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <div className="mt-4 p-4 bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-lg">
                   <p className="text-sm text-blue-800 dark:text-blue-200">
                     <strong>Overall Explanation:</strong> {sanitizeExplanation(currentQuestion.explanation)}
                   </p>
@@ -2189,7 +2216,7 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               <button
                 onClick={handleSubmitAnswer}
                 disabled={selectedAnswers.length === 0}
-                className="bg-blue-600 text-white py-3 px-8 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 py-3 px-8 rounded-lg font-medium hover:bg-slate-700 dark:hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 dark:focus:ring-offset-slate-950 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Submit Answer
               </button>
@@ -2197,16 +2224,16 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
               <div className="relative">
                 <button
                   onClick={handleNextQuestion}
-                  disabled={currentQuestionIndex === quizSession.questions.length - 1 && !isStreamFinished}
+                  disabled={currentQuestionIndex === totalQuestions - 1 && totalQuestions === 0}
                   className={`py-3 px-8 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors ${
-                    currentQuestionIndex === quizSession.questions.length - 1 && !isStreamFinished
+                    currentQuestionIndex === totalQuestions - 1 && totalQuestions === 0
                       ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                      : `bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 ${shakingNext ? 'animate-shake' : ''}`
+                      : `bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-slate-700 dark:hover:bg-slate-200 focus:ring-slate-400 ${shakingNext ? 'animate-shake' : ''}`
                   }`}
                 >
                   {currentQuestionIndex === quizSession.questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
                 </button>
-                {currentQuestionIndex === quizSession.questions.length - 1 && !isStreamFinished && (
+                {currentQuestionIndex === totalQuestions - 1 && totalQuestions === 0 && quizSession.isStreaming && (
                   <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap shadow-lg">
                     Slow down tiger!
                     <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-500"></div>

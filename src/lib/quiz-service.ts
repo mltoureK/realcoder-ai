@@ -31,6 +31,7 @@ export interface QuizSession {
   lastLifeRefill: Date;
   completed: boolean;
   isStreaming?: boolean;
+  expectedTotalQuestions?: number;
   repositoryInfo: RepositoryInfo;
 }
 
@@ -164,7 +165,7 @@ export function createQuizSession(repositoryInfo: RepositoryInfo, questions: Qui
     questions,
     currentQuestionIndex: 0,
     score: 0,
-    lives: 3, // Start with 3 lives
+    lives: 5, // Start with 5 lives
     lastLifeRefill: new Date(),
     completed: false,
     repositoryInfo
@@ -184,7 +185,7 @@ export function calculateLives(lastRefill: Date): number {
   const now = new Date();
   const hoursSinceRefill = (now.getTime() - lastRefill.getTime()) / (1000 * 60 * 60);
   const livesGained = Math.floor(hoursSinceRefill / 8); // 1 life every 8 hours
-  return Math.min(3, livesGained); // Max 3 lives
+  return Math.min(5, livesGained); // Max 5 lives
 }
 
 // Step 5: Check if lives can be refilled

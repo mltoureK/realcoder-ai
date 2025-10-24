@@ -33,6 +33,7 @@ export interface QuizSession {
   lastLifeRefill: Date;
   completed: boolean;
   isStreaming?: boolean;
+  expectedTotalQuestions?: number;
 }
 
 // GitHub API Integration
@@ -164,7 +165,7 @@ export function calculateLives(lastRefill: Date): number {
   const now = new Date();
   const hoursSinceRefill = (now.getTime() - lastRefill.getTime()) / (1000 * 60 * 60);
   const livesGained = Math.floor(hoursSinceRefill / 8);
-  return Math.min(3, livesGained);
+  return Math.min(5, livesGained);
 }
 
 export function canRefillLives(lastRefill: Date): boolean {

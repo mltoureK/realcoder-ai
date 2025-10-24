@@ -36,6 +36,21 @@ body {
   animation: shake 0.6s ease-in-out 1;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
 /* Prevent scroll position reset */
 .code-scroll-container {
   scroll-behavior: auto !important;

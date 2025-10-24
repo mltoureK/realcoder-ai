@@ -12,6 +12,7 @@ export interface BaseQuestion {
   repoUrl?: string;
   snippet?: string; // Function name or identifier from code
   codeContext?: string; // The actual code snippet
+  lesson?: string;
 }
 
 // Question type interfaces for the 5 active question types
@@ -129,6 +130,7 @@ export interface StoredQuestion {
   status: 'active' | 'removed' | 'flagged';
   createdAt: unknown; // Firestore timestamp
   lastUpdated: unknown; // Firestore timestamp
+  lesson?: string;
 }
 
 /**
@@ -210,6 +212,10 @@ export const normalizeQuestionForStorage = (question: unknown): Partial<StoredQu
       console.warn(`Unknown question type: ${q.type}`);
   }
 
+  if (typeof q.lesson === 'string') {
+    stored.lesson = q.lesson;
+  }
+
   return stored;
 };
 
@@ -225,7 +231,8 @@ export const denormalizeQuestionFromStorage = (storedQuestion: StoredQuestion): 
     language: storedQuestion.language,
     difficulty: storedQuestion.difficulty,
     repoUrl: storedQuestion.repoUrl,
-    codeContext: storedQuestion.codeContext
+    codeContext: storedQuestion.codeContext,
+    lesson: storedQuestion.lesson
   };
 
   // Reconstruct type-specific fields from root level
