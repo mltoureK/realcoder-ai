@@ -1,0 +1,369 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761345939309
+Started: 2025-10-24T22:45:39.354Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T22:45:39.437Z
+File: [3 files: shipping-address.d.ts, index.d.ts, confirmation-tokens.d.ts]
+Functions Extracted: 2
+
+
+Function 1: on
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+on(eventType: 'change', handler: (event: StripeShippingAddressElementChangeEvent) => any): StripeShippingAddressElement;
+on(eventType: 'ready', handler: (event: {elementType: 'shippingAddress'}) => any): StripeShippingAddressElement;
+on(eventType: 'focus', handler: (event: {elementType: 'shippingAddress'}) => any): StripeShippingAddressElement;
+on(eventType: 'blur', handler: (event: {elementType: 'shippingAddress'}) => any): StripeShippingAddressElement;
+on(eventType: 'escape', handler: (event: {elementType: 'shippingAddress'}) => any): StripeShippingAddressElement;
+on(eventType: 'loaderror', handler: (event: {elementType: 'shippingAddress'; error: StripeError;}) => any): StripeShippingAddressElement;
+on(eventType: 'loaderstart', handler: (event: {elementType: 'shippingAddress'}) => any): StripeShippingAddressElement;
+--------------------------------------------------------------------------------
+
+
+Function 2: once
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+once(eventType: 'change', handler: (event: StripeShippingAddressElementChangeEvent) => any): StripeShippingAddressElement;
+once(eventType: 'ready', handler: (event: {elementType: 'shippingAddress'}) => any): StripeShippingAddressElement;
+once(eventType: 'focus', handler: (event: {elementType: 'shippingAddress'}) => any): StripeShippingAddressElement;
+once(eventType: 'blur', handler: (event: {elementType: 'shippingAddress'}) => any): StripeShippingAddressElement;
+once(eventType: 'escape', handler: (event: {elementType: 'shippingAddress'}) => any): StripeShippingAddressElement;
+once(eventType: 'loaderror', handler: (event: {elementType: 'shippingAddress'; error: StripeError;}) => any): StripeShippingAddressElement;
+once(eventType: 'loaderstart', handler: (event: {elementType: 'shippingAddress'}) => any): StripeShippingAddressElement;
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T22:45:40.459Z
+File: [5 files: index.d.ts, index.d.ts, base.d.ts, containing the package.json version, index.d.ts]
+Functions Extracted: 3
+
+
+Function 1: injectScript
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const injectScript = (params: null | LoadParams): HTMLScriptElement => {
+  const queryString =
+    params && !params.advancedFraudSignals ? '?advancedFraudSignals=false' : '';
+  const script = document.createElement('script');
+  script.src = `${STRIPE_JS_URL}${queryString}`;
+
+  const headOrBody = document.head || document.body;
+
+  if (!headOrBody) {
+    throw new Error(
+      'Expected document.body not to be null. Stripe.js requires a <body> element.'
+    );
+  }
+
+  headOrBody.appendChild(script);
+
+  return script;
+};
+--------------------------------------------------------------------------------
+
+
+Function 2: findScript
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export const findScript = (): HTMLScriptElement | null => {
+  const scripts = document.querySelectorAll<HTMLScriptElement>(
+    `script[src^="${ORIGIN}"]`
+  );
+
+  for (let i = 0; i < scripts.length; i++) {
+    const script = scripts[i];
+
+    if (!isStripeJSURL(script.src)) {
+      continue;
+    }
+
+    return script;
+  }
+
+  return null;
+};
+--------------------------------------------------------------------------------
+
+
+Function 3: onLoad
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const onLoad = (
+  resolve: (
+    value: StripeConstructor | PromiseLike<StripeConstructor | null> | null
+  ) => void,
+  reject: (reason?: any) => void
+) => () => {
+  if (window.Stripe) {
+    resolve(window.Stripe);
+  } else {
+    reject(new Error('Stripe.js not available'));
+  }
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T22:54:31.574Z
+File: [2 files: context.ts, load-manifest.external.ts]
+Functions Extracted: 2
+
+
+Function 1: clearModuleContext
+Language: TypeScript
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+export async function clearModuleContext(path: string) {
+  intervalsManager.removeAll()
+  timeoutsManager.removeAll()
+
+  const handleContext = (
+    key: string,
+    cache: ReturnType<(typeof moduleContexts)['get']>,
+    context: typeof moduleContexts | typeof pendingModuleCaches
+  ) => {
+    if (cache?.paths.has(path)) {
+      context.delete(key)
+    }
+  }
+
+  for (const [key, cache] of moduleContexts) {
+    handleContext(key, cache, moduleContexts)
+  }
+  for (const [key, cache] of pendingModuleCaches) {
+    handleContext(key, await cache, pendingModuleCaches)
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: loadManifest
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+export function loadManifest<T extends object>(
+  path: string,
+  shouldCache: boolean = true,
+  cache = sharedCache,
+  skipParse = false
+): T {
+  const cached = shouldCache && cache.get(path)
+  if (cached) {
+    return cached as T
+  }
+
+  let manifest: any = readFileSync(/* turbopackIgnore: true */ path, 'utf8')
+
+  if (!skipParse) {
+    manifest = JSON.parse(manifest)
+  }
+  // Additional logic to freeze the manifest and return it
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T23:07:33.453Z
+File: scikit-learn-scikit-learn-5741bac/sklearn/svm/src/libsvm/svm.cpp
+Functions Extracted: 1
+
+
+Function 1: info
+Language: C++
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+static void info(const char *fmt,...) {
+	char buf[BUFSIZ];
+	va_list ap;
+	va_start(ap,fmt);
+	vsnprintf(buf,sizeof buf,fmt,ap);
+	va_end(ap);
+	(*svm_print_string)(buf);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T23:07:49.347Z
+File: scikit-learn-scikit-learn-5741bac/examples/calibration/plot_calibration_multiclass.py
+Functions Extracted: 1
+
+
+Function 1: plot_calibration_multiclass
+Language: Python
+Lines: 60
+Full Code:
+--------------------------------------------------------------------------------
+import numpy as np
+from sklearn.datasets import make_blobs
+import matplotlib.pyplot as plt
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.calibration import CalibratedClassifierCV
+from sklearn.metrics import log_loss, brier_score_loss
+
+np.random.seed(0)
+X, y = make_blobs(n_samples=2000, n_features=2, centers=3, random_state=42, cluster_std=5.0)
+X_train, y_train = X[:600], y[:600]
+X_valid, y_valid = X[600:1000], y[600:1000]
+X_train_valid, y_train_valid = X[:1000], y[:1000]
+X_test, y_test = X[1000:], y[1000:]
+
+clf = RandomForestClassifier(n_estimators=25)
+clf.fit(X_train_valid, y_train_valid)
+cal_clf = CalibratedClassifierCV(clf, method='sigmoid')
+cal_clf.fit(X_valid, y_valid)
+
+clf_probs = clf.predict_proba(X_test)
+cal_clf_probs = cal_clf.predict_proba(X_test)
+
+plt.figure(figsize=(10, 10))
+colors = ['r', 'g', 'b']
+for i in range(clf_probs.shape[0]):
+    plt.arrow(clf_probs[i, 0], clf_probs[i, 1], cal_clf_probs[i, 0] - clf_probs[i, 0], cal_clf_probs[i, 1] - clf_probs[i, 1], color=colors[y_test[i]], head_width=1e-2)
+plt.title('Change of predicted probabilities on test samples after sigmoid calibration')
+plt.xlabel('Probability class 1')
+plt.ylabel('Probability class 2')
+plt.xlim(-0.05, 1.05)
+plt.ylim(-0.05, 1.05)
+plt.legend(loc='best')
+plt.show()
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T23:20:20.224Z
+File: lodash-lodash-8a26eb4/lib/common/util.js
+Functions Extracted: 1
+
+
+Function 1: Hash
+Language: JavaScript
+Lines: 11
+Full Code:
+--------------------------------------------------------------------------------
+function Hash(properties) {
+  return _.transform(properties, (result, value, key) => {
+    result[key] = (_.isPlainObject(value) && !(value instanceof Hash))
+      ? new Hash(value)
+      : value;
+  }, this);
+}
+
+Hash.prototype = Object.create(null);
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T23:20:21.702Z
+File: Leak to avoid sporadic `noglobals` fails on Edge in Sauce Labs.
+Functions Extracted: 2
+
+
+Function 1: skipAssert
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function skipAssert(assert, count) {
+    count || (count = 1);
+    while (count--) {
+      assert.ok(true, 'test skipped');
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: convert
+Language: JavaScript
+Lines: 13
+Full Code:
+--------------------------------------------------------------------------------
+var convert = (function() {
+    var baseConvert = root.fp || require('../fp/_baseConvert.js');
+    if (!root.fp) {
+      return function(name, func, options) {
+        return baseConvert(_, name, func, options);
+      };
+    }
+    return function(name, func, options) {
+      if (typeof name == 'function') {
+        options = func;
+        func = name;
+        name = undefined;
+      }
+      return name === undefined
+        ? baseConvert(func, options)
+        : baseConvert(_.runInContext(), options)[name];
+    };
+}());
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T23:20:25.109Z
+File: [2 files: build-modules.js, _convertBrowser.js]
+Functions Extracted: 2
+
+
+Function 1: getTemplate
+Language: JavaScript
+Lines: 11
+Full Code:
+--------------------------------------------------------------------------------
+function getTemplate(moduleName) {
+  const data = {
+    'name': _.get(mapping.aliasToReal, moduleName, moduleName),
+    'mapping': mapping
+  };
+
+  if (isAlias(moduleName)) {
+    return template.alias(data);
+  }
+  if (isCategory(moduleName)) {
+    return template.category(data);
+  }
+  if (isThru(moduleName)) {
+    return template.thru(data);
+  }
+  return template.module(data);
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: build
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function build(target) {
+  target = path.resolve(target);
+
+  const fpPath = path.join(target, 'fp');
+  // Additional implementation likely follows...
+}
+--------------------------------------------------------------------------------
+
+================================================================================

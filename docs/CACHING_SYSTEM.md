@@ -26,7 +26,7 @@ No API call needed = $0 cost + 0 loading time
 
 ---
 
-### **Scenario 2: Repository with 1-49 Cached Questions**
+### **Scenario 2: Repository with 4-49 Cached Questions**
 
 ```
 User selects: https://github.com/new-repo/app
@@ -35,7 +35,7 @@ Check Firebase for upvoted questions
       ↓
 Found: 7 cached questions
       ↓
-Use 7 cached + generate 8 new ones
+Use 7 cached + generate 8 new ones = 15 total
       ↓
 Show cached FIRST (questions 1-7), then new (questions 8-15)
 ```
@@ -44,11 +44,31 @@ Show cached FIRST (questions 1-7), then new (questions 8-15)
 - **Questions 1-7:** `🟢 Community Reviewed` badge (cached)
 - **Questions 8-15:** No badge (fresh AI-generated)
 
+**Smart Logic:** Always aims for 15 total questions, using cached + generating the rest
+
+### **Scenario 3: Repository with 1-3 Cached Questions**
+
+```
+User selects: https://github.com/new-repo/app
+      ↓
+Check Firebase for upvoted questions
+      ↓
+Found: 2 cached questions
+      ↓
+Use 2 cached + generate 13 new ones
+      ↓
+Show cached FIRST (questions 1-2), then new (questions 3-15)
+```
+
+**UI Shows:**
+- **Questions 1-2:** `🟢 Community Reviewed` badge (cached)
+- **Questions 3-15:** No badge (fresh AI-generated)
+
 **Note:** Cached questions are shown FIRST, not shuffled with new ones.
 
 ---
 
-### **Scenario 3: Repository with 0 Cached Questions**
+### **Scenario 4: Repository with 0 Cached Questions**
 
 ```
 User selects: https://github.com/brand-new/repo

@@ -14,9 +14,9 @@ export interface ExtractedFunction {
   description?: string;
 }
 
-const MIN_TIMEOUT_MS = Number(process.env.OPENAI_FUNCTION_EXTRACTOR_MIN_TIMEOUT_MS ?? 15000);
-const MAX_TIMEOUT_MS = Number(process.env.OPENAI_FUNCTION_EXTRACTOR_MAX_TIMEOUT_MS ?? 45000);
-const TIMEOUT_PER_KB_MS = Number(process.env.OPENAI_FUNCTION_EXTRACTOR_TIMEOUT_PER_KB_MS ?? 80);
+const MIN_TIMEOUT_MS = Number(process.env.OPENAI_FUNCTION_EXTRACTOR_MIN_TIMEOUT_MS ?? 8000);
+const MAX_TIMEOUT_MS = Number(process.env.OPENAI_FUNCTION_EXTRACTOR_MAX_TIMEOUT_MS ?? 20000);
+const TIMEOUT_PER_KB_MS = Number(process.env.OPENAI_FUNCTION_EXTRACTOR_TIMEOUT_PER_KB_MS ?? 40);
 
 /**
  * Extract all complete functions from a file using GPT
@@ -211,7 +211,7 @@ Skip: stubs, simple returns, empty functions, <5 lines, <100 chars.`
 export async function* extractFunctionsFromFilesStreaming(
   files: Array<{ name: string; content: string; score: number }>,
   apiKey: string,
-  maxFiles: number = 8
+  maxFiles: number = 15
 ): AsyncGenerator<ExtractedFunction[], void, unknown> {
   console.log(`🎯 Starting streaming function extraction from up to ${maxFiles} files...`);
 
@@ -237,19 +237,21 @@ export async function* extractFunctionsFromFilesStreaming(
   
   console.log(`📊 Filtered files: ${manageableFiles.length}/${files.length} are manageable size (≤${Math.round(MAX_FILE_SIZE / 1024 / 1024)}MB, not minified)`);
 
-  // CRITICAL: Add randomization to prevent repetitive questions
-  // Shuffle files before scoring to add variety
+  // CRITICAL: Prioritize diversity over score to prevent repetitive questions
+  // Shuffle files first to break score bias
   const shuffledFiles = [...manageableFiles].sort(() => Math.random() - 0.5);
   
-  // Sort by score but with some randomness (take top 2x, then shuffle)
-  const topCandidates = shuffledFiles
-    .sort((a, b) => b.score - a.score)
-    .slice(0, maxFiles * 2); // Get 2x candidates
+  // Take a much larger sample to ensure diversity (3x instead of 2x)
+  const diverseCandidates = shuffledFiles
+    .slice(0, Math.min(maxFiles * 3, shuffledFiles.length)); // Take up to 3x files for diversity
   
-  // Shuffle candidates and take maxFiles for more variety
-  const selectedFiles = topCandidates
+  // Shuffle again and take maxFiles for maximum variety
+  const selectedFiles = diverseCandidates
     .sort(() => Math.random() - 0.5)
     .slice(0, maxFiles);
+  
+  // Log selected files for debugging diversity
+  console.log(`📁 Selected files for diversity:`, selectedFiles.map(f => f.name).slice(0, 5));
 
   console.log(`📊 Selected ${selectedFiles.length} files with randomization for diversity`);
 
@@ -298,7 +300,7 @@ export async function* extractFunctionsFromFilesStreaming(
     return;
   }
 
-  const maxConcurrencyEnv = Number(process.env.OPENAI_FUNCTION_EXTRACTOR_CONCURRENCY ?? 3);
+  const maxConcurrencyEnv = Number(process.env.OPENAI_FUNCTION_EXTRACTOR_CONCURRENCY ?? 4);
   const maxConcurrentBatches = Math.max(1, Math.min(maxConcurrencyEnv, batches.length));
   console.log(`🧵 Using parallel extraction with concurrency=${maxConcurrentBatches}`);
 

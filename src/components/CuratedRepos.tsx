@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface CuratedRepo {
   name: string;
@@ -1779,6 +1779,9 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
 export default function CuratedRepos({ onRepoSelect }: { onRepoSelect: (url: string) => void }) {
   const [selectedLanguage, setSelectedLanguage] = useState<string>('JavaScript');
   const [searchTerm, setSearchTerm] = useState('');
+  const [isScrolling, setIsScrolling] = useState(true);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const languages = Object.keys(CURATED_REPOS);
   const repoPool = CURATED_REPOS[selectedLanguage];
@@ -1788,6 +1791,49 @@ export default function CuratedRepos({ onRepoSelect }: { onRepoSelect: (url: str
     repo.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const highlightedCategories = Array.from(new Set(repoPool.map(repo => repo.category))).slice(0, 3);
+
+  // Auto-scroll functionality - infinite continuous scroll
+  useEffect(() => {
+    if (!isScrolling || filteredRepos.length <= 3) return;
+
+    const startScrolling = () => {
+      if (scrollIntervalRef.current) {
+        clearInterval(scrollIntervalRef.current);
+      }
+
+      scrollIntervalRef.current = setInterval(() => {
+        if (scrollContainerRef.current) {
+          const container = scrollContainerRef.current;
+          const scrollAmount = 0.5; // pixels per scroll (slower for smoother infinite effect)
+          const maxScroll = container.scrollHeight - container.clientHeight;
+          
+          if (container.scrollTop >= maxScroll) {
+            // Seamlessly reset to top for infinite scroll
+            container.scrollTop = 0;
+          } else {
+            container.scrollTop += scrollAmount;
+          }
+        }
+      }, 30); // Scroll every 30ms for very smooth continuous movement
+    };
+
+    startScrolling();
+
+    return () => {
+      if (scrollIntervalRef.current) {
+        clearInterval(scrollIntervalRef.current);
+      }
+    };
+  }, [isScrolling, filteredRepos.length, selectedLanguage, searchTerm]);
+
+  // Pause scrolling on hover/touch
+  const handleMouseEnter = () => setIsScrolling(false);
+  const handleMouseLeave = () => setIsScrolling(true);
+  const handleTouchStart = () => setIsScrolling(false);
+  const handleTouchEnd = () => {
+    // Resume scrolling after a short delay
+    setTimeout(() => setIsScrolling(true), 1000);
+  };
 
   return (
     <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-black/40 p-5 sm:p-8 shadow-[0_25px_70px_-35px_rgba(45,212,191,0.45)]">
@@ -1862,7 +1908,14 @@ export default function CuratedRepos({ onRepoSelect }: { onRepoSelect: (url: str
         </header>
 
         <div className="relative rounded-2xl border border-white/10 bg-white/5">
-          <div className="max-h-[26rem] overflow-y-auto px-2 py-3 sm:px-3">
+          <div 
+            ref={scrollContainerRef}
+            className="max-h-[26rem] overflow-y-auto px-2 py-3 sm:px-3"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               {filteredRepos.map((repo) => {
                 const difficultyBg =

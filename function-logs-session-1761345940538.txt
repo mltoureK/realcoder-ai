@@ -1,0 +1,920 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761345940538
+Started: 2025-10-24T22:45:40.538Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T22:45:40.541Z
+File: [3 files: pure.test.ts, au-bank-account.d.ts, embedded-checkout.d.ts]
+Functions Extracted: 1
+
+
+Function 1: setLoadParameters
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+loadStripe.setLoadParameters({advancedFraudSignals: false});
+loadStripe('pk_foo');
+
+expect(() => {
+  loadStripe.setLoadParameters({advancedFraudSignals: true});
+}).toThrow('cannot change load parameters');
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:45:45.130Z
+Question Type: true-false
+Function: setLoadParameters
+Function Size: 360 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setLoadParameters (JavaScript)\n// Sets load parameters for the Stripe.js script and throws an error if parameters are changed after loading.\n\nloadStripe.setLoadParameters({advancedFraudSignals: false});\nloadStripe('pk_foo');\n\nexpect(() => {\n  loadStripe.setLoadParameters({advancedFraudS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:45:46.942Z
+Question Type: select-all
+Function: setLoadParameters
+Function Size: 360 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setLoadParameters (JavaScript)\n// Sets load parameters for the Stripe.js script and throws an error if parameters are changed after loading.\n\nloadStripe.setLoadParameters({advancedFraudSignals: false});\nloadStripe('pk_foo');\n\nexpect(() => {\n  loadStripe.setLoadParameters({advancedFraudS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:45:47.286Z
+Question Type: function-variant
+Function: setLoadParameters
+Function Size: 360 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setLoadParameters (JavaScript)\n// Sets load parameters for the Stripe.js script and throws an error if parameters are changed after loading.\n\nloadStripe.setLoadParameters({advancedFraudSignals: false});\nloadStripe('pk_foo');\n\nexpect(() => {\n  loadStripe.setLoadParameters({advancedFraudS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:45:47.414Z
+Question Type: function-variant
+Function: setLoadParameters
+Function Size: 360 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setLoadParameters (JavaScript)\n// Sets load parameters for the Stripe.js script and throws an error if parameters are changed after loading.\n\nloadStripe.setLoadParameters({advancedFraudSignals: false});\nloadStripe('pk_foo');\n\nexpect(() => {\n  loadStripe.setLoadParameters({advancedFraudS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:45:49.077Z
+Question Type: order-sequence
+Function: setLoadParameters
+Function Size: 360 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: setLoadParameters (JavaScript)\n// Sets load parameters for the Stripe.js script and throws an error if parameters are changed after loading.\n\nloadStripe.setLoadParameters({advancedFraudSignals: false});\nloadStripe('pk_foo');\n\nexpect(() => {\n  loadStripe.setLoadParameters({advancedFraudS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:45:49.122Z
+Question Type: function-variant
+Function: setLoadParameters
+Function Size: 360 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setLoadParameters (JavaScript)\n// Sets load parameters for the Stripe.js script and throws an error if parameters are changed after loading.\n\nloadStripe.setLoadParameters({advancedFraudSignals: false});\nloadStripe('pk_foo');\n\nexpect(() => {\n  loadStripe.setLoadParameters({advancedFraudS
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761345940538
+Repository: Unknown
+Total Questions Generated: 5
+Total Chunks Processed: 1
+Ended: 2025-10-24T22:45:52.142Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:45:57.177Z
+Question Type: select-all
+Function: setLoadParameters
+Function Size: 360 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setLoadParameters (JavaScript)\n// Sets load parameters for the Stripe.js script and throws an error if parameters are changed after loading.\n\nloadStripe.setLoadParameters({advancedFraudSignals: false});\nloadStripe('pk_foo');\n\nexpect(() => {\n  loadStripe.setLoadParameters({advancedFraudS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:45:57.502Z
+Question Type: select-all
+Function: setLoadParameters
+Function Size: 360 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setLoadParameters (JavaScript)\n// Sets load parameters for the Stripe.js script and throws an error if parameters are changed after loading.\n\nloadStripe.setLoadParameters({advancedFraudSignals: false});\nloadStripe('pk_foo');\n\nexpect(() => {\n  loadStripe.setLoadParameters({advancedFraudS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:45:57.954Z
+Question Type: select-all
+Function: setLoadParameters
+Function Size: 360 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: setLoadParameters (JavaScript)\n// Sets load parameters for the Stripe.js script and throws an error if parameters are changed after loading.\n\nloadStripe.setLoadParameters({advancedFraudSignals: false});\nloadStripe('pk_foo');\n\nexpect(() => {\n  loadStripe.setLoadParameters({advancedFraudS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:45:58.981Z
+Question Type: multiple-choice
+Function: setLoadParameters
+Function Size: 360 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: setLoadParameters (JavaScript)\n// Sets load parameters for the Stripe.js script and throws an error if parameters are changed after loading.\n\nloadStripe.setLoadParameters({advancedFraudSignals: false});\nloadStripe('pk_foo');\n\nexpect(() => {\n  loadStripe.setLoadParameters({advancedFraudS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:45:59.585Z
+Question Type: function-variant
+Function: setLoadParameters
+Function Size: 360 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setLoadParameters (JavaScript)\n// Sets load parameters for the Stripe.js script and throws an error if parameters are changed after loading.\n\nloadStripe.setLoadParameters({advancedFraudSignals: false});\nloadStripe('pk_foo');\n\nexpect(() => {\n  loadStripe.setLoadParameters({advancedFraudS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:46:00.156Z
+Question Type: order-sequence
+Function: setLoadParameters
+Function Size: 360 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: setLoadParameters (JavaScript)\n// Sets load parameters for the Stripe.js script and throws an error if parameters are changed after loading.\n\nloadStripe.setLoadParameters({advancedFraudSignals: false});\nloadStripe('pk_foo');\n\nexpect(() => {\n  loadStripe.setLoadParameters({advancedFraudS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:46:01.738Z
+Question Type: true-false
+Function: setLoadParameters
+Function Size: 360 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setLoadParameters (JavaScript)\n// Sets load parameters for the Stripe.js script and throws an error if parameters are changed after loading.\n\nloadStripe.setLoadParameters({advancedFraudSignals: false});\nloadStripe('pk_foo');\n\nexpect(() => {\n  loadStripe.setLoadParameters({advancedFraudS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:46:03.324Z
+Question Type: true-false
+Function: setLoadParameters
+Function Size: 360 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setLoadParameters (JavaScript)\n// Sets load parameters for the Stripe.js script and throws an error if parameters are changed after loading.\n\nloadStripe.setLoadParameters({advancedFraudSignals: false});\nloadStripe('pk_foo');\n\nexpect(() => {\n  loadStripe.setLoadParameters({advancedFraudS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:46:06.506Z
+Question Type: function-variant
+Function: setLoadParameters
+Function Size: 360 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setLoadParameters (JavaScript)\n// Sets load parameters for the Stripe.js script and throws an error if parameters are changed after loading.\n\nloadStripe.setLoadParameters({advancedFraudSignals: false});\nloadStripe('pk_foo');\n\nexpect(() => {\n  loadStripe.setLoadParameters({advancedFraudS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:46:08.117Z
+Question Type: order-sequence
+Function: setLoadParameters
+Function Size: 360 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setLoadParameters (JavaScript)\n// Sets load parameters for the Stripe.js script and throws an error if parameters are changed after loading.\n\nloadStripe.setLoadParameters({advancedFraudSignals: false});\nloadStripe('pk_foo');\n\nexpect(() => {\n  loadStripe.setLoadParameters({advancedFraudS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:46:09.109Z
+Question Type: function-variant
+Function: setLoadParameters
+Function Size: 360 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setLoadParameters (JavaScript)\n// Sets load parameters for the Stripe.js script and throws an error if parameters are changed after loading.\n\nloadStripe.setLoadParameters({advancedFraudSignals: false});\nloadStripe('pk_foo');\n\nexpect(() => {\n  loadStripe.setLoadParameters({advancedFraudS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:46:10.335Z
+Question Type: order-sequence
+Function: setLoadParameters
+Function Size: 360 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: setLoadParameters (JavaScript)\n// Sets load parameters for the Stripe.js script and throws an error if parameters are changed after loading.\n\nloadStripe.setLoadParameters({advancedFraudSignals: false});\nloadStripe('pk_foo');\n\nexpect(() => {\n  loadStripe.setLoadParameters({advancedFraudS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:46:11.848Z
+Question Type: function-variant
+Function: setLoadParameters
+Function Size: 360 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setLoadParameters (JavaScript)\n// Sets load parameters for the Stripe.js script and throws an error if parameters are changed after loading.\n\nloadStripe.setLoadParameters({advancedFraudSignals: false});\nloadStripe('pk_foo');\n\nexpect(() => {\n  loadStripe.setLoadParameters({advancedFraudS
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:46:12.478Z
+Question Type: select-all
+Function: setLoadParameters
+Function Size: 360 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: setLoadParameters (JavaScript)\n// Sets load parameters for the Stripe.js script and throws an error if parameters are changed after loading.\n\nloadStripe.setLoadParameters({advancedFraudSignals: false});\nloadStripe('pk_foo');\n\nexpect(() => {\n  loadStripe.setLoadParameters({advancedFraudS
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761345940538
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 1
+Ended: 2025-10-24T22:46:16.854Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:50:12.246Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2121 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: meteor-meteor-6f48b86/npm-packages/cordova-plugin-meteor-webapp/src/android/AssetBundle.java\npackage com.meteor.webapp;\n\nimport android.net.Uri;\nimport android.util.Log;\n\nimport org.apache.cordova.CordovaResourceApi;\nimport org.json.JSONException;\nimport org.json.JSONObject;\n\nimport java.io
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:50:14.081Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2121 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: meteor-meteor-6f48b86/npm-packages/cordova-plugin-meteor-webapp/src/android/AssetBundle.java\npackage com.meteor.webapp;\n\nimport android.net.Uri;\nimport android.util.Log;\n\nimport org.apache.cordova.CordovaResourceApi;\nimport org.json.JSONException;\nimport org.json.JSONObject;\n\nimport java.io
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:50:14.506Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1165 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: if we downloaded the expected version\nif (asset.filePath.equals("index.html")) {\n                            JSONObject runtimeConfig = assetBundle.getRuntimeConfig();\n                            if (runtimeConfig != null) {\n                                try {\n                            
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:50:17.101Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2086 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: If the asset is not cacheable, we require a matching hash\nif ((asset.cacheable && hash == null) || (asset.hash != null && asset.hash.equals(hash))) {\n            return asset;\n        }\n\n        return null;\n    }\n\n    public String getVersion() {\n        return version;\n    }\n\n    public S
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:50:17.575Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1165 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: if we downloaded the expected version\nif (asset.filePath.equals("index.html")) {\n                            JSONObject runtimeConfig = assetBundle.getRuntimeConfig();\n                            if (runtimeConfig != null) {\n                                try {\n                            
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:50:17.686Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2121 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: meteor-meteor-6f48b86/npm-packages/cordova-plugin-meteor-webapp/src/android/AssetBundle.java\npackage com.meteor.webapp;\n\nimport android.net.Uri;\nimport android.util.Log;\n\nimport org.apache.cordova.CordovaResourceApi;\nimport org.json.JSONException;\nimport org.json.JSONObject;\n\nimport java.io
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:50:19.823Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 2086 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: If the asset is not cacheable, we require a matching hash\nif ((asset.cacheable && hash == null) || (asset.hash != null && asset.hash.equals(hash))) {\n            return asset;\n        }\n\n        return null;\n    }\n\n    public String getVersion() {\n        return version;\n    }\n\n    public S
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:50:22.902Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2131 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: meteor-meteor-6f48b86/npm-packages/cordova-plugin-meteor-webapp/src/android/AssetBundleDownloader.java\npackage com.meteor.webapp;\n\nimport android.net.Uri;\nimport android.util.Log;\n\nimport org.json.JSONException;\nimport org.json.JSONObject;\n\nimport java.io.File;\nimport java.io.IOException;\ni
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:50:25.501Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1165 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: if we downloaded the expected version\nif (asset.filePath.equals("index.html")) {\n                            JSONObject runtimeConfig = assetBundle.getRuntimeConfig();\n                            if (runtimeConfig != null) {\n                                try {\n                            
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:50:25.670Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2066 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Remove query parameters from url path\nString urlPath = Uri.parse(entry.urlPath).getPath();\n\n            if (parentAssetBundle == null || parentAssetBundle.cachedAssetForUrlPath(urlPath, entry.hash) == null) {\n                Asset asset = new Asset(entry.filePath, urlPath, entry.fileType, e
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:50:27.181Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2086 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: If the asset is not cacheable, we require a matching hash\nif ((asset.cacheable && hash == null) || (asset.hash != null && asset.hash.equals(hash))) {\n            return asset;\n        }\n\n        return null;\n    }\n\n    public String getVersion() {\n        return version;\n    }\n\n    public S
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:50:28.075Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2066 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: Remove query parameters from url path\nString urlPath = Uri.parse(entry.urlPath).getPath();\n\n            if (parentAssetBundle == null || parentAssetBundle.cachedAssetForUrlPath(urlPath, entry.hash) == null) {\n                Asset asset = new Asset(entry.filePath, urlPath, entry.fileType, e
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:50:31.564Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2131 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: meteor-meteor-6f48b86/npm-packages/cordova-plugin-meteor-webapp/src/android/AssetBundleDownloader.java\npackage com.meteor.webapp;\n\nimport android.net.Uri;\nimport android.util.Log;\n\nimport org.json.JSONException;\nimport org.json.JSONObject;\n\nimport java.io.File;\nimport java.io.IOException;\ni
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:50:31.975Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2131 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: meteor-meteor-6f48b86/npm-packages/cordova-plugin-meteor-webapp/src/android/AssetBundleDownloader.java\npackage com.meteor.webapp;\n\nimport android.net.Uri;\nimport android.util.Log;\n\nimport org.json.JSONException;\nimport org.json.JSONObject;\n\nimport java.io.File;\nimport java.io.IOException;\ni
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T22:50:32.450Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2066 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Remove query parameters from url path\nString urlPath = Uri.parse(entry.urlPath).getPath();\n\n            if (parentAssetBundle == null || parentAssetBundle.cachedAssetForUrlPath(urlPath, entry.hash) == null) {\n                Asset asset = new Asset(entry.filePath, urlPath, entry.fileType, e
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761345940538
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 5
+Ended: 2025-10-24T22:50:36.126Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T23:05:18.600Z
+File: scikit-learn-scikit-learn-5741bac/examples/linear_model/plot_logistic_multinomial.py
+Functions Extracted: 1
+
+
+Function 1: plot_hyperplanes
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+def plot_hyperplanes(classifier, X, ax):
+    xmin, xmax = X[:, 0].min(), X[:, 0].max()
+    ymin, ymax = X[:, 1].min(), X[:, 1].max()
+    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))
+
+    if isinstance(classifier, OneVsRestClassifier):
+        coef = np.concatenate([est.coef_ for est in classifier.estimators_])
+        intercept = np.concatenate([est.intercept_ for est in classifier.estimators_])
+    else:
+        coef = classifier.coef_
+        intercept = classifier.intercept_
+
+    for i in range(coef.shape[0]):
+        w = coef[i]
+        a = -w[0] / w[1]
+        xx = np.linspace(xmin, xmax)
+        yy = a * xx - (intercept[i]) / w[1]
+        ax.plot(xx, yy, "--", linewidth=3, label=f"Class {i}")
+
+    return ax.get_legend_handles_labels()
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:05:21.331Z
+Question Type: multiple-choice
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:05:26.608Z
+Question Type: order-sequence
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:05:26.662Z
+Question Type: order-sequence
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:05:26.668Z
+Question Type: order-sequence
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:05:27.003Z
+Question Type: select-all
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:05:33.550Z
+Question Type: true-false
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:05:33.746Z
+Question Type: function-variant
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:05:35.179Z
+Question Type: order-sequence
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:05:35.265Z
+Question Type: select-all
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:05:36.041Z
+Question Type: select-all
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:05:41.880Z
+Question Type: function-variant
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:05:42.876Z
+Question Type: true-false
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:05:45.234Z
+Question Type: select-all
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:05:48.823Z
+Question Type: function-variant
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:05:55.571Z
+Question Type: function-variant
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761345940538
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 1
+Ended: 2025-10-24T23:05:55.571Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:05:58.042Z
+Question Type: multiple-choice
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:06:01.896Z
+Question Type: true-false
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:06:03.598Z
+Question Type: order-sequence
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:06:04.614Z
+Question Type: select-all
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:06:09.589Z
+Question Type: order-sequence
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:06:09.715Z
+Question Type: true-false
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:06:10.600Z
+Question Type: function-variant
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:06:10.623Z
+Question Type: function-variant
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:06:12.408Z
+Question Type: order-sequence
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:06:17.787Z
+Question Type: select-all
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:06:20.027Z
+Question Type: function-variant
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:06:21.862Z
+Question Type: select-all
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:06:22.205Z
+Question Type: order-sequence
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:06:22.781Z
+Question Type: select-all
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:06:25.641Z
+Question Type: function-variant
+Function: plot_hyperplanes
+Function Size: 851 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: plot_hyperplanes (Python)\n// Plots the hyperplanes for a given classifier and dataset.\n\ndef plot_hyperplanes(classifier, X, ax):\n    xmin, xmax = X[:, 0].min(), X[:, 0].max()\n    ymin, ymax = X[:, 1].min(), X[:, 1].max()\n    ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))\n\n    if isinstanc
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761345940538
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 1
+Ended: 2025-10-24T23:06:26.113Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:20:38.769Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 182 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Collapse nested comment highlights.\n$parent.find(`[class~="comment"]`).each(function() {\n      const $element = $(this);\n      $element.text($element.text().trim());\n    });
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:20:40.695Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2073 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: lodash-lodash-8a26eb4/lib/main/build-site.js\n'use strict';\n\nconst _ = require('lodash');\nconst cheerio = require('cheerio');\nconst fs = require('fs');\nconst marky = require('marky-markdown');\nconst path = require('path');\nconst util = require('../common/util');\n\nconst basePath = path.join(_
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:20:43.179Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2073 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: lodash-lodash-8a26eb4/lib/main/build-site.js\n'use strict';\n\nconst _ = require('lodash');\nconst cheerio = require('cheerio');\nconst fs = require('fs');\nconst marky = require('marky-markdown');\nconst path = require('path');\nconst util = require('../common/util');\n\nconst basePath = path.join(_
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:20:43.643Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 173 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: Collapse nested string highlights.\n$parent.find(`[class~="string"]`).each(function() {\n      const $element = $(this);\n      $element.text($element.text());\n    });
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:20:44.835Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 173 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Collapse nested string highlights.\n$parent.find(`[class~="string"]`).each(function() {\n      const $element = $(this);\n      $element.text($element.text());\n    });
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:20:46.899Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2073 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: lodash-lodash-8a26eb4/lib/main/build-site.js\n'use strict';\n\nconst _ = require('lodash');\nconst cheerio = require('cheerio');\nconst fs = require('fs');\nconst marky = require('marky-markdown');\nconst path = require('path');\nconst util = require('../common/util');\n\nconst basePath = path.join(_
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:20:48.939Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 232 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Remove line indicators for single line snippets.\n$parent.children('pre').each(function() {\n      const $divs = $(this).children('div');\n      if ($divs.length == 1) {\n        $divs.replaceWith($divs.html());\n      }\n    });
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:20:49.757Z
+Question Type: select-all
+Function: Unknown
+Function Size: 232 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Remove line indicators for single line snippets.\n$parent.children('pre').each(function() {\n      const $divs = $(this).children('div');\n      if ($divs.length == 1) {\n        $divs.replaceWith($divs.html());\n      }\n    });
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:20:50.387Z
+Question Type: select-all
+Function: Unknown
+Function Size: 293 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Remove extraneous class names.\n$parent.find('[class]').each(function() {\n      const $element = $(this);\n      const classes = $element.attr('class').split(' ');\n      const attr = _(classes).intersection(highlights[ext]).join(' ');\n      $element.attr('class', attr || null);\n    });
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:20:53.850Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 293 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: Remove extraneous class names.\n$parent.find('[class]').each(function() {\n      const $element = $(this);\n      const classes = $element.attr('class').split(' ');\n      const attr = _(classes).intersection(highlights[ext]).join(' ');\n      $element.attr('class', attr || null);\n    });
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:20:53.986Z
+Question Type: select-all
+Function: Unknown
+Function Size: 182 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Collapse nested comment highlights.\n$parent.find(`[class~="comment"]`).each(function() {\n      const $element = $(this);\n      $element.text($element.text().trim());\n    });
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:20:56.854Z
+Question Type: true-false
+Function: Unknown
+Function Size: 293 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Remove extraneous class names.\n$parent.find('[class]').each(function() {\n      const $element = $(this);\n      const classes = $element.attr('class').split(' ');\n      const attr = _(classes).intersection(highlights[ext]).join(' ');\n      $element.attr('class', attr || null);\n    });
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:20:58.520Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 232 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: Remove line indicators for single line snippets.\n$parent.children('pre').each(function() {\n      const $divs = $(this).children('div');\n      if ($divs.length == 1) {\n        $divs.replaceWith($divs.html());\n      }\n    });
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:20:59.946Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 173 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: Collapse nested string highlights.\n$parent.find(`[class~="string"]`).each(function() {\n      const $element = $(this);\n      $element.text($element.text());\n    });
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:21:00.665Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 182 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Collapse nested comment highlights.\n$parent.find(`[class~="comment"]`).each(function() {\n      const $element = $(this);\n      $element.text($element.text().trim());\n    });
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761345940538
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 5
+Ended: 2025-10-24T23:21:03.485Z
+================================================================================
+

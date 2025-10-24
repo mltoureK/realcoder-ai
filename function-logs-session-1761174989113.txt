@@ -6456,3 +6456,1735 @@ function registerValidSW(swUrl, config) {
 --------------------------------------------------------------------------------
 
 ================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T15:25:24.298Z
+File: Make them available to the helpers.
+Functions Extracted: 5
+
+
+Function 1: readContext
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function readContext(Ctx) {
+  const dispatcher =
+    React.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE
+      .H;
+  return dispatcher.readContext(Ctx);
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: App
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+const App = () => (
+  <div>
+    <Theme.Provider value="light">
+      <Language.Provider value="english">
+        <Theme.Provider value="dark">
+          <Theme.Consumer>
+            {theme => <div id="theme1">{theme}</div>}
+          </Theme.Consumer>
+        </Theme.Provider>
+      </Language.Provider>
+    </Theme.Provider>
+    <Language.Consumer>
+      {language => <div id="language3">{language}</div>}
+    </Language.Consumer>
+  </div>
+);
+--------------------------------------------------------------------------------
+
+
+Function 3: Parent
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+class Parent extends React.Component {
+  render() {
+    return (
+      <Theme.Provider value="light">
+        <Child />
+      </Theme.Provider>
+    );
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: Child
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function Child() {
+  return (
+    <Language.Provider value="english">
+      <Grandchild />
+    </Language.Provider>
+  );
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: Grandchild
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+const Grandchild = props => {
+  return (
+    <div>
+      <Theme.Consumer>
+        {theme => <div id="theme">{theme}</div>}
+      </Theme.Consumer>
+      <Language.Consumer>
+        {language => <div id="language">{language}</div>}
+      </Language.Consumer>
+    </div>
+  );
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T15:41:06.845Z
+File: django-django-6fcbbe0/tests/apps/query_performing_app/apps.py
+Functions Extracted: 4
+
+
+Function 1: _perform_query
+Language: Python
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+def _perform_query(self):
+        from ..models import TotallyNormal
+
+        queryset = TotallyNormal.objects.using(self.database)
+        queryset.update_or_create(name="new name")
+        self.query_results = list(queryset.values_list("name"))
+--------------------------------------------------------------------------------
+
+
+Function 2: _perform_query
+Language: Python
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+def _perform_query(self):
+        connection = connections[self.database]
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 42" + connection.features.bare_select_suffix)
+            self.query_results = cursor.fetchall()
+--------------------------------------------------------------------------------
+
+
+Function 3: _perform_query
+Language: Python
+Lines: 13
+Full Code:
+--------------------------------------------------------------------------------
+def _perform_query(self):
+        from ..models import TotallyNormal
+
+        connection = connections[self.database]
+        table_meta = TotallyNormal._meta
+        with connection.cursor() as cursor:
+            cursor.executemany(
+                "INSERT INTO %s (%s) VALUES(%%s)"
+                % (
+                    connection.introspection.identifier_converter(table_meta.db_table),
+                    connection.ops.quote_name(table_meta.get_field("name").column),
+                ),
+                [("test name 1",), ("test name 2",)],
+            )
+            self.query_results = []
+--------------------------------------------------------------------------------
+
+
+Function 4: _perform_query
+Language: Python
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+def _perform_query(self):
+        with connections[self.database].cursor() as cursor:
+            cursor.callproc("test_procedure")
+            self.query_results = []
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T15:41:23.007Z
+File: django-django-6fcbbe0/django/apps/registry.py
+Functions Extracted: 6
+
+
+Function 1: populate
+Language: Python
+Lines: 39
+Full Code:
+--------------------------------------------------------------------------------
+def populate(self, installed_apps=None):
+        """
+        Load application configurations and models.
+
+        Import each application module and then each model module.
+
+        It is thread-safe and idempotent, but not reentrant.
+        """
+        if self.ready:
+            return
+
+        with self._lock:
+            if self.ready:
+                return
+
+            if self.loading:
+                raise RuntimeError("populate() isn't reentrant")
+            self.loading = True
+
+            for entry in installed_apps:
+                if isinstance(entry, AppConfig):
+                    app_config = entry
+                else:
+                    app_config = AppConfig.create(entry)
+                if app_config.label in self.app_configs:
+                    raise ImproperlyConfigured(
+                        "Application labels aren't unique, "
+                        "duplicates: %s" % app_config.label
+                    )
+
+                self.app_configs[app_config.label] = app_config
+                app_config.apps = self
+
+            counts = Counter(
+                app_config.name for app_config in self.app_configs.values()
+            )
+            duplicates = [name for name, count in counts.most_common() if count > 1]
+            if duplicates:
+                raise ImproperlyConfigured(
+                    "Application names aren't unique, "
+                    "duplicates: %s" % ", ".join(duplicates)
+                )
+
+            self.apps_ready = True
+
+            for app_config in self.app_configs.values():
+                app_config.import_models()
+
+            self.clear_cache()
+
+            self.models_ready = True
+
+            for app_config in self.get_app_configs():
+                app_config.ready()
+
+            self.ready = True
+            self.ready_event.set()
+--------------------------------------------------------------------------------
+
+
+Function 2: get_app_config
+Language: Python
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+def get_app_config(self, app_label):
+        """
+        Import applications and returns an app config for the given label.
+
+        Raise LookupError if no application exists with this label.
+        """
+        self.check_apps_ready()
+        try:
+            return self.app_configs[app_label]
+        except KeyError:
+            message = "No installed app with label '%s'." % app_label
+            for app_config in self.get_app_configs():
+                if app_config.name == app_label:
+                    message += " Did you mean '%s'?" % app_config.label
+                    break
+            raise LookupError(message)
+--------------------------------------------------------------------------------
+
+
+Function 3: get_models
+Language: Python
+Lines: 17
+Full Code:
+--------------------------------------------------------------------------------
+def get_models(self, include_auto_created=False, include_swapped=False):
+        """
+        Return a list of all installed models.
+
+        By default, the following models aren't included:
+
+        - auto-created models for many-to-many relations without
+          an explicit intermediate table,
+        - models that have been swapped out.
+
+        Set the corresponding keyword argument to True to include such models.
+        """
+        self.check_models_ready()
+
+        result = []
+        for app_config in self.app_configs.values():
+            result.extend(app_config.get_models(include_auto_created, include_swapped))
+        return result
+--------------------------------------------------------------------------------
+
+
+Function 4: register_model
+Language: Python
+Lines: 24
+Full Code:
+--------------------------------------------------------------------------------
+def register_model(self, app_label, model):
+        model_name = model._meta.model_name
+        app_models = self.all_models[app_label]
+        if model_name in app_models:
+            if (
+                model.__name__ == app_models[model_name].__name__
+                and model.__module__ == app_models[model_name].__module__
+            ):
+                warnings.warn(
+                    "Model '%s.%s' was already registered. Reloading models is not "
+                    "advised as it can lead to inconsistencies, most notably with "
+                    "related models." % (app_label, model_name),
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
+            else:
+                raise RuntimeError(
+                    "Conflicting '%s' models in application '%s': %s and %s." %
+                    (model_name, app_label, app_models[model_name], model)
+                )
+        app_models[model_name] = model
+        self.do_pending_operations(model)
+        self.clear_cache()
+--------------------------------------------------------------------------------
+
+
+Function 5: lazy_model_operation
+Language: Python
+Lines: 25
+Full Code:
+--------------------------------------------------------------------------------
+def lazy_model_operation(self, function, *model_keys):
+        """
+        Take a function and a number of ("app_label", "modelname") tuples, and
+        when all the corresponding models have been imported and registered,
+        call the function with the model classes as its arguments.
+
+        The function passed to this method must accept exactly n models as
+        arguments, where n=len(model_keys).
+        """
+        if not model_keys:
+            function()
+        else:
+            next_model, *more_models = model_keys
+
+            def apply_next_model(model):
+                next_function = partial(apply_next_model.func, model)
+                self.lazy_model_operation(next_function, *more_models)
+
+            apply_next_model.func = function
+
+            try:
+                model_class = self.get_registered_model(*next_model)
+            except LookupError:
+                self._pending_operations[next_model].append(apply_next_model)
+            else:
+                apply_next_model(model_class)
+--------------------------------------------------------------------------------
+
+
+Function 6: do_pending_operations
+Language: Python
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+def do_pending_operations(self, model):
+        """
+        Take a newly-prepared model and pass it to each function waiting for
+        it. This is called at the very end of Apps.register_model().
+        """
+        key = model._meta.app_label, model._meta.model_name
+        for function in self._pending_operations.pop(key, []):
+            function(model)
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T16:40:01.161Z
+File: [8 files: prisma.ts, auth.ts, index.get.ts, auth-event-handler.ts, foo.ts, comment.model.ts, env.d.ts, author.mapper.ts]
+Functions Extracted: 3
+
+
+Function 1: usePrisma
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+export const usePrisma = () => {
+    if (!_prisma) {
+        _prisma = new PrismaClient();
+    }
+    return _prisma;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: definePrivateEventHandler
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+export function definePrivateEventHandler<T>(
+    handler: (event: H3Event, cxt: PrivateContext) => T,
+    options: { requireAuth: boolean } = {requireAuth: true}
+) {
+    return defineEventHandler(async (event) => {
+        // Implementation details
+    });
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: authorMapper
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+const authorMapper = (author: any, id?: number) => ({
+  username: author.username,
+  bio: author.bio,
+  image: author.image,
+  following: id
+    ? author?.followedBy.some((followingUser: Partial<User>) => followingUser.id === id)
+    : false,
+});
+
+export default authorMapper;
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T16:47:11.506Z
+File: Return directly if sync
+Functions Extracted: 3
+
+
+Function 1: finalizeProfiling
+Language: TypeScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+function finalizeProfiling(key: string, start: [number, number], currentEntry: string[], completeProfiler: () => Promise<void>) {
+  const elapsed = process.hrtime(start);
+  const stats = (bucketStats[key] || (bucketStats[key] = {
+    time: 0.0,
+    count: 0,
+    isOther: false,
+  }));
+  stats.time += elapsed[0] * 1000 + elapsed[1] / 1_000_000;
+  stats.count++;
+  currentEntry.pop();
+  completeProfiler();
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: _runAsync
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+async function _runAsync<TResult>(bucket: string, f: () => TResult) {
+    runningName = bucket;
+    print(`(#${reportNum}) Profiling: ${runningName}`);
+    start();
+    try {
+      return await time(bucket, f);
+    } finally {
+      report();
+      reportNum++;
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: _runSync
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function _runSync<TResult>(bucket: string, f: () => TResult) {
+    runningName = bucket;
+    print(`(#${reportNum}) Profiling: ${runningName}`);
+    start();
+    try {
+      return time(bucket, f);
+    } finally {
+      report();
+      reportNum++;
+    }
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T16:47:31.631Z
+File: [2 files: and should probably keep doing so, but if we mess up, warn and continue., method call too.]
+Functions Extracted: 4
+
+
+Function 1: report
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function report() {
+    if (! Profile.enabled) {
+      return;
+    }
+    running = false;
+    print('');
+    setupReport();
+    reportHierarchy();
+    print('');
+    reportHotLeaves();
+    print('');
+    print(`(#${reportNum}) Total: ${formatMs(getTopLevelTotal())}` +
+          ` (${runningName})`);
+    print('');
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: reportOn
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function reportOn(entry: Entry, isLastLeafStack: boolean[] = []) {
+  const stats = entryStats(entry);
+  const isParent = hasSignificantChildren(entry);
+  const name = entryName(entry);
+
+  print((isParent ? leftRightDots : leftRightAlign)
+        (printIndentation(isLastLeafStack) + name, formatMs(stats.time), 70)
+        + (stats.isOther ? '' : (' (' + stats.count + ')')));
+
+  if (isParent) {
+    const childrenList = children(entry).filter(entry => {
+      return entryStats(entry).time > filter;
+    });
+    childrenList.forEach((child, i) => {
+      const isLastLeaf = i === childrenList.length - 1;
+      reportOn(child, isLastLeafStack.concat(isLastLeaf));
+    });
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: registerClientLoginFunction
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+registerClientLoginFunction(funcName, func) {
+    if (this._loginFuncs[funcName]) {
+      throw new Error(`${funcName} has been defined already`);
+    }
+    this._loginFuncs[funcName] = func;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 4: callLoginFunction
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+callLoginFunction(funcName, ...funcArgs) {
+    if (!this._loginFuncs[funcName]) {
+      throw new Error(`${funcName} was not defined`);
+    }
+    return this._loginFuncs[funcName].apply(this, funcArgs);
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T16:58:52.136Z
+File: meteor-meteor-6f48b86/packages/accounts-base/accounts-base.d.ts
+Functions Extracted: 6
+
+
+Function 1: createUser
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function createUser(
+    options: {
+      username?: string | undefined;
+      email?: string | undefined;
+      password?: string | undefined;
+      profile?: Meteor.UserProfile | undefined;
+    },
+    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void
+  ): Promise<string>;
+--------------------------------------------------------------------------------
+
+
+Function 2: changePassword
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function changePassword(
+    oldPassword: string,
+    newPassword: string,
+    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void
+  ): Promise<void>;
+--------------------------------------------------------------------------------
+
+
+Function 3: forgotPassword
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function forgotPassword(
+    options: { email?: string | undefined },
+    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void
+  ): Promise<void>;
+--------------------------------------------------------------------------------
+
+
+Function 4: resetPassword
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function resetPassword(
+    token: string,
+    newPassword: string,
+    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void
+  ): Promise<void>;
+--------------------------------------------------------------------------------
+
+
+Function 5: sendEnrollmentEmail
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function sendEnrollmentEmail(
+    userId: string,
+    email?: string,
+    extraTokenData?: Record<string, unknown>,
+    extraParams?: Record<string, unknown>
+  ): Promise<SendEmailResult>;
+--------------------------------------------------------------------------------
+
+
+Function 6: registerLoginHandler
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+function registerLoginHandler(
+    handler: (options: any) => undefined | LoginMethodResult
+  ): void;
+  function registerLoginHandler(
+    name: string,
+    handler: (options: any) => undefined | LoginMethodResult
+  ): void;
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T17:12:14.526Z
+File: [2 files: Using plain Class.forName can cause problems., Anonymous class. Replace the whole `new Correspondence` with a Correspondence.from call.]
+Functions Extracted: 2
+
+
+Function 1: loadClass
+Language: Java
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+private static Class<?> loadClass(String name) throws ClassNotFoundException {
+    ClassLoader loader =
+        firstNonNull(
+            currentThread().getContextClassLoader(), StackTraceCleaner.class.getClassLoader());
+    return loader.loadClass(name);
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: createStreakReplacementFrame
+Language: Java
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+private static StackTraceElementWrapper createStreakReplacementFrame(
+      StackFrameType stackFrameType, int length) {
+    return new StackTraceElementWrapper(
+        new StackTraceElement(
+            "[["
+                + stackFrameType.getName()
+                + ": "
+                + length
+                + " frames collapsed ("
+                + CLEANER_LINK
+                + ")]]",
+            "",
+            "",
+            0),
+        stackFrameType);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T17:12:19.254Z
+File: code to check whether records should be considered equivalent for testing purposes
+Functions Extracted: 2
+
+
+Function 1: compare
+Language: Java
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+@Override
+public boolean compare(Number actual, Number expected) {
+    double actualDouble = checkNotNull(actual).doubleValue();
+    double expectedDouble = checkNotNull(expected).doubleValue();
+    return equalWithinTolerance(actualDouble, expectedDouble, tolerance);
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: checkTolerance
+Language: Java
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+private static void checkTolerance(double tolerance) {
+    checkArgument(!Double.isNaN(tolerance), "tolerance cannot be NaN");
+    checkArgument(Double.compare(tolerance, 0.0) >= 0, "tolerance (%s) cannot be negative", tolerance);
+    checkArgument(tolerance != Double.POSITIVE_INFINITY, "tolerance cannot be POSITIVE_INFINITY");
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T17:12:20.559Z
+File: google-truth-8d25ede/core/src/main/java/com/google/common/truth/PrimitiveFloatArraySubject.java
+Functions Extracted: 2
+
+
+Function 1: usingTolerance
+Language: Java
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+public FloatArrayAsIterable usingTolerance(double tolerance) {
+    if (actual == null) {
+      failWithoutActual(simpleFact("cannot perform assertions on the contents of a null array"));
+      return ignoreCheck().that(new float[0]).usingTolerance(tolerance);
+    }
+    return FloatArrayAsIterable.create(tolerance(tolerance), iterableSubject(actual));
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: usingExactEquality
+Language: Java
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+public FloatArrayAsIterable usingExactEquality() {
+    if (actual == null) {
+      failWithoutActual(simpleFact("cannot perform assertions on the contents of a null array"));
+      return ignoreCheck().that(new float[0]).usingExactEquality();
+    }
+    return FloatArrayAsIterable.create(EXACT_EQUALITY_CORRESPONDENCE, iterableSubject(actual));
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T17:12:28.411Z
+File: code to format the diff between the records
+Functions Extracted: 2
+
+
+Function 1: addCompareException
+Language: Java
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+void addCompareException(
+        Class<?> callingClass,
+        Exception exception,
+        @Nullable Object actual,
+        @Nullable Object expected) {
+      if (firstCompareException == null) {
+        truncateStackTrace(exception, callingClass);
+        firstCompareException =
+            StoredException.create(exception, "compare", asList(actual, expected));
+      }
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: addFormatDiffException
+Language: Java
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+void addFormatDiffException(
+        Class<?> callingClass,
+        Exception exception,
+        @Nullable Object actual,
+        @Nullable Object expected) {
+      if (firstFormatDiffException == null) {
+        truncateStackTrace(exception, callingClass);
+        firstFormatDiffException =
+            StoredException.create(exception, "formatDiff", asList(actual, expected));
+      }
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T17:12:32.186Z
+File: Each of these is overridden by a subclass:
+Functions Extracted: 3
+
+
+Function 1: visitEnd
+Language: Java
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+public void visitEnd() {
+      if (seenJump) {
+        super.visitEnd();
+        return;
+      }
+      ImmutableSetMultimap<Label, Integer> lineNumbersAtLabel = this.lineNumbersAtLabel.build();
+      for (Entry<ImmutableList<Label>, StackEntry> e : actualValueAtLocation.build().entries()) {
+        for (int lineNumber : lineNumbers(e.getKey(), lineNumbersAtLabel)) {
+          actualValueAtLine.put(lineNumber, e.getValue());
+        }
+      }
+      super.visitEnd();
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: visitInsn
+Language: Java
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public void visitInsn(int opcode) {
+      switch (opcode) {
+        case Opcodes.NOP:
+        case Opcodes.INEG:
+        case Opcodes.LNEG:
+        case Opcodes.FNEG:
+        case Opcodes.DNEG:
+        case Opcodes.I2B:
+        case Opcodes.I2C:
+        case Opcodes.I2S:
+        case Opcodes.RETURN:
+          break;
+        // Additional cases omitted for brevity
+        default:
+          throw new RuntimeException("Unhandled opcode " + opcode);
+      }
+      super.visitInsn(opcode);
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: visitVarInsn
+Language: Java
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public void visitVarInsn(int opcode, int var) {
+      switch (opcode) {
+        case Opcodes.ILOAD:
+          push(InferredType.INT);
+          break;
+        // Additional cases omitted for brevity
+        default:
+          throw new RuntimeException("Unhandled opcode " + opcode);
+      }
+      super.visitVarInsn(opcode, var);
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T17:25:12.407Z
+File: briannesbitt-Carbon-60356b1/src/Carbon/PHPStan/MacroMethodReflection.php
+Functions Extracted: 2
+
+
+Function 1: __construct
+Language: PHP
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public function __construct(
+        ClassReflection $declaringClass,
+        string $methodName,
+        ParametersAcceptor $macroClosureType,
+        bool $static,
+        bool $final,
+        bool $deprecated,
+        ?string $docComment
+    ) {
+        $this->declaringClass = $declaringClass;
+        $this->methodName = $methodName;
+        $this->macroClosureType = $macroClosureType;
+        $this->static = $static;
+        $this->final = $final;
+        $this->deprecated = $deprecated;
+        $this->docComment = $docComment;
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: isDeprecated
+Language: PHP
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+public function isDeprecated(): TrinaryLogic
+    {
+        return TrinaryLogic::createFromBoolean(
+            $this->deprecated ||
+            preg_match('/@deprecated/i', $this->getDocComment() ?: '')
+        );
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T17:25:23.606Z
+File: You can specify precision among: minute, second, millisecond and microsecond
+Functions Extracted: 4
+
+
+Function 1: toArray
+Language: PHP
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public function toArray(): array {
+        return [
+            'year' => $this->year,
+            'month' => $this->month,
+            'day' => $this->day,
+            'dayOfWeek' => $this->dayOfWeek,
+            'dayOfYear' => $this->dayOfYear,
+            'hour' => $this->hour,
+            'minute' => $this->minute,
+            'second' => $this->second,
+            'micro' => $this->micro,
+            'timestamp' => $this->timestamp,
+            'formatted' => $this->rawFormat(\defined('static::DEFAULT_TO_STRING_FORMAT') ? static::DEFAULT_TO_STRING_FORMAT : CarbonInterface::DEFAULT_TO_STRING_FORMAT),
+            'timezone' => $this->timezone,
+        ];
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: toISOString
+Language: PHP
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+public function toISOString(bool $keepOffset = false): ?string {
+        if (!$this->isValid()) {
+            return null;
+        }
+
+        $yearFormat = $this->year < 0 || $this->year > 9999 ? 'YYYYYY' : 'YYYY';
+        $timezoneFormat = $keepOffset ? 'Z' : '[Z]';
+        $date = $keepOffset ? $this : $this->avoidMutation()->utc();
+
+        return $date->isoFormat("$yearFormat-MM-DD[T]HH:mm:ss.SSSSSS$timezoneFormat");
+    }
+--------------------------------------------------------------------------------
+
+
+Function 3: toDateTime
+Language: PHP
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+public function toDateTime(): DateTime {
+        return DateTime::createFromFormat('U.u', $this->rawFormat('U.u'))
+            ->setTimezone($this->getTimezone());
+    }
+--------------------------------------------------------------------------------
+
+
+Function 4: toPeriod
+Language: PHP
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+public function toPeriod($end = null, $interval = null, $unit = null): CarbonPeriod {
+        if ($unit) {
+            $interval = CarbonInterval::make("$interval ".static::pluralUnit($unit));
+        }
+
+        $isDefaultInterval = !$interval;
+        $interval ??= CarbonInterval::day();
+        $class = $this->isMutable() ? CarbonPeriod::class : CarbonPeriodImmutable::class;
+
+        if (\is_int($end) || (\is_string($end) && ctype_digit($end))) {
+            $end = (int) $end;
+        }
+
+        $end ??= 1;
+
+        if (!\is_int($end)) {
+            $end = $this->resolveCarbon($end);
+        }
+
+        return new $class(
+            raw: [$this, CarbonInterval::make($interval), $end],
+            dateClass: static::class,
+            isDefaultInterval: $isDefaultInterval,
+        );
+    }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T17:50:58.308Z
+File: method call too.
+Functions Extracted: 4
+
+
+Function 1: registerClientLoginFunction
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+registerClientLoginFunction(funcName, func) {
+    if (this._loginFuncs[funcName]) {
+      throw new Error(`${funcName} has been defined already`);
+    }
+    this._loginFuncs[funcName] = func;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: callLoginFunction
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+callLoginFunction(funcName, ...funcArgs) {
+    if (!this._loginFuncs[funcName]) {
+      throw new Error(`${funcName} was not defined`);
+    }
+    return this._loginFuncs[funcName].apply(this, funcArgs);
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: applyLoginFunction
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+applyLoginFunction(funcName, funcArgs) {
+    if (!this._loginFuncs[funcName]) {
+      throw new Error(`${funcName} was not defined`);
+    }
+    return this._loginFuncs[funcName].apply(this, funcArgs);
+  }
+--------------------------------------------------------------------------------
+
+
+Function 4: logout
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+logout(callback) {
+    this._loggingOut.set(true);
+
+    this.connection.applyAsync('logout', [], {
+      // Additional code omitted for brevity
+    });
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T17:51:02.859Z
+File: meteor-meteor-6f48b86/packages/accounts-base/accounts-base.d.ts
+Functions Extracted: 4
+
+
+Function 1: createUser
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function createUser(
+    options: {
+      username?: string | undefined;
+      email?: string | undefined;
+      password?: string | undefined;
+      profile?: Meteor.UserProfile | undefined;
+    },
+    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void
+  ): Promise<string>;
+--------------------------------------------------------------------------------
+
+
+Function 2: changePassword
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function changePassword(
+    oldPassword: string,
+    newPassword: string,
+    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void
+  ): Promise<void>;
+--------------------------------------------------------------------------------
+
+
+Function 3: forgotPassword
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function forgotPassword(
+    options: { email?: string | undefined },
+    callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void
+  ): Promise<void>;
+--------------------------------------------------------------------------------
+
+
+Function 4: sendEnrollmentEmail
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function sendEnrollmentEmail(
+    userId: string,
+    email?: string,
+    extraTokenData?: Record<string, unknown>,
+    extraParams?: Record<string, unknown>
+  ): Promise<SendEmailResult>;
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T17:51:16.836Z
+File: [2 files: meteor.d.ts, and should probably keep doing so, but if we mess up, warn and continue.]
+Functions Extracted: 3
+
+
+Function 1: report
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function report() {
+    if (! Profile.enabled) {
+      return;
+    }
+    running = false;
+    print('');
+    setupReport();
+    reportHierarchy();
+    print('');
+    reportHotLeaves();
+    print('');
+    print(`(#${reportNum}) Total: ${formatMs(getTopLevelTotal())}` +
+          ` (${runningName})`);
+    print('');
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: reportOn
+Language: JavaScript
+Lines: 14
+Full Code:
+--------------------------------------------------------------------------------
+function reportOn(entry: Entry, isLastLeafStack: boolean[] = []) {
+    const stats = entryStats(entry);
+    const isParent = hasSignificantChildren(entry);
+    const name = entryName(entry);
+
+    print((isParent ? leftRightDots : leftRightAlign)
+          (printIndentation(isLastLeafStack) + name, formatMs(stats.time), 70)
+          + (stats.isOther ? '' : (' (' + stats.count + ')')));
+
+    if (isParent) {
+      const childrenList = children(entry).filter(entry => {
+        return entryStats(entry).time > filter;
+      });
+      childrenList.forEach((child, i) => {
+        const isLastLeaf = i === childrenList.length - 1;
+        reportOn(child, isLastLeafStack.concat(isLastLeaf));
+      });
+    }
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: reportHotLeaves
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function reportHotLeaves() {
+    print('Top leaves:');
+
+    const totals = allLeafs().map(leaf => {
+      const info = leafTotals(leaf);
+      return {
+        name: leaf,
+        time: info.time,
+        count: info.count,
+      };
+    }).sort((a, b) => {
+      return a.time === b.time ? 0 : a.time > b.time ? -1 : 1;
+    });
+
+    totals.forEach(total => {
+      if (total.time < 100) {
+        //...
+      }
+    });
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T19:02:39.958Z
+File: freeCodeCamp-freeCodeCamp-380003c/client/src/templates/Challenges/components/help-modal.tsx
+Functions Extracted: 2
+
+
+Function 1: generateSearchLink
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export const generateSearchLink = (
+  title: string,
+  block: string,
+  superBlock: string
+) => {
+  const titleText = t(`intro:${superBlock}.blocks.${block}.title`);
+  const selector = 'in:title';
+  const query = encodeURIComponent(`${titleText} - ${title} ${selector}`);
+
+  const search = `${forumLocation}/search?q=${query}`;
+  return search;
+};
+--------------------------------------------------------------------------------
+
+
+Function 2: Checkbox
+Language: TypeScript
+Lines: 13
+Full Code:
+--------------------------------------------------------------------------------
+function Checkbox({
+  name,
+  i18nKey,
+  onChange,
+  value,
+  href,
+  label
+}: CheckboxProps) {
+  const { t } = useTranslation();
+
+  return (
+    <div className='checkbox-container'>
+      <input
+        id={name}
+        name={name}
+        type='checkbox'
+        onChange={onChange}
+        checked={value}
+        required
+      />
+      <label htmlFor={name}>{t(i18nKey)}</label>
+      <a href={href}>{label}</a>
+    </div>
+  );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T19:10:48.058Z
+File: google-gson-569279f/extras/src/main/java/com/google/gson/typeadapters/RuntimeTypeAdapterFactory.java
+Functions Extracted: 2
+
+
+Function 1: registerSubtype
+Language: Java
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+public RuntimeTypeAdapterFactory<T> registerSubtype(Class<? extends T> type, String label) {
+    if (type == null || label == null) {
+        throw new NullPointerException();
+    }
+    if (subtypeToLabel.containsKey(type) || labelToSubtype.containsKey(label)) {
+        throw new IllegalArgumentException("types and labels must be unique");
+    }
+    labelToSubtype.put(label, type);
+    subtypeToLabel.put(type, label);
+    return this;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: create
+Language: Java
+Lines: 30
+Full Code:
+--------------------------------------------------------------------------------
+@Override
+public <R> TypeAdapter<R> create(Gson gson, TypeToken<R> type) {
+    if (type == null) {
+        return null;
+    }
+    Class<?> rawType = type.getRawType();
+    boolean handle = recognizeSubtypes ? baseType.isAssignableFrom(rawType) : baseType.equals(rawType);
+    if (!handle) {
+        return null;
+    }
+
+    TypeAdapter<JsonElement> jsonElementAdapter = gson.getAdapter(JsonElement.class);
+    Map<String, TypeAdapter<?>> labelToDelegate = new LinkedHashMap<>();
+    Map<Class<?>, TypeAdapter<?>> subtypeToDelegate = new LinkedHashMap<>();
+    for (Map.Entry<String, Class<?>> entry : labelToSubtype.entrySet()) {
+        TypeAdapter<?> delegate = gson.getDelegateAdapter(this, TypeToken.get(entry.getValue()));
+        labelToDelegate.put(entry.getKey(), delegate);
+        subtypeToDelegate.put(entry.getValue(), delegate);
+    }
+
+    return new TypeAdapter<R>() {
+        @Override
+        public R read(JsonReader in) throws IOException {
+            JsonElement jsonElement = jsonElementAdapter.read(in);
+            JsonElement labelJsonElement;
+            if (maintainType) {
+                labelJsonElement = jsonElement.getAsJsonObject().get(typeFieldName);
+            } else {
+                labelJsonElement = jsonElement.getAsJsonObject().remove(typeFieldName);
+            }
+
+            if (labelJsonElement == null) {
+                throw new JsonParseException(
+                    "cannot deserialize " + baseType + " because it does not define a field named " + typeFieldName);
+            }
+            String label = labelJsonElement.getAsString();
+            @SuppressWarnings("unchecked")
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T19:10:48.207Z
+File: google-gson-569279f/gson/src/main/java/com/google/gson/ReflectionAccessFilter.java
+Functions Extracted: 4
+
+
+Function 1: BLOCK_INACCESSIBLE_JAVA
+Language: Java
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+ReflectionAccessFilter BLOCK_INACCESSIBLE_JAVA = new ReflectionAccessFilter() {
+    @Override
+    public FilterResult check(Class<?> rawClass) {
+        return ReflectionAccessFilterHelper.isJavaType(rawClass)
+            ? FilterResult.BLOCK_INACCESSIBLE
+            : FilterResult.INDECISIVE;
+    }
+
+    @Override
+    public String toString() {
+        return "ReflectionAccessFilter#BLOCK_INACCESSIBLE_JAVA";
+    }
+};
+--------------------------------------------------------------------------------
+
+
+Function 2: BLOCK_ALL_JAVA
+Language: Java
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+ReflectionAccessFilter BLOCK_ALL_JAVA = new ReflectionAccessFilter() {
+    @Override
+    public FilterResult check(Class<?> rawClass) {
+        return ReflectionAccessFilterHelper.isJavaType(rawClass)
+            ? FilterResult.BLOCK_ALL
+            : FilterResult.INDECISIVE;
+    }
+
+    @Override
+    public String toString() {
+        return "ReflectionAccessFilter#BLOCK_ALL_JAVA";
+    }
+};
+--------------------------------------------------------------------------------
+
+
+Function 3: BLOCK_ALL_ANDROID
+Language: Java
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+ReflectionAccessFilter BLOCK_ALL_ANDROID = new ReflectionAccessFilter() {
+    @Override
+    public FilterResult check(Class<?> rawClass) {
+        return ReflectionAccessFilterHelper.isAndroidType(rawClass)
+            ? FilterResult.BLOCK_ALL
+            : FilterResult.INDECISIVE;
+    }
+
+    @Override
+    public String toString() {
+        return "ReflectionAccessFilter#BLOCK_ALL_ANDROID";
+    }
+};
+--------------------------------------------------------------------------------
+
+
+Function 4: BLOCK_ALL_PLATFORM
+Language: Java
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+ReflectionAccessFilter BLOCK_ALL_PLATFORM = new ReflectionAccessFilter() {
+    @Override
+    public FilterResult check(Class<?> rawClass) {
+        return ReflectionAccessFilterHelper.isAnyPlatformType(rawClass)
+            ? FilterResult.BLOCK_ALL
+            : FilterResult.INDECISIVE;
+    }
+
+    @Override
+    public String toString() {
+        return "ReflectionAccessFilter#BLOCK_ALL_PLATFORM";
+    }
+};
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T19:11:03.552Z
+File: For backward compatibility change to LENIENT if writer has default strictness LEGACY_STRICT
+Functions Extracted: 3
+
+
+Function 1: newJsonWriter
+Language: Java
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+public JsonWriter newJsonWriter(Writer writer) throws IOException {
+    if (generateNonExecutableJson) {
+      writer.write(JSON_NON_EXECUTABLE_PREFIX);
+    }
+    JsonWriter jsonWriter = new JsonWriter(writer);
+    jsonWriter.setFormattingStyle(formattingStyle);
+    jsonWriter.setHtmlSafe(htmlSafe);
+    jsonWriter.setStrictness(strictness == null ? Strictness.LEGACY_STRICT : strictness);
+    jsonWriter.setSerializeNulls(serializeNulls);
+    return jsonWriter;
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: fromJson
+Language: Java
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+public <T> T fromJson(String json, TypeToken<T> typeOfT) throws JsonSyntaxException {
+    if (json == null) {
+      return null;
+    }
+    StringReader reader = new StringReader(json);
+    return fromJson(reader, typeOfT);
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: fromJson
+Language: Java
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+public <T> T fromJson(Reader json, TypeToken<T> typeOfT) throws JsonIOException, JsonSyntaxException {
+    JsonReader jsonReader = newJsonReader(json);
+    T object = fromJson(jsonReader, typeOfT);
+    assertFullConsumption(object, jsonReader);
+    return object;
+  }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T21:37:15.565Z
+File: };
+Functions Extracted: 6
+
+
+Function 1: findComp
+Language: JavaScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+function findComp(id, comps) {
+            var i = 0;
+            var len = comps.length;
+            while (i < len) {
+              if (comps[i].id === id) {
+                return comps[i];
+              }
+              i += 1;
+            }
+            return null;
+          }
+--------------------------------------------------------------------------------
+
+
+Function 2: findCompLayers
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function findCompLayers(id, comps) {
+            var comp = findComp(id, comps);
+            if (comp) {
+              if (!comp.layers.__used) {
+                comp.layers.__used = true;
+                return comp.layers;
+              }
+              return JSON.parse(JSON.stringify(comp.layers));
+            }
+            return null;
+          }
+--------------------------------------------------------------------------------
+
+
+Function 3: completeShapes
+Language: JavaScript
+Lines: 20
+Full Code:
+--------------------------------------------------------------------------------
+function completeShapes(arr) {
+            var i;
+            var len = arr.length;
+            var j;
+            var jLen;
+            for (i = len - 1; i >= 0; i -= 1) {
+              if (arr[i].ty === 'sh') {
+                if (arr[i].ks.k.i) {
+                  convertPathsToAbsoluteValues(arr[i].ks.k);
+                } else {
+                  jLen = arr[i].ks.k.length;
+                  for (j = 0; j < jLen; j += 1) {
+                    if (arr[i].ks.k[j].s) {
+                      convertPathsToAbsoluteValues(arr[i].ks.k[j].s[0]);
+                    }
+                    if (arr[i].ks.k[j].e) {
+                      convertPathsToAbsoluteValues(arr[i].ks.k[j].e[0]);
+                    }
+                  }
+                }
+              } else if (arr[i].ty === 'gr') {
+                completeShapes(arr[i].it);
+              }
+            }
+          }
+--------------------------------------------------------------------------------
+
+
+Function 4: convertPathsToAbsoluteValues
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function convertPathsToAbsoluteValues(path) {
+            var i;
+            var len = path.i.length;
+            for (i = 0; i < len; i += 1) {
+              path.i[i][0] += path.v[i][0];
+              path.i[i][1] += path.v[i][1];
+              path.o[i][0] += path.v[i][0];
+              path.o[i][1] += path.v[i][1];
+            }
+          }
+--------------------------------------------------------------------------------
+
+
+Function 5: checkVersion
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function checkVersion(minimum, animVersionString) {
+            var animVersion = animVersionString ? animVersionString.split('.') : [100, 100, 100];
+            if (minimum[0] > animVersion[0]) {
+              return true;
+            } if (animVersion[0] > minimum[0]) {
+              return false;
+            }
+            if (minimum[1] > animVersion[1]) {
+              return true;
+            } if (animVersion[1] > minimum[1]) {
+              return false;
+            }
+            if (minimum[2] > animVersion[2]) {
+              return true;
+            } if (animVersion[2] > minimum[2]) {
+              return false;
+            }
+            return null;
+          }
+--------------------------------------------------------------------------------
+
+
+Function 6: completeData
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+function completeData(animationData) {
+            if (animationData.__complete) {
+              return;
+            }
+            checkColors(animationData);
+            checkText(animationData);
+            checkChars(animationData);
+            checkPathProperties(animationData);
+            checkShapes(animationData);
+            completeLayers(animationData.layers, animationData.assets);
+            completeChars(animationData.chars, animationData.assets);
+            animationData.__complete = true;
+          }
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T21:37:20.541Z
+File: airbnb-lottie-web-bede03d/player/js/module.js
+Functions Extracted: 2
+
+
+Function 1: setQuality
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function setQuality(value) {
+  if (typeof value === 'string') {
+    switch (value) {
+      case 'high':
+        setDefaultCurveSegments(200);
+        break;
+      default:
+      case 'medium':
+        setDefaultCurveSegments(50);
+        break;
+      case 'low':
+        setDefaultCurveSegments(10);
+        break;
+    }
+  } else if (!isNaN(value) && value > 1) {
+    setDefaultCurveSegments(value);
+  }
+  if (getDefaultCurveSegments() >= 50) {
+    roundValues(false);
+  } else {
+    roundValues(true);
+  }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: getFactory
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function getFactory(name) {
+  switch (name) {
+    case 'propertyFactory':
+      return PropertyFactory;
+    case 'shapePropertyFactory':
+      return ShapePropertyFactory;
+    case 'matrix':
+      return Matrix;
+    default:
+      return null;
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================

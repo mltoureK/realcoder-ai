@@ -90,15 +90,21 @@ export async function POST(request: NextRequest) {
     };
 
     const withTimeout = async <T>(promise: Promise<T>, ms: number): Promise<T> => {
-      let timeoutHandle: ReturnType<typeof setTimeout>;
+      let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
       const timeoutPromise = new Promise<never>((_, reject) => {
         timeoutHandle = setTimeout(() => reject(new Error('Lesson generation timed out')), ms);
       });
       try {
         return await Promise.race([promise, timeoutPromise]);
       } finally {
-        clearTimeout(timeoutHandle);
+        if (timeoutHandle) {
+          clearTimeout(timeoutHandle);
+        }
       }
+    };
+
+    const buildFallbackLesson = (concept: string, codeContext: string, questionType: string): string => {
+      return `This question tests your understanding of ${concept}. Understanding this concept is important for writing effective code and solving real-world programming challenges.`;
     };
 
     const generateLesson = async (concept: string, codeContext: string, questionType: string): Promise<string> => {
@@ -174,17 +180,17 @@ Generate a lesson that prepares the learner for this question.
 
     const desiredTotal = typeof numQuestions === 'number' && numQuestions > 0 ? numQuestions : 30;
     const settings = {
-      concurrency: Number(process.env.OPENAI_CONCURRENCY ?? 4),
+      concurrency: Number(process.env.OPENAI_CONCURRENCY ?? 6),
       // Reduce overall API calls for faster testing
       maxCalls: Number(process.env.OPENAI_MAX_CALLS_PER_REQUEST ?? 10),
       timeouts: {
-        'function-variant': Number(process.env.OPENAI_TIMEOUT_FUNCTION_VARIANT_MS ?? 30000),
-        'multiple-choice': Number(process.env.OPENAI_TIMEOUT_MCQ_MS ?? 10000),
-        'true-false': Number(process.env.OPENAI_TIMEOUT_TRUE_FALSE_MS ?? 12500),
-        'select-all': Number(process.env.OPENAI_TIMEOUT_SELECT_ALL_MS ?? 30000),
-        'order-sequence': Number(process.env.OPENAI_TIMEOUT_ORDER_SEQUENCE_MS ?? 12500)
+        'function-variant': Number(process.env.OPENAI_TIMEOUT_FUNCTION_VARIANT_MS ?? 15000),
+        'multiple-choice': Number(process.env.OPENAI_TIMEOUT_MCQ_MS ?? 8000),
+        'true-false': Number(process.env.OPENAI_TIMEOUT_TRUE_FALSE_MS ?? 8000),
+        'select-all': Number(process.env.OPENAI_TIMEOUT_SELECT_ALL_MS ?? 15000),
+        'order-sequence': Number(process.env.OPENAI_TIMEOUT_ORDER_SEQUENCE_MS ?? 8000)
       },
-      retries: { attempts: 3, backoffBaseMs: 500 }
+      retries: { attempts: 2, backoffBaseMs: 300 }
     };
 
     // Helper to map raw -> UI
@@ -465,9 +471,39 @@ Generate a lesson that prepares the learner for this question.
               totalExtractedFunctions = prefetchedEntry?.functionsCount ?? prefetchedChunks.length;
               console.log(`⚡ FAST MODE: Using ${prefetchedChunks.length} prefetched chunks for streaming`);
               await processChunkBatch(prefetchedChunks, 'prefetch-cache', desiredTotal);
+              
+              // If we have enough prefetched chunks, skip additional extraction
+              if (questionsGenerated >= desiredTotal) {
+                console.log(`✅ Generated ${questionsGenerated} questions from prefetch, stopping early`);
+                // Skip the else block and continue to final processing
+              } else {
+                // Continue with additional extraction if needed
+                console.log('⚡ FAST MODE: Starting streaming function extraction...');
+                const functionGenerator = extractFunctionsFromFilesStreaming(parsedFiles, openaiApiKey, 15);
+
+                for await (const batchFunctions of functionGenerator) {
+                  batchCount += 1;
+                  const batchChunks = functionsToChunks(batchFunctions);
+                  allChunks.push(...batchChunks);
+                  totalExtractedFunctions += batchFunctions.length;
+
+                  console.log(`⚡ Batch ${batchCount}: Got ${batchFunctions.length} functions (${batchChunks.length} chunks), total chunks: ${allChunks.length}`);
+
+                  if (batchCount === 1 && batchChunks.length > 0) {
+                    console.log(`🚀 FIRST QUESTIONS INCOMING! Starting question generation with ${batchChunks.length} initial chunks...`);
+                  }
+
+                  await processChunkBatch(batchChunks, `batch-${batchCount}`);
+
+                  if (questionsGenerated >= desiredTotal) {
+                    console.log(`✅ Generated ${questionsGenerated} questions, stopping early`);
+                    break;
+                  }
+                }
+              }
             } else {
               console.log('⚡ FAST MODE: Starting streaming function extraction...');
-              const functionGenerator = extractFunctionsFromFilesStreaming(parsedFiles, openaiApiKey, 8);
+              const functionGenerator = extractFunctionsFromFilesStreaming(parsedFiles, openaiApiKey, 15);
 
               for await (const batchFunctions of functionGenerator) {
                 batchCount += 1;
@@ -556,7 +592,7 @@ Generate a lesson that prepares the learner for this question.
         storePrefetchedChunks(prefetchKey, chunks, extractedFunctionsCount);
       }
     } else {
-      const extractedFunctions = await extractFunctionsFromFiles(parsedFiles, openaiApiKey, 8);
+      const extractedFunctions = await extractFunctionsFromFiles(parsedFiles, openaiApiKey, 15);
       extractedFunctionsCount = extractedFunctions.length;
       console.log(`✅ Extracted ${extractedFunctionsCount} complete functions`);
       chunks = functionsToChunks(extractedFunctions);

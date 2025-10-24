@@ -1020,14 +1020,16 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                     style={vscDarkPlus}
                     customStyle={{
                       margin: 0,
-                      padding: '1rem',
-                      fontSize: '0.875rem',
-                      lineHeight: '1.6',
+                      padding: '1.1rem',
+                      fontSize: '0.92rem',
+                      lineHeight: '1.65',
                       borderRadius: 0,
-                      width: '100%'
+                      width: '100%',
+                      minHeight: isVariantCodeExpanded ? '60vh' : undefined,
+                      overflowY: 'auto'
                     }}
                     wrapLongLines={true}
-                    showLineNumbers={true}
+                    showLineNumbers={false}
                   >
                     {currentVariant.code}
                   </SyntaxHighlighter>
@@ -1948,14 +1950,14 @@ export default function QuizInterface({ quizSession, onClose }: QuizInterfacePro
                                 style={vscDarkPlus}
                                 customStyle={{
                                   margin: 0,
-                                  padding: '0.75rem',
-                                  fontSize: '0.8125rem',
-                                  lineHeight: '1.5',
+                                  padding: '1rem',
+                                  fontSize: '0.9rem',
+                                  lineHeight: '1.6',
                                   borderRadius: 0,
                                   width: '100%'
                                 }}
                                 wrapLongLines={true}
-                                showLineNumbers={true}
+                                showLineNumbers={false}
                               >
                                 {formatVariantForDisplay(variant.code)}
                               </SyntaxHighlighter>

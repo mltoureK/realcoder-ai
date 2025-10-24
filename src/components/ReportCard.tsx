@@ -444,9 +444,22 @@ export default function ReportCard({
                   <div className="rounded-2xl border border-white/20 bg-white/10 p-3">
                     <div className="text-[11px] font-semibold uppercase tracking-wide text-white/70">Accuracy</div>
                     <div className="mt-1 text-2xl font-semibold">{answeredAccuracyPercentage}%</div>
-                    <div className="text-[11px] text-white/70">
-                      {analysis.overall.total ? `${analysis.overall.correct} ✅ / ${analysis.overall.incorrect} ❌` : 'No attempts yet'}
-                    </div>
+                  <div className="text-[11px] text-white/70">
+                    {analysis.overall.total ? (
+                      <span className="flex items-center gap-2">
+                        <span className="flex items-center gap-1">
+                          <span className="inline-flex h-3 w-3 items-center justify-center rounded-full bg-emerald-400/80 text-[9px] font-bold text-emerald-950">✓</span>
+                          <span>{analysis.overall.correct}</span>
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="inline-flex h-3 w-3 items-center justify-center rounded-full bg-rose-400/80 text-[9px] font-bold text-rose-950">✕</span>
+                          <span>{analysis.overall.incorrect}</span>
+                        </span>
+                      </span>
+                    ) : (
+                      'No attempts yet'
+                    )}
+                  </div>
                   </div>
                   <div className="col-span-2 rounded-2xl border border-white/20 bg-white/10 p-3 sm:col-span-1">
                     <div className="text-[11px] font-semibold uppercase tracking-wide text-white/70">Tickets Done</div>

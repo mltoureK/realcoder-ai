@@ -835,9 +835,12 @@ export default function Home() {
           setIsLoading(false);
           setShowLoadingOverlay(false);
           return; // Skip API generation
-        } else if (cachedQuestions.length >= 8 && cachedQuestions.length < 50) {
-          // Use all cached + generate some new ones to build up cache
-          console.log(`🔄 Using ALL ${cachedQuestions.length} cached questions + generating new ones to build cache`);
+        } else if (cachedQuestions.length >= 4 && cachedQuestions.length < 50) {
+          // Smart logic: Use cached questions + generate more to reach 15 total
+          const targetTotal = 15;
+          const numToGenerate = Math.max(0, targetTotal - cachedQuestions.length);
+          
+          console.log(`🧠 SMART MODE: Using ${cachedQuestions.length} cached + generating ${numToGenerate} more to reach ${targetTotal} total`);
           
           const cachedToUse = cachedQuestions.map(q => ({
             ...q,
@@ -867,20 +870,25 @@ export default function Home() {
               branch: selectedBranch || 'main'
             },
             isCached: true,
-            isStreaming: true, // Mark that we're still streaming new questions
-            expectedTotalQuestions: cachedToUse.length
+            isStreaming: numToGenerate > 0, // Stream if we need more questions
+            expectedTotalQuestions: targetTotal
           };
           
           setQuizSession(cachedSession);
           setIsLoading(false);
           setShowLoadingOverlay(false);
           
-          // Store for background streaming to add more questions
-          (window as any).__cachedQuestionsToMerge = cachedToUse;
-          
-          // Continue to API generation to add more questions in background
-          // Don't return here - we want to stream new questions too
-        } else if (cachedQuestions.length > 0 && cachedQuestions.length < 8) {
+          // If we need more questions, continue to API generation
+          if (numToGenerate > 0) {
+            console.log(`🔄 Need ${numToGenerate} more questions, continuing to API generation...`);
+            // Store cached questions for merging
+            (window as any).__cachedQuestionsToMerge = cachedToUse;
+            // Don't return - continue to API generation
+          } else {
+            console.log('✅ Have enough cached questions, skipping API generation');
+            return; // Skip API generation
+          }
+        } else if (cachedQuestions.length > 0 && cachedQuestions.length < 4) {
           // Use up to 10 cached + generate the rest
           const numCached = Math.min(10, cachedQuestions.length);
           const cachedToUse = cachedQuestions.slice(0, numCached).map(q => ({
@@ -910,7 +918,22 @@ export default function Home() {
           throw new Error('No repository files matched the selected languages. Please adjust your selection and try again.');
         }
 
-        queuePrefetch(combinedCode, 'generate-quiz');
+        // Only trigger prefetch if we don't have enough cached questions
+        if (cachedQuestions.length < 4) {
+          queuePrefetch(combinedCode, 'generate-quiz');
+        } else {
+          console.log('⚡ Skipping prefetch - sufficient cached questions available');
+        }
+        // Calculate how many questions to generate based on cached questions
+        const cachedMergeListForGeneration = typeof window !== 'undefined' && Array.isArray((window as any).__cachedQuestionsToMerge)
+          ? (window as any).__cachedQuestionsToMerge
+          : null;
+        
+        const numCached = cachedMergeListForGeneration?.length || 0;
+        const targetTotal = 15;
+        const numToGenerate = Math.max(1, targetTotal - numCached);
+        
+        console.log(`🎯 Smart generation: ${numCached} cached + ${numToGenerate} new = ${targetTotal} total`);
         console.log('📤 Streaming quiz request with code length:', combinedCode.length);
         
         const quizResponse = await fetch('/api/generateQuiz?stream=1', {
@@ -922,7 +945,7 @@ export default function Home() {
             code: combinedCode,
             questionTypes: ['function-variant', 'multiple-choice', 'order-sequence', 'true-false', 'select-all'],
             difficulty: 'medium',
-            numQuestions: 15,
+            numQuestions: numToGenerate, // Generate only what we need
             repositoryInfo: {
               owner: githubRepo.owner,
               repo: githubRepo.repo,
