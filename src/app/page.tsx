@@ -1228,7 +1228,7 @@ export default function Home() {
           <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:h-20 sm:px-6">
             <div className="flex items-center">
               <h1 className="text-lg font-semibold tracking-tight text-cyan-100 drop-shadow sm:text-2xl">
-                RealCoder AI
+                RealCode
               </h1>
               <span className="ml-2 rounded-full border border-cyan-400/40 px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300/80 shadow-[0_0_14px_rgba(34,211,238,0.35)] sm:ml-3">
                 Beta
@@ -1255,7 +1255,7 @@ export default function Home() {
         <main className="relative mx-auto w-full max-w-5xl flex-1 px-4 pb-20 pt-10 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="mx-auto mb-6 inline-flex items-center rounded-full border border-cyan-400/20 bg-white/5 px-4 py-1 text-xs uppercase tracking-[0.45em] text-cyan-200/80 backdrop-blur">
-              Learn by shipping
+              Learn from real code
             </div>
             <h2 className="mb-4 text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
               <span className="bg-gradient-to-r from-cyan-300 via-sky-400 to-fuchsia-400 bg-clip-text text-transparent">
