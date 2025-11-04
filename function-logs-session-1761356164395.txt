@@ -1,0 +1,1201 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761356164395
+Started: 2025-10-25T01:36:04.395Z
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:36:07.157Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 328 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get employee by id rest api\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id :" + id));\n		return Res
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:36:09.886Z
+Question Type: select-all
+Function: Unknown
+Function Size: 604 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: update employee rest api\n@PutMapping("/employees/{id}")\n	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails){\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:36:13.082Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 136 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get all employees\n@GetMapping("/employees")\n	public List<Employee> getAllEmployees(){\n		return employeeRepository.findAll();\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:36:16.882Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 173 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: create employee rest api\n@PostMapping("/employees")\n	public Employee createEmployee(@RequestBody Employee employee) {\n		return employeeRepository.save(employee);\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:36:16.891Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 604 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: update employee rest api\n@PutMapping("/employees/{id}")\n	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails){\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:36:18.899Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1308 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: RameshMF-ReactJS-Spring-Boot-CRUD-Full-Stack-App-394c537/springboot-backend/src/main/java/net/javaguides/springboot/controller/EmployeeController.java\npackage net.javaguides.springboot.controller;\n\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport org.springfram
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:36:24.816Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1308 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: RameshMF-ReactJS-Spring-Boot-CRUD-Full-Stack-App-394c537/springboot-backend/src/main/java/net/javaguides/springboot/controller/EmployeeController.java\npackage net.javaguides.springboot.controller;\n\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport org.springfram
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:36:26.943Z
+Question Type: select-all
+Function: Unknown
+Function Size: 173 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: create employee rest api\n@PostMapping("/employees")\n	public Employee createEmployee(@RequestBody Employee employee) {\n		return employeeRepository.save(employee);\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:36:27.751Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 328 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: get employee by id rest api\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id :" + id));\n		return Res
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:36:28.352Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 136 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get all employees\n@GetMapping("/employees")\n	public List<Employee> getAllEmployees(){\n		return employeeRepository.findAll();\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:36:30.334Z
+Question Type: true-false
+Function: Unknown
+Function Size: 173 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: create employee rest api\n@PostMapping("/employees")\n	public Employee createEmployee(@RequestBody Employee employee) {\n		return employeeRepository.save(employee);\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:36:32.851Z
+Question Type: select-all
+Function: Unknown
+Function Size: 328 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get employee by id rest api\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id :" + id));\n		return Res
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:36:36.367Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1308 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: RameshMF-ReactJS-Spring-Boot-CRUD-Full-Stack-App-394c537/springboot-backend/src/main/java/net/javaguides/springboot/controller/EmployeeController.java\npackage net.javaguides.springboot.controller;\n\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport org.springfram
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:36:39.514Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 136 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get all employees\n@GetMapping("/employees")\n	public List<Employee> getAllEmployees(){\n		return employeeRepository.findAll();\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:36:42.678Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 604 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: update employee rest api\n@PutMapping("/employees/{id}")\n	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails){\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exi
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761356164395
+Repository: Unknown
+Total Questions Generated: 14
+Total Chunks Processed: 5
+Ended: 2025-10-25T01:36:45.040Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-25T01:38:07.646Z
+File: Leak to avoid sporadic `noglobals` fails on Edge in Sauce Labs.
+Functions Extracted: 2
+
+
+Function 1: skipAssert
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function skipAssert(assert, count) {
+    count || (count = 1);
+    while (count--) {
+        assert.ok(true, 'test skipped');
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: convert
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+var convert = (function() {
+    var baseConvert = root.fp || require('../fp/_baseConvert.js');
+    if (!root.fp) {
+        return function(name, func, options) {
+            return baseConvert(_, name, func, options);
+        };
+    }
+    return function(name, func, options) {
+        if (typeof name == 'function') {
+            options = func;
+            func = name;
+            name = undefined;
+        }
+        return name === undefined
+            ? baseConvert(func, options)
+            : baseConvert(_.runInContext(), options)[name];
+    };
+}());
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:38:14.163Z
+Question Type: select-all
+Function: skipAssert
+Function Size: 227 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: skipAssert (JavaScript)\n// Skips a given number of tests with a passing result.\n\nfunction skipAssert(assert, count) {\n    count || (count = 1);\n    while (count--) {\n        assert.ok(true, 'test skipped');\n    }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:38:17.247Z
+Question Type: function-variant
+Function: skipAssert
+Function Size: 227 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: skipAssert (JavaScript)\n// Skips a given number of tests with a passing result.\n\nfunction skipAssert(assert, count) {\n    count || (count = 1);\n    while (count--) {\n        assert.ok(true, 'test skipped');\n    }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:38:17.549Z
+Question Type: order-sequence
+Function: skipAssert
+Function Size: 227 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: skipAssert (JavaScript)\n// Skips a given number of tests with a passing result.\n\nfunction skipAssert(assert, count) {\n    count || (count = 1);\n    while (count--) {\n        assert.ok(true, 'test skipped');\n    }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:38:18.603Z
+Question Type: function-variant
+Function: convert
+Function Size: 660 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: convert (JavaScript)\n// Converts a function to a new format based on provided options.\n\nvar convert = (function() {\n    var baseConvert = root.fp || require('../fp/_baseConvert.js');\n    if (!root.fp) {\n        return function(name, func, options) {\n            return baseConvert(_, nam
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:38:19.757Z
+Question Type: multiple-choice
+Function: skipAssert
+Function Size: 227 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: skipAssert (JavaScript)\n// Skips a given number of tests with a passing result.\n\nfunction skipAssert(assert, count) {\n    count || (count = 1);\n    while (count--) {\n        assert.ok(true, 'test skipped');\n    }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:38:28.390Z
+Question Type: function-variant
+Function: convert
+Function Size: 660 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: convert (JavaScript)\n// Converts a function to a new format based on provided options.\n\nvar convert = (function() {\n    var baseConvert = root.fp || require('../fp/_baseConvert.js');\n    if (!root.fp) {\n        return function(name, func, options) {\n            return baseConvert(_, nam
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:38:30.195Z
+Question Type: function-variant
+Function: skipAssert
+Function Size: 227 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: skipAssert (JavaScript)\n// Skips a given number of tests with a passing result.\n\nfunction skipAssert(assert, count) {\n    count || (count = 1);\n    while (count--) {\n        assert.ok(true, 'test skipped');\n    }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:38:30.336Z
+Question Type: true-false
+Function: skipAssert
+Function Size: 227 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: skipAssert (JavaScript)\n// Skips a given number of tests with a passing result.\n\nfunction skipAssert(assert, count) {\n    count || (count = 1);\n    while (count--) {\n        assert.ok(true, 'test skipped');\n    }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:38:30.883Z
+Question Type: order-sequence
+Function: convert
+Function Size: 660 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: convert (JavaScript)\n// Converts a function to a new format based on provided options.\n\nvar convert = (function() {\n    var baseConvert = root.fp || require('../fp/_baseConvert.js');\n    if (!root.fp) {\n        return function(name, func, options) {\n            return baseConvert(_, nam
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761356164395
+Repository: Unknown
+Total Questions Generated: 8
+Total Chunks Processed: 2
+Ended: 2025-10-25T01:38:33.329Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:38:36.203Z
+Question Type: multiple-choice
+Function: skipAssert
+Function Size: 227 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: skipAssert (JavaScript)\n// Skips a given number of tests with a passing result.\n\nfunction skipAssert(assert, count) {\n    count || (count = 1);\n    while (count--) {\n        assert.ok(true, 'test skipped');\n    }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:38:42.836Z
+Question Type: function-variant
+Function: skipAssert
+Function Size: 227 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: skipAssert (JavaScript)\n// Skips a given number of tests with a passing result.\n\nfunction skipAssert(assert, count) {\n    count || (count = 1);\n    while (count--) {\n        assert.ok(true, 'test skipped');\n    }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:38:43.338Z
+Question Type: order-sequence
+Function: skipAssert
+Function Size: 227 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: skipAssert (JavaScript)\n// Skips a given number of tests with a passing result.\n\nfunction skipAssert(assert, count) {\n    count || (count = 1);\n    while (count--) {\n        assert.ok(true, 'test skipped');\n    }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:38:44.095Z
+Question Type: true-false
+Function: convert
+Function Size: 660 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: convert (JavaScript)\n// Converts a function to a new format based on provided options.\n\nvar convert = (function() {\n    var baseConvert = root.fp || require('../fp/_baseConvert.js');\n    if (!root.fp) {\n        return function(name, func, options) {\n            return baseConvert(_, nam
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:38:49.652Z
+Question Type: select-all
+Function: skipAssert
+Function Size: 227 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: skipAssert (JavaScript)\n// Skips a given number of tests with a passing result.\n\nfunction skipAssert(assert, count) {\n    count || (count = 1);\n    while (count--) {\n        assert.ok(true, 'test skipped');\n    }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:38:50.846Z
+Question Type: select-all
+Function: convert
+Function Size: 660 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: convert (JavaScript)\n// Converts a function to a new format based on provided options.\n\nvar convert = (function() {\n    var baseConvert = root.fp || require('../fp/_baseConvert.js');\n    if (!root.fp) {\n        return function(name, func, options) {\n            return baseConvert(_, nam
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:38:52.743Z
+Question Type: select-all
+Function: convert
+Function Size: 660 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: convert (JavaScript)\n// Converts a function to a new format based on provided options.\n\nvar convert = (function() {\n    var baseConvert = root.fp || require('../fp/_baseConvert.js');\n    if (!root.fp) {\n        return function(name, func, options) {\n            return baseConvert(_, nam
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:38:53.235Z
+Question Type: select-all
+Function: skipAssert
+Function Size: 227 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: skipAssert (JavaScript)\n// Skips a given number of tests with a passing result.\n\nfunction skipAssert(assert, count) {\n    count || (count = 1);\n    while (count--) {\n        assert.ok(true, 'test skipped');\n    }\n}
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761356164395
+Repository: Unknown
+Total Questions Generated: 7
+Total Chunks Processed: 2
+Ended: 2025-10-25T01:38:56.222Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:42:23.549Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2142 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-ab6c6ee/platform/android/java/editor/src/main/java/com/android/apksig/ApkVerificationIssue.java\n/*\n * Copyright (C) 2020 The Android Open Source Project\n *\n * Licensed under the Apache License, Version 2.0 (the "License");\n * you may not use this file except in compliance 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:42:24.500Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2137 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-ab6c6ee/platform/android/java/editor/src/main/java/com/android/apksig/ApkSignerEngine.java\n/*\n * Copyright (C) 2016 The Android Open Source Project\n *\n * Licensed under the Apache License, Version 2.0 (the "License");\n * you may not use this file except in compliance with 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:42:29.017Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1153 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: .NET libraries.\nif (BuildConfig.FLAVOR.equals("mono")) {\n			try {\n				Log.v("GODOT", "Loading System.Security.Cryptography.Native.Android library");\n				System.loadLibrary("System.Security.Cryptography.Native.Android");\n			} catch (UnsatisfiedLinkError e) {\n				Log.e("GODOT", "Unable to loa
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:42:30.703Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2137 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-ab6c6ee/platform/android/java/editor/src/main/java/com/android/apksig/ApkSignerEngine.java\n/*\n * Copyright (C) 2016 The Android Open Source Project\n *\n * Licensed under the Apache License, Version 2.0 (the "License");\n * you may not use this file except in compliance with 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:42:36.035Z
+Question Type: select-all
+Function: Unknown
+Function Size: 111 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: successfully, otherwise they fail when the process crashes.\nsuper.onGodotForceQuit(instance);\n		}\n	}\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:42:36.262Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2123 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-ab6c6ee/platform/android/java/app/src/main/java/com/godot/game/GodotApp.java\n/**************************************************************************/\n/*  GodotApp.java                                                         */\n/*****************************************
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:42:37.718Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2123 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-ab6c6ee/platform/android/java/app/src/main/java/com/godot/game/GodotApp.java\n/**************************************************************************/\n/*  GodotApp.java                                                         */\n/*****************************************
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:42:41.833Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2137 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: godotengine-godot-ab6c6ee/platform/android/java/editor/src/main/java/com/android/apksig/ApkSignerEngine.java\n/*\n * Copyright (C) 2016 The Android Open Source Project\n *\n * Licensed under the Apache License, Version 2.0 (the "License");\n * you may not use this file except in compliance with 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:42:44.099Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 111 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: successfully, otherwise they fail when the process crashes.\nsuper.onGodotForceQuit(instance);\n		}\n	}\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:42:46.610Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2123 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-ab6c6ee/platform/android/java/app/src/main/java/com/godot/game/GodotApp.java\n/**************************************************************************/\n/*  GodotApp.java                                                         */\n/*****************************************
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:42:47.411Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2142 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: godotengine-godot-ab6c6ee/platform/android/java/editor/src/main/java/com/android/apksig/ApkVerificationIssue.java\n/*\n * Copyright (C) 2020 The Android Open Source Project\n *\n * Licensed under the Apache License, Version 2.0 (the "License");\n * you may not use this file except in compliance 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:42:55.501Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2142 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-ab6c6ee/platform/android/java/editor/src/main/java/com/android/apksig/ApkVerificationIssue.java\n/*\n * Copyright (C) 2020 The Android Open Source Project\n *\n * Licensed under the Apache License, Version 2.0 (the "License");\n * you may not use this file except in compliance 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:42:58.564Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 111 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: successfully, otherwise they fail when the process crashes.\nsuper.onGodotForceQuit(instance);\n		}\n	}\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:42:59.109Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1153 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: .NET libraries.\nif (BuildConfig.FLAVOR.equals("mono")) {\n			try {\n				Log.v("GODOT", "Loading System.Security.Cryptography.Native.Android library");\n				System.loadLibrary("System.Security.Cryptography.Native.Android");\n			} catch (UnsatisfiedLinkError e) {\n				Log.e("GODOT", "Unable to loa
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:43:01.877Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1153 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: .NET libraries.\nif (BuildConfig.FLAVOR.equals("mono")) {\n			try {\n				Log.v("GODOT", "Loading System.Security.Cryptography.Native.Android library");\n				System.loadLibrary("System.Security.Cryptography.Native.Android");\n			} catch (UnsatisfiedLinkError e) {\n				Log.e("GODOT", "Unable to loa
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761356164395
+Repository: Unknown
+Total Questions Generated: 13
+Total Chunks Processed: 5
+Ended: 2025-10-25T01:43:04.440Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:44:06.471Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 1350 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Linked list size can be expensive to get so we cache it\nconst uint32_t plist_size = plist_cpp.size();\n	if (r_size != nullptr) {\n		*r_size = plist_size;\n	}\n	plist = reinterpret_cast<GDExtensionPropertyInfo *>(memalloc(sizeof(GDExtensionPropertyInfo) * plist_size));\n	unsigned int i = 0;\n	for 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:44:09.992Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2080 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/variant/basis.cpp\n/**************************************************************************/\n/*  basis.cpp                                                             */\n/**************************************************************************/\n/*      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:44:11.665Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2082 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/classes/wrapped.cpp\n/**************************************************************************/\n/*  wrapped.cpp                                                           */\n/**************************************************************************/\n/*    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:44:15.753Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 573 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Gram-Schmidt Process\nVector3 x = get_column(0);\n	Vector3 y = get_column(1);\n	Vector3 z = get_column(2);\n\n	x.normalize();\n	y = (y - x * (x.dot(y)));\n	y.normalize();\n	z = (z - x * (x.dot(z)) - y * (y.dot(z)));\n	z.normalize();\n\n	set_column(0, x);\n	set_column(1, y);\n	set_column(2, z);\n}\n\nBasis 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:44:16.553Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 29 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: namespace internal\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:44:20.491Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2082 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/classes/wrapped.cpp\n/**************************************************************************/\n/*  wrapped.cpp                                                           */\n/**************************************************************************/\n/*    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:44:23.095Z
+Question Type: select-all
+Function: Unknown
+Function Size: 29 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: namespace internal\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:44:25.404Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2080 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/variant/basis.cpp\n/**************************************************************************/\n/*  basis.cpp                                                             */\n/**************************************************************************/\n/*      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:44:27.592Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2082 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/classes/wrapped.cpp\n/**************************************************************************/\n/*  wrapped.cpp                                                           */\n/**************************************************************************/\n/*    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:44:32.436Z
+Question Type: select-all
+Function: Unknown
+Function Size: 573 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Gram-Schmidt Process\nVector3 x = get_column(0);\n	Vector3 y = get_column(1);\n	Vector3 z = get_column(2);\n\n	x.normalize();\n	y = (y - x * (x.dot(y)));\n	y.normalize();\n	z = (z - x * (x.dot(z)) - y * (y.dot(z)));\n	z.normalize();\n\n	set_column(0, x);\n	set_column(1, y);\n	set_column(2, z);\n}\n\nBasis 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:44:34.824Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 29 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: namespace internal\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:44:38.713Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2080 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/variant/basis.cpp\n/**************************************************************************/\n/*  basis.cpp                                                             */\n/**************************************************************************/\n/*      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:44:42.954Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1350 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Linked list size can be expensive to get so we cache it\nconst uint32_t plist_size = plist_cpp.size();\n	if (r_size != nullptr) {\n		*r_size = plist_size;\n	}\n	plist = reinterpret_cast<GDExtensionPropertyInfo *>(memalloc(sizeof(GDExtensionPropertyInfo) * plist_size));\n	unsigned int i = 0;\n	for 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:44:47.656Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1350 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Linked list size can be expensive to get so we cache it\nconst uint32_t plist_size = plist_cpp.size();\n	if (r_size != nullptr) {\n		*r_size = plist_size;\n	}\n	plist = reinterpret_cast<GDExtensionPropertyInfo *>(memalloc(sizeof(GDExtensionPropertyInfo) * plist_size));\n	unsigned int i = 0;\n	for 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:44:49.397Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 573 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Gram-Schmidt Process\nVector3 x = get_column(0);\n	Vector3 y = get_column(1);\n	Vector3 z = get_column(2);\n\n	x.normalize();\n	y = (y - x * (x.dot(y)));\n	y.normalize();\n	z = (z - x * (x.dot(z)) - y * (y.dot(z)));\n	z.normalize();\n\n	set_column(0, x);\n	set_column(1, y);\n	set_column(2, z);\n}\n\nBasis 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761356164395
+Repository: Unknown
+Total Questions Generated: 15
+Total Chunks Processed: 5
+Ended: 2025-10-25T01:44:51.750Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:50:01.125Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 1350 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Linked list size can be expensive to get so we cache it\nconst uint32_t plist_size = plist_cpp.size();\n	if (r_size != nullptr) {\n		*r_size = plist_size;\n	}\n	plist = reinterpret_cast<GDExtensionPropertyInfo *>(memalloc(sizeof(GDExtensionPropertyInfo) * plist_size));\n	unsigned int i = 0;\n	for 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:50:03.453Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2082 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/classes/wrapped.cpp\n/**************************************************************************/\n/*  wrapped.cpp                                                           */\n/**************************************************************************/\n/*    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:50:05.629Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2082 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/classes/wrapped.cpp\n/**************************************************************************/\n/*  wrapped.cpp                                                           */\n/**************************************************************************/\n/*    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:50:06.083Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 573 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: Gram-Schmidt Process\nVector3 x = get_column(0);\n	Vector3 y = get_column(1);\n	Vector3 z = get_column(2);\n\n	x.normalize();\n	y = (y - x * (x.dot(y)));\n	y.normalize();\n	z = (z - x * (x.dot(z)) - y * (y.dot(z)));\n	z.normalize();\n\n	set_column(0, x);\n	set_column(1, y);\n	set_column(2, z);\n}\n\nBasis 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:50:14.052Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 29 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: namespace internal\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:50:14.467Z
+Question Type: select-all
+Function: Unknown
+Function Size: 573 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Gram-Schmidt Process\nVector3 x = get_column(0);\n	Vector3 y = get_column(1);\n	Vector3 z = get_column(2);\n\n	x.normalize();\n	y = (y - x * (x.dot(y)));\n	y.normalize();\n	z = (z - x * (x.dot(z)) - y * (y.dot(z)));\n	z.normalize();\n\n	set_column(0, x);\n	set_column(1, y);\n	set_column(2, z);\n}\n\nBasis 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:50:17.263Z
+Question Type: true-false
+Function: Unknown
+Function Size: 29 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: namespace internal\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:50:22.819Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1350 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: Linked list size can be expensive to get so we cache it\nconst uint32_t plist_size = plist_cpp.size();\n	if (r_size != nullptr) {\n		*r_size = plist_size;\n	}\n	plist = reinterpret_cast<GDExtensionPropertyInfo *>(memalloc(sizeof(GDExtensionPropertyInfo) * plist_size));\n	unsigned int i = 0;\n	for 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:50:23.354Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1350 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Linked list size can be expensive to get so we cache it\nconst uint32_t plist_size = plist_cpp.size();\n	if (r_size != nullptr) {\n		*r_size = plist_size;\n	}\n	plist = reinterpret_cast<GDExtensionPropertyInfo *>(memalloc(sizeof(GDExtensionPropertyInfo) * plist_size));\n	unsigned int i = 0;\n	for 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:50:26.208Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2080 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/variant/basis.cpp\n/**************************************************************************/\n/*  basis.cpp                                                             */\n/**************************************************************************/\n/*      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:50:29.734Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2080 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/variant/basis.cpp\n/**************************************************************************/\n/*  basis.cpp                                                             */\n/**************************************************************************/\n/*      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:50:32.557Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2080 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/variant/basis.cpp\n/**************************************************************************/\n/*  basis.cpp                                                             */\n/**************************************************************************/\n/*      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:50:33.024Z
+Question Type: select-all
+Function: Unknown
+Function Size: 29 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: namespace internal\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:50:36.340Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2082 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/classes/wrapped.cpp\n/**************************************************************************/\n/*  wrapped.cpp                                                           */\n/**************************************************************************/\n/*    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:50:43.600Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 573 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Gram-Schmidt Process\nVector3 x = get_column(0);\n	Vector3 y = get_column(1);\n	Vector3 z = get_column(2);\n\n	x.normalize();\n	y = (y - x * (x.dot(y)));\n	y.normalize();\n	z = (z - x * (x.dot(z)) - y * (y.dot(z)));\n	z.normalize();\n\n	set_column(0, x);\n	set_column(1, y);\n	set_column(2, z);\n}\n\nBasis 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761356164395
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 5
+Ended: 2025-10-25T01:50:46.384Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:57:44.051Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 29 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: namespace internal\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:57:45.089Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 573 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Gram-Schmidt Process\nVector3 x = get_column(0);\n	Vector3 y = get_column(1);\n	Vector3 z = get_column(2);\n\n	x.normalize();\n	y = (y - x * (x.dot(y)));\n	y.normalize();\n	z = (z - x * (x.dot(z)) - y * (y.dot(z)));\n	z.normalize();\n\n	set_column(0, x);\n	set_column(1, y);\n	set_column(2, z);\n}\n\nBasis 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:57:46.481Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 29 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: namespace internal\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:57:47.638Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2080 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/variant/basis.cpp\n/**************************************************************************/\n/*  basis.cpp                                                             */\n/**************************************************************************/\n/*      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:57:52.313Z
+Question Type: select-all
+Function: Unknown
+Function Size: 573 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Gram-Schmidt Process\nVector3 x = get_column(0);\n	Vector3 y = get_column(1);\n	Vector3 z = get_column(2);\n\n	x.normalize();\n	y = (y - x * (x.dot(y)));\n	y.normalize();\n	z = (z - x * (x.dot(z)) - y * (y.dot(z)));\n	z.normalize();\n\n	set_column(0, x);\n	set_column(1, y);\n	set_column(2, z);\n}\n\nBasis 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:57:52.482Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 1350 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Linked list size can be expensive to get so we cache it\nconst uint32_t plist_size = plist_cpp.size();\n	if (r_size != nullptr) {\n		*r_size = plist_size;\n	}\n	plist = reinterpret_cast<GDExtensionPropertyInfo *>(memalloc(sizeof(GDExtensionPropertyInfo) * plist_size));\n	unsigned int i = 0;\n	for 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:57:52.750Z
+Question Type: true-false
+Function: Unknown
+Function Size: 573 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Gram-Schmidt Process\nVector3 x = get_column(0);\n	Vector3 y = get_column(1);\n	Vector3 z = get_column(2);\n\n	x.normalize();\n	y = (y - x * (x.dot(y)));\n	y.normalize();\n	z = (z - x * (x.dot(z)) - y * (y.dot(z)));\n	z.normalize();\n\n	set_column(0, x);\n	set_column(1, y);\n	set_column(2, z);\n}\n\nBasis 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:57:58.508Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2082 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/classes/wrapped.cpp\n/**************************************************************************/\n/*  wrapped.cpp                                                           */\n/**************************************************************************/\n/*    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:58:01.912Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2082 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/classes/wrapped.cpp\n/**************************************************************************/\n/*  wrapped.cpp                                                           */\n/**************************************************************************/\n/*    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:58:03.564Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2082 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/classes/wrapped.cpp\n/**************************************************************************/\n/*  wrapped.cpp                                                           */\n/**************************************************************************/\n/*    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:58:05.867Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 29 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: namespace internal\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:58:07.080Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1350 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Linked list size can be expensive to get so we cache it\nconst uint32_t plist_size = plist_cpp.size();\n	if (r_size != nullptr) {\n		*r_size = plist_size;\n	}\n	plist = reinterpret_cast<GDExtensionPropertyInfo *>(memalloc(sizeof(GDExtensionPropertyInfo) * plist_size));\n	unsigned int i = 0;\n	for 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:58:12.691Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2080 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/variant/basis.cpp\n/**************************************************************************/\n/*  basis.cpp                                                             */\n/**************************************************************************/\n/*      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:58:14.938Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2080 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/variant/basis.cpp\n/**************************************************************************/\n/*  basis.cpp                                                             */\n/**************************************************************************/\n/*      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:58:23.289Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1350 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Linked list size can be expensive to get so we cache it\nconst uint32_t plist_size = plist_cpp.size();\n	if (r_size != nullptr) {\n		*r_size = plist_size;\n	}\n	plist = reinterpret_cast<GDExtensionPropertyInfo *>(memalloc(sizeof(GDExtensionPropertyInfo) * plist_size));\n	unsigned int i = 0;\n	for 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761356164395
+Repository: Unknown
+Total Questions Generated: 15
+Total Chunks Processed: 5
+Ended: 2025-10-25T01:58:26.968Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:04:36.752Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2080 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/variant/basis.cpp\n/**************************************************************************/\n/*  basis.cpp                                                             */\n/**************************************************************************/\n/*      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:04:37.113Z
+Question Type: true-false
+Function: Unknown
+Function Size: 573 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Gram-Schmidt Process\nVector3 x = get_column(0);\n	Vector3 y = get_column(1);\n	Vector3 z = get_column(2);\n\n	x.normalize();\n	y = (y - x * (x.dot(y)));\n	y.normalize();\n	z = (z - x * (x.dot(z)) - y * (y.dot(z)));\n	z.normalize();\n\n	set_column(0, x);\n	set_column(1, y);\n	set_column(2, z);\n}\n\nBasis 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:04:39.101Z
+Question Type: select-all
+Function: Unknown
+Function Size: 29 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: namespace internal\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:04:41.653Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2082 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/classes/wrapped.cpp\n/**************************************************************************/\n/*  wrapped.cpp                                                           */\n/**************************************************************************/\n/*    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:04:49.840Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 573 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Gram-Schmidt Process\nVector3 x = get_column(0);\n	Vector3 y = get_column(1);\n	Vector3 z = get_column(2);\n\n	x.normalize();\n	y = (y - x * (x.dot(y)));\n	y.normalize();\n	z = (z - x * (x.dot(z)) - y * (y.dot(z)));\n	z.normalize();\n\n	set_column(0, x);\n	set_column(1, y);\n	set_column(2, z);\n}\n\nBasis 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:04:51.186Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1350 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: Linked list size can be expensive to get so we cache it\nconst uint32_t plist_size = plist_cpp.size();\n	if (r_size != nullptr) {\n		*r_size = plist_size;\n	}\n	plist = reinterpret_cast<GDExtensionPropertyInfo *>(memalloc(sizeof(GDExtensionPropertyInfo) * plist_size));\n	unsigned int i = 0;\n	for 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:04:52.317Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2082 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/classes/wrapped.cpp\n/**************************************************************************/\n/*  wrapped.cpp                                                           */\n/**************************************************************************/\n/*    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:04:52.567Z
+Question Type: select-all
+Function: Unknown
+Function Size: 573 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Gram-Schmidt Process\nVector3 x = get_column(0);\n	Vector3 y = get_column(1);\n	Vector3 z = get_column(2);\n\n	x.normalize();\n	y = (y - x * (x.dot(y)));\n	y.normalize();\n	z = (z - x * (x.dot(z)) - y * (y.dot(z)));\n	z.normalize();\n\n	set_column(0, x);\n	set_column(1, y);\n	set_column(2, z);\n}\n\nBasis 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:04:55.691Z
+Question Type: true-false
+Function: Unknown
+Function Size: 29 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: namespace internal\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:04:57.213Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1350 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Linked list size can be expensive to get so we cache it\nconst uint32_t plist_size = plist_cpp.size();\n	if (r_size != nullptr) {\n		*r_size = plist_size;\n	}\n	plist = reinterpret_cast<GDExtensionPropertyInfo *>(memalloc(sizeof(GDExtensionPropertyInfo) * plist_size));\n	unsigned int i = 0;\n	for 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:04:59.246Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 2080 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/variant/basis.cpp\n/**************************************************************************/\n/*  basis.cpp                                                             */\n/**************************************************************************/\n/*      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:05:09.110Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2080 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/variant/basis.cpp\n/**************************************************************************/\n/*  basis.cpp                                                             */\n/**************************************************************************/\n/*      
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:05:09.388Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2082 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: godotengine-godot-cpp-6c05f1f/src/classes/wrapped.cpp\n/**************************************************************************/\n/*  wrapped.cpp                                                           */\n/**************************************************************************/\n/*    
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:05:15.359Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 29 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: namespace internal\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:05:18.452Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1350 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Linked list size can be expensive to get so we cache it\nconst uint32_t plist_size = plist_cpp.size();\n	if (r_size != nullptr) {\n		*r_size = plist_size;\n	}\n	plist = reinterpret_cast<GDExtensionPropertyInfo *>(memalloc(sizeof(GDExtensionPropertyInfo) * plist_size));\n	unsigned int i = 0;\n	for 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761356164395
+Repository: Unknown
+Total Questions Generated: 14
+Total Chunks Processed: 5
+Ended: 2025-10-25T02:05:20.934Z
+================================================================================
+

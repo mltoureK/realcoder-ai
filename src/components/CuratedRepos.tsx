@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface CuratedRepo {
   name: string;
@@ -1779,6 +1779,9 @@ const CURATED_REPOS: { [key: string]: CuratedRepo[] } = {
 export default function CuratedRepos({ onRepoSelect }: { onRepoSelect: (url: string) => void }) {
   const [selectedLanguage, setSelectedLanguage] = useState<string>('JavaScript');
   const [searchTerm, setSearchTerm] = useState('');
+  const [isScrolling, setIsScrolling] = useState(true);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const languages = Object.keys(CURATED_REPOS);
   const repoPool = CURATED_REPOS[selectedLanguage];
@@ -1789,11 +1792,64 @@ export default function CuratedRepos({ onRepoSelect }: { onRepoSelect: (url: str
   );
   const highlightedCategories = Array.from(new Set(repoPool.map(repo => repo.category))).slice(0, 3);
 
+  // Infinite scrolling effect
+  useEffect(() => {
+    if (!isScrolling || filteredRepos.length === 0) return;
+
+    const startScrolling = () => {
+      if (scrollIntervalRef.current) {
+        clearInterval(scrollIntervalRef.current);
+      }
+
+      scrollIntervalRef.current = setInterval(() => {
+        if (scrollContainerRef.current) {
+          const container = scrollContainerRef.current;
+          const scrollAmount = 1; // pixels per interval
+          const maxScroll = container.scrollHeight - container.clientHeight;
+          
+          if (container.scrollTop >= maxScroll) {
+            // Reset to top for infinite loop
+            container.scrollTop = 0;
+          } else {
+            container.scrollTop += scrollAmount;
+          }
+        }
+      }, 50); // 50ms interval for smooth scrolling
+    };
+
+    startScrolling();
+
+    return () => {
+      if (scrollIntervalRef.current) {
+        clearInterval(scrollIntervalRef.current);
+      }
+    };
+  }, [isScrolling, filteredRepos.length, selectedLanguage, searchTerm]);
+
+  // Pause scrolling on hover
+  const handleMouseEnter = () => {
+    setIsScrolling(false);
+  };
+
+  const handleMouseLeave = () => {
+    setIsScrolling(true);
+  };
+
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-black/40 p-5 sm:p-8 shadow-[0_25px_70px_-35px_rgba(45,212,191,0.45)]">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.15),_transparent_65%)]" />
-      <div className="pointer-events-none absolute right-[-120px] top-[-140px] h-[280px] w-[280px] rounded-full bg-fuchsia-500/25 blur-[120px]" />
-      <div className="pointer-events-none absolute left-[-160px] bottom-[-160px] h-[320px] w-[320px] rounded-full bg-cyan-400/20 blur-[140px]" />
+    <>
+      <style jsx>{`
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
+      <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-black/40 p-5 sm:p-8 shadow-[0_25px_70px_-35px_rgba(45,212,191,0.45)]">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.15),_transparent_65%)]" />
+        <div className="pointer-events-none absolute right-[-120px] top-[-140px] h-[280px] w-[280px] rounded-full bg-fuchsia-500/25 blur-[120px]" />
+        <div className="pointer-events-none absolute left-[-160px] bottom-[-160px] h-[320px] w-[320px] rounded-full bg-cyan-400/20 blur-[140px]" />
 
       <div className="relative flex flex-col gap-6">
         <header className="flex flex-col gap-4">
@@ -1862,7 +1918,13 @@ export default function CuratedRepos({ onRepoSelect }: { onRepoSelect: (url: str
         </header>
 
         <div className="relative rounded-2xl border border-white/10 bg-white/5">
-          <div className="max-h-[26rem] overflow-y-auto px-2 py-3 sm:px-3">
+          <div 
+            ref={scrollContainerRef}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            className="max-h-[26rem] overflow-y-auto px-2 py-3 sm:px-3 scrollbar-hide"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               {filteredRepos.map((repo) => {
                 const difficultyBg =
@@ -1931,6 +1993,7 @@ export default function CuratedRepos({ onRepoSelect }: { onRepoSelect: (url: str
           Uses 1 life · Selecting a curated repo streams fresh questions tailored to that codebase.
         </footer>
       </div>
-    </section>
+      </section>
+    </>
   );
 }

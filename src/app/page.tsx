@@ -1206,13 +1206,29 @@ export default function Home() {
 
   const canGenerateQuiz = () => {
     if (activeTab === 'upload') {
-      return selectedFiles.length > 0;
+      const canUpload = selectedFiles.length > 0;
+      console.log('🔍 Upload tab - canGenerateQuiz:', canUpload, 'selectedFiles:', selectedFiles.length);
+      return canUpload;
     } else if (activeTab === 'curated') {
       // For curated (GitHub) path, ensure branch is selected and files are loaded
-      return Boolean(githubRepo.owner && githubRepo.repo && selectedBranch && repositoryFiles.length > 0);
+      const canCurated = Boolean(githubRepo.owner && githubRepo.repo && selectedBranch && repositoryFiles.length > 0);
+      console.log('🔍 Curated tab - canGenerateQuiz:', canCurated, {
+        owner: githubRepo.owner,
+        repo: githubRepo.repo,
+        selectedBranch,
+        repositoryFiles: repositoryFiles.length
+      });
+      return canCurated;
     } else {
       // For raw GitHub input, require branch + files loaded
-      return Boolean(githubRepo.owner && githubRepo.repo && selectedBranch && repositoryFiles.length > 0);
+      const canGithub = Boolean(githubRepo.owner && githubRepo.repo && selectedBranch && repositoryFiles.length > 0);
+      console.log('🔍 GitHub tab - canGenerateQuiz:', canGithub, {
+        owner: githubRepo.owner,
+        repo: githubRepo.repo,
+        selectedBranch,
+        repositoryFiles: repositoryFiles.length
+      });
+      return canGithub;
     }
   };
 
@@ -1709,6 +1725,27 @@ export default function Home() {
                       </ul>
                     </div>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* Debug Information */}
+            {!canGenerateQuiz() && !isLoading && (
+              <div className="mb-4 rounded-lg border border-amber-400/30 bg-amber-500/10 p-3 text-sm">
+                <div className="flex items-center gap-2 text-amber-200">
+                  <span>⚠️</span>
+                  <span className="font-medium">Requirements not met:</span>
+                </div>
+                <div className="mt-2 text-xs text-amber-100/80">
+                  {activeTab === 'upload' ? (
+                    <div>• Upload at least one file</div>
+                  ) : (
+                    <div>
+                      {!githubRepo.owner && <div>• Select a repository</div>}
+                      {!selectedBranch && <div>• Select a branch</div>}
+                      {repositoryFiles.length === 0 && <div>• Wait for files to load</div>}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

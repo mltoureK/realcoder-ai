@@ -1,0 +1,324 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761349689573
+Started: 2025-10-24T23:48:09.573Z
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:48:11.818Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 2094 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: // eslint-disable-next-line @typescript-eslint/no-unsafe-argument\nchallengeFiles:\n          completedChallenge?.challengeFiles?.map(\n            regenerateMissingProperties\n          ) ?? null\n      }\n    : null;\n\n  const id = challengeData?.id;\n  const startIndex = (pageNo - 1) * ITEMS_PER
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:48:14.069Z
+Question Type: select-all
+Function: Unknown
+Function Size: 50 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nid,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:48:15.274Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2056 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Items per page in timeline.\nconst ITEMS_PER_PAGE = 15;\n\ninterface TimelineProps {\n  completedMap: CompletedChallenge[];\n  openModal: (arg: string) => void;\n  t: TFunction;\n  username: string;\n}\n\ninterface TimelineInnerProps extends TimelineProps {\n  idToNameMap: Map<string, NameMap>;\n  sort
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:48:16.407Z
+Question Type: select-all
+Function: Unknown
+Function Size: 58 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nsuperBlock,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:48:16.517Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2094 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: // eslint-disable-next-line @typescript-eslint/no-unsafe-argument\nchallengeFiles:\n          completedChallenge?.challengeFiles?.map(\n            regenerateMissingProperties\n          ) ?? null\n      }\n    : null;\n\n  const id = challengeData?.id;\n  const startIndex = (pageNo - 1) * ITEMS_PER
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:48:17.584Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 50 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nid,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:48:20.691Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2056 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Items per page in timeline.\nconst ITEMS_PER_PAGE = 15;\n\ninterface TimelineProps {\n  completedMap: CompletedChallenge[];\n  openModal: (arg: string) => void;\n  t: TFunction;\n  username: string;\n}\n\ninterface TimelineInnerProps extends TimelineProps {\n  idToNameMap: Map<string, NameMap>;\n  sort
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:48:20.703Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1629 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: freeCodeCamp-freeCodeCamp-380003c/client/src/components/profile/components/time-line.tsx\nimport Loadable from '@loadable/component';\nimport { graphql, useStaticQuery } from 'gatsby';\nimport { reverse, sortBy } from 'lodash-es';\nimport React, { useMemo, useState } from 'react';\nimport type {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:48:21.770Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2056 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Items per page in timeline.\nconst ITEMS_PER_PAGE = 15;\n\ninterface TimelineProps {\n  completedMap: CompletedChallenge[];\n  openModal: (arg: string) => void;\n  t: TFunction;\n  username: string;\n}\n\ninterface TimelineInnerProps extends TimelineProps {\n  idToNameMap: Map<string, NameMap>;\n  sort
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:48:22.534Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 58 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nsuperBlock,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:48:22.744Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1629 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: freeCodeCamp-freeCodeCamp-380003c/client/src/components/profile/components/time-line.tsx\nimport Loadable from '@loadable/component';\nimport { graphql, useStaticQuery } from 'gatsby';\nimport { reverse, sortBy } from 'lodash-es';\nimport React, { useMemo, useState } from 'react';\nimport type {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:48:25.589Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 58 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nsuperBlock,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:48:27.058Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1629 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: freeCodeCamp-freeCodeCamp-380003c/client/src/components/profile/components/time-line.tsx\nimport Loadable from '@loadable/component';\nimport { graphql, useStaticQuery } from 'gatsby';\nimport { reverse, sortBy } from 'lodash-es';\nimport React, { useMemo, useState } from 'react';\nimport type {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:48:31.302Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2094 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: // eslint-disable-next-line @typescript-eslint/no-unsafe-argument\nchallengeFiles:\n          completedChallenge?.challengeFiles?.map(\n            regenerateMissingProperties\n          ) ?? null\n      }\n    : null;\n\n  const id = challengeData?.id;\n  const startIndex = (pageNo - 1) * ITEMS_PER
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:48:33.177Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 50 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: @ts-expect-error Graphql needs typing\nid,
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761349689573
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 5
+Ended: 2025-10-24T23:48:33.179Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:52:59.418Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 2096 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Return with static fallback strengths/weaknesses to avoid API calls\nconst strengthsWeaknesses: StrengthsWeaknesses = {\n    strengths: ['Solid programming fundamentals and problem-solving skills'],\n    weaknesses: ['Continue practicing to identify specific improvement areas']\n  };\n\n  if (str
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:53:00.223Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1113 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: mltoureK-realcoder-ai-7cd5135/src/app/api/reportCard/route.ts\nimport { NextRequest, NextResponse } from 'next/server';\nimport { analyzeResults, computeRepoIQ, generateStrengthsWeaknesses, type QuestionResult, type FailedQuestion, type Analysis, type RepoIQ, type StrengthsWeaknesses } from '
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:53:01.749Z
+Question Type: true-false
+Function: Unknown
+Function Size: 636 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Use OpenAI to generate a bug based on the failed question\ntry {\n    const response = await fetch('https://api.openai.com/v1/chat/completions', {\n      method: 'POST',\n      headers: {\n        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,\n        'Content-Type': 'application/json'
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:53:02.123Z
+Question Type: select-all
+Function: Unknown
+Function Size: 591 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Fallback to generic but improved format\nreturn {\n      title: `${failedQuestion.type.charAt(0).toUpperCase() + failedQuestion.type.slice(1)} logic error causing unexpected behavior`,\n      description: 'symptom of the logic error in the code: the application behaves differently than expecte
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:53:05.178Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2071 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: test based on failed question concept' }],\ndifficulty: 'medium' as const,\n        sourceQuestion: {\n          type: failedQuestion.type,\n          question: failedQuestion.question,\n          codeContext: failedQuestion.codeContext,\n          userAnswer: failedQuestion.selectedAnswers.join(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:53:05.349Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2071 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: test based on failed question concept' }],\ndifficulty: 'medium' as const,\n        sourceQuestion: {\n          type: failedQuestion.type,\n          question: failedQuestion.question,\n          codeContext: failedQuestion.codeContext,\n          userAnswer: failedQuestion.selectedAnswers.join(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:53:10.797Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1113 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: mltoureK-realcoder-ai-7cd5135/src/app/api/reportCard/route.ts\nimport { NextRequest, NextResponse } from 'next/server';\nimport { analyzeResults, computeRepoIQ, generateStrengthsWeaknesses, type QuestionResult, type FailedQuestion, type Analysis, type RepoIQ, type StrengthsWeaknesses } from '
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:53:11.811Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1113 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: mltoureK-realcoder-ai-7cd5135/src/app/api/reportCard/route.ts\nimport { NextRequest, NextResponse } from 'next/server';\nimport { analyzeResults, computeRepoIQ, generateStrengthsWeaknesses, type QuestionResult, type FailedQuestion, type Analysis, type RepoIQ, type StrengthsWeaknesses } from '
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:53:13.182Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 591 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: Fallback to generic but improved format\nreturn {\n      title: `${failedQuestion.type.charAt(0).toUpperCase() + failedQuestion.type.slice(1)} logic error causing unexpected behavior`,\n      description: 'symptom of the logic error in the code: the application behaves differently than expecte
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:53:14.201Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2096 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Return with static fallback strengths/weaknesses to avoid API calls\nconst strengthsWeaknesses: StrengthsWeaknesses = {\n    strengths: ['Solid programming fundamentals and problem-solving skills'],\n    weaknesses: ['Continue practicing to identify specific improvement areas']\n  };\n\n  if (str
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:53:17.627Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2096 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: Return with static fallback strengths/weaknesses to avoid API calls\nconst strengthsWeaknesses: StrengthsWeaknesses = {\n    strengths: ['Solid programming fundamentals and problem-solving skills'],\n    weaknesses: ['Continue practicing to identify specific improvement areas']\n  };\n\n  if (str
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:53:19.819Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2071 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: test based on failed question concept' }],\ndifficulty: 'medium' as const,\n        sourceQuestion: {\n          type: failedQuestion.type,\n          question: failedQuestion.question,\n          codeContext: failedQuestion.codeContext,\n          userAnswer: failedQuestion.selectedAnswers.join(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:53:20.287Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 636 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: Use OpenAI to generate a bug based on the failed question\ntry {\n    const response = await fetch('https://api.openai.com/v1/chat/completions', {\n      method: 'POST',\n      headers: {\n        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,\n        'Content-Type': 'application/json'
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:53:24.012Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 591 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Fallback to generic but improved format\nreturn {\n      title: `${failedQuestion.type.charAt(0).toUpperCase() + failedQuestion.type.slice(1)} logic error causing unexpected behavior`,\n      description: 'symptom of the logic error in the code: the application behaves differently than expecte
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:53:24.959Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 636 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Use OpenAI to generate a bug based on the failed question\ntry {\n    const response = await fetch('https://api.openai.com/v1/chat/completions', {\n      method: 'POST',\n      headers: {\n        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,\n        'Content-Type': 'application/json'
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761349689573
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 5
+Ended: 2025-10-24T23:53:30.066Z
+================================================================================
+

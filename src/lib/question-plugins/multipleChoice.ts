@@ -8,22 +8,46 @@ const MAX_TOKENS = 2500;
 const SYSTEM_PROMPT = 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.';
 
 function createUserPrompt(chunk: string): string {
-  return `Generate 1 multiple-choice question based on this function to test understanding:
+  return `Generate 1 hard difficulty multiple-choice quiz question that can be answered based on the function from the code chunk:
 
 ${chunk}
 
-Then i want you to
+CRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.
 
-Return ONLY valid JSON:
+IMPORTANT REQUIREMENTS:
+1. ONLY generate questions about functions that actually exist in the provided code chunk
+2. The function name in "snippet" must be from the code
+3. Focus on what the function does, how it works, and edge cases
+4. Make incorrect options realistic bugs or misunderstandings
+
+FOCUS ON UNIVERSAL PROGRAMMING CONCEPTS:
+- Function behavior and logic
+- Edge cases and error handling
+- Input/output analysis
+- Algorithm understanding
+- Common programming pitfalls
+
+AVOID:
+- Repository-specific trivia
+- Basic syntax questions
+- Obvious answers
+
+EXPLANATION REQUIREMENTS:
+- Explain WHY the correct answer is right
+- Explain WHY incorrect answers are wrong
+- Include practical examples
+- Focus on learning value
+
+Format:
 [
   {
-    "snippet": "functionName",
+    "snippet": "show complete function that the question uses from the code chunk",
     "quiz": {
       "type": "multiple-choice",
-      "question": "hard coding question",
-      "options": ["option A", "option B", "option C", "option D"],
+      "question": "Ask about specific function behavior, edge cases, or what happens in certain scenarios",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
       "answer": "A",
-      "explanation": "why option A is correct"
+      "explanation": "Detailed explanation (3-5 sentences) with a helpful tone that explains why the correct answer is right and why others are wrong"
     }
   }
 ]`;
@@ -90,8 +114,18 @@ export const multipleChoicePlugin: QuestionPlugin = {
           if (cleanContent.endsWith('```')) cleanContent = cleanContent.replace(/\s*```$/, '');
           const jsonStart = cleanContent.indexOf('[');
           if (jsonStart > 0) cleanContent = cleanContent.substring(jsonStart);
-          const jsonEnd = cleanContent.lastIndexOf(']');
-          if (jsonEnd > 0 && jsonEnd < cleanContent.length - 1) cleanContent = cleanContent.substring(0, jsonEnd + 1);
+          // Find the complete JSON array by counting brackets
+          let bracketCount = 0;
+          let jsonEnd = -1;
+          for (let i = 0; i < cleanContent.length; i++) {
+            if (cleanContent[i] === '[') bracketCount++;
+            if (cleanContent[i] === ']') bracketCount--;
+            if (bracketCount === 0) {
+              jsonEnd = i;
+              break;
+            }
+          }
+          if (jsonEnd > 0) cleanContent = cleanContent.substring(0, jsonEnd + 1);
           
           const parsed = JSON.parse(cleanContent);
 

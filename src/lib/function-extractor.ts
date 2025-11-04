@@ -14,9 +14,9 @@ export interface ExtractedFunction {
   description?: string;
 }
 
-const MIN_TIMEOUT_MS = Number(process.env.OPENAI_FUNCTION_EXTRACTOR_MIN_TIMEOUT_MS ?? 15000);
-const MAX_TIMEOUT_MS = Number(process.env.OPENAI_FUNCTION_EXTRACTOR_MAX_TIMEOUT_MS ?? 45000);
-const TIMEOUT_PER_KB_MS = Number(process.env.OPENAI_FUNCTION_EXTRACTOR_TIMEOUT_PER_KB_MS ?? 80);
+const MIN_TIMEOUT_MS = Number(process.env.OPENAI_FUNCTION_EXTRACTOR_MIN_TIMEOUT_MS ?? 3000);
+const MAX_TIMEOUT_MS = Number(process.env.OPENAI_FUNCTION_EXTRACTOR_MAX_TIMEOUT_MS ?? 8000);
+const TIMEOUT_PER_KB_MS = Number(process.env.OPENAI_FUNCTION_EXTRACTOR_TIMEOUT_PER_KB_MS ?? 20);
 
 /**
  * Extract all complete functions from a file using GPT
@@ -136,6 +136,19 @@ Skip: stubs, simple returns, empty functions, <5 lines, <100 chars.`
     if (jsonStart > 0) {
       cleanContent = cleanContent.substring(jsonStart);
     }
+    
+    // Find the complete JSON array by counting brackets
+    let bracketCount = 0;
+    let jsonEnd = -1;
+    for (let i = 0; i < cleanContent.length; i++) {
+      if (cleanContent[i] === '[') bracketCount++;
+      if (cleanContent[i] === ']') bracketCount--;
+      if (bracketCount === 0) {
+        jsonEnd = i;
+        break;
+      }
+    }
+    if (jsonEnd > 0) cleanContent = cleanContent.substring(0, jsonEnd + 1);
 
     const parsed = JSON.parse(cleanContent);
 
@@ -159,7 +172,7 @@ Skip: stubs, simple returns, empty functions, <5 lines, <100 chars.`
         .trim();
       
       // Count actual code lines (non-empty, non-comment)
-      const actualCodeLines = codeWithoutComments.split('\n').filter(line => line.trim().length > 0).length;
+      const actualCodeLines = codeWithoutComments.split('\n').filter((line: string) => line.trim().length > 0).length;
       if (actualCodeLines < 4) return false; // At least 4 lines of actual code
       
       // Reject functions that just return the input unchanged
@@ -211,12 +224,12 @@ Skip: stubs, simple returns, empty functions, <5 lines, <100 chars.`
 export async function* extractFunctionsFromFilesStreaming(
   files: Array<{ name: string; content: string; score: number }>,
   apiKey: string,
-  maxFiles: number = 8
+  maxFiles: number = 15
 ): AsyncGenerator<ExtractedFunction[], void, unknown> {
   console.log(`🎯 Starting streaming function extraction from up to ${maxFiles} files...`);
 
   // CRITICAL: Filter out extremely large files and minified files
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB limit (much more reasonable)
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB limit (reasonable for quality)
   const manageableFiles = files.filter(file => {
     // Skip large files
     if (file.content.length > MAX_FILE_SIZE) return false;
@@ -237,19 +250,22 @@ export async function* extractFunctionsFromFilesStreaming(
   
   console.log(`📊 Filtered files: ${manageableFiles.length}/${files.length} are manageable size (≤${Math.round(MAX_FILE_SIZE / 1024 / 1024)}MB, not minified)`);
 
-  // CRITICAL: Add randomization to prevent repetitive questions
-  // Shuffle files before scoring to add variety
-  const shuffledFiles = [...manageableFiles].sort(() => Math.random() - 0.5);
+  // SMART APPROACH: Prioritize first question speed while maintaining quality
+  // 1. Take small files first for fast first question
+  // 2. Then add larger files for comprehensive coverage
   
-  // Sort by score but with some randomness (take top 2x, then shuffle)
-  const topCandidates = shuffledFiles
-    .sort((a, b) => b.score - a.score)
-    .slice(0, maxFiles * 2); // Get 2x candidates
+  const smallFiles = manageableFiles.filter(f => f.content.length < 20 * 1024); // < 20KB
+  const largeFiles = manageableFiles.filter(f => f.content.length >= 20 * 1024); // >= 20KB
   
-  // Shuffle candidates and take maxFiles for more variety
-  const selectedFiles = topCandidates
-    .sort(() => Math.random() - 0.5)
-    .slice(0, maxFiles);
+  // Shuffle both groups for diversity
+  const shuffledSmallFiles = [...smallFiles].sort(() => Math.random() - 0.5);
+  const shuffledLargeFiles = [...largeFiles].sort(() => Math.random() - 0.5);
+  
+  // Take small files first (for fast first question), then large files (for quality)
+  const selectedFiles = [
+    ...shuffledSmallFiles.slice(0, Math.min(5, shuffledSmallFiles.length)), // First 5 small files
+    ...shuffledLargeFiles.slice(0, Math.min(maxFiles - 5, shuffledLargeFiles.length)) // Remaining from large files
+  ].slice(0, maxFiles);
 
   console.log(`📊 Selected ${selectedFiles.length} files with randomization for diversity`);
 
@@ -298,7 +314,7 @@ export async function* extractFunctionsFromFilesStreaming(
     return;
   }
 
-  const maxConcurrencyEnv = Number(process.env.OPENAI_FUNCTION_EXTRACTOR_CONCURRENCY ?? 3);
+  const maxConcurrencyEnv = Number(process.env.OPENAI_FUNCTION_EXTRACTOR_CONCURRENCY ?? 4);
   const maxConcurrentBatches = Math.max(1, Math.min(maxConcurrencyEnv, batches.length));
   console.log(`🧵 Using parallel extraction with concurrency=${maxConcurrentBatches}`);
 

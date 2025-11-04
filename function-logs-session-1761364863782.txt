@@ -1,0 +1,164 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761364863782
+Started: 2025-10-25T04:01:03.782Z
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:01:09.274Z
+Question Type: true-false
+Function: Unknown
+Function Size: 140 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Frontend errors\nexport class AlreadyExistsError extends Error {\n    constructor(message?: string) {\n        super(message);\n    }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:01:10.594Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2039 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: API errors\nexport interface ErrorResponse {\n    errors: Array<{\n        code: string\n        context: string | null\n        details: string | null\n        ghostErrorCode: string | null\n        help: string\n        id: string\n        message: string\n        property: string | null\n        ty
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:01:12.723Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 2039 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: API errors\nexport interface ErrorResponse {\n    errors: Array<{\n        code: string\n        context: string | null\n        details: string | null\n        ghostErrorCode: string | null\n        help: string\n        id: string\n        message: string\n        property: string | null\n        ty
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:01:27.202Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 140 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Frontend errors\nexport class AlreadyExistsError extends Error {\n    constructor(message?: string) {\n        super(message);\n    }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:01:31.591Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1133 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Note: we store the comments from new to old, and show them in reverse order\nreturn {\n        comments: dedupedComments,\n        pagination: data.meta.pagination\n    };\n}\n\nfunction setCommentsIsLoading({data: isLoading}: {data: boolean | null}) {\n    return {\n        commentsIsLoading: isLoa
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:01:33.811Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1117 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: TryGhost-Ghost-1bf0399/apps/comments-ui/src/actions.ts\nimport {AddComment, Comment, CommentsOptions, DispatchActionType, EditableAppContext, OpenCommentForm} from './AppContext';\nimport {AdminApi} from './utils/adminApi';\nimport {GhostApi} from './utils/api';\nimport {Page} from './pages';\n\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:01:39.114Z
+Question Type: true-false
+Function: Unknown
+Function Size: 140 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Frontend errors\nexport class AlreadyExistsError extends Error {\n    constructor(message?: string) {\n        super(message);\n    }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:01:48.753Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1133 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: Note: we store the comments from new to old, and show them in reverse order\nreturn {\n        comments: dedupedComments,\n        pagination: data.meta.pagination\n    };\n}\n\nfunction setCommentsIsLoading({data: isLoading}: {data: boolean | null}) {\n    return {\n        commentsIsLoading: isLoa
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:01:50.124Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1133 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: Note: we store the comments from new to old, and show them in reverse order\nreturn {\n        comments: dedupedComments,\n        pagination: data.meta.pagination\n    };\n}\n\nfunction setCommentsIsLoading({data: isLoading}: {data: boolean | null}) {\n    return {\n        commentsIsLoading: isLoa
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:01:50.909Z
+Question Type: true-false
+Function: Unknown
+Function Size: 93 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-line no-console\nstate.commentsIsLoading = false;\n        throw error;
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:01:54.224Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2039 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: API errors\nexport interface ErrorResponse {\n    errors: Array<{\n        code: string\n        context: string | null\n        details: string | null\n        ghostErrorCode: string | null\n        help: string\n        id: string\n        message: string\n        property: string | null\n        ty
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:01:59.256Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1117 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: TryGhost-Ghost-1bf0399/apps/comments-ui/src/actions.ts\nimport {AddComment, Comment, CommentsOptions, DispatchActionType, EditableAppContext, OpenCommentForm} from './AppContext';\nimport {AdminApi} from './utils/adminApi';\nimport {GhostApi} from './utils/api';\nimport {Page} from './pages';\n\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:02:02.395Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1117 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: TryGhost-Ghost-1bf0399/apps/comments-ui/src/actions.ts\nimport {AddComment, Comment, CommentsOptions, DispatchActionType, EditableAppContext, OpenCommentForm} from './AppContext';\nimport {AdminApi} from './utils/adminApi';\nimport {GhostApi} from './utils/api';\nimport {Page} from './pages';\n\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:02:10.465Z
+Question Type: select-all
+Function: Unknown
+Function Size: 93 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-line no-console\nstate.commentsIsLoading = false;\n        throw error;
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:02:11.059Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 93 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-line no-console\nstate.commentsIsLoading = false;\n        throw error;
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761364863782
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 5
+Ended: 2025-10-25T04:02:16.490Z
+================================================================================
+

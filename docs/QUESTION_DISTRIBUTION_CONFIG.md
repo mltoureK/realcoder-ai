@@ -5,10 +5,9 @@ This file explains how to customize the question type distribution for quiz gene
 ## Current Configuration (15 API Calls per Quiz)
 
 **Distribution:**
-- 5 Function Variant (FV) - 33%
-- 5 Select All (SA) - 33%
-- 2 Order Sequence (OS) - 13%
-- 2 True/False (TF) - 13%
+- 4 Function Variant (FV) - 27%
+- 4 Select All (SA) - 27%
+- 6 True/False (TF) - 40%
 - 1 Multiple Choice (MCQ) - 7%
 
 **Total: 15 API calls per quiz**
@@ -25,17 +24,16 @@ File: `src/lib/question-plugins/question-distribution-config.ts`
 1. **Modify the counts array** - Each number represents how many questions of that type to generate:
 ```typescript
 export const QUESTION_DISTRIBUTION = [
-  { type: 'function-variant', count: 5 },
-  { type: 'select-all', count: 5 },
-  { type: 'order-sequence', count: 2 },
-  { type: 'true-false', count: 2 },
+  { type: 'function-variant', count: 4 },
+  { type: 'select-all', count: 4 },
+  { type: 'true-false', count: 6 },
   { type: 'multiple-choice', count: 1 },
 ];
 ```
 
 2. **Change individual counts** - Want more Function Variants?
 ```typescript
-{ type: 'function-variant', count: 8 },  // Changed from 5 to 8
+{ type: 'function-variant', count: 8 },  // Changed from 4 to 8
 ```
 
 3. **Add new question types** - If you create a new plugin:
@@ -52,21 +50,17 @@ export const QUESTION_DISTRIBUTION = [
 
 ## Important Rules
 
-### 1. Never Show Order Sequence First
-Order Sequence questions can't be the first question shown to users (it's confusing without context).
-
-The system automatically ensures:
-- Order Sequence questions are shuffled to positions 2-15
-- They never appear at index 0 (first position)
+### 1. Question Ordering
+All question types can appear in any position, including first.
 
 ### 2. Total API Calls = Total Count
 The sum of all counts equals total API calls:
-- 5 + 5 + 2 + 2 + 1 = **15 API calls**
+- 4 + 4 + 6 + 1 = **15 API calls**
 
 To change total API calls, adjust the counts accordingly.
 
 ### 3. Randomization
-Questions are generated in the order specified, but then **randomly shuffled** before being presented to users (respecting Rule #1).
+Questions are generated in the order specified, but then **randomly shuffled** before being presented to users.
 
 ---
 

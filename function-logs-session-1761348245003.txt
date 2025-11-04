@@ -1,0 +1,1370 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761348245003
+Started: 2025-10-24T23:24:05.003Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T23:24:05.004Z
+File: [2 files: saucelabs.js, build-dist.js]
+Functions Extracted: 1
+
+
+Function 1: build
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function build() {
+  async.series([
+    _.partial(webpack, mappingConfig),
+    _.partial(webpack, fpConfig),
+    file.min(path.join(distPath, filename))
+  ], util.pitch);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:08.004Z
+Question Type: true-false
+Function: build
+Function Size: 284 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: build (JavaScript)\n// Creates browser builds of the FP converter and mappings at the target path.\n\nfunction build() {\n  async.series([\n    _.partial(webpack, mappingConfig),\n    _.partial(webpack, fpConfig),\n    file.min(path.join(distPath, filename))\n  ], util.pitch);\n}
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T23:24:09.189Z
+File: [6 files: util.js, Setup Sauce Connect so we can use this server from Sauce Labs., ff955275(v=vs.85).aspx., Add score adjusted for margin of error., test-ui.js, remove.js]
+Functions Extracted: 3
+
+
+Function 1: Hash
+Language: JavaScript
+Lines: 9
+Full Code:
+--------------------------------------------------------------------------------
+function Hash(properties) {
+  return _.transform(properties, (result, value, key) => {
+    result[key] = (_.isPlainObject(value) && !(value instanceof Hash))
+      ? new Hash(value)
+      : value;
+  }, this);
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: pattern
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+var pattern = (function() {
+  var result = args[0],
+      delimiter = result.charAt(0),
+      lastIndex = result.lastIndexOf(delimiter);
+
+  return RegExp(result.slice(1, lastIndex), result.slice(lastIndex + 1));
+}());
+--------------------------------------------------------------------------------
+
+
+Function 3: fs.writeFileSync
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+fs.writeFileSync(filePath, fs.readFileSync(filePath, 'utf8').replace(pattern, function(match) {
+  var snippet = _.slice(arguments, -3, -2)[0];
+  return match.replace(snippet, snippet.replace(reLine, ''));
+}));
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:12.458Z
+Question Type: true-false
+Function: build
+Function Size: 284 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: build (JavaScript)\n// Creates browser builds of the FP converter and mappings at the target path.\n\nfunction build() {\n  async.series([\n    _.partial(webpack, mappingConfig),\n    _.partial(webpack, fpConfig),\n    file.min(path.join(distPath, filename))\n  ], util.pitch);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:13.033Z
+Question Type: order-sequence
+Function: build
+Function Size: 284 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: build (JavaScript)\n// Creates browser builds of the FP converter and mappings at the target path.\n\nfunction build() {\n  async.series([\n    _.partial(webpack, mappingConfig),\n    _.partial(webpack, fpConfig),\n    file.min(path.join(distPath, filename))\n  ], util.pitch);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:13.040Z
+Question Type: order-sequence
+Function: build
+Function Size: 284 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: build (JavaScript)\n// Creates browser builds of the FP converter and mappings at the target path.\n\nfunction build() {\n  async.series([\n    _.partial(webpack, mappingConfig),\n    _.partial(webpack, fpConfig),\n    file.min(path.join(distPath, filename))\n  ], util.pitch);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:13.470Z
+Question Type: function-variant
+Function: build
+Function Size: 284 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: build (JavaScript)\n// Creates browser builds of the FP converter and mappings at the target path.\n\nfunction build() {\n  async.series([\n    _.partial(webpack, mappingConfig),\n    _.partial(webpack, fpConfig),\n    file.min(path.join(distPath, filename))\n  ], util.pitch);\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:13.765Z
+Question Type: function-variant
+Function: build
+Function Size: 284 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: build (JavaScript)\n// Creates browser builds of the FP converter and mappings at the target path.\n\nfunction build() {\n  async.series([\n    _.partial(webpack, mappingConfig),\n    _.partial(webpack, fpConfig),\n    file.min(path.join(distPath, filename))\n  ], util.pitch);\n}
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761348245003
+Repository: Unknown
+Total Questions Generated: 4
+Total Chunks Processed: 1
+Ended: 2025-10-24T23:24:19.484Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T23:24:21.776Z
+File: Set a more readable browser name.
+Functions Extracted: 1
+
+
+Function 1: window.onload
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+window.onload = function() {
+        var timeoutId = setInterval(function() {
+          var ua = document.getElementById('qunit-userAgent');
+          if (ua) {
+            ua.innerHTML = platform;
+            clearInterval(timeoutId);
+          }
+        }, 16);
+      };
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:22.606Z
+Question Type: true-false
+Function: fs.writeFileSync
+Function Size: 336 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: fs.writeFileSync (JavaScript)\n// Reads a file, replaces content based on a pattern, and writes back to the file.\n\nfs.writeFileSync(filePath, fs.readFileSync(filePath, 'utf8').replace(pattern, function(match) {\n  var snippet = _.slice(arguments, -3, -2)[0];\n  return match.replace(snippet
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:23.089Z
+Question Type: true-false
+Function: pattern
+Function Size: 325 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: pattern (JavaScript)\n// Creates a regular expression pattern based on command line arguments.\n\nvar pattern = (function() {\n  var result = args[0],\n      delimiter = result.charAt(0),\n      lastIndex = result.lastIndexOf(delimiter);\n\n  return RegExp(result.slice(1, lastIndex), result.sli
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:24.776Z
+Question Type: select-all
+Function: pattern
+Function Size: 325 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: pattern (JavaScript)\n// Creates a regular expression pattern based on command line arguments.\n\nvar pattern = (function() {\n  var result = args[0],\n      delimiter = result.charAt(0),\n      lastIndex = result.lastIndexOf(delimiter);\n\n  return RegExp(result.slice(1, lastIndex), result.sli
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:25.729Z
+Question Type: order-sequence
+Function: pattern
+Function Size: 325 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: pattern (JavaScript)\n// Creates a regular expression pattern based on command line arguments.\n\nvar pattern = (function() {\n  var result = args[0],\n      delimiter = result.charAt(0),\n      lastIndex = result.lastIndexOf(delimiter);\n\n  return RegExp(result.slice(1, lastIndex), result.sli
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:27.505Z
+Question Type: order-sequence
+Function: fs.writeFileSync
+Function Size: 336 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: fs.writeFileSync (JavaScript)\n// Reads a file, replaces content based on a pattern, and writes back to the file.\n\nfs.writeFileSync(filePath, fs.readFileSync(filePath, 'utf8').replace(pattern, function(match) {\n  var snippet = _.slice(arguments, -3, -2)[0];\n  return match.replace(snippet
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:27.512Z
+Question Type: order-sequence
+Function: Hash
+Function Size: 316 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: Hash (JavaScript)\n// Creates a hash object and assigns properties from the provided object.\n\nfunction Hash(properties) {\n  return _.transform(properties, (result, value, key) => {\n    result[key] = (_.isPlainObject(value) && !(value instanceof Hash))\n      ? new Hash(value)\n      : valu
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:28.125Z
+Question Type: multiple-choice
+Function: Hash
+Function Size: 316 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: Hash (JavaScript)\n// Creates a hash object and assigns properties from the provided object.\n\nfunction Hash(properties) {\n  return _.transform(properties, (result, value, key) => {\n    result[key] = (_.isPlainObject(value) && !(value instanceof Hash))\n      ? new Hash(value)\n      : valu
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:32.996Z
+Question Type: select-all
+Function: pattern
+Function Size: 325 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: pattern (JavaScript)\n// Creates a regular expression pattern based on command line arguments.\n\nvar pattern = (function() {\n  var result = args[0],\n      delimiter = result.charAt(0),\n      lastIndex = result.lastIndexOf(delimiter);\n\n  return RegExp(result.slice(1, lastIndex), result.sli
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:33.234Z
+Question Type: select-all
+Function: fs.writeFileSync
+Function Size: 336 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: fs.writeFileSync (JavaScript)\n// Reads a file, replaces content based on a pattern, and writes back to the file.\n\nfs.writeFileSync(filePath, fs.readFileSync(filePath, 'utf8').replace(pattern, function(match) {\n  var snippet = _.slice(arguments, -3, -2)[0];\n  return match.replace(snippet
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:33.259Z
+Question Type: order-sequence
+Function: fs.writeFileSync
+Function Size: 336 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: fs.writeFileSync (JavaScript)\n// Reads a file, replaces content based on a pattern, and writes back to the file.\n\nfs.writeFileSync(filePath, fs.readFileSync(filePath, 'utf8').replace(pattern, function(match) {\n  var snippet = _.slice(arguments, -3, -2)[0];\n  return match.replace(snippet
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:35.186Z
+Question Type: function-variant
+Function: Hash
+Function Size: 316 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: Hash (JavaScript)\n// Creates a hash object and assigns properties from the provided object.\n\nfunction Hash(properties) {\n  return _.transform(properties, (result, value, key) => {\n    result[key] = (_.isPlainObject(value) && !(value instanceof Hash))\n      ? new Hash(value)\n      : valu
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:36.112Z
+Question Type: function-variant
+Function: pattern
+Function Size: 325 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: pattern (JavaScript)\n// Creates a regular expression pattern based on command line arguments.\n\nvar pattern = (function() {\n  var result = args[0],\n      delimiter = result.charAt(0),\n      lastIndex = result.lastIndexOf(delimiter);\n\n  return RegExp(result.slice(1, lastIndex), result.sli
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761348245003
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 3
+Ended: 2025-10-24T23:24:45.892Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:49.271Z
+Question Type: multiple-choice
+Function: window.onload
+Function Size: 498 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: window.onload (JavaScript)\n// Sets a function to run when the window has finished loading, which updates the innerHTML of an element with the ID 'qunit-userAgent' to the value of 'platform' at regular intervals.\n\nwindow.onload = function() {\n        var timeoutId = setInterval(function(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:49.807Z
+Question Type: true-false
+Function: window.onload
+Function Size: 498 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: window.onload (JavaScript)\n// Sets a function to run when the window has finished loading, which updates the innerHTML of an element with the ID 'qunit-userAgent' to the value of 'platform' at regular intervals.\n\nwindow.onload = function() {\n        var timeoutId = setInterval(function(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:52.421Z
+Question Type: select-all
+Function: window.onload
+Function Size: 498 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: window.onload (JavaScript)\n// Sets a function to run when the window has finished loading, which updates the innerHTML of an element with the ID 'qunit-userAgent' to the value of 'platform' at regular intervals.\n\nwindow.onload = function() {\n        var timeoutId = setInterval(function(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:52.616Z
+Question Type: select-all
+Function: window.onload
+Function Size: 498 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: window.onload (JavaScript)\n// Sets a function to run when the window has finished loading, which updates the innerHTML of an element with the ID 'qunit-userAgent' to the value of 'platform' at regular intervals.\n\nwindow.onload = function() {\n        var timeoutId = setInterval(function(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:53.914Z
+Question Type: order-sequence
+Function: window.onload
+Function Size: 498 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: window.onload (JavaScript)\n// Sets a function to run when the window has finished loading, which updates the innerHTML of an element with the ID 'qunit-userAgent' to the value of 'platform' at regular intervals.\n\nwindow.onload = function() {\n        var timeoutId = setInterval(function(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:53.922Z
+Question Type: order-sequence
+Function: window.onload
+Function Size: 498 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: window.onload (JavaScript)\n// Sets a function to run when the window has finished loading, which updates the innerHTML of an element with the ID 'qunit-userAgent' to the value of 'platform' at regular intervals.\n\nwindow.onload = function() {\n        var timeoutId = setInterval(function(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:55.618Z
+Question Type: true-false
+Function: window.onload
+Function Size: 498 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: window.onload (JavaScript)\n// Sets a function to run when the window has finished loading, which updates the innerHTML of an element with the ID 'qunit-userAgent' to the value of 'platform' at regular intervals.\n\nwindow.onload = function() {\n        var timeoutId = setInterval(function(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:24:59.867Z
+Question Type: function-variant
+Function: window.onload
+Function Size: 498 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: window.onload (JavaScript)\n// Sets a function to run when the window has finished loading, which updates the innerHTML of an element with the ID 'qunit-userAgent' to the value of 'platform' at regular intervals.\n\nwindow.onload = function() {\n        var timeoutId = setInterval(function(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:25:00.926Z
+Question Type: order-sequence
+Function: window.onload
+Function Size: 498 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: window.onload (JavaScript)\n// Sets a function to run when the window has finished loading, which updates the innerHTML of an element with the ID 'qunit-userAgent' to the value of 'platform' at regular intervals.\n\nwindow.onload = function() {\n        var timeoutId = setInterval(function(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:25:01.919Z
+Question Type: order-sequence
+Function: window.onload
+Function Size: 498 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: window.onload (JavaScript)\n// Sets a function to run when the window has finished loading, which updates the innerHTML of an element with the ID 'qunit-userAgent' to the value of 'platform' at regular intervals.\n\nwindow.onload = function() {\n        var timeoutId = setInterval(function(
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:25:02.738Z
+Question Type: function-variant
+Function: window.onload
+Function Size: 498 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: window.onload (JavaScript)\n// Sets a function to run when the window has finished loading, which updates the innerHTML of an element with the ID 'qunit-userAgent' to the value of 'platform' at regular intervals.\n\nwindow.onload = function() {\n        var timeoutId = setInterval(function(
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761348245003
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 1
+Ended: 2025-10-24T23:25:07.356Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T23:26:14.234Z
+File: [15 files: CASE: we hard-require leading slashes for the collection index route, always set password to a random uid when importing, Helper function to extract domain from URL, We need to explicitly wait for the already running task instead of dropping it and returning immediately, Up to an hour ago, show relative time, Apply limit (but not when filtering by post as per original implementation), Determine the order of magnitude (10^n), This always generates a valid object ID that is fully numeric, Helper to display a URL from a base URL, helpers.ts, CASE: you delete a model without fetching before, Update the posts by account cache, assign all other roles, Reason: we don't store the exact cancelation date in the subscription object, no-explicit-any]
+Functions Extracted: 5
+
+
+Function 1: extractDomain
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+export const extractDomain = (url: string): string | null => {
+    try {
+        const domain = new URL(url.startsWith('http') ? url : `https://${url}`).hostname;
+        return domain.replace(/^www\./, '');
+    } catch {
+        return null;
+    }
+};
+--------------------------------------------------------------------------------
+
+
+Function 2: extendSourcesWithPercentages
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export function extendSourcesWithPercentages({
+    processedData,
+    totalVisitors,
+    mode
+}: ExtendSourcesOptions): ProcessedSourceData[] {
+    if (mode === 'growth') {
+        return processedData;
+    }
+
+    return processedData.map(item => ({
+        ...item,
+        percentage: totalVisitors > 0 ? (item.visits / totalVisitors) : 0
+    }));
+};
+--------------------------------------------------------------------------------
+
+
+Function 3: loadNewsletterSubscribers
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+loadNewsletterSubscribers() {
+    if (this._loadNewsletterSubscribers.isRunning) {
+        return this._loadNewsletterSubscribers.last;
+    }
+    return this._loadNewsletterSubscribers.perform();
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: formatNumber
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function formatNumber(number: number): string {
+    if (number !== 0 && !number) {
+        return '';
+    }
+    // Additional formatting logic can be added here
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: updatePostsByAccountCache
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+const postsByAccountKey = QUERY_KEYS.profilePosts('index');
+const previousPostsByAccount = queryClient.getQueryData<{pages: {posts: Activity[]}[]}>(postsByAccountKey);
+
+queryClient.setQueryData(postsByAccountKey, (current?: {pages: {posts: Activity[]}[]}) => {
+    if (!current) {
+        return current;
+    }
+
+    return {
+        ...current,
+        pages: current.pages.map((page: {posts: Activity[]}) => ({
+            ...page,
+            posts: page.posts.filter((item: Activity) => item.object.id !== id)
+        }))
+    };
+});
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:17.833Z
+Question Type: true-false
+Function: extractDomain
+Function Size: 373 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: extractDomain (TypeScript)\n// Extracts the domain from a given URL, returning it without the 'www.' prefix.\n\nexport const extractDomain = (url: string): string | null => {\n    try {\n        const domain = new URL(url.startsWith('http') ? url : `https://${url}`).hostname;\n        return 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:18.925Z
+Question Type: true-false
+Function: updatePostsByAccountCache
+Function Size: 665 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updatePostsByAccountCache (JavaScript)\n// Updates the cache of posts by account, filtering out a specified post ID.\n\nconst postsByAccountKey = QUERY_KEYS.profilePosts('index');\nconst previousPostsByAccount = queryClient.getQueryData<{pages: {posts: Activity[]}[]}>(postsByAccountKey);\n\nq
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:20.614Z
+Question Type: select-all
+Function: extractDomain
+Function Size: 373 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: extractDomain (TypeScript)\n// Extracts the domain from a given URL, returning it without the 'www.' prefix.\n\nexport const extractDomain = (url: string): string | null => {\n    try {\n        const domain = new URL(url.startsWith('http') ? url : `https://${url}`).hostname;\n        return 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:22.257Z
+Question Type: order-sequence
+Function: extendSourcesWithPercentages
+Function Size: 502 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: extendSourcesWithPercentages (TypeScript)\n// Extends source data with percentage values based on total visitors, depending on the mode.\n\nexport function extendSourcesWithPercentages({\n    processedData,\n    totalVisitors,\n    mode\n}: ExtendSourcesOptions): ProcessedSourceData[] {\n    if
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:22.265Z
+Question Type: order-sequence
+Function: updatePostsByAccountCache
+Function Size: 665 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: updatePostsByAccountCache (JavaScript)\n// Updates the cache of posts by account, filtering out a specified post ID.\n\nconst postsByAccountKey = QUERY_KEYS.profilePosts('index');\nconst previousPostsByAccount = queryClient.getQueryData<{pages: {posts: Activity[]}[]}>(postsByAccountKey);\n\nq
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:25.275Z
+Question Type: function-variant
+Function: extractDomain
+Function Size: 373 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: extractDomain (TypeScript)\n// Extracts the domain from a given URL, returning it without the 'www.' prefix.\n\nexport const extractDomain = (url: string): string | null => {\n    try {\n        const domain = new URL(url.startsWith('http') ? url : `https://${url}`).hostname;\n        return 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:27.349Z
+Question Type: select-all
+Function: loadNewsletterSubscribers
+Function Size: 333 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: loadNewsletterSubscribers (JavaScript)\n// Loads newsletter subscribers, waiting for an already running task if necessary.\n\nloadNewsletterSubscribers() {\n    if (this._loadNewsletterSubscribers.isRunning) {\n        return this._loadNewsletterSubscribers.last;\n    }\n    return this._loadN
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:27.980Z
+Question Type: select-all
+Function: formatNumber
+Function Size: 296 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: formatNumber (TypeScript)\n// Formats a number for display, returning an empty string if the number is not valid.\n\nexport function formatNumber(number: number): string {\n    if (number !== 0 && !number) {\n        return '';\n    }\n    // Additional formatting logic can be added here\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:33.253Z
+Question Type: function-variant
+Function: formatNumber
+Function Size: 296 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: formatNumber (TypeScript)\n// Formats a number for display, returning an empty string if the number is not valid.\n\nexport function formatNumber(number: number): string {\n    if (number !== 0 && !number) {\n        return '';\n    }\n    // Additional formatting logic can be added here\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:34.281Z
+Question Type: function-variant
+Function: extendSourcesWithPercentages
+Function Size: 502 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: extendSourcesWithPercentages (TypeScript)\n// Extends source data with percentage values based on total visitors, depending on the mode.\n\nexport function extendSourcesWithPercentages({\n    processedData,\n    totalVisitors,\n    mode\n}: ExtendSourcesOptions): ProcessedSourceData[] {\n    if
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:35.976Z
+Question Type: order-sequence
+Function: formatNumber
+Function Size: 296 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: formatNumber (TypeScript)\n// Formats a number for display, returning an empty string if the number is not valid.\n\nexport function formatNumber(number: number): string {\n    if (number !== 0 && !number) {\n        return '';\n    }\n    // Additional formatting logic can be added here\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:38.070Z
+Question Type: multiple-choice
+Function: loadNewsletterSubscribers
+Function Size: 333 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: loadNewsletterSubscribers (JavaScript)\n// Loads newsletter subscribers, waiting for an already running task if necessary.\n\nloadNewsletterSubscribers() {\n    if (this._loadNewsletterSubscribers.isRunning) {\n        return this._loadNewsletterSubscribers.last;\n    }\n    return this._loadN
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:38.176Z
+Question Type: function-variant
+Function: extendSourcesWithPercentages
+Function Size: 502 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: extendSourcesWithPercentages (TypeScript)\n// Extends source data with percentage values based on total visitors, depending on the mode.\n\nexport function extendSourcesWithPercentages({\n    processedData,\n    totalVisitors,\n    mode\n}: ExtendSourcesOptions): ProcessedSourceData[] {\n    if
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:38.286Z
+Question Type: select-all
+Function: updatePostsByAccountCache
+Function Size: 665 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updatePostsByAccountCache (JavaScript)\n// Updates the cache of posts by account, filtering out a specified post ID.\n\nconst postsByAccountKey = QUERY_KEYS.profilePosts('index');\nconst previousPostsByAccount = queryClient.getQueryData<{pages: {posts: Activity[]}[]}>(postsByAccountKey);\n\nq
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761348245003
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 5
+Ended: 2025-10-24T23:26:44.219Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:47.091Z
+Question Type: true-false
+Function: loadNewsletterSubscribers
+Function Size: 333 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: loadNewsletterSubscribers (JavaScript)\n// Loads newsletter subscribers, waiting for an already running task if necessary.\n\nloadNewsletterSubscribers() {\n    if (this._loadNewsletterSubscribers.isRunning) {\n        return this._loadNewsletterSubscribers.last;\n    }\n    return this._loadN
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:47.419Z
+Question Type: true-false
+Function: extendSourcesWithPercentages
+Function Size: 502 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: extendSourcesWithPercentages (TypeScript)\n// Extends source data with percentage values based on total visitors, depending on the mode.\n\nexport function extendSourcesWithPercentages({\n    processedData,\n    totalVisitors,\n    mode\n}: ExtendSourcesOptions): ProcessedSourceData[] {\n    if
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:48.988Z
+Question Type: select-all
+Function: loadNewsletterSubscribers
+Function Size: 333 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: loadNewsletterSubscribers (JavaScript)\n// Loads newsletter subscribers, waiting for an already running task if necessary.\n\nloadNewsletterSubscribers() {\n    if (this._loadNewsletterSubscribers.isRunning) {\n        return this._loadNewsletterSubscribers.last;\n    }\n    return this._loadN
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:52.225Z
+Question Type: order-sequence
+Function: extractDomain
+Function Size: 373 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: extractDomain (TypeScript)\n// Extracts the domain from a given URL, returning it without the 'www.' prefix.\n\nexport const extractDomain = (url: string): string | null => {\n    try {\n        const domain = new URL(url.startsWith('http') ? url : `https://${url}`).hostname;\n        return 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:53.942Z
+Question Type: multiple-choice
+Function: updatePostsByAccountCache
+Function Size: 665 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updatePostsByAccountCache (JavaScript)\n// Updates the cache of posts by account, filtering out a specified post ID.\n\nconst postsByAccountKey = QUERY_KEYS.profilePosts('index');\nconst previousPostsByAccount = queryClient.getQueryData<{pages: {posts: Activity[]}[]}>(postsByAccountKey);\n\nq
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:54.873Z
+Question Type: function-variant
+Function: extractDomain
+Function Size: 373 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: extractDomain (TypeScript)\n// Extracts the domain from a given URL, returning it without the 'www.' prefix.\n\nexport const extractDomain = (url: string): string | null => {\n    try {\n        const domain = new URL(url.startsWith('http') ? url : `https://${url}`).hostname;\n        return 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:55.173Z
+Question Type: select-all
+Function: updatePostsByAccountCache
+Function Size: 665 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: updatePostsByAccountCache (JavaScript)\n// Updates the cache of posts by account, filtering out a specified post ID.\n\nconst postsByAccountKey = QUERY_KEYS.profilePosts('index');\nconst previousPostsByAccount = queryClient.getQueryData<{pages: {posts: Activity[]}[]}>(postsByAccountKey);\n\nq
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:26:55.429Z
+Question Type: select-all
+Function: formatNumber
+Function Size: 296 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: formatNumber (TypeScript)\n// Formats a number for display, returning an empty string if the number is not valid.\n\nexport function formatNumber(number: number): string {\n    if (number !== 0 && !number) {\n        return '';\n    }\n    // Additional formatting logic can be added here\n}
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761348245003
+Repository: Unknown
+Total Questions Generated: 7
+Total Chunks Processed: 5
+Ended: 2025-10-24T23:26:58.709Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T23:36:48.715Z
+File: [6 files: elastic-client-generator-js to regenerate this file again., @ts-expect-error, clean prerelease, delete_by_query.ts, mtermvectors.ts, nodes.ts]
+Functions Extracted: 1
+
+
+Function 1: deletePolicy
+Language: TypeScript
+Lines: 40
+Full Code:
+--------------------------------------------------------------------------------
+async deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {
+    const {
+      path: acceptedPath
+    } = this[kAcceptedParams]['enrich.delete_policy']
+
+    const userQuery = params?.querystring
+    const querystring: Record<string, any> = userQuery != null ? { ...userQuery } : {}
+
+    let body: Record<string, any> | string | undefined
+    const userBody = params?.body
+    if (userBody != null) {
+      if (typeof userBody === 'string') {
+        body = userBody
+      } else {
+        body = { ...userBody }
+      }
+    }
+
+    for (const key in params) {
+      if (acceptedPath.includes(key)) {
+        continue
+      } else if (key !== 'body' && key !== 'querystring') {
+        body[key] = params[key]
+      }
+    }
+
+    let method = ''
+    let path = ''
+    if (params.index != null) {
+      method = body != null ? 'POST' : 'GET'
+      path = `/${encodeURIComponent(params.index.toString())}/_msearch/template`
+    } else {
+      method = body != null ? 'POST' : 'GET'
+      path = '/_msearch/template'
+    }
+    const meta: TransportRequestMetadata = {
+      name: 'msearch_template',
+      pathParts: {
+        index: params.index
+      },
+      acceptedParams: [
+        'index',
+        'search_templates',
+        'ccs_minimize_roundtrips',
+        'max_concurrent_searches',
+        'project_routing',
+        'search_type',
+        'rest_total_hits_as_int',
+        'typed_keys'
+      ]
+    }
+    return await this.transport.request({ path, method, querystring, bulkBody: body, meta }, options)
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T23:36:49.178Z
+File: [4 files: elastic-client-generator-js to regenerate this file again., @ts-expect-error, 'localhost$abcd$efgh', serverless only supports one node, so pick the first one]
+Functions Extracted: 1
+
+
+Function 1: DeleteByQueryApi
+Language: TypeScript
+Lines: 31
+Full Code:
+--------------------------------------------------------------------------------
+export default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {
+  const {
+    path: acceptedPath,
+    body: acceptedBody,
+    query: acceptedQuery
+  } = acceptedParams.delete_by_query;
+
+  const userQuery = params?.querystring;
+  const querystring: Record<string, any> = userQuery != null ? { ...userQuery } : {};
+
+  let body: Record<string, any> | string | undefined;
+  const userBody = params?.body;
+  if (userBody != null) {
+    if (typeof userBody === 'string') {
+      body = userBody;
+    } else {
+      body = { ...userBody };
+    }
+  }
+
+  for (const key in params) {
+    if (acceptedBody.includes(key)) {
+      body = body ?? {};
+      querystring[key] = params[key];
+    }
+  }
+
+  const method = 'GET';
+  const path = `/${encodeURIComponent(params.index.toString())}/_source/${encodeURIComponent(params.id.toString())}`;
+  const meta: TransportRequestMetadata = {
+    name: 'get_source',
+    pathParts: {
+      id: params.id,
+      index: params.index
+    },
+    acceptedParams: [
+      'id',
+      'index',
+      'preference',
+      'realtime',
+      'refresh',
+      'routing',
+      '_source',
+      '_source_excludes',
+      '_source_includes',
+      'version',
+      'version_type'
+    ]
+  };
+  return await this.transport.request({ path, method, querystring, body, meta }, options);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:36:55.956Z
+Question Type: true-false
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:36:56.725Z
+Question Type: order-sequence
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:36:56.769Z
+Question Type: true-false
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:36:58.169Z
+Question Type: select-all
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:36:58.396Z
+Question Type: select-all
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:03.734Z
+Question Type: function-variant
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:04.777Z
+Question Type: order-sequence
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:05.662Z
+Question Type: multiple-choice
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:08.545Z
+Question Type: select-all
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:11.256Z
+Question Type: select-all
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:11.747Z
+Question Type: function-variant
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:16.078Z
+Question Type: order-sequence
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:16.384Z
+Question Type: function-variant
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:19.750Z
+Question Type: order-sequence
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:19.786Z
+Question Type: function-variant
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761348245003
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 1
+Ended: 2025-10-24T23:37:19.787Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:27.347Z
+Question Type: true-false
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:27.792Z
+Question Type: order-sequence
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:27.800Z
+Question Type: order-sequence
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:28.127Z
+Question Type: select-all
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:29.928Z
+Question Type: multiple-choice
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:34.867Z
+Question Type: function-variant
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:34.887Z
+Question Type: function-variant
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:37.310Z
+Question Type: select-all
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:41.849Z
+Question Type: order-sequence
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:42.870Z
+Question Type: order-sequence
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:42.954Z
+Question Type: true-false
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:46.959Z
+Question Type: function-variant
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:47.203Z
+Question Type: function-variant
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:50.537Z
+Question Type: select-all
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:37:51.010Z
+Question Type: select-all
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761348245003
+Repository: Unknown
+Total Questions Generated: 6
+Total Chunks Processed: 1
+Ended: 2025-10-24T23:37:56.619Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:38:04.628Z
+Question Type: order-sequence
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:38:04.640Z
+Question Type: order-sequence
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:38:04.647Z
+Question Type: order-sequence
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:38:04.696Z
+Question Type: order-sequence
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:38:05.783Z
+Question Type: select-all
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:38:11.703Z
+Question Type: function-variant
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:38:12.643Z
+Question Type: true-false
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:38:12.657Z
+Question Type: true-false
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:38:13.915Z
+Question Type: select-all
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:38:14.513Z
+Question Type: multiple-choice
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:38:19.760Z
+Question Type: function-variant
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:38:20.423Z
+Question Type: select-all
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:38:23.793Z
+Question Type: function-variant
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:38:26.265Z
+Question Type: select-all
+Function: DeleteByQueryApi
+Function Size: 1510 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: DeleteByQueryApi (TypeScript)\n// Deletes documents that match the specified query in Elasticsearch.\n\nexport default async function DeleteByQueryApi (this: That, params: T.DeleteByQueryRequest, options?: TransportRequestOptions): Promise<T.DeleteByQueryResponse> {\n  const {\n    path: acc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:38:27.691Z
+Question Type: function-variant
+Function: deletePolicy
+Function Size: 1669 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: deletePolicy (TypeScript)\n// Deletes an existing enrich policy and its enrich index.\n\nasync deletePolicy (this: That, params: T.EnrichDeletePolicyRequest, options?: TransportRequestOptions): Promise<any> {\n    const {\n      path: acceptedPath\n    } = this[kAcceptedParams]['enrich.delete
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761348245003
+Repository: Unknown
+Total Questions Generated: 5
+Total Chunks Processed: 2
+Ended: 2025-10-24T23:38:29.769Z
+================================================================================
+

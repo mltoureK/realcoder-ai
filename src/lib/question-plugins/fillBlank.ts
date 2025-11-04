@@ -54,8 +54,18 @@ export const fillBlankPlugin: QuestionPlugin = {
           if (cleanContent.endsWith('```')) cleanContent = cleanContent.replace(/\s*```$/, '');
           const jsonStart = cleanContent.indexOf('[');
           if (jsonStart > 0) cleanContent = cleanContent.substring(jsonStart);
-          const jsonEnd = cleanContent.lastIndexOf(']');
-          if (jsonEnd > 0 && jsonEnd < cleanContent.length - 1) cleanContent = cleanContent.substring(0, jsonEnd + 1);
+          // Find the complete JSON array by counting brackets
+          let bracketCount = 0;
+          let jsonEnd = -1;
+          for (let i = 0; i < cleanContent.length; i++) {
+            if (cleanContent[i] === '[') bracketCount++;
+            if (cleanContent[i] === ']') bracketCount--;
+            if (bracketCount === 0) {
+              jsonEnd = i;
+              break;
+            }
+          }
+          if (jsonEnd > 0) cleanContent = cleanContent.substring(0, jsonEnd + 1);
           const parsed = JSON.parse(cleanContent);
           const hookNames = new Set(['useState','useEffect','useMemo','useCallback','useRef','useReducer','useContext']);
           const keywordPool = new Set(['if','else','switch','case','try','catch','finally','await','async','return','throw','new','yield']);
@@ -199,10 +209,10 @@ export const fillBlankPlugin: QuestionPlugin = {
 
         generated.push({
           snippet: correct,
-          codeContext,
           quiz: {
             type: 'fill-blank',
             question: `Complete the code: ${codeContext}`,
+            codeContext: codeContext,
             options: shuffled,
             answer: String(answerIndex + 1),
             explanation: `"${correct}" is the correct ${category === 'hook' ? 'React hook' : category === 'keyword' ? 'keyword' : category === 'builtin' ? 'built-in method' : category === 'param' ? 'parameter' : 'identifier'} in this snippet.`

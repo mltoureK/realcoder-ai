@@ -1,0 +1,164 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761365275807
+Started: 2025-10-25T04:07:55.807Z
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:08:00.872Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1270 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Update update subscribers\nif (this.current !== this.prev) {\n            this.events.change?.notify(this.current)\n\n            if (this.dependents) {\n                for (const dependent of this.dependents) {\n                    dependent.dirty()\n                }\n            }\n        }\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:08:03.332Z
+Question Type: true-false
+Function: Unknown
+Function Size: 971 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Extract top-level onComplete so it doesn't get applied per-value\nconst { onComplete, ...rest } = options || {}\n            if (typeof onComplete === "function") {\n                animationOnComplete = onComplete as VoidFunction\n            }\n            animations = animateSubject(\n        
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:08:04.457Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2097 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: motiondivision-motion-b5df740/packages/motion-dom/src/value/index.ts\nimport { SubscriptionManager, velocityPerSecond, warnOnce } from "motion-utils"\nimport {\n    AnimationPlaybackControlsWithThen,\n    AnyResolvedKeyframe,\n    TransformProperties,\n} from "../animation/types"\nimport { frame }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:08:10.402Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2097 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: motiondivision-motion-b5df740/packages/motion-dom/src/value/index.ts\nimport { SubscriptionManager, velocityPerSecond, warnOnce } from "motion-utils"\nimport {\n    AnimationPlaybackControlsWithThen,\n    AnyResolvedKeyframe,\n    TransformProperties,\n} from "../animation/types"\nimport { frame }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:08:11.917Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1270 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Update update subscribers\nif (this.current !== this.prev) {\n            this.events.change?.notify(this.current)\n\n            if (this.dependents) {\n                for (const dependent of this.dependents) {\n                    dependent.dirty()\n                }\n            }\n        }\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:08:17.070Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2112 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: motiondivision-motion-b5df740/packages/framer-motion/src/animation/animate/index.ts\nimport type {\n    AnimationPlaybackControlsWithThen,\n    AnimationScope,\n    DOMKeyframesDefinition,\n    AnimationOptions as DynamicAnimationOptions,\n    ElementOrSelector,\n    MotionValue,\n    UnresolvedVal
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:08:17.855Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 2070 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Casts because of parseFloat's poor typing\nreturn velocityPerSecond(\n            parseFloat(this.current as any) -\n                parseFloat(this.prevFrameValue as any),\n            delta\n        )\n    }\n\n    hasAnimated = false\n\n    /**\n     * Registers a new animation to control this `Mot
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:08:22.406Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1270 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Update update subscribers\nif (this.current !== this.prev) {\n            this.events.change?.notify(this.current)\n\n            if (this.dependents) {\n                for (const dependent of this.dependents) {\n                    dependent.dirty()\n                }\n            }\n        }\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:08:27.520Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2070 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Casts because of parseFloat's poor typing\nreturn velocityPerSecond(\n            parseFloat(this.current as any) -\n                parseFloat(this.prevFrameValue as any),\n            delta\n        )\n    }\n\n    hasAnimated = false\n\n    /**\n     * Registers a new animation to control this `Mot
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:08:32.817Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2112 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: motiondivision-motion-b5df740/packages/framer-motion/src/animation/animate/index.ts\nimport type {\n    AnimationPlaybackControlsWithThen,\n    AnimationScope,\n    DOMKeyframesDefinition,\n    AnimationOptions as DynamicAnimationOptions,\n    ElementOrSelector,\n    MotionValue,\n    UnresolvedVal
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:08:33.755Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2112 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: motiondivision-motion-b5df740/packages/framer-motion/src/animation/animate/index.ts\nimport type {\n    AnimationPlaybackControlsWithThen,\n    AnimationScope,\n    DOMKeyframesDefinition,\n    AnimationOptions as DynamicAnimationOptions,\n    ElementOrSelector,\n    MotionValue,\n    UnresolvedVal
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:08:35.607Z
+Question Type: select-all
+Function: Unknown
+Function Size: 971 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Extract top-level onComplete so it doesn't get applied per-value\nconst { onComplete, ...rest } = options || {}\n            if (typeof onComplete === "function") {\n                animationOnComplete = onComplete as VoidFunction\n            }\n            animations = animateSubject(\n        
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:08:42.226Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2097 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: motiondivision-motion-b5df740/packages/motion-dom/src/value/index.ts\nimport { SubscriptionManager, velocityPerSecond, warnOnce } from "motion-utils"\nimport {\n    AnimationPlaybackControlsWithThen,\n    AnyResolvedKeyframe,\n    TransformProperties,\n} from "../animation/types"\nimport { frame }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:08:44.303Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2070 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Casts because of parseFloat's poor typing\nreturn velocityPerSecond(\n            parseFloat(this.current as any) -\n                parseFloat(this.prevFrameValue as any),\n            delta\n        )\n    }\n\n    hasAnimated = false\n\n    /**\n     * Registers a new animation to control this `Mot
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:08:47.392Z
+Question Type: true-false
+Function: Unknown
+Function Size: 971 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Extract top-level onComplete so it doesn't get applied per-value\nconst { onComplete, ...rest } = options || {}\n            if (typeof onComplete === "function") {\n                animationOnComplete = onComplete as VoidFunction\n            }\n            animations = animateSubject(\n        
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761365275807
+Repository: Unknown
+Total Questions Generated: 15
+Total Chunks Processed: 5
+Ended: 2025-10-25T04:08:53.174Z
+================================================================================
+

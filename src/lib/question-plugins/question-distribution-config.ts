@@ -14,10 +14,9 @@ export interface QuestionTypeConfig {
  * QUESTION DISTRIBUTION (15 API calls per quiz)
  *
  * Default breakdown:
- * - 5 Function Variant (FV) - Deep code understanding
- * - 5 Select All (SA) - Complex multi-answer questions
- * - 2 Order Sequence (OS) - Code step ordering
- * - 2 True/False (TF) - Quick comprehension checks
+ * - 4 Function Variant (FV) - Deep code understanding
+ * - 4 Select All (SA) - Complex multi-answer questions
+ * - 6 True/False (TF) - Quick comprehension checks
  * - 1 Multiple Choice (MCQ) - Single correct answer
  *
  * Total: 15 API calls
@@ -28,18 +27,16 @@ export interface QuestionTypeConfig {
 export const QUESTION_DISTRIBUTION: QuestionTypeConfig[] = [
   { type: 'function-variant', count: 4 },
   { type: 'select-all', count: 4 },
-  { type: 'order-sequence', count: 4 },
-  { type: 'true-false', count: 2 },
+  { type: 'true-false', count: 6 },
   { type: 'multiple-choice', count: 1 },
 ];
 
 /**
  * Question types that should NEVER appear first
  * 
- * Order Sequence questions are confusing without context,
- * so they must never be the first question shown to users.
+ * Currently no question types are restricted from appearing first.
  */
-export const NEVER_FIRST_TYPES = ['order-sequence'];
+export const NEVER_FIRST_TYPES: string[] = [];
 
 /**
  * Get total API calls from distribution

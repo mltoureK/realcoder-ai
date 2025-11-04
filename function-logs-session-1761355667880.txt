@@ -1,0 +1,324 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761355667880
+Started: 2025-10-25T01:27:47.885Z
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:27:55.102Z
+Question Type: select-all
+Function: Unknown
+Function Size: 622 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: 1. Get project name and target dir\nlet targetDir = argTargetDir\n  if (!targetDir) {\n    if (interactive) {\n      const projectName = await prompts.text({\n        message: 'Project name:',\n        defaultValue: defaultTargetDir,\n        placeholder: defaultTargetDir,\n        validate: (value
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:28:00.339Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 820 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: vitejs-vite-bb85bd7/packages/create-vite/src/index.ts\nimport fs from 'node:fs'\nimport path from 'node:path'\nimport { fileURLToPath } from 'node:url'\nimport type { SpawnOptions } from 'node:child_process'\nimport spawn from 'cross-spawn'\nimport mri from 'mri'\nimport * as prompts from '@clack/
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:28:00.526Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 622 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: 1. Get project name and target dir\nlet targetDir = argTargetDir\n  if (!targetDir) {\n    if (interactive) {\n      const projectName = await prompts.text({\n        message: 'Project name:',\n        defaultValue: defaultTargetDir,\n        placeholder: defaultTargetDir,\n        validate: (value
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:28:04.978Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 820 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: vitejs-vite-bb85bd7/packages/create-vite/src/index.ts\nimport fs from 'node:fs'\nimport path from 'node:path'\nimport { fileURLToPath } from 'node:url'\nimport type { SpawnOptions } from 'node:child_process'\nimport spawn from 'cross-spawn'\nimport mri from 'mri'\nimport * as prompts from '@clack/
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:28:07.235Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2044 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: prettier-ignore\nconst helpMessage = `\\nUsage: create-vite [OPTION]... [DIRECTORY]\n\nCreate a new Vite project in JavaScript or TypeScript.\nWhen running in TTY, the CLI will start in interactive mode.\n\nOptions:\n  -t, --template NAME                   use a specific template\n  -i, --immediate 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:28:09.357Z
+Question Type: select-all
+Function: Unknown
+Function Size: 667 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: 3. Get package name\nlet packageName = path.basename(path.resolve(targetDir))\n  if (!isValidPackageName(packageName)) {\n    if (interactive) {\n      const packageNameResult = await prompts.text({\n        message: 'Package name:',\n        defaultValue: toValidPackageName(packageName),\n       
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:28:12.601Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1139 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: 2. Handle directory if exist and not empty\nif (fs.existsSync(targetDir) && !isEmpty(targetDir)) {\n    let overwrite: 'yes' | 'no' | 'ignore' | undefined = argOverwrite\n      ? 'yes'\n      : undefined\n    if (!overwrite) {\n      if (interactive) {\n        const res = await prompts.select({\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:28:15.496Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2044 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: prettier-ignore\nconst helpMessage = `\\nUsage: create-vite [OPTION]... [DIRECTORY]\n\nCreate a new Vite project in JavaScript or TypeScript.\nWhen running in TTY, the CLI will start in interactive mode.\n\nOptions:\n  -t, --template NAME                   use a specific template\n  -i, --immediate 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:28:19.093Z
+Question Type: true-false
+Function: Unknown
+Function Size: 622 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: 1. Get project name and target dir\nlet targetDir = argTargetDir\n  if (!targetDir) {\n    if (interactive) {\n      const projectName = await prompts.text({\n        message: 'Project name:',\n        defaultValue: defaultTargetDir,\n        placeholder: defaultTargetDir,\n        validate: (value
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:28:20.632Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 820 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: vitejs-vite-bb85bd7/packages/create-vite/src/index.ts\nimport fs from 'node:fs'\nimport path from 'node:path'\nimport { fileURLToPath } from 'node:url'\nimport type { SpawnOptions } from 'node:child_process'\nimport spawn from 'cross-spawn'\nimport mri from 'mri'\nimport * as prompts from '@clack/
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:28:23.408Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2044 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: prettier-ignore\nconst helpMessage = `\\nUsage: create-vite [OPTION]... [DIRECTORY]\n\nCreate a new Vite project in JavaScript or TypeScript.\nWhen running in TTY, the CLI will start in interactive mode.\n\nOptions:\n  -t, --template NAME                   use a specific template\n  -i, --immediate 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:28:32.111Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1139 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: 2. Handle directory if exist and not empty\nif (fs.existsSync(targetDir) && !isEmpty(targetDir)) {\n    let overwrite: 'yes' | 'no' | 'ignore' | undefined = argOverwrite\n      ? 'yes'\n      : undefined\n    if (!overwrite) {\n      if (interactive) {\n        const res = await prompts.select({\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:28:33.015Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 667 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: 3. Get package name\nlet packageName = path.basename(path.resolve(targetDir))\n  if (!isValidPackageName(packageName)) {\n    if (interactive) {\n      const packageNameResult = await prompts.text({\n        message: 'Package name:',\n        defaultValue: toValidPackageName(packageName),\n       
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:28:33.856Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 667 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: 3. Get package name\nlet packageName = path.basename(path.resolve(targetDir))\n  if (!isValidPackageName(packageName)) {\n    if (interactive) {\n      const packageNameResult = await prompts.text({\n        message: 'Package name:',\n        defaultValue: toValidPackageName(packageName),\n       
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:28:36.612Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1139 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: 2. Handle directory if exist and not empty\nif (fs.existsSync(targetDir) && !isEmpty(targetDir)) {\n    let overwrite: 'yes' | 'no' | 'ignore' | undefined = argOverwrite\n      ? 'yes'\n      : undefined\n    if (!overwrite) {\n      if (interactive) {\n        const res = await prompts.select({\n 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761355667880
+Repository: Unknown
+Total Questions Generated: 14
+Total Chunks Processed: 5
+Ended: 2025-10-25T01:28:39.427Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:30:47.559Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2066 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: olivernn-lunr.js-aa5a878/lib/index.js\n/*!\n * lunr.Index\n * Copyright (C) @YEAR Oliver Nightingale\n */\n\n/**\n * An index contains the built index of all documents and provides a query interface\n * to the index.\n *\n * Usually instances of lunr.Index will not be created using this constructor, 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:30:49.972Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2064 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: olivernn-lunr.js-aa5a878/index.html\n<!DOCTYPE html>\n<html>\n<head>\n  <title>lunr.js - A bit like Solr, but much smaller and not as bright</title>\n  <link rel="stylesheet" href="/styles.css" type="text/css">\n  <script type="text/javascript" src="/lunr.min.js">\n  </script>\n  <script type="text
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:30:53.335Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2069 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: olivernn-lunr.js-aa5a878/lib/pipeline.js\n/*!\n * lunr.Pipeline\n * Copyright (C) @YEAR Oliver Nightingale\n */\n\n/**\n * lunr.Pipelines maintain an ordered list of functions to be applied to all\n * tokens in documents entering the search index and queries being ran against\n * the index.\n *\n * An
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:30:56.335Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2069 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: olivernn-lunr.js-aa5a878/lib/pipeline.js\n/*!\n * lunr.Pipeline\n * Copyright (C) @YEAR Oliver Nightingale\n */\n\n/**\n * lunr.Pipelines maintain an ordered list of functions to be applied to all\n * tokens in documents entering the search index and queries being ran against\n * the index.\n *\n * An
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:30:56.368Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2066 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: olivernn-lunr.js-aa5a878/lib/index.js\n/*!\n * lunr.Index\n * Copyright (C) @YEAR Oliver Nightingale\n */\n\n/**\n * An index contains the built index of all documents and provides a query interface\n * to the index.\n *\n * Usually instances of lunr.Index will not be created using this constructor, 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:31:02.225Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 120 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: text processing in here\n})\n\n    this.pipeline.after(lunr.stopWordFilter, function (token, tokenIndex, tokens) {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:31:05.549Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2046 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: * score documents\nvar query = new lunr.Query(this.fields),\n      matchingFields = Object.create(null),\n      queryVectors = Object.create(null),\n      termFieldCache = Object.create(null),\n      requiredMatches = Object.create(null),\n      prohibitedMatches = Object.create(null)\n\n  /*\n   * 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:31:08.875Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2064 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: olivernn-lunr.js-aa5a878/index.html\n<!DOCTYPE html>\n<html>\n<head>\n  <title>lunr.js - A bit like Solr, but much smaller and not as bright</title>\n  <link rel="stylesheet" href="/styles.css" type="text/css">\n  <script type="text/javascript" src="/lunr.min.js">\n  </script>\n  <script type="text
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:31:09.942Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2046 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: * score documents\nvar query = new lunr.Query(this.fields),\n      matchingFields = Object.create(null),\n      queryVectors = Object.create(null),\n      termFieldCache = Object.create(null),\n      requiredMatches = Object.create(null),\n      prohibitedMatches = Object.create(null)\n\n  /*\n   * 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:31:12.051Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2069 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: olivernn-lunr.js-aa5a878/lib/pipeline.js\n/*!\n * lunr.Pipeline\n * Copyright (C) @YEAR Oliver Nightingale\n */\n\n/**\n * lunr.Pipelines maintain an ordered list of functions to be applied to all\n * tokens in documents entering the search index and queries being ran against\n * the index.\n *\n * An
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:31:15.751Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 2064 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: olivernn-lunr.js-aa5a878/index.html\n<!DOCTYPE html>\n<html>\n<head>\n  <title>lunr.js - A bit like Solr, but much smaller and not as bright</title>\n  <link rel="stylesheet" href="/styles.css" type="text/css">\n  <script type="text/javascript" src="/lunr.min.js">\n  </script>\n  <script type="text
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:31:21.019Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 120 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: text processing in here\n})\n\n    this.pipeline.after(lunr.stopWordFilter, function (token, tokenIndex, tokens) {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:31:22.180Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 2066 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: olivernn-lunr.js-aa5a878/lib/index.js\n/*!\n * lunr.Index\n * Copyright (C) @YEAR Oliver Nightingale\n */\n\n/**\n * An index contains the built index of all documents and provides a query interface\n * to the index.\n *\n * Usually instances of lunr.Index will not be created using this constructor, 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:31:22.973Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 120 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: text processing in here\n})\n\n    this.pipeline.after(lunr.stopWordFilter, function (token, tokenIndex, tokens) {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T01:31:48.138Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2046 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: * score documents\nvar query = new lunr.Query(this.fields),\n      matchingFields = Object.create(null),\n      queryVectors = Object.create(null),\n      termFieldCache = Object.create(null),\n      requiredMatches = Object.create(null),\n      prohibitedMatches = Object.create(null)\n\n  /*\n   * 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761355667880
+Repository: Unknown
+Total Questions Generated: 13
+Total Chunks Processed: 5
+Ended: 2025-10-25T01:31:48.140Z
+================================================================================
+

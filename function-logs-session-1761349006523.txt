@@ -1,0 +1,65 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761349006523
+Started: 2025-10-24T23:36:46.523Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T23:36:46.525Z
+File: [8 files: @ts-expect-error, 1751, @ts-expect-error, @ts-expect-error, @ts-expect-error, @ts-expect-error, @ts-expect-error, @ts-expect-error]
+Functions Extracted: 2
+
+
+Function 1: handler
+Language: TypeScript
+Lines: 8
+Full Code:
+--------------------------------------------------------------------------------
+async function handler (req: http.IncomingMessage, res: http.ServerResponse) {
+      res.setHeader('content-type', 'application/json')
+      res.end(JSON.stringify({
+        took: 0,
+        errors: true,
+        items: [
+          { delete: { status: 200 } },
+          { index: { status: 429 } },
+          { index: { status: 200 } }
+        ]
+      }))
+    }
+--------------------------------------------------------------------------------
+
+
+Function 2: unfollow
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+async unfollow (this: That, params: T.CcrUnfollowRequest, options?: TransportRequestOptions): Promise<T.CcrUnfollowResponse> {
+    const {
+      path: acceptedPath
+    } = this[kAcceptedParams]['ccr.unfollow']
+
+    const userQuery = params?.querystring
+    const querystring: Record<string, any> = userQuery != null ? { ...userQuery } : {}
+
+    let body: Record<string, any> | string | undefined
+    const userBody = params?.body
+    if (userBody != null) {
+      if (typeof userBody === 'string') {
+        body = userBody
+      } else {
+        body = { ...userBody }
+      }
+    }
+
+    for (const key in params) {
+      if (acceptedPath.includes(key)) {
+        continue
+      } else if (key !== 'body' && key !== 'querystring') {
+        // additional logic here
+      }
+    }
+}
+--------------------------------------------------------------------------------
+
+================================================================================

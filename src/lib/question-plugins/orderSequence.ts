@@ -61,8 +61,18 @@ export const orderSequencePlugin: QuestionPlugin = {
           if (cleanContent.endsWith('```')) cleanContent = cleanContent.replace(/\s*```$/, '');
           const jsonStart = cleanContent.indexOf('[');
           if (jsonStart > 0) cleanContent = cleanContent.substring(jsonStart);
-          const jsonEnd = cleanContent.lastIndexOf(']');
-          if (jsonEnd > 0 && jsonEnd < cleanContent.length - 1) cleanContent = cleanContent.substring(0, jsonEnd + 1);
+          // Find the complete JSON array by counting brackets
+          let bracketCount = 0;
+          let jsonEnd = -1;
+          for (let i = 0; i < cleanContent.length; i++) {
+            if (cleanContent[i] === '[') bracketCount++;
+            if (cleanContent[i] === ']') bracketCount--;
+            if (bracketCount === 0) {
+              jsonEnd = i;
+              break;
+            }
+          }
+          if (jsonEnd > 0) cleanContent = cleanContent.substring(0, jsonEnd + 1);
           const parsed = JSON.parse(cleanContent);
 
           parsed.forEach((question: any) => {
@@ -125,12 +135,12 @@ export const orderSequencePlugin: QuestionPlugin = {
               const rawCorrectOrder = Array.isArray(question.quiz.correctOrder) ? question.quiz.correctOrder : [];
               const sanitizedCorrectOrder = rawCorrectOrder
                 .map((id: any) => String(id))
-                .filter((id) => {
+                .filter((id: string) => {
                   const step = stepMapById.get(id);
                   return step && !step.isDistractor;
                 });
 
-              const dedupedCorrectOrder = sanitizedCorrectOrder.filter((id, idx) => sanitizedCorrectOrder.indexOf(id) === idx);
+              const dedupedCorrectOrder = sanitizedCorrectOrder.filter((id: string, idx: number) => sanitizedCorrectOrder.indexOf(id) === idx);
               let finalCorrectOrder = dedupedCorrectOrder.slice(0, MAX_CORRECT_STEPS);
 
               if (finalCorrectOrder.length < MIN_CORRECT_STEPS) {

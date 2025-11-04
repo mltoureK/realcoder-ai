@@ -1,0 +1,324 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761358137490
+Started: 2025-10-25T02:08:57.490Z
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:09:01.894Z
+Question Type: select-all
+Function: Unknown
+Function Size: 173 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: create employee rest api\n@PostMapping("/employees")\n	public Employee createEmployee(@RequestBody Employee employee) {\n		return employeeRepository.save(employee);\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:09:02.440Z
+Question Type: select-all
+Function: Unknown
+Function Size: 136 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get all employees\n@GetMapping("/employees")\n	public List<Employee> getAllEmployees(){\n		return employeeRepository.findAll();\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:09:02.508Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1308 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: RameshMF-ReactJS-Spring-Boot-CRUD-Full-Stack-App-394c537/springboot-backend/src/main/java/net/javaguides/springboot/controller/EmployeeController.java\npackage net.javaguides.springboot.controller;\n\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport org.springfram
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:09:04.464Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 136 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get all employees\n@GetMapping("/employees")\n	public List<Employee> getAllEmployees(){\n		return employeeRepository.findAll();\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:09:12.236Z
+Question Type: select-all
+Function: Unknown
+Function Size: 328 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get employee by id rest api\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id :" + id));\n		return Res
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:09:14.765Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 328 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get employee by id rest api\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id :" + id));\n		return Res
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:09:17.310Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 173 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: create employee rest api\n@PostMapping("/employees")\n	public Employee createEmployee(@RequestBody Employee employee) {\n		return employeeRepository.save(employee);\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:09:19.269Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 604 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: update employee rest api\n@PutMapping("/employees/{id}")\n	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails){\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:09:21.890Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1308 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: RameshMF-ReactJS-Spring-Boot-CRUD-Full-Stack-App-394c537/springboot-backend/src/main/java/net/javaguides/springboot/controller/EmployeeController.java\npackage net.javaguides.springboot.controller;\n\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport org.springfram
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:09:23.255Z
+Question Type: true-false
+Function: Unknown
+Function Size: 136 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get all employees\n@GetMapping("/employees")\n	public List<Employee> getAllEmployees(){\n		return employeeRepository.findAll();\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:09:29.991Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 604 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: update employee rest api\n@PutMapping("/employees/{id}")\n	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails){\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:09:30.887Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 328 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get employee by id rest api\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id :" + id));\n		return Res
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:09:33.830Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1308 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: RameshMF-ReactJS-Spring-Boot-CRUD-Full-Stack-App-394c537/springboot-backend/src/main/java/net/javaguides/springboot/controller/EmployeeController.java\npackage net.javaguides.springboot.controller;\n\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport org.springfram
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:09:35.857Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 604 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: update employee rest api\n@PutMapping("/employees/{id}")\n	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails){\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:09:41.943Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 173 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: create employee rest api\n@PostMapping("/employees")\n	public Employee createEmployee(@RequestBody Employee employee) {\n		return employeeRepository.save(employee);\n	}
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761358137490
+Repository: Unknown
+Total Questions Generated: 15
+Total Chunks Processed: 5
+Ended: 2025-10-25T02:09:45.400Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:10:50.655Z
+Question Type: true-false
+Function: Unknown
+Function Size: 50 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: execution.\nlet chain = Promise.resolve();
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:10:50.887Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 44 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Default imports.\nvar registry = {};
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:10:52.766Z
+Question Type: select-all
+Function: Unknown
+Function Size: 926 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: LadybirdBrowser-ladybird-5632a52/Tests/LibWeb/Text/input/wpt-import/wasm/core/js/harness/async_index.js\n/*\n * Copyright 2018 WebAssembly Community Group participants\n *\n * Licensed under the Apache License, Version 2.0 (the "License");\n * you may not use this file except in compliance with 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:10:55.948Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1115 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Resets the registry between two different WPT tests.\nfunction reinitializeRegistry() {\n  if (typeof WebAssembly === "undefined") return;\n\n  chain = chain.then(_ => {\n    let spectest = {\n      externref: externref,\n      is_externref: is_externref,\n      is_funcref: is_funcref,\n      eq_ext
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:10:59.671Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1103 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: version.\nfunction assertThrows(func, err) {\n  let caught = false;\n  try {\n    func();\n  } catch (e) {\n    assert_true(\n      e instanceof err,\n      `expected ${err.name}, observed ${e.constructor.name}`\n    );\n    caught = true;\n  }\n  assert_true(caught, testNum() + "assertThrows must catc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:11:07.624Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 926 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: LadybirdBrowser-ladybird-5632a52/Tests/LibWeb/Text/input/wpt-import/wasm/core/js/harness/async_index.js\n/*\n * Copyright 2018 WebAssembly Community Group participants\n *\n * Licensed under the Apache License, Version 2.0 (the "License");\n * you may not use this file except in compliance with 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:11:07.630Z
+Question Type: select-all
+Function: Unknown
+Function Size: 44 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Default imports.\nvar registry = {};
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:11:10.282Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1103 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: version.\nfunction assertThrows(func, err) {\n  let caught = false;\n  try {\n    func();\n  } catch (e) {\n    assert_true(\n      e instanceof err,\n      `expected ${err.name}, observed ${e.constructor.name}`\n    );\n    caught = true;\n  }\n  assert_true(caught, testNum() + "assertThrows must catc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:11:11.559Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1103 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: version.\nfunction assertThrows(func, err) {\n  let caught = false;\n  try {\n    func();\n  } catch (e) {\n    assert_true(\n      e instanceof err,\n      `expected ${err.name}, observed ${e.constructor.name}`\n    );\n    caught = true;\n  }\n  assert_true(caught, testNum() + "assertThrows must catc
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:11:16.798Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 50 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: execution.\nlet chain = Promise.resolve();
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:11:16.901Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 44 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Default imports.\nvar registry = {};
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:11:21.131Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1115 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Resets the registry between two different WPT tests.\nfunction reinitializeRegistry() {\n  if (typeof WebAssembly === "undefined") return;\n\n  chain = chain.then(_ => {\n    let spectest = {\n      externref: externref,\n      is_externref: is_externref,\n      is_funcref: is_funcref,\n      eq_ext
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:11:28.028Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 1115 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: Resets the registry between two different WPT tests.\nfunction reinitializeRegistry() {\n  if (typeof WebAssembly === "undefined") return;\n\n  chain = chain.then(_ => {\n    let spectest = {\n      externref: externref,\n      is_externref: is_externref,\n      is_funcref: is_funcref,\n      eq_ext
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:11:29.129Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 926 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: LadybirdBrowser-ladybird-5632a52/Tests/LibWeb/Text/input/wpt-import/wasm/core/js/harness/async_index.js\n/*\n * Copyright 2018 WebAssembly Community Group participants\n *\n * Licensed under the Apache License, Version 2.0 (the "License");\n * you may not use this file except in compliance with 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:11:33.227Z
+Question Type: order-sequence
+Function: Unknown
+Function Size: 50 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: execution.\nlet chain = Promise.resolve();
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761358137490
+Repository: Unknown
+Total Questions Generated: 13
+Total Chunks Processed: 5
+Ended: 2025-10-25T02:11:33.229Z
+================================================================================
+

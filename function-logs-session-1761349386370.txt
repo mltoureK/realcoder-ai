@@ -1,0 +1,360 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761349386370
+Started: 2025-10-24T23:43:06.370Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T23:43:06.370Z
+File: [7 files: elastic-client-generator-js to regenerate this file again., @ts-expect-error, @ts-expect-error, index.ts, @ts-expect-error, @ts-expect-error, as we will reed the documents only if needed.]
+Functions Extracted: 3
+
+
+Function 1: allocationExplain
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+async allocationExplain (this: That, params?: T.ClusterAllocationExplainRequest | TB.ClusterAllocationExplainRequest, options?: TransportRequestOptions): Promise<any> {
+    const acceptedPath: string[] = []
+    const acceptedBody: string[] = ['current_node', 'index', 'primary', 'shard']
+    const querystring: Record<string, any> = {}
+
+    for (const key in params) {
+      querystring[key] = params[key]
+    }
+
+    let method = ''
+    let path = ''
+    if (params.model_id != null) {
+      method = 'GET'
+      path = `/_cat/ml/trained_models/${encodeURIComponent(params.model_id.toString())}`
+    } else {
+      method = 'GET'
+      path = '/_cat/ml/trained_models'
+    }
+    return await this.transport.request({ path, method, querystring, body }, options)
+  }
+--------------------------------------------------------------------------------
+
+
+Function 2: nodeattrs
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+async nodeattrs (this: That, params?: T.CatNodeattrsRequest | TB.CatNodeattrsRequest, options?: TransportRequestOptions): Promise<any> {
+    const acceptedPath: string[] = []
+    const querystring: Record<string, any> = {}
+    const body = undefined
+
+    params = params ?? {}
+    for (const key in params) {
+      if (acceptedPath.includes(key)) {
+        continue
+      } else if (key !== 'body') {
+        body[key] = params[key]
+      }
+    }
+    return await this.transport.request({ path, method, querystring, body }, options)
+  }
+--------------------------------------------------------------------------------
+
+
+Function 3: addDocumentsGetter
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+function addDocumentsGetter<TDocument, TAggregations> (result: TransportResult<T.SearchResponse<TDocument, TAggregations>, unknown>): void {
+  Object.defineProperty(result, 'documents', {
+    get () {
+      if (this.body.hits?.hits != null) {
+        return this.body.hits.hits.map(hit => hit._source);
+      }
+      return [];
+    }
+  });
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:12.624Z
+Question Type: select-all
+Function: nodeattrs
+Function Size: 626 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: nodeattrs (TypeScript)\n// Returns information about custom node attributes.\n\nasync nodeattrs (this: That, params?: T.CatNodeattrsRequest | TB.CatNodeattrsRequest, options?: TransportRequestOptions): Promise<any> {\n    const acceptedPath: string[] = []\n    const querystring: Record<strin
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:13.892Z
+Question Type: select-all
+Function: nodeattrs
+Function Size: 626 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: nodeattrs (TypeScript)\n// Returns information about custom node attributes.\n\nasync nodeattrs (this: That, params?: T.CatNodeattrsRequest | TB.CatNodeattrsRequest, options?: TransportRequestOptions): Promise<any> {\n    const acceptedPath: string[] = []\n    const querystring: Record<strin
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:14.443Z
+Question Type: order-sequence
+Function: nodeattrs
+Function Size: 626 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: nodeattrs (TypeScript)\n// Returns information about custom node attributes.\n\nasync nodeattrs (this: That, params?: T.CatNodeattrsRequest | TB.CatNodeattrsRequest, options?: TransportRequestOptions): Promise<any> {\n    const acceptedPath: string[] = []\n    const querystring: Record<strin
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:17.865Z
+Question Type: select-all
+Function: addDocumentsGetter
+Function Size: 440 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: addDocumentsGetter (TypeScript)\n// Adds a getter for documents to the result object.\n\nfunction addDocumentsGetter<TDocument, TAggregations> (result: TransportResult<T.SearchResponse<TDocument, TAggregations>, unknown>): void {\n  Object.defineProperty(result, 'documents', {\n    get () {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:20.068Z
+Question Type: select-all
+Function: allocationExplain
+Function Size: 872 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: allocationExplain (TypeScript)\n// Provides explanations for shard allocations in the cluster.\n\nasync allocationExplain (this: That, params?: T.ClusterAllocationExplainRequest | TB.ClusterAllocationExplainRequest, options?: TransportRequestOptions): Promise<any> {\n    const acceptedPath:
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:21.358Z
+Question Type: function-variant
+Function: allocationExplain
+Function Size: 872 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: allocationExplain (TypeScript)\n// Provides explanations for shard allocations in the cluster.\n\nasync allocationExplain (this: That, params?: T.ClusterAllocationExplainRequest | TB.ClusterAllocationExplainRequest, options?: TransportRequestOptions): Promise<any> {\n    const acceptedPath:
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:21.557Z
+Question Type: function-variant
+Function: allocationExplain
+Function Size: 872 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: allocationExplain (TypeScript)\n// Provides explanations for shard allocations in the cluster.\n\nasync allocationExplain (this: That, params?: T.ClusterAllocationExplainRequest | TB.ClusterAllocationExplainRequest, options?: TransportRequestOptions): Promise<any> {\n    const acceptedPath:
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:22.760Z
+Question Type: multiple-choice
+Function: nodeattrs
+Function Size: 626 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: nodeattrs (TypeScript)\n// Returns information about custom node attributes.\n\nasync nodeattrs (this: That, params?: T.CatNodeattrsRequest | TB.CatNodeattrsRequest, options?: TransportRequestOptions): Promise<any> {\n    const acceptedPath: string[] = []\n    const querystring: Record<strin
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:24.167Z
+Question Type: true-false
+Function: allocationExplain
+Function Size: 872 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: allocationExplain (TypeScript)\n// Provides explanations for shard allocations in the cluster.\n\nasync allocationExplain (this: That, params?: T.ClusterAllocationExplainRequest | TB.ClusterAllocationExplainRequest, options?: TransportRequestOptions): Promise<any> {\n    const acceptedPath:
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:25.110Z
+Question Type: function-variant
+Function: addDocumentsGetter
+Function Size: 440 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: addDocumentsGetter (TypeScript)\n// Adds a getter for documents to the result object.\n\nfunction addDocumentsGetter<TDocument, TAggregations> (result: TransportResult<T.SearchResponse<TDocument, TAggregations>, unknown>): void {\n  Object.defineProperty(result, 'documents', {\n    get () {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:27.716Z
+Question Type: true-false
+Function: addDocumentsGetter
+Function Size: 440 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: addDocumentsGetter (TypeScript)\n// Adds a getter for documents to the result object.\n\nfunction addDocumentsGetter<TDocument, TAggregations> (result: TransportResult<T.SearchResponse<TDocument, TAggregations>, unknown>): void {\n  Object.defineProperty(result, 'documents', {\n    get () {\n
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761349386370
+Repository: Unknown
+Total Questions Generated: 9
+Total Chunks Processed: 3
+Ended: 2025-10-24T23:43:30.440Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:37.120Z
+Question Type: select-all
+Function: allocationExplain
+Function Size: 872 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: allocationExplain (TypeScript)\n// Provides explanations for shard allocations in the cluster.\n\nasync allocationExplain (this: That, params?: T.ClusterAllocationExplainRequest | TB.ClusterAllocationExplainRequest, options?: TransportRequestOptions): Promise<any> {\n    const acceptedPath:
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:37.469Z
+Question Type: select-all
+Function: addDocumentsGetter
+Function Size: 440 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: addDocumentsGetter (TypeScript)\n// Adds a getter for documents to the result object.\n\nfunction addDocumentsGetter<TDocument, TAggregations> (result: TransportResult<T.SearchResponse<TDocument, TAggregations>, unknown>): void {\n  Object.defineProperty(result, 'documents', {\n    get () {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:38.448Z
+Question Type: order-sequence
+Function: allocationExplain
+Function Size: 872 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: allocationExplain (TypeScript)\n// Provides explanations for shard allocations in the cluster.\n\nasync allocationExplain (this: That, params?: T.ClusterAllocationExplainRequest | TB.ClusterAllocationExplainRequest, options?: TransportRequestOptions): Promise<any> {\n    const acceptedPath:
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:38.455Z
+Question Type: order-sequence
+Function: addDocumentsGetter
+Function Size: 440 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: addDocumentsGetter (TypeScript)\n// Adds a getter for documents to the result object.\n\nfunction addDocumentsGetter<TDocument, TAggregations> (result: TransportResult<T.SearchResponse<TDocument, TAggregations>, unknown>): void {\n  Object.defineProperty(result, 'documents', {\n    get () {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:42.985Z
+Question Type: true-false
+Function: nodeattrs
+Function Size: 626 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: nodeattrs (TypeScript)\n// Returns information about custom node attributes.\n\nasync nodeattrs (this: That, params?: T.CatNodeattrsRequest | TB.CatNodeattrsRequest, options?: TransportRequestOptions): Promise<any> {\n    const acceptedPath: string[] = []\n    const querystring: Record<strin
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:43.156Z
+Question Type: select-all
+Function: nodeattrs
+Function Size: 626 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: nodeattrs (TypeScript)\n// Returns information about custom node attributes.\n\nasync nodeattrs (this: That, params?: T.CatNodeattrsRequest | TB.CatNodeattrsRequest, options?: TransportRequestOptions): Promise<any> {\n    const acceptedPath: string[] = []\n    const querystring: Record<strin
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:45.471Z
+Question Type: function-variant
+Function: allocationExplain
+Function Size: 872 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: allocationExplain (TypeScript)\n// Provides explanations for shard allocations in the cluster.\n\nasync allocationExplain (this: That, params?: T.ClusterAllocationExplainRequest | TB.ClusterAllocationExplainRequest, options?: TransportRequestOptions): Promise<any> {\n    const acceptedPath:
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:45.543Z
+Question Type: function-variant
+Function: allocationExplain
+Function Size: 872 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: allocationExplain (TypeScript)\n// Provides explanations for shard allocations in the cluster.\n\nasync allocationExplain (this: That, params?: T.ClusterAllocationExplainRequest | TB.ClusterAllocationExplainRequest, options?: TransportRequestOptions): Promise<any> {\n    const acceptedPath:
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:46.451Z
+Question Type: order-sequence
+Function: addDocumentsGetter
+Function Size: 440 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: addDocumentsGetter (TypeScript)\n// Adds a getter for documents to the result object.\n\nfunction addDocumentsGetter<TDocument, TAggregations> (result: TransportResult<T.SearchResponse<TDocument, TAggregations>, unknown>): void {\n  Object.defineProperty(result, 'documents', {\n    get () {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:48.718Z
+Question Type: true-false
+Function: addDocumentsGetter
+Function Size: 440 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: addDocumentsGetter (TypeScript)\n// Adds a getter for documents to the result object.\n\nfunction addDocumentsGetter<TDocument, TAggregations> (result: TransportResult<T.SearchResponse<TDocument, TAggregations>, unknown>): void {\n  Object.defineProperty(result, 'documents', {\n    get () {\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:52.088Z
+Question Type: multiple-choice
+Function: allocationExplain
+Function Size: 872 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: allocationExplain (TypeScript)\n// Provides explanations for shard allocations in the cluster.\n\nasync allocationExplain (this: That, params?: T.ClusterAllocationExplainRequest | TB.ClusterAllocationExplainRequest, options?: TransportRequestOptions): Promise<any> {\n    const acceptedPath:
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:52.611Z
+Question Type: select-all
+Function: nodeattrs
+Function Size: 626 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: nodeattrs (TypeScript)\n// Returns information about custom node attributes.\n\nasync nodeattrs (this: That, params?: T.CatNodeattrsRequest | TB.CatNodeattrsRequest, options?: TransportRequestOptions): Promise<any> {\n    const acceptedPath: string[] = []\n    const querystring: Record<strin
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:53.476Z
+Question Type: order-sequence
+Function: nodeattrs
+Function Size: 626 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: nodeattrs (TypeScript)\n// Returns information about custom node attributes.\n\nasync nodeattrs (this: That, params?: T.CatNodeattrsRequest | TB.CatNodeattrsRequest, options?: TransportRequestOptions): Promise<any> {\n    const acceptedPath: string[] = []\n    const querystring: Record<strin
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:43:56.467Z
+Question Type: function-variant
+Function: nodeattrs
+Function Size: 626 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Function: nodeattrs (TypeScript)\n// Returns information about custom node attributes.\n\nasync nodeattrs (this: That, params?: T.CatNodeattrsRequest | TB.CatNodeattrsRequest, options?: TransportRequestOptions): Promise<any> {\n    const acceptedPath: string[] = []\n    const querystring: Record<strin
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-24T23:44:00.080Z
+Question Type: function-variant
+Function: addDocumentsGetter
+Function Size: 440 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: addDocumentsGetter (TypeScript)\n// Adds a getter for documents to the result object.\n\nfunction addDocumentsGetter<TDocument, TAggregations> (result: TransportResult<T.SearchResponse<TDocument, TAggregations>, unknown>): void {\n  Object.defineProperty(result, 'documents', {\n    get () {\n
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761349386370
+Repository: Unknown
+Total Questions Generated: 7
+Total Chunks Processed: 3
+Ended: 2025-10-24T23:44:02.313Z
+================================================================================
+

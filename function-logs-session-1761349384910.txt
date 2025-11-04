@@ -1,0 +1,62 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761349384910
+Started: 2025-10-24T23:43:04.911Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T23:43:04.916Z
+File: [8 files: Step 5: Check if lives can be refilled, Add missing explanation if needed, Firestore collection names, Fetch user data, Download repository as tarball (single API call), Extract concepts from failed questions (weaknesses) - limit to 3 most recent failed questions, Check if user is signed in, JavaScript functions]
+Functions Extracted: 3
+
+
+Function 1: canRefillLives
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function canRefillLives(lastRefill: Date): boolean {
+  const now = new Date();
+  const hoursSinceRefill = (now.getTime() - lastRefill.getTime()) / (1000 * 60 * 60);
+  return hoursSinceRefill >= 8;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: downloadRepositoryTarball
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export async function downloadRepositoryTarball(owner: string, repo: string, branch: string = 'main'): Promise<Buffer> {
+  console.log('📦 Downloading tarball for', `${owner}/${repo}`, 'branch:', branch);
+  console.log('⏱️ Using 5-minute timeout for large repositories (like Linux kernel)');
+  const tarballUrl = `https://api.github.com/repos/${owner}/${repo}/tarball/${branch}`;
+  const headers: HeadersInit = {
+    'Accept': 'application/vnd.github.v3+json',
+    'User-Agent': 'RealCoder-AI'
+  };
+--------------------------------------------------------------------------------
+
+
+Function 3: fetchUserData
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+const fetchUserData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const userData = await getUser(user.uid);
+      setUserDoc(userData);
+    } catch (err) {
+      console.error('Error fetching user data:', err);
+      setError('Failed to load subscription data');
+    } finally {
+      setLoading(false);
+    }
+  };
+--------------------------------------------------------------------------------
+
+================================================================================

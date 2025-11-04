@@ -1,0 +1,324 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761360177363
+Started: 2025-10-25T02:42:57.363Z
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:43:00.645Z
+Question Type: true-false
+Function: Unknown
+Function Size: 136 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get all employees\n@GetMapping("/employees")\n	public List<Employee> getAllEmployees(){\n		return employeeRepository.findAll();\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:43:06.161Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 173 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: create employee rest api\n@PostMapping("/employees")\n	public Employee createEmployee(@RequestBody Employee employee) {\n		return employeeRepository.save(employee);\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:43:09.108Z
+Question Type: select-all
+Function: Unknown
+Function Size: 604 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: update employee rest api\n@PutMapping("/employees/{id}")\n	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails){\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:43:10.465Z
+Question Type: select-all
+Function: Unknown
+Function Size: 173 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: create employee rest api\n@PostMapping("/employees")\n	public Employee createEmployee(@RequestBody Employee employee) {\n		return employeeRepository.save(employee);\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:43:15.932Z
+Question Type: bug-finding
+Function: Unknown
+Function Size: 173 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: create employee rest api\n@PostMapping("/employees")\n	public Employee createEmployee(@RequestBody Employee employee) {\n		return employeeRepository.save(employee);\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:43:16.367Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 604 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: update employee rest api\n@PutMapping("/employees/{id}")\n	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails){\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:43:19.684Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1308 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: RameshMF-ReactJS-Spring-Boot-CRUD-Full-Stack-App-394c537/springboot-backend/src/main/java/net/javaguides/springboot/controller/EmployeeController.java\npackage net.javaguides.springboot.controller;\n\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport org.springfram
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:43:19.922Z
+Question Type: bug-finding
+Function: Unknown
+Function Size: 136 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: get all employees\n@GetMapping("/employees")\n	public List<Employee> getAllEmployees(){\n		return employeeRepository.findAll();\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:43:20.342Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 328 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get employee by id rest api\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id :" + id));\n		return Res
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:43:25.965Z
+Question Type: select-all
+Function: Unknown
+Function Size: 328 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get employee by id rest api\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id :" + id));\n		return Res
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:43:26.782Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1308 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: RameshMF-ReactJS-Spring-Boot-CRUD-Full-Stack-App-394c537/springboot-backend/src/main/java/net/javaguides/springboot/controller/EmployeeController.java\npackage net.javaguides.springboot.controller;\n\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport org.springfram
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:43:28.014Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 604 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: update employee rest api\n@PutMapping("/employees/{id}")\n	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails){\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:43:29.117Z
+Question Type: select-all
+Function: Unknown
+Function Size: 136 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: get all employees\n@GetMapping("/employees")\n	public List<Employee> getAllEmployees(){\n		return employeeRepository.findAll();\n	}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:43:32.363Z
+Question Type: bug-finding
+Function: Unknown
+Function Size: 1308 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: RameshMF-ReactJS-Spring-Boot-CRUD-Full-Stack-App-394c537/springboot-backend/src/main/java/net/javaguides/springboot/controller/EmployeeController.java\npackage net.javaguides.springboot.controller;\n\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport org.springfram
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:43:35.718Z
+Question Type: bug-finding
+Function: Unknown
+Function Size: 328 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: get employee by id rest api\n@GetMapping("/employees/{id}")\n	public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {\n		Employee employee = employeeRepository.findById(id)\n				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id :" + id));\n		return Res
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761360177363
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 5
+Ended: 2025-10-25T02:43:35.718Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:44:22.045Z
+Question Type: bug-finding
+Function: Unknown
+Function Size: 681 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: socketio-socket.io-693080c/packages/engine.io-client/lib/socket.ts\nimport { transports as DEFAULT_TRANSPORTS } from "./transports/index.js";\nimport { installTimerFunctions, byteLength } from "./util.js";\nimport { decode } from "./contrib/parseqs.js";\nimport { parse } from "./contrib/parseur
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:44:22.050Z
+Question Type: true-false
+Function: Unknown
+Function Size: 70 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: debug()\nconst debug = debugModule("engine.io-client:socket");
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:44:25.212Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1370 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: if no port is specified manually, use the protocol default\nopts.port = this.secure ? "443" : "80";\n    }\n\n    this.hostname =\n      opts.hostname ||\n      (typeof location !== "undefined" ? location.hostname : "localhost");\n    this.port =\n      opts.port ||\n      (typeof location !== "unde
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:44:25.933Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1370 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: if no port is specified manually, use the protocol default\nopts.port = this.secure ? "443" : "80";\n    }\n\n    this.hostname =\n      opts.hostname ||\n      (typeof location !== "undefined" ? location.hostname : "localhost");\n    this.port =\n      opts.port ||\n      (typeof location !== "unde
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:44:26.952Z
+Question Type: bug-finding
+Function: Unknown
+Function Size: 2133 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: script, so we create one single event listener here which will forward the event to the socket instances\naddEventListener(\n    "offline",\n    () => {\n      debug(\n        "closing %d connection(s) because the network was lost",\n        OFFLINE_EVENT_LISTENERS.length,\n      );\n      OFFLINE_
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:44:30.529Z
+Question Type: select-all
+Function: Unknown
+Function Size: 196 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: debug()\nconst withEventListeners =\n  typeof addEventListener === "function" &&\n  typeof removeEventListener === "function";\n\nconst OFFLINE_EVENT_LISTENERS = [];\n\nif (withEventListeners) {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:44:32.425Z
+Question Type: bug-finding
+Function: Unknown
+Function Size: 196 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: debug()\nconst withEventListeners =\n  typeof addEventListener === "function" &&\n  typeof removeEventListener === "function";\n\nconst OFFLINE_EVENT_LISTENERS = [];\n\nif (withEventListeners) {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:44:34.020Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 196 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: debug()\nconst withEventListeners =\n  typeof addEventListener === "function" &&\n  typeof removeEventListener === "function";\n\nconst OFFLINE_EVENT_LISTENERS = [];\n\nif (withEventListeners) {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:44:34.411Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 1370 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: if no port is specified manually, use the protocol default\nopts.port = this.secure ? "443" : "80";\n    }\n\n    this.hostname =\n      opts.hostname ||\n      (typeof location !== "undefined" ? location.hostname : "localhost");\n    this.port =\n      opts.port ||\n      (typeof location !== "unde
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:44:34.497Z
+Question Type: bug-finding
+Function: Unknown
+Function Size: 70 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: debug()\nconst debug = debugModule("engine.io-client:socket");
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:44:38.687Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2133 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: script, so we create one single event listener here which will forward the event to the socket instances\naddEventListener(\n    "offline",\n    () => {\n      debug(\n        "closing %d connection(s) because the network was lost",\n        OFFLINE_EVENT_LISTENERS.length,\n      );\n      OFFLINE_
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:44:43.769Z
+Question Type: select-all
+Function: Unknown
+Function Size: 681 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: socketio-socket.io-693080c/packages/engine.io-client/lib/socket.ts\nimport { transports as DEFAULT_TRANSPORTS } from "./transports/index.js";\nimport { installTimerFunctions, byteLength } from "./util.js";\nimport { decode } from "./contrib/parseqs.js";\nimport { parse } from "./contrib/parseur
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:44:45.787Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 70 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: debug()\nconst debug = debugModule("engine.io-client:socket");
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:44:46.140Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2133 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: script, so we create one single event listener here which will forward the event to the socket instances\naddEventListener(\n    "offline",\n    () => {\n      debug(\n        "closing %d connection(s) because the network was lost",\n        OFFLINE_EVENT_LISTENERS.length,\n      );\n      OFFLINE_
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:44:47.905Z
+Question Type: true-false
+Function: Unknown
+Function Size: 681 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: socketio-socket.io-693080c/packages/engine.io-client/lib/socket.ts\nimport { transports as DEFAULT_TRANSPORTS } from "./transports/index.js";\nimport { installTimerFunctions, byteLength } from "./util.js";\nimport { decode } from "./contrib/parseqs.js";\nimport { parse } from "./contrib/parseur
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761360177363
+Repository: Unknown
+Total Questions Generated: 10
+Total Chunks Processed: 5
+Ended: 2025-10-25T02:44:52.975Z
+================================================================================
+

@@ -270,7 +270,7 @@ export default function Dashboard() {
         )}
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* Start Quiz */}
           <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg p-4 sm:p-6 text-white">
             <h3 className="text-lg sm:text-xl font-bold mb-2">Start Learning</h3>
@@ -282,6 +282,20 @@ export default function Dashboard() {
               className="bg-white text-blue-600 px-3 sm:px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors inline-block text-sm sm:text-base"
             >
               Take a Quiz
+            </Link>
+          </div>
+
+          {/* Question Curation */}
+          <div className="bg-gradient-to-r from-green-500 to-teal-600 rounded-xl shadow-lg p-4 sm:p-6 text-white">
+            <h3 className="text-lg sm:text-xl font-bold mb-2">Curate Questions</h3>
+            <p className="text-green-100 mb-4 text-sm sm:text-base">
+              Manually review and approve high-quality quiz questions.
+            </p>
+            <Link
+              href="/dashboard/curation"
+              className="bg-white text-green-600 px-3 sm:px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors inline-block text-sm sm:text-base"
+            >
+              Manage Questions
             </Link>
           </div>
 

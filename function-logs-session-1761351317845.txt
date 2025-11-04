@@ -1,0 +1,1016 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761351317845
+Started: 2025-10-25T00:15:17.845Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-25T00:15:17.850Z
+File: motiondivision-motion-b5df740/packages/framer-motion/src/value/use-transform.ts
+Functions Extracted: 2
+
+
+Function 1: useTransform
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function useTransform<I, O>(
+    input:
+        | MotionValue<I>
+        | MotionValue<string>[]
+        | MotionValue<number>[]
+        | MotionValue<AnyResolvedKeyframe>[]
+        | (() => O),
+    inputRangeOrTransformer?: InputRange | Transformer<I, O>,
+    outputRange?: O[],
+    options?: TransformOptions<O>
+): MotionValue<O> {
+    if (typeof input === "function") {
+        return useComputed(input)
+    }
+
+    const transformer =
+        typeof inputRangeOrTransformer === "function"
+            ? inputRangeOrTransformer
+            : transform(inputRangeOrTransformer!, outputRange!, options)
+
+    return Array.isArray(input)
+        ? useListTransform(
+              input,
+              transformer as MultiTransformer<AnyResolvedKeyframe, O>
+          )
+        : useListTransform([input], ([latest]) =>
+              (transformer as SingleTransformer<I, O>)(latest)
+          )
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: useListTransform
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function useListTransform<I, O>(
+    values: MotionValue<I>[],
+    transformer: MultiTransformer<I, O>
+): MotionValue<O> {
+    const latest = useConstant<I[]>(() => [])
+
+    return useCombineMotionValues(values, () => {
+        latest.length = 0
+        const numValues = values.length
+        for (let i = 0; i < numValues; i++) {
+            latest[i] = values[i].get()
+        }
+
+        return transformer(latest)
+    })
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-25T00:15:18.337Z
+File: koajs-koa-27df3b6/lib/context.js
+Functions Extracted: 1
+
+
+Function 1: toJSON
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+toJSON () {
+    return {
+      request: this.request.toJSON(),
+      response: this.response.toJSON(),
+      app: this.app.toJSON(),
+      originalUrl: this.originalUrl,
+      req: '<original node req>',
+      res: '<original node res>',
+      socket: '<original node socket>'
+    }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-25T00:15:24.452Z
+File: motiondivision-motion-b5df740/packages/framer-motion/src/motion/index.tsx
+Functions Extracted: 4
+
+
+Function 1: createMotionComponent
+Language: TypeScript
+Lines: 51
+Full Code:
+--------------------------------------------------------------------------------
+export function createMotionComponent<
+    Props,
+    TagName extends keyof DOMMotionComponents | string = "div"
+>(
+    Component: TagName | string | React.ComponentType<Props>,
+    { forwardMotionProps = false }: MotionComponentOptions = {},
+    preloadedFeatures?: FeaturePackages,
+    createVisualElement?: CreateVisualElement<Props, TagName>
+) {
+    preloadedFeatures && loadFeatures(preloadedFeatures)
+
+    const useVisualState = isSVGComponent(Component)
+        ? useSVGVisualState
+        : useHTMLVisualState
+
+    function MotionDOMComponent(
+        props: MotionComponentProps<Props>,
+        externalRef?: React.Ref<HTMLElement | SVGElement>
+    ) {
+        let MeasureLayout: undefined | React.ComponentType<MotionProps>
+
+        const configAndProps = {
+            ...useContext(MotionConfigContext),
+            ...props,
+            layoutId: useLayoutId(props),
+        }
+
+        const { isStatic } = configAndProps
+
+        const context = useCreateMotionContext<HTMLElement | SVGElement>(props)
+
+        const visualState = useVisualState(props, isStatic)
+
+        if (!isStatic && isBrowser) {
+            useStrictMode(configAndProps, preloadedFeatures)
+
+            const layoutProjection = getProjectionFunctionality(configAndProps)
+            MeasureLayout = layoutProjection.MeasureLayout
+
+            context.visualElement = useVisualElement(
+                Component,
+                visualState,
+                configAndProps,
+                createVisualElement,
+                layoutProjection.ProjectionNode
+            )
+        }
+
+        return (
+            <MotionContext.Provider value={context}>
+                {MeasureLayout && context.visualElement ? (
+                    <MeasureLayout
+                        visualElement={context.visualElement}
+                        {...configAndProps}
+                    />
+                ) : null}
+                {useRender<Props, TagName>(
+                    Component,
+                    props,
+                    useMotionRef<
+                        HTMLElement | SVGElement,
+                        HTMLRenderState | SVGRenderState
+                    >(visualState, context.visualElement, externalRef),
+                    visualState,
+                    isStatic,
+                    forwardMotionProps
+                )}
+            </MotionContext.Provider>
+        )
+    }
+
+    MotionDOMComponent.displayName = `motion.${
+        typeof Component === "string"
+            ? Component
+            : `create(${Component.displayName ?? Component.name ?? ""})`
+    }`
+
+    const ForwardRefMotionComponent = forwardRef(MotionDOMComponent as any)
+    ;(ForwardRefMotionComponent as any)[motionComponentSymbol] = Component
+
+    return ForwardRefMotionComponent as MotionComponent<TagName, Props>
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: useLayoutId
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+function useLayoutId({ layoutId }: MotionProps) {
+    const layoutGroupId = useContext(LayoutGroupContext).id
+    return layoutGroupId && layoutId !== undefined
+        ? layoutGroupId + "-" + layoutId
+        : layoutId
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: useStrictMode
+Language: TypeScript
+Lines: 13
+Full Code:
+--------------------------------------------------------------------------------
+function useStrictMode(
+    configAndProps: MotionProps,
+    preloadedFeatures?: FeaturePackages
+) {
+    const isStrict = useContext(LazyContext).strict
+
+    if (
+        process.env.NODE_ENV !== "production" &&
+        preloadedFeatures &&
+        isStrict
+    ) {
+        const strictMessage =
+            "You have rendered a `motion` component within a `LazyMotion` component. This will break tree shaking. Import and render a `m` component instead."
+        configAndProps.ignoreStrict
+            ? warning(false, strictMessage, "lazy-strict-mode")
+            : invariant(false, strictMessage, "lazy-strict-mode")
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: getProjectionFunctionality
+Language: TypeScript
+Lines: 11
+Full Code:
+--------------------------------------------------------------------------------
+function getProjectionFunctionality(props: MotionProps) {
+    const { drag, layout } = featureDefinitions
+
+    if (!drag && !layout) return {}
+
+    const combined = { ...drag, ...layout }
+
+    return {
+        MeasureLayout:
+            drag?.isEnabled(props) || layout?.isEnabled(props)
+                ? combined.MeasureLayout
+                : undefined,
+        ProjectionNode: combined.ProjectionNode,
+    }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-25T00:15:25.349Z
+File: just allows us to look at the results of animations when everything has wrapped up
+Functions Extracted: 5
+
+
+Function 1: Component
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+const Component = () => {
+    const animation = useAnimation();
+    const x = useMotionValue(0);
+
+    React.useEffect(() => {
+        animation.start({ x: 100 });
+    }, []);
+
+    return (
+        <motion.div
+            animate={animation}
+            style={{ x }}
+            onAnimationComplete={() => resolve(x.get())}
+        />
+    );
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: Component
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+const Component = () => {
+    const animation = useAnimation();
+    const x = useMotionValue(0);
+
+    useEffect(() => {
+        animation.start("foo").then(() => resolve(x.get()));
+    }, []);
+
+    return (
+        <motion.div
+            variants={variants}
+            animate={animation}
+            style={{ x }}
+        />
+    );
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: Component
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const Component = () => {
+    const controls = useAnimation();
+    const variants = {
+        foo: { x: 100 },
+    };
+
+    const childVariants = {
+        foo: { backgroundColor: "#fff" },
+    };
+
+    const x = useMotionValue(0);
+    const backgroundColor = useMotionValue("#000");
+
+    useEffect(() => {
+        controls
+            .start("foo")
+            .then(() => resolve([x.get(), backgroundColor.get()]));
+    }, []);
+
+    return (
+        <motion.div
+            animate={controls}
+            variants={variants}
+            style={{ x }}
+        >
+            <motion.div
+                variants={childVariants}
+                style={{ backgroundColor }}
+            />
+        </motion.div>
+    );
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: Component
+Language: JavaScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+const Component = () => {
+    const xa = useMotionValue(0);
+    const xb = useMotionValue(0);
+    const controls = useAnimation();
+
+    useEffect(() => {
+        controls.set({ x: 1 });
+        resolve([xa.get(), xb.get()]);
+    });
+
+    return (
+        <>
+            <motion.div animate={controls} style={{ x: xa }} />
+            <motion.div animate={controls} style={{ x: xb }} />
+        </>
+    );
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: Component
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+const Component = () => {
+    const xa = useMotionValue(0);
+    const xb = useMotionValue(0);
+    const controls = useAnimation();
+
+    useEffect(() => {
+        controls
+            .start((custom) => {
+                return { x: 1 * custom };
+            })
+            .then(() => {
+                resolve([xa.get(), xb.get()]);
+            });
+    });
+
+    return (
+        <>
+            <motion.div
+                animate={controls}
+                custom={1}
+                style={{ x: xa }}
+            />
+            <motion.div
+                animate={controls}
+                custom={2}
+                style={{ x: xb }}
+            />
+        </>
+    );
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-25T00:15:26.029Z
+File: animations for instance if layout="size" and an element has only changed position
+Functions Extracted: 5
+
+
+Function 1: propagateDirtyNodes
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+export function propagateDirtyNodes(node: IProjectionNode) {
+    if (statsBuffer.value) {
+        metrics.nodes++;
+    }
+
+    if (!node.parent) return;
+
+    if (!node.isProjecting()) {
+        node.isProjectionDirty = node.parent.isProjectionDirty;
+    }
+
+    node.isSharedProjectionDirty ||= Boolean(
+        node.isProjectionDirty ||
+            node.parent.isProjectionDirty ||
+            node.parent.isSharedProjectionDirty
+    );
+
+    node.isTransformDirty ||= node.parent.isTransformDirty;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: cleanDirtyNodes
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function cleanDirtyNodes(node: IProjectionNode) {
+    node.isProjectionDirty =
+        node.isSharedProjectionDirty =
+        node.isTransformDirty =
+            false;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: mixAxisDelta
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+export function mixAxisDelta(output: AxisDelta, delta: AxisDelta, p: number) {
+    output.translate = mixNumber(delta.translate, 0, p);
+    output.scale = mixNumber(delta.scale, 1, p);
+    output.origin = delta.origin;
+    output.originPoint = delta.originPoint;
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: mixAxis
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function mixAxis(output: Axis, from: Axis, to: Axis, p: number) {
+    output.min = mixNumber(from.min, to.min, p);
+    output.max = mixNumber(from.max, to.max, p);
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: mixBox
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function mixBox(output: Box, from: Box, to: Box, p: number) {
+    mixAxis(output.x, from.x, to.x, p);
+    mixAxis(output.y, from.y, to.y, p);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-25T00:15:27.054Z
+File: [3 files: animations for instance if layout="size" and an element has only changed position, delta-calc.ts, utils.ts]
+Functions Extracted: 3
+
+
+Function 1: calcAxisDelta
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function calcAxisDelta(
+    delta: AxisDelta,
+    source: Axis,
+    target: Axis,
+    origin: number = 0.5
+) {
+    delta.origin = origin;
+    delta.originPoint = mixNumber(source.min, source.max, delta.origin);
+    delta.scale = calcLength(target) / calcLength(source);
+    delta.translate =
+        mixNumber(target.min, target.max, delta.origin) - delta.originPoint;
+
+    if (
+        (delta.scale >= SCALE_MIN && delta.scale <= SCALE_MAX) ||
+        isNaN(delta.scale)
+    ) {
+        delta.scale = 1.0;
+    }
+
+    if (
+        (delta.translate >= TRANSLATE_MIN &&
+            delta.translate <= TRANSLATE_MAX) ||
+        isNaN(delta.translate)
+    ) {
+        delta.translate = 0.0;
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: calcBoxDelta
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export function calcBoxDelta(
+    delta: Delta,
+    source: Box,
+    target: Box,
+    origin?: ResolvedValues
+): void {
+    calcAxisDelta(
+        delta.x,
+        source.x,
+        target.x,
+        origin ? (origin.originX as number) : undefined
+    );
+    calcAxisDelta(
+        delta.y,
+        source.y,
+        target.y,
+        origin ? (origin.originY as number) : undefined
+    );
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: calcRelativePosition
+Language: TypeScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+export function calcRelativePosition(target: Box, layout: Box, parent: Box) {
+    calcRelativeAxisPosition(target.x, layout.x, parent.x);
+    calcRelativeAxisPosition(target.y, layout.y, parent.y);
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-25T00:15:29.832Z
+File: [7 files: search-params.js, util.inspect.custom support for node 6+, only.js, redirect.test.js, idempotent.test.js, index.test.js, stream.js]
+Functions Extracted: 8
+
+
+Function 1: stringify
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+stringify: (obj) => {
+    const searchParams = new URLSearchParams();
+    const addKey = (k, v, params) => {
+        const val = typeof v === 'string' || typeof v === 'number' ? v : '';
+        params.append(k, val);
+    };
+
+    for (const [key, value] of Object.entries(obj)) {
+        if (Array.isArray(value)) {
+            const lgth = value.length;
+            for (let i = 0; i < lgth; i++) {
+                addKey(key, value[i], searchParams);
+            }
+        } else {
+            addKey(key, value, searchParams);
+        }
+    }
+    return searchParams.toString();
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: parse
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+parse: (str) => {
+    const searchParams = new URLSearchParams(str);
+    const obj = {};
+    for (const key of searchParams.keys()) {
+        const values = searchParams.getAll(key);
+        obj[key] = values.length <= 1 ? values[0] : values;
+    }
+    return obj;
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: listen
+Language: JavaScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+listen (...args) {
+    debug('listen');
+    const server = http.createServer(this.callback());
+    return server.listen(...args);
+}
+--------------------------------------------------------------------------------
+
+
+Function 4: use
+Language: JavaScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+use (fn) {
+    if (typeof fn !== 'function') { throw new TypeError('middleware must be a function!'); }
+    debug('use %s', fn._name || fn.name || '-');
+    this.middleware.push(fn);
+    return this;
+}
+--------------------------------------------------------------------------------
+
+
+Function 5: callback
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+callback () {
+    const fn = this.compose(this.middleware);
+
+    if (!this.listenerCount('error')) this.on('error', this.onerror);
+
+    const handleRequest = (req, res) => {
+        const ctx = this.createContext(req, res);
+        if (!this.ctxStorage) {
+            return this.handleRequest(ctx, fn);
+        }
+        return this.ctxStorage.run(ctx, async () => {
+            return await this.handleRequest(ctx, fn);
+        });
+    };
+
+    return handleRequest;
+}
+--------------------------------------------------------------------------------
+
+
+Function 6: handleRequest
+Language: JavaScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+handleRequest (ctx, fnMiddleware) {
+    const res = ctx.res;
+    res.statusCode = 404;
+    const onerror = (err) => ctx.onerror(err);
+    const handleResponse = () => respond(ctx);
+    onFinished(res, onerror);
+    return fnMiddleware(ctx).then(handleResponse).catch(onerror);
+}
+--------------------------------------------------------------------------------
+
+
+Function 7: createContext
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+createContext (req, res) {
+    const context = Object.create(this.context);
+    const request = (context.request = Object.create(this.request));
+    const response = (context.response = Object.create(this.response));
+    context.app = request.app = response.app = this;
+    context.req = request.req = response.req = req;
+    context.res = request.res = response.res = res;
+    request.ctx = response.ctx = context;
+    request.response = response;
+    response.request = request;
+    context.originalUrl = request.originalUrl = req.url;
+    context.state = {};
+    return context;
+}
+--------------------------------------------------------------------------------
+
+
+Function 8: escape
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+function escape (html) {
+    return String(html)
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-25T00:15:30.556Z
+File: motiondivision-motion-b5df740/packages/motion-dom/src/gestures/hover.ts
+Functions Extracted: 1
+
+
+Function 1: hover
+Language: TypeScript
+Lines: 22
+Full Code:
+--------------------------------------------------------------------------------
+export function hover(
+    elementOrSelector: ElementOrSelector,
+    onHoverStart: OnHoverStartEvent,
+    options: EventOptions = {}
+): VoidFunction {
+    const [elements, eventOptions, cancel] = setupGesture(
+        elementOrSelector,
+        options
+    )
+
+    const onPointerEnter = (enterEvent: PointerEvent) => {
+        if (!isValidHover(enterEvent)) return
+
+        const { target } = enterEvent
+        const onHoverEnd = onHoverStart(target as Element, enterEvent)
+
+        if (typeof onHoverEnd !== "function" || !target) return
+
+        const onPointerLeave = (leaveEvent: PointerEvent) => {
+            if (!isValidHover(leaveEvent)) return
+
+            onHoverEnd(leaveEvent)
+            target.removeEventListener(
+                "pointerleave",
+                onPointerLeave as EventListener
+            )
+        }
+
+        target.addEventListener(
+            "pointerleave",
+            onPointerLeave as EventListener,
+            eventOptions
+        )
+    }
+
+    elements.forEach((element) => {
+        element.addEventListener(
+            "pointerenter",
+            onPointerEnter as EventListener,
+            eventOptions
+        )
+    })
+
+    return cancel
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-25T00:15:30.871Z
+File: [2 files: static-prop.test.tsx, index.ts]
+Functions Extracted: 1
+
+
+Function 1: scopedAnimate
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+function scopedAnimate<O extends {}>(
+    subjectOrSequence:
+        | AnimationSequence
+        | MotionValue<number>
+        | MotionValue<string>
+        | number
+        | string
+        | ElementOrSelector
+        | O
+        | O[],
+    optionsOrKeyframes?:
+        | SequenceOptions
+        | number
+        | string
+        | UnresolvedValueKeyframe<number>[]
+        | UnresolvedValueKeyframe<string>[]
+        | DOMKeyframesDefinition
+        | ObjectTarget<O>,
+    options?:
+        | ValueAnimationTransition<number>
+        | ValueAnimationTransition<string>
+        | DynamicAnimationOptions
+): AnimationPlaybackControlsWithThen {
+    let animations: AnimationPlaybackControlsWithThen[] = []
+    let animationOnComplete: VoidFunction | undefined
+
+    if (isSequence(subjectOrSequence)) {
+        animations = animateSequence(
+            subjectOrSequence,
+            optionsOrKeyframes as SequenceOptions,
+            scope
+        )
+    } else {
+        // Implementation for other cases
+    }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-25T00:15:41.077Z
+File: [2 files: delta-calc.ts, subject.ts]
+Functions Extracted: 3
+
+
+Function 1: calcAxisDelta
+Language: TypeScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+export function calcAxisDelta(
+    delta: AxisDelta,
+    source: Axis,
+    target: Axis,
+    origin: number = 0.5
+) {
+    delta.origin = origin;
+    delta.originPoint = mixNumber(source.min, source.max, delta.origin);
+    delta.scale = calcLength(target) / calcLength(source);
+    delta.translate =
+        mixNumber(target.min, target.max, delta.origin) - delta.originPoint;
+
+    if (
+        (delta.scale >= SCALE_MIN && delta.scale <= SCALE_MAX) ||
+        isNaN(delta.scale)
+    ) {
+        delta.scale = 1.0;
+    }
+
+    if (
+        (delta.translate >= TRANSLATE_MIN &&
+            delta.translate <= TRANSLATE_MAX) ||
+        isNaN(delta.translate)
+    ) {
+        delta.translate = 0.0;
+    }
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: calcBoxDelta
+Language: TypeScript
+Lines: 10
+Full Code:
+--------------------------------------------------------------------------------
+export function calcBoxDelta(
+    delta: Delta,
+    source: Box,
+    target: Box,
+    origin?: ResolvedValues
+): void {
+    calcAxisDelta(
+        delta.x,
+        source.x,
+        target.x,
+        origin ? (origin.originX as number) : undefined
+    );
+    calcAxisDelta(
+        delta.y,
+        source.y,
+        target.y,
+        origin ? (origin.originY as number) : undefined
+    );
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: animateSubject
+Language: TypeScript
+Lines: 50
+Full Code:
+--------------------------------------------------------------------------------
+export function animateSubject<O extends Object>(
+    subject:
+        | MotionValue<number>
+        | MotionValue<string>
+        | number
+        | string
+        | ElementOrSelector
+        | O
+        | O[],
+    keyframes:
+        | number
+        | string
+        | UnresolvedValueKeyframe<number>[]
+        | UnresolvedValueKeyframe<string>[]
+        | DOMKeyframesDefinition
+        | ObjectTarget<O>,
+    options?:
+        | ValueAnimationTransition<number>
+        | ValueAnimationTransition<string>
+        | DynamicAnimationOptions,
+    scope?: AnimationScope
+): AnimationPlaybackControlsWithThen[] {
+    const animations: AnimationPlaybackControlsWithThen[] = [];
+
+    if (isSingleValue(subject, keyframes)) {
+        animations.push(
+            animateSingleValue(
+                subject,
+                isDOMKeyframes(keyframes)
+                    ? (keyframes as any).default || keyframes
+                    : keyframes,
+                options ? (options as any).default || options : options
+            )
+        );
+    } else {
+        const subjects = resolveSubjects(
+            subject,
+            keyframes as DOMKeyframesDefinition,
+            scope
+        );
+
+        const numSubjects = subjects.length;
+
+        invariant(
+            Boolean(numSubjects),
+            "No valid elements provided.",
+            "no-valid-elements"
+        );
+
+        for (let i = 0; i < numSubjects; i++) {
+            const thisSubject = subjects[i];
+
+            invariant(
+                thisSubject !== null,
+                "You're trying to perform an animation on null. Ensure that selectors are correctly finding elements and refs are correctly hydrated.",
+                "animate-null"
+            );
+
+            const createVisualElement =
+                thisSubject instanceof Element
+                    ? createDOMVisualElement
+                    : createObjectVisualElement;
+
+            if (!visualElementStore.has(thisSubject)) {
+                createVisualElement(thisSubject as any);
+            }
+
+            const visualElement = visualElementStore.get(thisSubject)!;
+            const transition = { ...options };
+
+            if (
+                "delay" in transition &&
+                typeof transition.delay === "function"
+            ) {
+                transition.delay = transition.delay(i, numSubjects);
+            }
+
+            animations.push(
+                ...animateTarget(
+                    visualElement,
+                    { ...(keyframes as {}), transition } as TargetAndTransition,
+                    {}
+                )
+            );
+        }
+    }
+
+    return animations;
+}
+--------------------------------------------------------------------------------
+
+================================================================================

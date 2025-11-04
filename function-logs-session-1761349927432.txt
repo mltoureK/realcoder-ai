@@ -1,0 +1,122 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761349927432
+Started: 2025-10-24T23:52:07.435Z
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T23:52:07.450Z
+File: [8 files: detect unrecognized arguments., Return a copy of the object only containing the whitelisted properties., error case, since you should always start with a non-empty catalog.), error., Deep compare each member, Create a (shallow-cloned) duplicate of an object., consuming the return value of the function that follows., token. Thus we only need to observe hashed tokens here.]
+Functions Extracted: 3
+
+
+Function 1: _.pick
+Language: JavaScript
+Lines: 15
+Full Code:
+--------------------------------------------------------------------------------
+_.pick = function(object, oiteratee, context) {
+    var result = {}, obj = object, iteratee, keys;
+    if (obj == null) return result;
+    if (_.isFunction(oiteratee)) {
+      keys = _.allKeys(obj);
+      iteratee = optimizeCb(oiteratee, context);
+    } else {
+      keys = flatten(arguments, false, false, 1);
+      iteratee = function(value, key, obj) { return key in obj; };
+      obj = Object(obj);
+    }
+    for (var i = 0, length = keys.length; i < length; i++) {
+      var key = keys[i];
+      var value = obj[key];
+      if (iteratee(value, key, obj)) result[key] = value;
+    }
+    return result;
+  };
+--------------------------------------------------------------------------------
+
+
+Function 2: _.clone
+Language: JavaScript
+Lines: 7
+Full Code:
+--------------------------------------------------------------------------------
+_.clone = function(obj) {
+    if (!_.isObject(obj)) return obj;
+    return _.isArray(obj) ? obj.slice() : _.extend({}, obj);
+  };
+--------------------------------------------------------------------------------
+
+
+Function 3: _.compose
+Language: JavaScript
+Lines: 11
+Full Code:
+--------------------------------------------------------------------------------
+_.compose = function() {
+    var args = arguments;
+    var start = args.length - 1;
+    return function() {
+      var i = start;
+      var result = args[start].apply(this, arguments);
+      while (i--) result = args[i].call(this, result);
+      return result;
+    };
+  };
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-24T23:52:15.997Z
+File: [8 files: Step 5: Check if lives can be refilled, Migrated from vanilla.js version, Non-streaming path: Use prefetched chunks when available, otherwise extract now, Get base URL for redirects, Product metadata, user-management.ts, Check for resets before incrementing, Penalize very small or very large files]
+Functions Extracted: 3
+
+
+Function 1: canRefillLives
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+export function canRefillLives(lastRefill: Date): boolean {
+  const now = new Date();
+  const hoursSinceRefill = (now.getTime() - lastRefill.getTime()) / (1000 * 60 * 60);
+  return hoursSinceRefill >= 8;
+}
+--------------------------------------------------------------------------------
+
+
+Function 2: checkForResetsBeforeIncrementing
+Language: TypeScript
+Lines: 12
+Full Code:
+--------------------------------------------------------------------------------
+let quizzesThisWeek = userData.quizzesThisWeek || 0;
+let quizzesThisMonth = userData.quizzesThisMonth || 0;
+const updates: Record<string, unknown> = {};
+
+if (needsWeekReset(userData.weekResetDate)) {
+  quizzesThisWeek = 0;
+  updates.weekResetDate = Timestamp.fromDate(getNextMonday());
+  console.log(`🔄 Reset weekly count before increment for user ${userId}`);
+}
+
+if (needsMonthReset(userData.monthResetDate)) {
+  quizzesThisMonth = 0;
+  updates.monthResetDate = Timestamp.fromDate(getFirstOfNextMonth());
+  console.log(`🔄 Reset monthly count before increment for user ${userId}`);
+}
+--------------------------------------------------------------------------------
+
+
+Function 3: penalizeFileSize
+Language: TypeScript
+Lines: 5
+Full Code:
+--------------------------------------------------------------------------------
+if (content.length < 100) score -= 10;
+if (content.length > 50000) score -= 5;
+
+return Math.max(score, 1);
+--------------------------------------------------------------------------------
+
+================================================================================

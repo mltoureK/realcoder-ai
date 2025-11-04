@@ -1,0 +1,1176 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761361609323
+Started: 2025-10-25T03:06:49.323Z
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:06:56.357Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 69 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Serialization\n*   String json = gson.toJson(myObject);\n *\n *
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:06:58.777Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2116 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: google-gson-569279f/extras/src/main/java/com/google/gson/graph/GraphAdapterBuilder.java\n/*\n * Copyright (C) 2011 Google Inc.\n *\n * Licensed under the Apache License, Version 2.0 (the "License");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:07:01.876Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2077 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: google-gson-569279f/extras/src/main/java/com/google/gson/extras/examples/rawcollections/RawCollectionsExample.java\n/*\n * Copyright (C) 2011 Google Inc.\n *\n * Licensed under the Apache License, Version 2.0 (the "License");\n * you may not use this file except in compliance with the License.\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:07:11.295Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2077 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: google-gson-569279f/extras/src/main/java/com/google/gson/extras/examples/rawcollections/RawCollectionsExample.java\n/*\n * Copyright (C) 2011 Google Inc.\n *\n * Licensed under the Apache License, Version 2.0 (the "License");\n * you may not use this file except in compliance with the License.\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:07:13.315Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2111 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: Create copy to allow reusing GraphAdapterBuilder without affecting adapter factory\nMap<Type, InstanceCreator<?>> instanceCreators = new HashMap<>(this.instanceCreators);\n    Factory factory = new Factory(instanceCreators);\n    gsonBuilder.registerTypeAdapterFactory(factory);\n    for (Map.En
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:07:13.975Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2044 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Deserialization\n*   MyClass deserialized = gson.fromJson(json, MyClass.class);\n * </pre>\n *\n * @see Gson\n * @see GsonBuilder\n */\npublic final class GraphAdapterBuilder {\n  private final Map<Type, InstanceCreator<?>> instanceCreators;\n  private final ConstructorConstructor constructorConstru
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:07:15.535Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2044 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Deserialization\n*   MyClass deserialized = gson.fromJson(json, MyClass.class);\n * </pre>\n *\n * @see Gson\n * @see GsonBuilder\n */\npublic final class GraphAdapterBuilder {\n  private final Map<Type, InstanceCreator<?>> instanceCreators;\n  private final ConstructorConstructor constructorConstru
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:07:22.423Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2044 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Deserialization\n*   MyClass deserialized = gson.fromJson(json, MyClass.class);\n * </pre>\n *\n * @see Gson\n * @see GsonBuilder\n */\npublic final class GraphAdapterBuilder {\n  private final Map<Type, InstanceCreator<?>> instanceCreators;\n  private final ConstructorConstructor constructorConstru
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:07:29.020Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2111 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Create copy to allow reusing GraphAdapterBuilder without affecting adapter factory\nMap<Type, InstanceCreator<?>> instanceCreators = new HashMap<>(this.instanceCreators);\n    Factory factory = new Factory(instanceCreators);\n    gsonBuilder.registerTypeAdapterFactory(factory);\n    for (Map.En
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:07:30.067Z
+Question Type: select-all
+Function: Unknown
+Function Size: 69 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Serialization\n*   String json = gson.toJson(myObject);\n *\n *
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:07:38.728Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 69 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Serialization\n*   String json = gson.toJson(myObject);\n *\n *
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:07:39.412Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2111 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: Create copy to allow reusing GraphAdapterBuilder without affecting adapter factory\nMap<Type, InstanceCreator<?>> instanceCreators = new HashMap<>(this.instanceCreators);\n    Factory factory = new Factory(instanceCreators);\n    gsonBuilder.registerTypeAdapterFactory(factory);\n    for (Map.En
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:07:43.245Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2077 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: google-gson-569279f/extras/src/main/java/com/google/gson/extras/examples/rawcollections/RawCollectionsExample.java\n/*\n * Copyright (C) 2011 Google Inc.\n *\n * Licensed under the Apache License, Version 2.0 (the "License");\n * you may not use this file except in compliance with the License.\n 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:07:47.401Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2116 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: google-gson-569279f/extras/src/main/java/com/google/gson/graph/GraphAdapterBuilder.java\n/*\n * Copyright (C) 2011 Google Inc.\n *\n * Licensed under the Apache License, Version 2.0 (the "License");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:07:49.748Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2116 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: google-gson-569279f/extras/src/main/java/com/google/gson/graph/GraphAdapterBuilder.java\n/*\n * Copyright (C) 2011 Google Inc.\n *\n * Licensed under the Apache License, Version 2.0 (the "License");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of 
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761361609323
+Repository: Unknown
+Total Questions Generated: 11
+Total Chunks Processed: 5
+Ended: 2025-10-25T03:07:54.868Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:22:52.419Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2097 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: motiondivision-motion-b5df740/packages/motion-dom/src/value/index.ts\nimport { SubscriptionManager, velocityPerSecond, warnOnce } from "motion-utils"\nimport {\n    AnimationPlaybackControlsWithThen,\n    AnyResolvedKeyframe,\n    TransformProperties,\n} from "../animation/types"\nimport { frame }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:22:54.326Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2070 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Casts because of parseFloat's poor typing\nreturn velocityPerSecond(\n            parseFloat(this.current as any) -\n                parseFloat(this.prevFrameValue as any),\n            delta\n        )\n    }\n\n    hasAnimated = false\n\n    /**\n     * Registers a new animation to control this `Mot
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:22:54.653Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 2112 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: motiondivision-motion-b5df740/packages/framer-motion/src/animation/animate/index.ts\nimport type {\n    AnimationPlaybackControlsWithThen,\n    AnimationScope,\n    DOMKeyframesDefinition,\n    AnimationOptions as DynamicAnimationOptions,\n    ElementOrSelector,\n    MotionValue,\n    UnresolvedVal
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:22:56.429Z
+Question Type: select-all
+Function: Unknown
+Function Size: 971 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Extract top-level onComplete so it doesn't get applied per-value\nconst { onComplete, ...rest } = options || {}\n            if (typeof onComplete === "function") {\n                animationOnComplete = onComplete as VoidFunction\n            }\n            animations = animateSubject(\n        
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:23:03.785Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1270 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Update update subscribers\nif (this.current !== this.prev) {\n            this.events.change?.notify(this.current)\n\n            if (this.dependents) {\n                for (const dependent of this.dependents) {\n                    dependent.dirty()\n                }\n            }\n        }\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:23:08.085Z
+Question Type: true-false
+Function: Unknown
+Function Size: 971 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Extract top-level onComplete so it doesn't get applied per-value\nconst { onComplete, ...rest } = options || {}\n            if (typeof onComplete === "function") {\n                animationOnComplete = onComplete as VoidFunction\n            }\n            animations = animateSubject(\n        
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:23:10.969Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2097 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: motiondivision-motion-b5df740/packages/motion-dom/src/value/index.ts\nimport { SubscriptionManager, velocityPerSecond, warnOnce } from "motion-utils"\nimport {\n    AnimationPlaybackControlsWithThen,\n    AnyResolvedKeyframe,\n    TransformProperties,\n} from "../animation/types"\nimport { frame }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:23:15.228Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2070 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Casts because of parseFloat's poor typing\nreturn velocityPerSecond(\n            parseFloat(this.current as any) -\n                parseFloat(this.prevFrameValue as any),\n            delta\n        )\n    }\n\n    hasAnimated = false\n\n    /**\n     * Registers a new animation to control this `Mot
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:23:17.029Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1270 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Update update subscribers\nif (this.current !== this.prev) {\n            this.events.change?.notify(this.current)\n\n            if (this.dependents) {\n                for (const dependent of this.dependents) {\n                    dependent.dirty()\n                }\n            }\n        }\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:23:26.337Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2097 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: motiondivision-motion-b5df740/packages/motion-dom/src/value/index.ts\nimport { SubscriptionManager, velocityPerSecond, warnOnce } from "motion-utils"\nimport {\n    AnimationPlaybackControlsWithThen,\n    AnyResolvedKeyframe,\n    TransformProperties,\n} from "../animation/types"\nimport { frame }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:23:27.838Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2070 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Casts because of parseFloat's poor typing\nreturn velocityPerSecond(\n            parseFloat(this.current as any) -\n                parseFloat(this.prevFrameValue as any),\n            delta\n        )\n    }\n\n    hasAnimated = false\n\n    /**\n     * Registers a new animation to control this `Mot
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:23:31.029Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2112 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: motiondivision-motion-b5df740/packages/framer-motion/src/animation/animate/index.ts\nimport type {\n    AnimationPlaybackControlsWithThen,\n    AnimationScope,\n    DOMKeyframesDefinition,\n    AnimationOptions as DynamicAnimationOptions,\n    ElementOrSelector,\n    MotionValue,\n    UnresolvedVal
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:23:38.117Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 971 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: Extract top-level onComplete so it doesn't get applied per-value\nconst { onComplete, ...rest } = options || {}\n            if (typeof onComplete === "function") {\n                animationOnComplete = onComplete as VoidFunction\n            }\n            animations = animateSubject(\n        
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:23:40.177Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1270 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Update update subscribers\nif (this.current !== this.prev) {\n            this.events.change?.notify(this.current)\n\n            if (this.dependents) {\n                for (const dependent of this.dependents) {\n                    dependent.dirty()\n                }\n            }\n        }\n   
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:23:43.509Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2112 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: motiondivision-motion-b5df740/packages/framer-motion/src/animation/animate/index.ts\nimport type {\n    AnimationPlaybackControlsWithThen,\n    AnimationScope,\n    DOMKeyframesDefinition,\n    AnimationOptions as DynamicAnimationOptions,\n    ElementOrSelector,\n    MotionValue,\n    UnresolvedVal
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761361609323
+Repository: Unknown
+Total Questions Generated: 14
+Total Chunks Processed: 5
+Ended: 2025-10-25T03:23:49.551Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:25:08.000Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2115 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: google-truth-8d25ede/core/src/main/java/com/google/common/truth/BigDecimalSubject.java\n/*\n * Copyright (c) 2015 Google, Inc.\n *\n * Licensed under the Apache License, Version 2.0 (the "License");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:25:12.336Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1052 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: google-truth-8d25ede/core/src/main/java/com/google/common/truth/ComparableSubject.java\n/*\n * Copyright (c) 2014 Google, Inc.\n *\n * Licensed under the Apache License, Version 2.0 (the "License");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:25:13.178Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1052 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: google-truth-8d25ede/core/src/main/java/com/google/common/truth/ComparableSubject.java\n/*\n * Copyright (c) 2014 Google, Inc.\n *\n * Licensed under the Apache License, Version 2.0 (the "License");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:25:19.227Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 444 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: This won't mention "(scale is ignored)" if it fails, but that seems tolerable or even good?\nisEqualTo(expected);\n    } else if (actual.compareTo(expected) != 0) {\n      failWithoutActual(\n          numericFact("expected", expected),\n          numericFact("but was", actual),\n          simple
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:25:20.173Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2126 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: TODO(b/136040841): Consider further tightening this to the proper `extends Comparable<? super T>`\npublic class ComparableSubject<T extends Comparable<?>> extends Subject {\n  /**\n   * The actual value, which has type {@code T} except in unusual circumstances. The unusual\n   * circumstances c
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:25:22.473Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2115 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: google-truth-8d25ede/core/src/main/java/com/google/common/truth/BigDecimalSubject.java\n/*\n * Copyright (c) 2015 Google, Inc.\n *\n * Licensed under the Apache License, Version 2.0 (the "License");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:25:24.569Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2115 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: google-truth-8d25ede/core/src/main/java/com/google/common/truth/BigDecimalSubject.java\n/*\n * Copyright (c) 2015 Google, Inc.\n *\n * Licensed under the Apache License, Version 2.0 (the "License");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:25:25.924Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2126 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: TODO(b/136040841): Consider further tightening this to the proper `extends Comparable<? super T>`\npublic class ComparableSubject<T extends Comparable<?>> extends Subject {\n  /**\n   * The actual value, which has type {@code T} except in unusual circumstances. The unusual\n   * circumstances c
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:25:27.651Z
+Question Type: true-false
+Function: Unknown
+Function Size: 773 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: To express more specific javadoc\npublic void isEqualTo(@Nullable Object expected) {\n    super.isEqualTo(expected);\n  }\n\n  /**\n   * Checks that the actual value is equivalent to the given value according to {@link\n   * Comparable#compareTo}, (i.e., checks that {@code a.compareTo(b) == 0}). T
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:25:32.997Z
+Question Type: true-false
+Function: Unknown
+Function Size: 444 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: This won't mention "(scale is ignored)" if it fails, but that seems tolerable or even good?\nisEqualTo(expected);\n    } else if (actual.compareTo(expected) != 0) {\n      failWithoutActual(\n          numericFact("expected", expected),\n          numericFact("but was", actual),\n          simple
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:25:36.605Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 2126 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: TODO(b/136040841): Consider further tightening this to the proper `extends Comparable<? super T>`\npublic class ComparableSubject<T extends Comparable<?>> extends Subject {\n  /**\n   * The actual value, which has type {@code T} except in unusual circumstances. The unusual\n   * circumstances c
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:25:36.613Z
+Question Type: select-all
+Function: Unknown
+Function Size: 444 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: This won't mention "(scale is ignored)" if it fails, but that seems tolerable or even good?\nisEqualTo(expected);\n    } else if (actual.compareTo(expected) != 0) {\n      failWithoutActual(\n          numericFact("expected", expected),\n          numericFact("but was", actual),\n          simple
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:25:40.876Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 773 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: To express more specific javadoc\npublic void isEqualTo(@Nullable Object expected) {\n    super.isEqualTo(expected);\n  }\n\n  /**\n   * Checks that the actual value is equivalent to the given value according to {@link\n   * Comparable#compareTo}, (i.e., checks that {@code a.compareTo(b) == 0}). T
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:25:44.057Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1052 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: google-truth-8d25ede/core/src/main/java/com/google/common/truth/ComparableSubject.java\n/*\n * Copyright (c) 2014 Google, Inc.\n *\n * Licensed under the Apache License, Version 2.0 (the "License");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of 
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:25:50.363Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 773 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: To express more specific javadoc\npublic void isEqualTo(@Nullable Object expected) {\n    super.isEqualTo(expected);\n  }\n\n  /**\n   * Checks that the actual value is equivalent to the given value according to {@link\n   * Comparable#compareTo}, (i.e., checks that {@code a.compareTo(b) == 0}). T
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761361609323
+Repository: Unknown
+Total Questions Generated: 12
+Total Chunks Processed: 5
+Ended: 2025-10-25T03:25:54.705Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:43:43.540Z
+Question Type: true-false
+Function: Unknown
+Function Size: 93 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-line\n/* istanbul ignore next */\nif (transportVersion.includes('-')) {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:43:46.612Z
+Question Type: true-false
+Function: Unknown
+Function Size: 573 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error kChild symbol is for internal use only\nif ((opts.cloud != null || opts.serverMode === 'serverless') && opts[kChild] === undefined) {\n      if (opts.cloud != null) {\n        const { id } = opts.cloud\n        if (typeof id !== 'string') {\n          throw new errors.Configurat
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:43:50.829Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 93 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-line\n/* istanbul ignore next */\nif (transportVersion.includes('-')) {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:43:51.107Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1450 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: elastic-elasticsearch-js-e0353e7/src/client.ts\n/*\n * Copyright Elasticsearch B.V. and contributors\n * SPDX-License-Identifier: Apache-2.0\n */\n\nimport process from 'node:process'\nimport { ConnectionOptions as TlsConnectionOptions } from 'node:tls'\nimport { URL } from 'node:url'\nimport buffer
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:43:51.292Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 1450 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: elastic-elasticsearch-js-e0353e7/src/client.ts\n/*\n * Copyright Elasticsearch B.V. and contributors\n * SPDX-License-Identifier: Apache-2.0\n */\n\nimport process from 'node:process'\nimport { ConnectionOptions as TlsConnectionOptions } from 'node:tls'\nimport { URL } from 'node:url'\nimport buffer
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:43:57.128Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2045 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: clean prerelease\ntransportVersion = transportVersion.slice(0, transportVersion.indexOf('-')) + 'p'\n}\nconst nodeVersion = process.versions.node\n\nconst serverlessApiVersion = '2023-10-31'\n\nexport interface NodeOptions {\n  /** @property url Elasticsearch node's location */\n  url: URL\n  id?: st
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:44:01.248Z
+Question Type: true-false
+Function: Unknown
+Function Size: 160 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: clean prerelease\nclientVersion = clientVersion.slice(0, clientVersion.indexOf('-')) + 'p'\n}\nlet transportVersion: string = transportPackageJson.version
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:44:08.352Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2045 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: clean prerelease\ntransportVersion = transportVersion.slice(0, transportVersion.indexOf('-')) + 'p'\n}\nconst nodeVersion = process.versions.node\n\nconst serverlessApiVersion = '2023-10-31'\n\nexport interface NodeOptions {\n  /** @property url Elasticsearch node's location */\n  url: URL\n  id?: st
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:44:12.004Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 160 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: clean prerelease\nclientVersion = clientVersion.slice(0, clientVersion.indexOf('-')) + 'p'\n}\nlet transportVersion: string = transportPackageJson.version
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:44:16.067Z
+Question Type: select-all
+Function: Unknown
+Function Size: 160 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: clean prerelease\nclientVersion = clientVersion.slice(0, clientVersion.indexOf('-')) + 'p'\n}\nlet transportVersion: string = transportPackageJson.version
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:44:20.373Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 573 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error kChild symbol is for internal use only\nif ((opts.cloud != null || opts.serverMode === 'serverless') && opts[kChild] === undefined) {\n      if (opts.cloud != null) {\n        const { id } = opts.cloud\n        if (typeof id !== 'string') {\n          throw new errors.Configurat
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:44:22.331Z
+Question Type: select-all
+Function: Unknown
+Function Size: 93 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-line\n/* istanbul ignore next */\nif (transportVersion.includes('-')) {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:44:25.913Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1450 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: elastic-elasticsearch-js-e0353e7/src/client.ts\n/*\n * Copyright Elasticsearch B.V. and contributors\n * SPDX-License-Identifier: Apache-2.0\n */\n\nimport process from 'node:process'\nimport { ConnectionOptions as TlsConnectionOptions } from 'node:tls'\nimport { URL } from 'node:url'\nimport buffer
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:44:34.574Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2045 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: clean prerelease\ntransportVersion = transportVersion.slice(0, transportVersion.indexOf('-')) + 'p'\n}\nconst nodeVersion = process.versions.node\n\nconst serverlessApiVersion = '2023-10-31'\n\nexport interface NodeOptions {\n  /** @property url Elasticsearch node's location */\n  url: URL\n  id?: st
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:44:38.078Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 573 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error kChild symbol is for internal use only\nif ((opts.cloud != null || opts.serverMode === 'serverless') && opts[kChild] === undefined) {\n      if (opts.cloud != null) {\n        const { id } = opts.cloud\n        if (typeof id !== 'string') {\n          throw new errors.Configurat
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761361609323
+Repository: Unknown
+Total Questions Generated: 15
+Total Chunks Processed: 5
+Ended: 2025-10-25T03:44:43.506Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:45:05.430Z
+Question Type: true-false
+Function: Unknown
+Function Size: 93 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-line\n/* istanbul ignore next */\nif (transportVersion.includes('-')) {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:45:09.179Z
+Question Type: select-all
+Function: Unknown
+Function Size: 93 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-line\n/* istanbul ignore next */\nif (transportVersion.includes('-')) {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:45:09.267Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2045 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: clean prerelease\ntransportVersion = transportVersion.slice(0, transportVersion.indexOf('-')) + 'p'\n}\nconst nodeVersion = process.versions.node\n\nconst serverlessApiVersion = '2023-10-31'\n\nexport interface NodeOptions {\n  /** @property url Elasticsearch node's location */\n  url: URL\n  id?: st
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:45:18.584Z
+Question Type: true-false
+Function: Unknown
+Function Size: 573 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error kChild symbol is for internal use only\nif ((opts.cloud != null || opts.serverMode === 'serverless') && opts[kChild] === undefined) {\n      if (opts.cloud != null) {\n        const { id } = opts.cloud\n        if (typeof id !== 'string') {\n          throw new errors.Configurat
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:45:19.914Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 573 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error kChild symbol is for internal use only\nif ((opts.cloud != null || opts.serverMode === 'serverless') && opts[kChild] === undefined) {\n      if (opts.cloud != null) {\n        const { id } = opts.cloud\n        if (typeof id !== 'string') {\n          throw new errors.Configurat
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:45:20.346Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 93 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-line\n/* istanbul ignore next */\nif (transportVersion.includes('-')) {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:45:25.464Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2045 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: clean prerelease\ntransportVersion = transportVersion.slice(0, transportVersion.indexOf('-')) + 'p'\n}\nconst nodeVersion = process.versions.node\n\nconst serverlessApiVersion = '2023-10-31'\n\nexport interface NodeOptions {\n  /** @property url Elasticsearch node's location */\n  url: URL\n  id?: st
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:45:27.925Z
+Question Type: true-false
+Function: Unknown
+Function Size: 160 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: clean prerelease\nclientVersion = clientVersion.slice(0, clientVersion.indexOf('-')) + 'p'\n}\nlet transportVersion: string = transportPackageJson.version
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:45:34.309Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1450 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: elastic-elasticsearch-js-e0353e7/src/client.ts\n/*\n * Copyright Elasticsearch B.V. and contributors\n * SPDX-License-Identifier: Apache-2.0\n */\n\nimport process from 'node:process'\nimport { ConnectionOptions as TlsConnectionOptions } from 'node:tls'\nimport { URL } from 'node:url'\nimport buffer
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:45:37.212Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2045 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: clean prerelease\ntransportVersion = transportVersion.slice(0, transportVersion.indexOf('-')) + 'p'\n}\nconst nodeVersion = process.versions.node\n\nconst serverlessApiVersion = '2023-10-31'\n\nexport interface NodeOptions {\n  /** @property url Elasticsearch node's location */\n  url: URL\n  id?: st
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:45:38.865Z
+Question Type: select-all
+Function: Unknown
+Function Size: 573 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: @ts-expect-error kChild symbol is for internal use only\nif ((opts.cloud != null || opts.serverMode === 'serverless') && opts[kChild] === undefined) {\n      if (opts.cloud != null) {\n        const { id } = opts.cloud\n        if (typeof id !== 'string') {\n          throw new errors.Configurat
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:45:41.024Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 160 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: clean prerelease\nclientVersion = clientVersion.slice(0, clientVersion.indexOf('-')) + 'p'\n}\nlet transportVersion: string = transportPackageJson.version
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:45:46.117Z
+Question Type: true-false
+Function: Unknown
+Function Size: 160 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: clean prerelease\nclientVersion = clientVersion.slice(0, clientVersion.indexOf('-')) + 'p'\n}\nlet transportVersion: string = transportPackageJson.version
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:45:46.953Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1450 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: elastic-elasticsearch-js-e0353e7/src/client.ts\n/*\n * Copyright Elasticsearch B.V. and contributors\n * SPDX-License-Identifier: Apache-2.0\n */\n\nimport process from 'node:process'\nimport { ConnectionOptions as TlsConnectionOptions } from 'node:tls'\nimport { URL } from 'node:url'\nimport buffer
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:45:47.807Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1450 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: elastic-elasticsearch-js-e0353e7/src/client.ts\n/*\n * Copyright Elasticsearch B.V. and contributors\n * SPDX-License-Identifier: Apache-2.0\n */\n\nimport process from 'node:process'\nimport { ConnectionOptions as TlsConnectionOptions } from 'node:tls'\nimport { URL } from 'node:url'\nimport buffer
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761361609323
+Repository: Unknown
+Total Questions Generated: 15
+Total Chunks Processed: 5
+Ended: 2025-10-25T03:45:53.304Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:48:05.665Z
+Question Type: true-false
+Function: Unknown
+Function Size: 268 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Returns the slugs of all headings in a tree\nfunction getHeadingsFromMarkdownTree(\n  tree: ReturnType<typeof markdownProcessor.parse>\n): string[] {\n  const headings: string[] = []\n  slugger.reset()\n\n  visit(tree, 'heading', (node) => {\n    let headingText = ''
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:48:05.749Z
+Question Type: select-all
+Function: Unknown
+Function Size: 268 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Returns the slugs of all headings in a tree\nfunction getHeadingsFromMarkdownTree(\n  tree: ReturnType<typeof markdownProcessor.parse>\n): string[] {\n  const headings: string[] = []\n  slugger.reset()\n\n  visit(tree, 'heading', (node) => {\n    let headingText = ''
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:48:11.985Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2100 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: vercel-next.js-498349c/.github/actions/validate-docs-links/src/index.ts\nimport fs from 'fs/promises'\nimport path from 'path'\nimport unified from 'unified'\nimport markdown from 'remark-parse'\nimport remarkToRehype from 'remark-rehype'\nimport raw from 'rehype-raw'\nimport visit from 'unist-uti
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:48:15.861Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2100 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: vercel-next.js-498349c/.github/actions/validate-docs-links/src/index.ts\nimport fs from 'fs/promises'\nimport path from 'path'\nimport unified from 'unified'\nimport markdown from 'remark-parse'\nimport remarkToRehype from 'remark-rehype'\nimport raw from 'rehype-raw'\nimport visit from 'unist-uti
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:48:21.352Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 268 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Returns the slugs of all headings in a tree\nfunction getHeadingsFromMarkdownTree(\n  tree: ReturnType<typeof markdownProcessor.parse>\n): string[] {\n  const headings: string[] = []\n  slugger.reset()\n\n  visit(tree, 'heading', (node) => {\n    let headingText = ''
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:48:24.497Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 228 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: text values of all children of a heading node.\nvisit(node, (node: any) => {\n      if (node.value) {\n        headingText += node.value\n      }\n    })\n    headings.push(slugger.slug(headingText))\n  })\n\n  return headings\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:48:24.639Z
+Question Type: true-false
+Function: Unknown
+Function Size: 228 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: text values of all children of a heading node.\nvisit(node, (node: any) => {\n      if (node.value) {\n        headingText += node.value\n      }\n    })\n    headings.push(slugger.slug(headingText))\n  })\n\n  return headings\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:48:24.786Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 228 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: text values of all children of a heading node.\nvisit(node, (node: any) => {\n      if (node.value) {\n        headingText += node.value\n      }\n    })\n    headings.push(slugger.slug(headingText))\n  })\n\n  return headings\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:48:31.367Z
+Question Type: true-false
+Function: Unknown
+Function Size: 195 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Create a processor to parse MDX content\nconst markdownProcessor = unified()\n  .use(markdown)\n  .use(remarkToRehype, { allowDangerousHTML: true })\n  .use(raw)\n  .use(function compiler() {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:48:39.421Z
+Question Type: true-false
+Function: Unknown
+Function Size: 654 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Collect the paths of all .mdx files in the passed directories\nasync function getAllMdxFilePaths(\n  directoriesToScan: string[],\n  fileList: string[] = []\n): Promise<string[]> {\n  for (const dir of directoriesToScan) {\n    const dirPath = path.join('.', dir)\n    const files = await fs.readdi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:48:41.198Z
+Question Type: select-all
+Function: Unknown
+Function Size: 654 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Collect the paths of all .mdx files in the passed directories\nasync function getAllMdxFilePaths(\n  directoriesToScan: string[],\n  fileList: string[] = []\n): Promise<string[]> {\n  for (const dir of directoriesToScan) {\n    const dirPath = path.join('.', dir)\n    const files = await fs.readdi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:48:45.096Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 195 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Create a processor to parse MDX content\nconst markdownProcessor = unified()\n  .use(markdown)\n  .use(remarkToRehype, { allowDangerousHTML: true })\n  .use(raw)\n  .use(function compiler() {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:48:47.091Z
+Question Type: true-false
+Function: Unknown
+Function Size: 654 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Collect the paths of all .mdx files in the passed directories\nasync function getAllMdxFilePaths(\n  directoriesToScan: string[],\n  fileList: string[] = []\n): Promise<string[]> {\n  for (const dir of directoriesToScan) {\n    const dirPath = path.join('.', dir)\n    const files = await fs.readdi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:48:50.832Z
+Question Type: select-all
+Function: Unknown
+Function Size: 195 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Create a processor to parse MDX content\nconst markdownProcessor = unified()\n  .use(markdown)\n  .use(remarkToRehype, { allowDangerousHTML: true })\n  .use(raw)\n  .use(function compiler() {
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:48:53.527Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2100 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: vercel-next.js-498349c/.github/actions/validate-docs-links/src/index.ts\nimport fs from 'fs/promises'\nimport path from 'path'\nimport unified from 'unified'\nimport markdown from 'remark-parse'\nimport remarkToRehype from 'remark-rehype'\nimport raw from 'rehype-raw'\nimport visit from 'unist-uti
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761361609323
+Repository: Unknown
+Total Questions Generated: 14
+Total Chunks Processed: 5
+Ended: 2025-10-25T03:48:59.571Z
+================================================================================
+
+
+--- FUNCTION EXTRACTION ---
+Timestamp: 2025-10-25T03:51:20.083Z
+File: [5 files: *` paths, note: `pageFetchCacheMode` is also set by being in an unstable_cache context., [slug], will be no `dynamic = "error"`, the manifest matchers, will return the same matcher each time.]
+Functions Extracted: 1
+
+
+Function 1: normalizePath
+Language: TypeScript
+Lines: 6
+Full Code:
+--------------------------------------------------------------------------------
+function normalizePath(filePath: string): string {
+  if (filePath.startsWith(ERRORS_PATH.substring(1))) {
+    return (
+      filePath
+    );
+  }
+}
+--------------------------------------------------------------------------------
+
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:51:24.631Z
+Question Type: true-false
+Function: normalizePath
+Function Size: 256 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: normalizePath (TypeScript)\n// Normalizes the given file path if it starts with the errors path.\n\nfunction normalizePath(filePath: string): string {\n  if (filePath.startsWith(ERRORS_PATH.substring(1))) {\n    return (\n      filePath\n    );\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:51:24.643Z
+Question Type: true-false
+Function: normalizePath
+Function Size: 256 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: normalizePath (TypeScript)\n// Normalizes the given file path if it starts with the errors path.\n\nfunction normalizePath(filePath: string): string {\n  if (filePath.startsWith(ERRORS_PATH.substring(1))) {\n    return (\n      filePath\n    );\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:51:28.157Z
+Question Type: select-all
+Function: normalizePath
+Function Size: 256 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: normalizePath (TypeScript)\n// Normalizes the given file path if it starts with the errors path.\n\nfunction normalizePath(filePath: string): string {\n  if (filePath.startsWith(ERRORS_PATH.substring(1))) {\n    return (\n      filePath\n    );\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:51:32.455Z
+Question Type: function-variant
+Function: normalizePath
+Function Size: 256 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: normalizePath (TypeScript)\n// Normalizes the given file path if it starts with the errors path.\n\nfunction normalizePath(filePath: string): string {\n  if (filePath.startsWith(ERRORS_PATH.substring(1))) {\n    return (\n      filePath\n    );\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:51:36.135Z
+Question Type: true-false
+Function: normalizePath
+Function Size: 256 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: normalizePath (TypeScript)\n// Normalizes the given file path if it starts with the errors path.\n\nfunction normalizePath(filePath: string): string {\n  if (filePath.startsWith(ERRORS_PATH.substring(1))) {\n    return (\n      filePath\n    );\n  }\n}
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761361609323
+Repository: Unknown
+Total Questions Generated: 5
+Total Chunks Processed: 1
+Ended: 2025-10-25T03:51:41.989Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:51:51.861Z
+Question Type: select-all
+Function: normalizePath
+Function Size: 256 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: normalizePath (TypeScript)\n// Normalizes the given file path if it starts with the errors path.\n\nfunction normalizePath(filePath: string): string {\n  if (filePath.startsWith(ERRORS_PATH.substring(1))) {\n    return (\n      filePath\n    );\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:51:52.430Z
+Question Type: select-all
+Function: normalizePath
+Function Size: 256 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: normalizePath (TypeScript)\n// Normalizes the given file path if it starts with the errors path.\n\nfunction normalizePath(filePath: string): string {\n  if (filePath.startsWith(ERRORS_PATH.substring(1))) {\n    return (\n      filePath\n    );\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:51:52.465Z
+Question Type: select-all
+Function: normalizePath
+Function Size: 256 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: normalizePath (TypeScript)\n// Normalizes the given file path if it starts with the errors path.\n\nfunction normalizePath(filePath: string): string {\n  if (filePath.startsWith(ERRORS_PATH.substring(1))) {\n    return (\n      filePath\n    );\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:51:53.135Z
+Question Type: function-variant
+Function: normalizePath
+Function Size: 256 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: normalizePath (TypeScript)\n// Normalizes the given file path if it starts with the errors path.\n\nfunction normalizePath(filePath: string): string {\n  if (filePath.startsWith(ERRORS_PATH.substring(1))) {\n    return (\n      filePath\n    );\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:52:02.917Z
+Question Type: true-false
+Function: normalizePath
+Function Size: 256 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: normalizePath (TypeScript)\n// Normalizes the given file path if it starts with the errors path.\n\nfunction normalizePath(filePath: string): string {\n  if (filePath.startsWith(ERRORS_PATH.substring(1))) {\n    return (\n      filePath\n    );\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:52:06.404Z
+Question Type: select-all
+Function: normalizePath
+Function Size: 256 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: normalizePath (TypeScript)\n// Normalizes the given file path if it starts with the errors path.\n\nfunction normalizePath(filePath: string): string {\n  if (filePath.startsWith(ERRORS_PATH.substring(1))) {\n    return (\n      filePath\n    );\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:52:08.356Z
+Question Type: function-variant
+Function: normalizePath
+Function Size: 256 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: normalizePath (TypeScript)\n// Normalizes the given file path if it starts with the errors path.\n\nfunction normalizePath(filePath: string): string {\n  if (filePath.startsWith(ERRORS_PATH.substring(1))) {\n    return (\n      filePath\n    );\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:52:09.726Z
+Question Type: function-variant
+Function: normalizePath
+Function Size: 256 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: normalizePath (TypeScript)\n// Normalizes the given file path if it starts with the errors path.\n\nfunction normalizePath(filePath: string): string {\n  if (filePath.startsWith(ERRORS_PATH.substring(1))) {\n    return (\n      filePath\n    );\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:52:13.790Z
+Question Type: multiple-choice
+Function: normalizePath
+Function Size: 256 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: normalizePath (TypeScript)\n// Normalizes the given file path if it starts with the errors path.\n\nfunction normalizePath(filePath: string): string {\n  if (filePath.startsWith(ERRORS_PATH.substring(1))) {\n    return (\n      filePath\n    );\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:52:17.587Z
+Question Type: true-false
+Function: normalizePath
+Function Size: 256 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: normalizePath (TypeScript)\n// Normalizes the given file path if it starts with the errors path.\n\nfunction normalizePath(filePath: string): string {\n  if (filePath.startsWith(ERRORS_PATH.substring(1))) {\n    return (\n      filePath\n    );\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:52:18.236Z
+Question Type: true-false
+Function: normalizePath
+Function Size: 256 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: normalizePath (TypeScript)\n// Normalizes the given file path if it starts with the errors path.\n\nfunction normalizePath(filePath: string): string {\n  if (filePath.startsWith(ERRORS_PATH.substring(1))) {\n    return (\n      filePath\n    );\n  }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T03:52:18.337Z
+Question Type: true-false
+Function: normalizePath
+Function Size: 256 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // Function: normalizePath (TypeScript)\n// Normalizes the given file path if it starts with the errors path.\n\nfunction normalizePath(filePath: string): string {\n  if (filePath.startsWith(ERRORS_PATH.substring(1))) {\n    return (\n      filePath\n    );\n  }\n}
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761361609323
+Repository: Unknown
+Total Questions Generated: 12
+Total Chunks Processed: 1
+Ended: 2025-10-25T03:52:23.679Z
+================================================================================
+

@@ -104,10 +104,18 @@ function cleanAiResponse(content: string): string {
     cleanContent = cleanContent.substring(jsonStart);
   }
   
-  const jsonEnd = cleanContent.lastIndexOf(']');
-  if (jsonEnd > 0 && jsonEnd < cleanContent.length - 1) {
-    cleanContent = cleanContent.substring(0, jsonEnd + 1);
+  // Find the complete JSON array by counting brackets
+  let bracketCount = 0;
+  let jsonEnd = -1;
+  for (let i = 0; i < cleanContent.length; i++) {
+    if (cleanContent[i] === '[') bracketCount++;
+    if (cleanContent[i] === ']') bracketCount--;
+    if (bracketCount === 0) {
+      jsonEnd = i;
+      break;
+    }
   }
+  if (jsonEnd > 0) cleanContent = cleanContent.substring(0, jsonEnd + 1);
   
   return cleanContent;
 }
@@ -198,9 +206,20 @@ async function processAiResponse(response: Response, generated: RawQuestion[], p
     
     // Find JSON array boundaries
     const jsonStart = cleanContent.indexOf('[');
-    const jsonEnd = cleanContent.lastIndexOf(']');
-    if (jsonStart >= 0 && jsonEnd > jsonStart) {
-      cleanContent = cleanContent.substring(jsonStart, jsonEnd + 1);
+    if (jsonStart >= 0) {
+      cleanContent = cleanContent.substring(jsonStart);
+      // Find the complete JSON array by counting brackets
+      let bracketCount = 0;
+      let jsonEnd = -1;
+      for (let i = 0; i < cleanContent.length; i++) {
+        if (cleanContent[i] === '[') bracketCount++;
+        if (cleanContent[i] === ']') bracketCount--;
+        if (bracketCount === 0) {
+          jsonEnd = i;
+          break;
+        }
+      }
+      if (jsonEnd > 0) cleanContent = cleanContent.substring(0, jsonEnd + 1);
     }
     
     const parsed = JSON.parse(cleanContent);

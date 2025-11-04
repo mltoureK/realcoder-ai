@@ -91,7 +91,7 @@ IMPORTANT REQUIREMENTS:
 4. Include the actual function code in the "codeContext" field with PROPER JSON ESCAPING
 5. Create exactly ${optionCount} options total
 6. Exactly ${correctCount} options should be correct (this is MANDATORY - not more, not less)
-7. Create realistic incorrect options that test deep understanding
+7. Create statements that can be verified by reading the provided code chunk
 8. SCENARIO CONTEXT: Create realistic development scenarios that explain WHY this function exists
 9. JSON ESCAPING: ALL special characters in codeContext MUST be properly escaped for JSON
 
@@ -197,10 +197,18 @@ function cleanAiResponse(content: string): string {
     cleanContent = cleanContent.substring(jsonStart);
   }
   
-  const jsonEnd = cleanContent.lastIndexOf(']');
-  if (jsonEnd > 0 && jsonEnd < cleanContent.length - 1) {
-    cleanContent = cleanContent.substring(0, jsonEnd + 1);
+  // Find the complete JSON array by counting brackets
+  let bracketCount = 0;
+  let jsonEnd = -1;
+  for (let i = 0; i < cleanContent.length; i++) {
+    if (cleanContent[i] === '[') bracketCount++;
+    if (cleanContent[i] === ']') bracketCount--;
+    if (bracketCount === 0) {
+      jsonEnd = i;
+      break;
+    }
   }
+  if (jsonEnd > 0) cleanContent = cleanContent.substring(0, jsonEnd + 1);
   
   // Fix common JSON escaping issues for Java code
   // Fix string concatenation issues (remove + operators that break JSON)

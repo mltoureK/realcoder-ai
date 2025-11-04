@@ -15,7 +15,7 @@ import {
   removeComments,
   balanceVariantVerbosity
 } from '@/lib/question-plugins/utils';
-import { extractFunctionsFromFiles, extractFunctionsFromFilesStreaming, functionsToChunks } from '@/lib/function-extractor';
+import { extractFunctionsFromFiles, extractFunctionsFromFilesStreaming, functionsToChunks, ExtractedFunction } from '@/lib/function-extractor';
 import { parseCombinedCode } from '@/lib/quiz-code-utils';
 import { getPrefetchedChunks, getPrefetchKeyForRequest, storePrefetchedChunks } from '@/lib/quiz-prefetch';
 
@@ -25,7 +25,7 @@ import { getPrefetchedChunks, getPrefetchKeyForRequest, storePrefetchedChunks } 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { code, questionTypes, difficulty, numQuestions, repositoryInfo } = body;
+    const { code, questionTypes, difficulty, numQuestions, repositoryInfo, extractedFunctions } = body;
     const streamParam = request.nextUrl?.searchParams?.get('stream');
 
     console.log('📡 /generateQuiz API called with:', { 
@@ -33,7 +33,8 @@ export async function POST(request: NextRequest) {
       questionTypes, 
       difficulty, 
       numQuestions,
-      repositoryInfo 
+      repositoryInfo,
+      hasExtractedFunctions: !!extractedFunctions?.length
     });
 
         // Check if OpenAI API key is available
@@ -146,13 +147,27 @@ Generate a lesson that prepares the learner for this question.
 
     console.log('🤖 Using OpenAI to generate questions based on actual code');
     
-    // NEW APPROACH: Extract complete functions from high-score files
-    console.log('🔍 Step 1: Parsing files from code...');
-    const parsedFiles = parseCombinedCode(code || '');
-    console.log(`📊 Parsed ${parsedFiles.length} files from repository`);
-    const prefetchKey = getPrefetchKeyForRequest(repositoryInfo ?? null, code || '');
-    const prefetchedEntry = getPrefetchedChunks(prefetchKey);
-    const prefetchedChunks = prefetchedEntry?.chunks ?? [];
+    // NEW APPROACH: Use pre-extracted functions if available, otherwise extract from files
+    console.log('🔍 Step 1: Preparing function chunks...');
+    let parsedFiles: Array<{ name: string; content: string; score: number }> = [];
+    let prefetchKey: string | null = null;
+    let prefetchedEntry: any = null;
+    let prefetchedChunks: string[] = [];
+
+    if (extractedFunctions && Array.isArray(extractedFunctions) && extractedFunctions.length > 0) {
+      console.log(`⚡ Using ${extractedFunctions.length} pre-extracted functions`);
+      // Convert pre-extracted functions directly to chunks
+      const functionChunks = functionsToChunks(extractedFunctions);
+      prefetchedChunks = functionChunks;
+      console.log(`📦 Created ${functionChunks.length} chunks from pre-extracted functions`);
+    } else {
+      console.log('🔍 No pre-extracted functions provided, parsing files from code...');
+      parsedFiles = parseCombinedCode(code || '');
+      console.log(`📊 Parsed ${parsedFiles.length} files from repository`);
+      prefetchKey = getPrefetchKeyForRequest(repositoryInfo ?? null, code || '');
+      prefetchedEntry = getPrefetchedChunks(prefetchKey);
+      prefetchedChunks = prefetchedEntry?.chunks ?? [];
+    }
 
     // Select plugins per requested types
     const availablePlugins: Record<string, unknown> = {
@@ -462,12 +477,12 @@ Generate a lesson that prepares the learner for this question.
             if (prefetchedChunks.length > 0) {
               batchCount += 1;
               allChunks.push(...prefetchedChunks);
-              totalExtractedFunctions = prefetchedEntry?.functionsCount ?? prefetchedChunks.length;
-              console.log(`⚡ FAST MODE: Using ${prefetchedChunks.length} prefetched chunks for streaming`);
-              await processChunkBatch(prefetchedChunks, 'prefetch-cache', desiredTotal);
-            } else {
+              totalExtractedFunctions = extractedFunctions?.length ?? prefetchedEntry?.functionsCount ?? prefetchedChunks.length;
+              console.log(`⚡ FAST MODE: Using ${prefetchedChunks.length} ${extractedFunctions ? 'pre-extracted' : 'prefetched'} chunks for streaming`);
+              await processChunkBatch(prefetchedChunks, extractedFunctions ? 'pre-extracted' : 'prefetch-cache', desiredTotal);
+            } else if (parsedFiles.length > 0) {
               console.log('⚡ FAST MODE: Starting streaming function extraction...');
-              const functionGenerator = extractFunctionsFromFilesStreaming(parsedFiles, openaiApiKey, 8);
+              const functionGenerator = extractFunctionsFromFilesStreaming(parsedFiles, openaiApiKey, 15);
 
               for await (const batchFunctions of functionGenerator) {
                 batchCount += 1;
@@ -542,13 +557,18 @@ Generate a lesson that prepares the learner for this question.
       });
     }
 
-    // Non-streaming path: Use prefetched chunks when available, otherwise extract now
+    // Non-streaming path: Use pre-extracted functions, prefetched chunks, or extract now
     console.log('🔍 Step 2: Preparing function chunks for non-streaming mode...');
     let chunks: string[] = [];
     let extractedFunctionsCount = 0;
+    const usingPreExtracted = extractedFunctions && Array.isArray(extractedFunctions) && extractedFunctions.length > 0;
     const usingPrefetch = prefetchedChunks.length > 0;
 
-    if (usingPrefetch) {
+    if (usingPreExtracted) {
+      chunks = functionsToChunks(extractedFunctions);
+      extractedFunctionsCount = extractedFunctions.length;
+      console.log(`⚡ Using ${chunks.length} chunks from ${extractedFunctionsCount} pre-extracted functions`);
+    } else if (usingPrefetch) {
       chunks = prefetchedChunks.slice();
       extractedFunctionsCount = prefetchedEntry?.functionsCount ?? prefetchedChunks.length;
       console.log(`♻️ Using ${chunks.length} prefetched chunks (functions: ${extractedFunctionsCount})`);
@@ -556,7 +576,7 @@ Generate a lesson that prepares the learner for this question.
         storePrefetchedChunks(prefetchKey, chunks, extractedFunctionsCount);
       }
     } else {
-      const extractedFunctions = await extractFunctionsFromFiles(parsedFiles, openaiApiKey, 8);
+      const extractedFunctions = await extractFunctionsFromFiles(parsedFiles, openaiApiKey, 15);
       extractedFunctionsCount = extractedFunctions.length;
       console.log(`✅ Extracted ${extractedFunctionsCount} complete functions`);
       chunks = functionsToChunks(extractedFunctions);

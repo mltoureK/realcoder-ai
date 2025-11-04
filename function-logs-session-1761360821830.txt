@@ -1,0 +1,154 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761360821830
+Started: 2025-10-25T02:53:41.830Z
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:53:45.485Z
+Question Type: bug-finding
+Function: Unknown
+Function Size: 51 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Raw Code Input\nfunction test() { return 1 + 1; }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:53:45.487Z
+Question Type: bug-finding
+Function: Unknown
+Function Size: 51 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Raw Code Input\nfunction test() { return 1 + 1; }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:53:45.488Z
+Question Type: bug-finding
+Function: Unknown
+Function Size: 51 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Raw Code Input\nfunction test() { return 1 + 1; }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:53:45.518Z
+Question Type: bug-finding
+Function: Unknown
+Function Size: 51 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Raw Code Input\nfunction test() { return 1 + 1; }
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761360821830
+Repository: Unknown
+Total Questions Generated: 0
+Total Chunks Processed: 1
+Ended: 2025-10-25T02:53:45.518Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:54:19.227Z
+Question Type: bug-finding
+Function: Unknown
+Function Size: 171 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Raw Code Input\nfunction calculateSum(a, b) { if (typeof a !== "number" || typeof b !== "number") { throw new Error("Both parameters must be numbers"); } return a + b; }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:54:19.852Z
+Question Type: bug-finding
+Function: Unknown
+Function Size: 171 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Raw Code Input\nfunction calculateSum(a, b) { if (typeof a !== "number" || typeof b !== "number") { throw new Error("Both parameters must be numbers"); } return a + b; }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:54:19.854Z
+Question Type: bug-finding
+Function: Unknown
+Function Size: 171 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Raw Code Input\nfunction calculateSum(a, b) { if (typeof a !== "number" || typeof b !== "number") { throw new Error("Both parameters must be numbers"); } return a + b; }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:54:20.364Z
+Question Type: bug-finding
+Function: Unknown
+Function Size: 171 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Raw Code Input\nfunction calculateSum(a, b) { if (typeof a !== "number" || typeof b !== "number") { throw new Error("Both parameters must be numbers"); } return a + b; }
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761360821830
+Repository: Unknown
+Total Questions Generated: 0
+Total Chunks Processed: 1
+Ended: 2025-10-25T02:54:20.365Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:54:29.081Z
+Question Type: bug-finding
+Function: Unknown
+Function Size: 51 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Raw Code Input\nfunction test() { return 1 + 1; }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:54:29.322Z
+Question Type: bug-finding
+Function: Unknown
+Function Size: 51 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Raw Code Input\nfunction test() { return 1 + 1; }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:54:29.456Z
+Question Type: bug-finding
+Function: Unknown
+Function Size: 51 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Raw Code Input\nfunction test() { return 1 + 1; }
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T02:54:29.517Z
+Question Type: bug-finding
+Function: Unknown
+Function Size: 51 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // Raw Code Input\nfunction test() { return 1 + 1; }
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761360821830
+Repository: Unknown
+Total Questions Generated: 0
+Total Chunks Processed: 1
+Ended: 2025-10-25T02:54:29.520Z
+================================================================================
+

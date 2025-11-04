@@ -1,0 +1,644 @@
+=== FUNCTION EXTRACTION & QUESTION GENERATION LOG ===
+Session ID: session-1761365598437
+Started: 2025-10-25T04:13:18.437Z
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:13:30.151Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1117 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: TryGhost-Ghost-1bf0399/apps/comments-ui/src/actions.ts\nimport {AddComment, Comment, CommentsOptions, DispatchActionType, EditableAppContext, OpenCommentForm} from './AppContext';\nimport {AdminApi} from './utils/adminApi';\nimport {GhostApi} from './utils/api';\nimport {Page} from './pages';\n\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:13:30.229Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2039 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: API errors\nexport interface ErrorResponse {\n    errors: Array<{\n        code: string\n        context: string | null\n        details: string | null\n        ghostErrorCode: string | null\n        help: string\n        id: string\n        message: string\n        property: string | null\n        ty
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:13:30.681Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 93 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-line no-console\nstate.commentsIsLoading = false;\n        throw error;
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:13:44.116Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 2039 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: API errors\nexport interface ErrorResponse {\n    errors: Array<{\n        code: string\n        context: string | null\n        details: string | null\n        ghostErrorCode: string | null\n        help: string\n        id: string\n        message: string\n        property: string | null\n        ty
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:13:45.170Z
+Question Type: select-all
+Function: Unknown
+Function Size: 140 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Frontend errors\nexport class AlreadyExistsError extends Error {\n    constructor(message?: string) {\n        super(message);\n    }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:13:46.015Z
+Question Type: select-all
+Function: Unknown
+Function Size: 93 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-line no-console\nstate.commentsIsLoading = false;\n        throw error;
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:13:47.271Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1133 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Note: we store the comments from new to old, and show them in reverse order\nreturn {\n        comments: dedupedComments,\n        pagination: data.meta.pagination\n    };\n}\n\nfunction setCommentsIsLoading({data: isLoading}: {data: boolean | null}) {\n    return {\n        commentsIsLoading: isLoa
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:13:55.753Z
+Question Type: true-false
+Function: Unknown
+Function Size: 140 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Frontend errors\nexport class AlreadyExistsError extends Error {\n    constructor(message?: string) {\n        super(message);\n    }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:13:58.846Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 140 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Frontend errors\nexport class AlreadyExistsError extends Error {\n    constructor(message?: string) {\n        super(message);\n    }\n}
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:13:59.369Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1133 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Note: we store the comments from new to old, and show them in reverse order\nreturn {\n        comments: dedupedComments,\n        pagination: data.meta.pagination\n    };\n}\n\nfunction setCommentsIsLoading({data: isLoading}: {data: boolean | null}) {\n    return {\n        commentsIsLoading: isLoa
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:14:04.372Z
+Question Type: true-false
+Function: Unknown
+Function Size: 93 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-line no-console\nstate.commentsIsLoading = false;\n        throw error;
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:14:08.880Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1117 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: TryGhost-Ghost-1bf0399/apps/comments-ui/src/actions.ts\nimport {AddComment, Comment, CommentsOptions, DispatchActionType, EditableAppContext, OpenCommentForm} from './AppContext';\nimport {AdminApi} from './utils/adminApi';\nimport {GhostApi} from './utils/api';\nimport {Page} from './pages';\n\n
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:14:09.722Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2039 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: API errors\nexport interface ErrorResponse {\n    errors: Array<{\n        code: string\n        context: string | null\n        details: string | null\n        ghostErrorCode: string | null\n        help: string\n        id: string\n        message: string\n        property: string | null\n        ty
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:14:17.090Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1133 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Note: we store the comments from new to old, and show them in reverse order\nreturn {\n        comments: dedupedComments,\n        pagination: data.meta.pagination\n    };\n}\n\nfunction setCommentsIsLoading({data: isLoading}: {data: boolean | null}) {\n    return {\n        commentsIsLoading: isLoa
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:14:20.807Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1117 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: TryGhost-Ghost-1bf0399/apps/comments-ui/src/actions.ts\nimport {AddComment, Comment, CommentsOptions, DispatchActionType, EditableAppContext, OpenCommentForm} from './AppContext';\nimport {AdminApi} from './utils/adminApi';\nimport {GhostApi} from './utils/api';\nimport {Page} from './pages';\n\n
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761365598437
+Repository: Unknown
+Total Questions Generated: 15
+Total Chunks Processed: 5
+Ended: 2025-10-25T04:14:26.826Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:17:15.098Z
+Question Type: true-false
+Function: Unknown
+Function Size: 187 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-next-line no-restricted-syntax\nfor await (const user of users) {\n    const articles = await Promise.all(Array.from({ length: 2 }, () => generateArticle(user.id)));
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:17:19.478Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1155 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: you can check request hmac, user, token, etc..\nconst header = getHeader(event, 'authorization');\n        let token;\n\n        if (\n            (header && header.split(' ')[0] === 'Token') ||\n            (header && header.split(' ')[0] === 'Bearer')\n        ) {\n            token = header.spli
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:17:21.222Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1239 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: gothinkster-realworld-32a16a6/apps/api/prisma/seed.ts\nimport {\n  randEmail,\n  randFullName,\n  randLines,\n  randParagraph,\n  randPassword,\n  randPhrase,\n  randWord,\n} from '@ngneat/falso';\nimport { PrismaClient } from '@prisma/client';\nimport { RegisteredUser } from '../app/models/registered
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:17:23.577Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1155 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: you can check request hmac, user, token, etc..\nconst header = getHeader(event, 'authorization');\n        let token;\n\n        if (\n            (header && header.split(' ')[0] === 'Token') ||\n            (header && header.split(' ')[0] === 'Bearer')\n        ) {\n            token = header.spli
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:17:30.995Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 1239 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: gothinkster-realworld-32a16a6/apps/api/prisma/seed.ts\nimport {\n  randEmail,\n  randFullName,\n  randLines,\n  randParagraph,\n  randPassword,\n  randPhrase,\n  randWord,\n} from '@ngneat/falso';\nimport { PrismaClient } from '@prisma/client';\nimport { RegisteredUser } from '../app/models/registered
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:17:31.308Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1155 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: you can check request hmac, user, token, etc..\nconst header = getHeader(event, 'authorization');\n        let token;\n\n        if (\n            (header && header.split(' ')[0] === 'Token') ||\n            (header && header.split(' ')[0] === 'Bearer')\n        ) {\n            token = header.spli
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:17:36.163Z
+Question Type: true-false
+Function: Unknown
+Function Size: 318 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: gothinkster-realworld-32a16a6/apps/api/server/models/http-exception.model.ts\nclass HttpException extends Error {\n  errorCode: number;\n  constructor(\n    errorCode: number,\n    public readonly message: string | any,\n  ) {\n    super(message);\n    this.errorCode = errorCode;\n  }\n}\n\nexport defa
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:17:38.960Z
+Question Type: select-all
+Function: Unknown
+Function Size: 318 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: gothinkster-realworld-32a16a6/apps/api/server/models/http-exception.model.ts\nclass HttpException extends Error {\n  errorCode: number;\n  constructor(\n    errorCode: number,\n    public readonly message: string | any,\n  ) {\n    super(message);\n    this.errorCode = errorCode;\n  }\n}\n\nexport defa
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:17:49.639Z
+Question Type: true-false
+Function: Unknown
+Function Size: 413 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: gothinkster-realworld-32a16a6/apps/api/server/auth-event-handler.ts\nimport {default as jwt} from "jsonwebtoken";\n\nexport interface PrivateContext {\n    auth: {\n        id: number;\n    }\n}\n\nexport function definePrivateEventHandler<T>(\n    handler: (event: H3Event, cxt: PrivateContext) => T,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:17:49.948Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 187 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-next-line no-restricted-syntax\nfor await (const user of users) {\n    const articles = await Promise.all(Array.from({ length: 2 }, () => generateArticle(user.id)));
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:17:56.041Z
+Question Type: select-all
+Function: Unknown
+Function Size: 187 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: eslint-disable-next-line no-restricted-syntax\nfor await (const user of users) {\n    const articles = await Promise.all(Array.from({ length: 2 }, () => generateArticle(user.id)));
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:18:01.339Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 413 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: gothinkster-realworld-32a16a6/apps/api/server/auth-event-handler.ts\nimport {default as jwt} from "jsonwebtoken";\n\nexport interface PrivateContext {\n    auth: {\n        id: number;\n    }\n}\n\nexport function definePrivateEventHandler<T>(\n    handler: (event: H3Event, cxt: PrivateContext) => T,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:18:03.172Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 413 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: gothinkster-realworld-32a16a6/apps/api/server/auth-event-handler.ts\nimport {default as jwt} from "jsonwebtoken";\n\nexport interface PrivateContext {\n    auth: {\n        id: number;\n    }\n}\n\nexport function definePrivateEventHandler<T>(\n    handler: (event: H3Event, cxt: PrivateContext) => T,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:18:04.219Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1239 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: gothinkster-realworld-32a16a6/apps/api/prisma/seed.ts\nimport {\n  randEmail,\n  randFullName,\n  randLines,\n  randParagraph,\n  randPassword,\n  randPhrase,\n  randWord,\n} from '@ngneat/falso';\nimport { PrismaClient } from '@prisma/client';\nimport { RegisteredUser } from '../app/models/registered
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:18:05.341Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 318 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: gothinkster-realworld-32a16a6/apps/api/server/models/http-exception.model.ts\nclass HttpException extends Error {\n  errorCode: number;\n  constructor(\n    errorCode: number,\n    public readonly message: string | any,\n  ) {\n    super(message);\n    this.errorCode = errorCode;\n  }\n}\n\nexport defa
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761365598437
+Repository: Unknown
+Total Questions Generated: 13
+Total Chunks Processed: 5
+Ended: 2025-10-25T04:18:10.027Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:22:57.091Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1239 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: gothinkster-realworld-32a16a6/apps/api/prisma/seed.ts\nimport {\n  randEmail,\n  randFullName,\n  randLines,\n  randParagraph,\n  randPassword,\n  randPhrase,\n  randWord,\n} from '@ngneat/falso';\nimport { PrismaClient } from '@prisma/client';\nimport { RegisteredUser } from '../app/models/registered
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:22:58.807Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 318 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: gothinkster-realworld-32a16a6/apps/api/server/models/http-exception.model.ts\nclass HttpException extends Error {\n  errorCode: number;\n  constructor(\n    errorCode: number,\n    public readonly message: string | any,\n  ) {\n    super(message);\n    this.errorCode = errorCode;\n  }\n}\n\nexport defa
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:23:07.213Z
+Question Type: select-all
+Function: Unknown
+Function Size: 187 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-next-line no-restricted-syntax\nfor await (const user of users) {\n    const articles = await Promise.all(Array.from({ length: 2 }, () => generateArticle(user.id)));
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:23:08.051Z
+Question Type: true-false
+Function: Unknown
+Function Size: 187 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-next-line no-restricted-syntax\nfor await (const user of users) {\n    const articles = await Promise.all(Array.from({ length: 2 }, () => generateArticle(user.id)));
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:23:09.449Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1239 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: gothinkster-realworld-32a16a6/apps/api/prisma/seed.ts\nimport {\n  randEmail,\n  randFullName,\n  randLines,\n  randParagraph,\n  randPassword,\n  randPhrase,\n  randWord,\n} from '@ngneat/falso';\nimport { PrismaClient } from '@prisma/client';\nimport { RegisteredUser } from '../app/models/registered
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:23:10.193Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1155 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: you can check request hmac, user, token, etc..\nconst header = getHeader(event, 'authorization');\n        let token;\n\n        if (\n            (header && header.split(' ')[0] === 'Token') ||\n            (header && header.split(' ')[0] === 'Bearer')\n        ) {\n            token = header.spli
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:23:19.206Z
+Question Type: true-false
+Function: Unknown
+Function Size: 413 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: gothinkster-realworld-32a16a6/apps/api/server/auth-event-handler.ts\nimport {default as jwt} from "jsonwebtoken";\n\nexport interface PrivateContext {\n    auth: {\n        id: number;\n    }\n}\n\nexport function definePrivateEventHandler<T>(\n    handler: (event: H3Event, cxt: PrivateContext) => T,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:23:21.034Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1239 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: gothinkster-realworld-32a16a6/apps/api/prisma/seed.ts\nimport {\n  randEmail,\n  randFullName,\n  randLines,\n  randParagraph,\n  randPassword,\n  randPhrase,\n  randWord,\n} from '@ngneat/falso';\nimport { PrismaClient } from '@prisma/client';\nimport { RegisteredUser } from '../app/models/registered
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:23:22.067Z
+Question Type: select-all
+Function: Unknown
+Function Size: 318 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: gothinkster-realworld-32a16a6/apps/api/server/models/http-exception.model.ts\nclass HttpException extends Error {\n  errorCode: number;\n  constructor(\n    errorCode: number,\n    public readonly message: string | any,\n  ) {\n    super(message);\n    this.errorCode = errorCode;\n  }\n}\n\nexport defa
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:23:22.861Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 413 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: gothinkster-realworld-32a16a6/apps/api/server/auth-event-handler.ts\nimport {default as jwt} from "jsonwebtoken";\n\nexport interface PrivateContext {\n    auth: {\n        id: number;\n    }\n}\n\nexport function definePrivateEventHandler<T>(\n    handler: (event: H3Event, cxt: PrivateContext) => T,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:23:32.922Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1155 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: you can check request hmac, user, token, etc..\nconst header = getHeader(event, 'authorization');\n        let token;\n\n        if (\n            (header && header.split(' ')[0] === 'Token') ||\n            (header && header.split(' ')[0] === 'Bearer')\n        ) {\n            token = header.spli
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:23:33.306Z
+Question Type: true-false
+Function: Unknown
+Function Size: 318 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: gothinkster-realworld-32a16a6/apps/api/server/models/http-exception.model.ts\nclass HttpException extends Error {\n  errorCode: number;\n  constructor(\n    errorCode: number,\n    public readonly message: string | any,\n  ) {\n    super(message);\n    this.errorCode = errorCode;\n  }\n}\n\nexport defa
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:23:35.675Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 187 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: eslint-disable-next-line no-restricted-syntax\nfor await (const user of users) {\n    const articles = await Promise.all(Array.from({ length: 2 }, () => generateArticle(user.id)));
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:23:42.844Z
+Question Type: true-false
+Function: Unknown
+Function Size: 413 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: gothinkster-realworld-32a16a6/apps/api/server/auth-event-handler.ts\nimport {default as jwt} from "jsonwebtoken";\n\nexport interface PrivateContext {\n    auth: {\n        id: number;\n    }\n}\n\nexport function definePrivateEventHandler<T>(\n    handler: (event: H3Event, cxt: PrivateContext) => T,
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:23:56.783Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1155 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: you can check request hmac, user, token, etc..\nconst header = getHeader(event, 'authorization');\n        let token;\n\n        if (\n            (header && header.split(' ')[0] === 'Token') ||\n            (header && header.split(' ')[0] === 'Bearer')\n        ) {\n            token = header.spli
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761365598437
+Repository: Unknown
+Total Questions Generated: 15
+Total Chunks Processed: 5
+Ended: 2025-10-25T04:24:00.569Z
+================================================================================
+
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:30:58.366Z
+Question Type: true-false
+Function: Unknown
+Function Size: 131 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: React-Dnd Components\nprivate actions: DragDropActions\n	private monitor: DragDropMonitor\n	private registry: HandlerRegistry
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:30:59.583Z
+Question Type: true-false
+Function: Unknown
+Function Size: 2044 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: public for test\npublic get window(): Window | undefined {\n		return this.options.window\n	}\n	public get document(): Document | undefined {\n		return this.options.document\n	}\n	/**\n	 * Get the root element to use for event subscriptions\n	 */\n	private get rootElement(): Node | undefined {\n		retur
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:31:02.582Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1823 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Internal State\nprivate enterLeaveCounter: EnterLeaveCounter\n\n	private sourcePreviewNodes: Map<string, Element> = new Map()\n	private sourcePreviewNodeOptions: Map<string, any> = new Map()\n	private sourceNodes: Map<string, Element> = new Map()\n	private sourceNodeOptions: Map<string, any> = ne
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:31:04.988Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 903 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: react-dnd-react-dnd-1de654e/packages/backend-html5/src/HTML5BackendImpl.ts\nimport type {\n	Backend,\n	DragDropActions,\n	DragDropManager,\n	DragDropMonitor,\n	HandlerRegistry,\n	Identifier,\n	Unsubscribe,\n	XYCoord,\n} from 'dnd-core'\n\nimport { EnterLeaveCounter } from './EnterLeaveCounter.js'\nimpor
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:31:07.455Z
+Question Type: true-false
+Function: Unknown
+Function Size: 131 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: React-Dnd Components\nprivate actions: DragDropActions\n	private monitor: DragDropMonitor\n	private registry: HandlerRegistry
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:31:16.084Z
+Question Type: select-all
+Function: Unknown
+Function Size: 903 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: react-dnd-react-dnd-1de654e/packages/backend-html5/src/HTML5BackendImpl.ts\nimport type {\n	Backend,\n	DragDropActions,\n	DragDropManager,\n	DragDropMonitor,\n	HandlerRegistry,\n	Identifier,\n	Unsubscribe,\n	XYCoord,\n} from 'dnd-core'\n\nimport { EnterLeaveCounter } from './EnterLeaveCounter.js'\nimpor
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:31:17.753Z
+Question Type: select-all
+Function: Unknown
+Function Size: 2044 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: public for test\npublic get window(): Window | undefined {\n		return this.options.window\n	}\n	public get document(): Document | undefined {\n		return this.options.document\n	}\n	/**\n	 * Get the root element to use for event subscriptions\n	 */\n	private get rootElement(): Node | undefined {\n		retur
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:31:25.867Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 2044 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: public for test\npublic get window(): Window | undefined {\n		return this.options.window\n	}\n	public get document(): Document | undefined {\n		return this.options.document\n	}\n	/**\n	 * Get the root element to use for event subscriptions\n	 */\n	private get rootElement(): Node | undefined {\n		retur
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:31:29.294Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1065 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: SSR Fix (https://github.com/react-dnd/react-dnd/pull/813\nif (!target.addEventListener) {\n			return\n		}\n		target.addEventListener(\n			'dragstart',\n			this.handleTopDragStart as EventListener,\n		)\n		target.addEventListener('dragstart', this.handleTopDragStartCapture, true)\n		target.addEventLi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:31:29.620Z
+Question Type: multiple-choice
+Function: Unknown
+Function Size: 903 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: react-dnd-react-dnd-1de654e/packages/backend-html5/src/HTML5BackendImpl.ts\nimport type {\n	Backend,\n	DragDropActions,\n	DragDropManager,\n	DragDropMonitor,\n	HandlerRegistry,\n	Identifier,\n	Unsubscribe,\n	XYCoord,\n} from 'dnd-core'\n\nimport { EnterLeaveCounter } from './EnterLeaveCounter.js'\nimpor
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:31:35.682Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 131 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: React-Dnd Components\nprivate actions: DragDropActions\n	private monitor: DragDropMonitor\n	private registry: HandlerRegistry
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:31:47.201Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1065 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: SSR Fix (https://github.com/react-dnd/react-dnd/pull/813\nif (!target.addEventListener) {\n			return\n		}\n		target.addEventListener(\n			'dragstart',\n			this.handleTopDragStart as EventListener,\n		)\n		target.addEventListener('dragstart', this.handleTopDragStartCapture, true)\n		target.addEventLi
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:31:50.566Z
+Question Type: true-false
+Function: Unknown
+Function Size: 1823 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Internal State\nprivate enterLeaveCounter: EnterLeaveCounter\n\n	private sourcePreviewNodes: Map<string, Element> = new Map()\n	private sourcePreviewNodeOptions: Map<string, any> = new Map()\n	private sourceNodes: Map<string, Element> = new Map()\n	private sourceNodeOptions: Map<string, any> = ne
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:31:56.846Z
+Question Type: select-all
+Function: Unknown
+Function Size: 1823 characters
+Questions Generated: 1
+Repository: Unknown
+Function Preview: // File: Internal State\nprivate enterLeaveCounter: EnterLeaveCounter\n\n	private sourcePreviewNodes: Map<string, Element> = new Map()\n	private sourcePreviewNodeOptions: Map<string, any> = new Map()\n	private sourceNodes: Map<string, Element> = new Map()\n	private sourceNodeOptions: Map<string, any> = ne
+================================================================================
+
+--- QUESTION GENERATION ---
+Timestamp: 2025-10-25T04:31:58.908Z
+Question Type: function-variant
+Function: Unknown
+Function Size: 1065 characters
+Questions Generated: 0
+Repository: Unknown
+Function Preview: // File: SSR Fix (https://github.com/react-dnd/react-dnd/pull/813\nif (!target.addEventListener) {\n			return\n		}\n		target.addEventListener(\n			'dragstart',\n			this.handleTopDragStart as EventListener,\n		)\n		target.addEventListener('dragstart', this.handleTopDragStartCapture, true)\n		target.addEventLi
+================================================================================
+
+
+=== SESSION SUMMARY ===
+Session ID: session-1761365598437
+Repository: Unknown
+Total Questions Generated: 14
+Total Chunks Processed: 5
+Ended: 2025-10-25T04:32:01.199Z
+================================================================================
+

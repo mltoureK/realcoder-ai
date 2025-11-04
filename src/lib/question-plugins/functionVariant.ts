@@ -31,7 +31,9 @@ export const functionVariantPlugin: QuestionPlugin = {
               model: 'gpt-4o-mini',
               messages: [
                 { role: 'system', content: 'You are a JSON generator. You MUST return ONLY valid JSON with no additional text, explanations, or markdown formatting.' },
-                { role: 'user', content: `Generate ${questionsPerChunk} hard difficulty function-variant quiz questions that can be answered based on the json snippet function that the question uses from the code chunk:\n\n${chunk}\n\nCRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.\n\nIMPORTANT REQUIREMENTS:\n1. ONLY generate questions about functions that actually exist in the provided code chunk\n2. The function name in \"snippet\" A functionfrom the code\n3. The correct variant must be the actual function implementation from the code\n4. Incorrect variants should have realistic bugs\n
+                { role: 'user', content: `Generate ${questionsPerChunk} hard difficulty function-variant quiz questions that can be answered based on the json snippet function that the question uses from the code chunk:\n\n${chunk}\n\nCRITICAL: Return ONLY valid JSON array. No text before or after. No markdown. No explanations.\n\nIMPORTANT REQUIREMENTS:\n1. ONLY generate questions about functions that actually exist in the provided code chunk\n2. The function name in \"snippet\" must be from the code\n3. The correct variant must be the actual function implementation from the code\n4. Incorrect variants should have realistic bugs
+5. CRITICAL: Generate COMPLETE code - do not truncate with comments like "// Other methods..."
+6. Include ALL class methods, properties, and implementation details in the code variants\n
 
 FOCUS ON UNIVERSAL PROGRAMMING CONCEPTS:
 
@@ -48,10 +50,10 @@ EXPLANATION REQUIREMENTS:
 
 Format:\n[\n  {\n    \"snippet\": \"show complete function(and code)  that the question uses from the code chunk\",\n    \"quiz\": {\n      \"type\": \"function-variant\",\n     
                  \"question\": \"Ask the user to select the function that accomplishes very specific instructions that only the correct answer accomplishes [insert function purpose] and watchout for [List 3 errors that the wrong answers have]".\",
-      \"variants\": [\n        {\n          \"id\": \"A\",\n          \"code\": \"Display full function from the code chunk\",\n          \"isCorrect\": true,\n          \"explanation\": \"Detailed explanation (3-5 sentences) with a humorous snarky tone that makes user feel smart for getting it right\"\n        },\n        {\n          \"id\": \"B\",\n          \"code\": \"Display full correct function from the code chunk with a functional error added to it${variantBLength}\",\n          \"isCorrect\": false,\n          \"explanation\": \"Longer explanation (3-5 sentences) on why this specific bug is wrong in a condescending tone\"\n        },\n        {\n          \"id\": \"C\",\n          \"code\": \"Display full correct function from the code chunk with a functional error added to it${variantCLength}\",\n          \"isCorrect\": false,\n          \"explanation\": \"Encouraging and funny explanation (3-5 sentences) on why this specific bug is wrong. \"\n        },\n        {\n          \"id\": \"D\",\n          \"code\": \"correct function with a functional error added to it${variantDLength}\",\n          \"isCorrect\": false,\n          \"explanation\": \"Here is why this specific bug is wrong (3-5 sentences), and here is an example to further explain that\"\n        }\n      ]\n    }\n  }\n]` }
+      \"variants\": [\n        {\n          \"id\": \"A\",\n          \"code\": \"Display the COMPLETE function from the code chunk - include ALL methods, properties, and implementation details\",\n          \"isCorrect\": true,\n          \"explanation\": \"Detailed explanation (3-5 sentences) with a humorous snarky tone that makes user feel smart for getting it right\"\n        },\n        {\n          \"id\": \"B\",\n          \"code\": \"Display full correct function from the code chunk with a functional error added to it${variantBLength}\",\n          \"isCorrect\": false,\n          \"explanation\": \"Longer explanation (3-5 sentences) on why this specific bug is wrong in a condescending tone\"\n        },\n        {\n          \"id\": \"C\",\n          \"code\": \"Display full correct function from the code chunk with a functional error added to it${variantCLength}\",\n          \"isCorrect\": false,\n          \"explanation\": \"Encouraging and funny explanation (3-5 sentences) on why this specific bug is wrong. \"\n        },\n        {\n          \"id\": \"D\",\n          \"code\": \"correct function with a functional error added to it${variantDLength}\",\n          \"isCorrect\": false,\n          \"explanation\": \"Here is why this specific bug is wrong (3-5 sentences), and here is an example to further explain that\"\n        }\n      ]\n    }\n  }\n]` }
               ],
               temperature: 0.7,
-              max_tokens: 2500 // First, explain the purpose of the function in the application. Then, 
+              max_tokens: 6000 // Increased to ensure complete function snippets 
             }),
             signal: controller.signal
           });
@@ -77,8 +79,18 @@ Format:\n[\n  {\n    \"snippet\": \"show complete function(and code)  that the q
           if (cleanContent.endsWith('```')) cleanContent = cleanContent.replace(/\s*```$/, '');
           const jsonStart = cleanContent.indexOf('[');
           if (jsonStart > 0) cleanContent = cleanContent.substring(jsonStart);
-          const jsonEnd = cleanContent.lastIndexOf(']');
-          if (jsonEnd > 0 && jsonEnd < cleanContent.length - 1) cleanContent = cleanContent.substring(0, jsonEnd + 1);
+          // Find the complete JSON array by counting brackets
+          let bracketCount = 0;
+          let jsonEnd = -1;
+          for (let i = 0; i < cleanContent.length; i++) {
+            if (cleanContent[i] === '[') bracketCount++;
+            if (cleanContent[i] === ']') bracketCount--;
+            if (bracketCount === 0) {
+              jsonEnd = i;
+              break;
+            }
+          }
+          if (jsonEnd > 0) cleanContent = cleanContent.substring(0, jsonEnd + 1);
           const parsed = JSON.parse(cleanContent);
 
           parsed.forEach((question: any) => {
